@@ -60,11 +60,9 @@
          document.getElementById('latest-version').textContent = latestVersion;
 
          if (latestVersion && latestVersion !== currentVersion && latestVersion !== 'Error fetching latest') {
-             document.getElementById('update-available').style.display = 'block';
              document.getElementById('up-to-date').style.display = 'none';
-         }
-
-         if (latestVersion === currentVersion) {
+             document.getElementById('update-available').style.display = 'block';
+         } else {
              document.getElementById('up-to-date').style.display = 'block';
          }
 

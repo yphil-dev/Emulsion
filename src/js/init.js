@@ -193,6 +193,7 @@ function getPlatformInfo(name) {
         'recents': { name: 'Recents', vendor: 'Emulsion' },
         'atari': { name: '2600 +', vendor: 'Atari' },
         'spectrum': { name: 'ZX Spectrum', vendor: 'Sinclair' },
+        'c64': { name: 'C64', vendor: 'Commodore' },
         'nes': { name: 'NES', vendor: 'Nintendo' },
         'sms': { name: 'Master System', vendor: 'Sega' },
         'pcengine': { name: 'PC Engine', vendor: 'NEC' },

@@ -115,7 +115,7 @@ div.menu-game-container:hover {
 }
 
 div.platform-info .vendor {
-  font-size: clamp(18px, 1.8vw, 24px); /* Minimum, preferred, maximum */
+  font-size: clamp(14px, 1.4vw, 24px); /* Minimum, preferred, maximum */
   color: var(--color-platform-text-header);
 
   text-shadow:

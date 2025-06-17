@@ -488,6 +488,7 @@ const defaultPreferences = {
 const platforms = [
     { name: "atari", extensions: [".zip"] },
     { name: "spectrum", extensions: [".zip"] },
+    { name: "c64", extensions: [".zip"] },
     { name: "nes", extensions: [".zip"] },
     { name: "sms", extensions: [".zip"] },
     { name: "pcengine", extensions: [".pce"] },

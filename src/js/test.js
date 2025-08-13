@@ -124,7 +124,8 @@ function testCleanFileName() {
       { input: 'WIPEOUT2097', expected: 'Wipeout 2097' },
       { input: 'WipEout 3 (USA)', expected: 'WipEout 3' },
       { input: 'WipEout 3 - Special Edition (Europe) (En,Fr,De,Es,It)', expected: 'WipEout 3 - Special Edition' },
-      { input: 'Snoopy vs. the Red Baron (USA)', expected: 'Snoopy vs. the Red Baron' }
+      { input: 'Snoopy vs. the Red Baron (USA)', expected: 'Snoopy Vs. The Red Baron' },
+      { input: 'WipEout Fusion (USA)', expected: 'WipEout Fusion' }
 
   ];
 

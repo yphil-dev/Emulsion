@@ -86,8 +86,9 @@ function safeFileName(fileName) {
 // Uppercase ALPHANUMER1C
 const PREDEFINED_TITLES = {
     VRALLY2:        'V-Rally 2',
-    WIPEOUT2097:    'Wipeout 2097',
+    WIPEOUT2097:    'WipEout 2097',
     WIPEOUT3:       'WipEout 3',
+    WIPEOUTFUSION:  'WipEout Fusion',
     PROJECTXSE:     'ProjectX SE',
     SONIC3COMPLETE: 'Sonic 3 Complete',
     NHL94:          'NHL 94',
@@ -110,6 +111,7 @@ function stripExtensions(fileName) {
 }
 
 function cleanFileName(fileName) {
+    console.log("fileName: ", fileName);
     // 1) Base part before underscore
     const raw = fileName.split('_')[0];
 
@@ -137,8 +139,12 @@ function cleanFileName(fileName) {
     s = _removeParens(s);
     s = _removeBrackets(s);
     s = _moveTrailingArticleToFront(s);
+
+    console.log("_titleCase(s): ", _titleCase(s));
+
     return _titleCase(s);
 }
+
 function _removeAfterUnderscore(s) {
     return s.split('_')[0];
 }

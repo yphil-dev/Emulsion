@@ -85,107 +85,107 @@ function safeFileName(fileName) {
 
 // Uppercase ALPHANUMER1C
 const PREDEFINED_TITLES = {
-  VRALLY2:        'V-Rally 2',
-  WIPEOUT2097:    'Wipeout 2097',
-  WIPEOUT3:       'WipEout 3',
-  PROJECTXSE:     'ProjectX SE',
-  SONIC3COMPLETE: 'Sonic 3 Complete',
-  NHL94:          'NHL 94',
+    VRALLY2:        'V-Rally 2',
+    WIPEOUT2097:    'Wipeout 2097',
+    WIPEOUT3:       'WipEout 3',
+    PROJECTXSE:     'ProjectX SE',
+    SONIC3COMPLETE: 'Sonic 3 Complete',
+    NHL94:          'NHL 94',
 };
 
 function stripExtensions(fileName) {
-  if (!fileName || typeof fileName !== 'string') return fileName;
+    if (!fileName || typeof fileName !== 'string') return fileName;
 
     const lastDot = fileName.lastIndexOf('.');
 
-  // Return original string if:
-  // 1. No dot found
-  // 2. Dot is at start (hidden file)
-  // 3. Dot is at end (invalid extension)
-  if (lastDot <= 0 || lastDot === fileName.length - 1) {
-    return fileName;
-  }
+    // Return original string if:
+    // 1. No dot found
+    // 2. Dot is at start (hidden file)
+    // 3. Dot is at end (invalid extension)
+    if (lastDot <= 0 || lastDot === fileName.length - 1) {
+        return fileName;
+    }
 
-  return fileName.substring(0, lastDot);
+    return fileName.substring(0, lastDot);
 }
 
 function cleanFileName(fileName) {
-  // 1) Base part before underscore
-  const raw = fileName.split('_')[0];
+    // 1) Base part before underscore
+    const raw = fileName.split('_')[0];
 
-  // 2) Remove all trailing "(…)" or "[…]"
-  const noParens = raw.replace(/\s*[\(\[].*?[\)\]]/g, '');
+    // 2) Remove all trailing "(…)" or "[…]"
+    const noParens = raw.replace(/\s*[\(\[].*?[\)\]]/g, '');
 
-  // 3) Split into [core, subtitle] on first " - "
-  const [corePart, subtitlePart] = noParens.split(/\s-\s(.+)$/);
+    // 3) Split into [core, subtitle] on first " - "
+    const [corePart, subtitlePart] = noParens.split(/\s-\s(.+)$/);
 
-  // 4) Build lookup key from corePart: remove non-alphanumerics, uppercase
-  const key = corePart.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+    // 4) Build lookup key from corePart: remove non-alphanumerics, uppercase
+    const key = corePart.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
 
-  // 5) If exception exists, return it + suffix (if any)
-  if (PREDEFINED_TITLES[key]) {
-    return subtitlePart
-      ? `${PREDEFINED_TITLES[key]} - ${subtitlePart}`   // preserve subtitle
-      : PREDEFINED_TITLES[key];
-  }
+    // 5) If exception exists, return it + suffix (if any)
+    if (PREDEFINED_TITLES[key]) {
+        return subtitlePart
+            ? `${PREDEFINED_TITLES[key]} - ${subtitlePart}`   // preserve subtitle
+            : PREDEFINED_TITLES[key];
+    }
 
-  // 6) Fallback to your original pipeline on the full raw filename
-  let s = _removeAfterUnderscore(fileName);
-  s = _splitSpecial(s);
-  s = _splitCamelCase(s);
-  s = _splitAcronym(s);
-  s = _removeParens(s);
-  s = _removeBrackets(s);
-  s = _moveTrailingArticleToFront(s);
-  return _titleCase(s);
+    // 6) Fallback to your original pipeline on the full raw filename
+    let s = _removeAfterUnderscore(fileName);
+    s = _splitSpecial(s);
+    s = _splitCamelCase(s);
+    s = _splitAcronym(s);
+    s = _removeParens(s);
+    s = _removeBrackets(s);
+    s = _moveTrailingArticleToFront(s);
+    return _titleCase(s);
 }
 function _removeAfterUnderscore(s) {
-  return s.split('_')[0];
+    return s.split('_')[0];
 }
 
 function _splitSpecial(s) {
-  return s.replace(/(\d+[A-Z])(?=[A-Z][a-z])/g, '$1 ');
+    return s.replace(/(\d+[A-Z])(?=[A-Z][a-z])/g, '$1 ');
 }
 
 function _splitCamelCase(s) {
-  return s.replace(/([a-z])([A-Z])/g, '$1 $2');
+    return s.replace(/([a-z])([A-Z])/g, '$1 $2');
 }
 
 function _splitAcronym(s) {
-  return s.replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2');
+    return s.replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2');
 }
 
 function _removeParens(s) {
-  return s.replace(/\s*\(.*?\)/g, '');
+    return s.replace(/\s*\(.*?\)/g, '');
 }
 
 function _removeBrackets(s) {
-  return s.replace(/\s*\[.*?\]/g, '');
+    return s.replace(/\s*\[.*?\]/g, '');
 }
 
 function _moveTrailingArticleToFront(s) {
-  // Matches "... , The" (case-insensitive), end of string
-  const m = s.match(/^(.*?),\s*(The|An|A)$/i);
-  if (m) {
-    // Capitalize the article properly and prepend
-    const art = m[2].charAt(0).toUpperCase() + m[2].slice(1).toLowerCase();
-    return `${art} ${m[1].trim()}`;
-  }
-  return s;
+    // Matches "... , The" (case-insensitive), end of string
+    const m = s.match(/^(.*?),\s*(The|An|A)$/i);
+    if (m) {
+        // Capitalize the article properly and prepend
+        const art = m[2].charAt(0).toUpperCase() + m[2].slice(1).toLowerCase();
+        return `${art} ${m[1].trim()}`;
+    }
+    return s;
 }
 
 function _titleCase(s) {
-  return s
-    .split(/\s+/)
-    .map(word => {
-      // If it's all digits or ALL-CAP (or contains digits), leave as-is
-      if (/^[0-9]+$/.test(word) || /^[A-Z0-9]+$/.test(word)) {
-        return word;
-      }
-      // Otherwise, uppercase first letter, lowercase the rest
-      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-    })
-    .join(' ');
+    return s
+        .split(/\s+/)
+        .map(word => {
+            // If it's all digits or ALL-CAP (or contains digits), leave as-is
+            if (/^[0-9]+$/.test(word) || /^[A-Z0-9]+$/.test(word)) {
+                return word;
+            }
+            // Otherwise, uppercase first letter, lowercase the rest
+            return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+        })
+        .join(' ');
 }
 
 function getPlatformInfo(name) {
@@ -324,8 +324,8 @@ function applyTheme(theme) {
     const menu = document.getElementById('menu');
 
     const baseDir = LB.baseDir.endsWith('/')
-        ? LB.baseDir.slice(0, -1)
-        : LB.baseDir;
+          ? LB.baseDir.slice(0, -1)
+          : LB.baseDir;
 
     const bgPath = path.join(LB.baseDir, 'img', 'themes', theme, 'background.png');
     const bgImageUrl = `url("file://${bgPath.replace(/\\/g, '/')}")`;
@@ -349,8 +349,8 @@ function applyTheme(theme) {
 }
 
 function setFooterSize(size) {
-  const footer = document.getElementById('footer');
-  footer.className = `footer-${size}`;
+    const footer = document.getElementById('footer');
+    footer.className = `footer-${size}`;
 }
 
 LB.prefs = {

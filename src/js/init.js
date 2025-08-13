@@ -95,23 +95,20 @@ const PREDEFINED_TITLES = {
 };
 
 function stripExtensions(fileName) {
+    console.log("ext fileName:", fileName);
     if (!fileName || typeof fileName !== 'string') return fileName;
 
-    const lastDot = fileName.lastIndexOf('.');
-
-    // Return original string if:
-    // 1. No dot found
-    // 2. Dot is at start (hidden file)
-    // 3. Dot is at end (invalid extension)
-    if (lastDot <= 0 || lastDot === fileName.length - 1) {
-        return fileName;
+    let base = fileName;
+    for (let i = 0; i < 2; i++) {
+        const lastDot = base.lastIndexOf('.');
+        if (lastDot <= 0) break; // stop if no more extension
+        base = base.substring(0, lastDot);
     }
-
-    return fileName.substring(0, lastDot);
+    return base;
 }
 
 function cleanFileName(fileName) {
-    console.log("fileName: ", fileName);
+    console.log("cleanFileName fileName: ", fileName);
     // 1) Base part before underscore
     const raw = fileName.split('_')[0];
 

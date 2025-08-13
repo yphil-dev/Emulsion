@@ -347,6 +347,7 @@ async function buildGallery(params) {
 
                 let fileName = path.basename(gameFilePath);
                 let fileNameWithoutExt = LB.utils.stripExtensions(fileName);
+                // console.log("fileNameWithoutExt: ", fileNameWithoutExt);
                 let fileNameClean = LB.utils.cleanFileName(fileNameWithoutExt);
 
                 let dataCommand = `${emulator} ${emulatorArgs} ${gameFilePath}`;

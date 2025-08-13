@@ -39,7 +39,6 @@ function cleanFileName(fileName) {
   s = _moveTrailingArticleToFront(s);
   return _titleCase(s);
 }
-
 function _removeAfterUnderscore(s) {
   return s.split('_')[0];
 }
@@ -124,7 +123,8 @@ function testCleanFileName() {
       { input: 'VRALLY2', expected: 'V-Rally 2' },
       { input: 'WIPEOUT2097', expected: 'Wipeout 2097' },
       { input: 'WipEout 3 (USA)', expected: 'WipEout 3' },
-      { input: 'WipEout 3 - Special Edition (Europe) (En,Fr,De,Es,It)', expected: 'WipEout 3 - Special Edition' }
+      { input: 'WipEout 3 - Special Edition (Europe) (En,Fr,De,Es,It)', expected: 'WipEout 3 - Special Edition' },
+      { input: 'Snoopy vs. the Red Baron (USA)', expected: 'Snoopy vs. the Red Baron' }
 
   ];
 

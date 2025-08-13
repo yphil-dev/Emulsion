@@ -94,17 +94,19 @@ const PREDEFINED_TITLES = {
 };
 
 function stripExtensions(fileName) {
-  let name = fileName;
-  let ext;
+  if (!fileName || typeof fileName !== 'string') return fileName;
 
-  // keep chopping off the last ext until there is none
-  while ((ext = path.extname(name))) {
-    // safety: if name is just the extension (e.g. ".gitignore"), break
-    if (name === ext) break;
-    name = name.slice(0, -ext.length);
+    const lastDot = fileName.lastIndexOf('.');
+
+  // Return original string if:
+  // 1. No dot found
+  // 2. Dot is at start (hidden file)
+  // 3. Dot is at end (invalid extension)
+  if (lastDot <= 0 || lastDot === fileName.length - 1) {
+    return fileName;
   }
 
-  return name;
+  return fileName.substring(0, lastDot);
 }
 
 function cleanFileName(fileName) {
@@ -137,7 +139,6 @@ function cleanFileName(fileName) {
   s = _moveTrailingArticleToFront(s);
   return _titleCase(s);
 }
-
 function _removeAfterUnderscore(s) {
   return s.split('_')[0];
 }

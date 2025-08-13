@@ -426,7 +426,7 @@ function buildPlatformForm(platformName) {
     const gamesDirInput = document.createElement('input');
     gamesDirInput.type = 'text';
     gamesDirInput.classList.add('input');
-    gamesDirInput.placeholder = 'Your games directory';
+    gamesDirInput.placeholder = `Your ${platformInfo.name} games directory`;
 
     const gamesDirLabel = document.createElement('label');
     gamesDirLabel.textContent = 'Games directory';
@@ -470,7 +470,7 @@ function buildPlatformForm(platformName) {
     const emulatorInput = document.createElement('input');
     emulatorInput.type = 'text';
     emulatorInput.classList.add('input');
-    emulatorInput.placeholder = 'Your emulator';
+    emulatorInput.placeholder = `Your ${platformInfo.name} emulator`;
 
     const emulatorCtn = document.createElement('div');
     emulatorCtn.classList.add('dual-ctn');
@@ -565,7 +565,7 @@ function buildPlatformForm(platformName) {
     const emulatorArgsInput = document.createElement('input');
     emulatorArgsInput.classList.add('input');
     emulatorArgsInput.type = 'text';
-    emulatorArgsInput.placeholder = 'Your emulator arguments';
+    emulatorArgsInput.placeholder = `Your ${platformInfo.name} emulator arguments`;
 
     emulatorArgsCtn.appendChild(emulatorArgsIcon);
     emulatorArgsCtn.appendChild(emulatorArgsInput);

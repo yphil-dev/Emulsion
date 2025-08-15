@@ -1,7 +1,5 @@
 function buildHomeSlide(platformName, preferences) {
 
-    console.log("buildHomeSlide: ");
-
     const slide = document.createElement("div");
     slide.className = "slide";
     slide.id = platformName;

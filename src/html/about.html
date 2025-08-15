@@ -37,10 +37,10 @@
         <div class="content">
             <img src="../../img/icon.png" alt="App icon">
             <h2>Emulsion <span id="current-version">x.y.z</span></h2>
-            <h3 id="#up-to-date">
+            <h3 id="up-to-date">
                 ✨ Up to date!
             </h3>
-                <h3 id="update-available">
+            <h3 id="update-available">
                 <button id="upgradeBtn" class="button">✨ <span id="latest-version"></span> is available!</button>
             </h3>
             <div class="buttons">
@@ -52,7 +52,10 @@
          const { ipcRenderer } = require('electron');
 
          const params = new URLSearchParams(window.location.search);
-
+         /*
+          *          console.log("params: ", params);
+          *          alert("Params: " + params);
+          *  */
          const latestVersion = params.get('latestVersion');
          const currentVersion = params.get('currentVersion');
 
@@ -77,6 +80,7 @@
          });
 
          document.getElementById('closeBtn').addEventListener('click', () => {
+             console.log("closeBtn: ", closeBtn);
              window.close();
          });
         </script>

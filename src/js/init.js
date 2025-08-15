@@ -95,7 +95,6 @@ const PREDEFINED_TITLES = {
 };
 
 function stripExtensions(fileName) {
-    console.log("ext fileName:", fileName);
     if (!fileName || typeof fileName !== 'string') return fileName;
 
     let base = fileName;
@@ -108,7 +107,6 @@ function stripExtensions(fileName) {
 }
 
 function cleanFileName(fileName) {
-    console.log("cleanFileName fileName: ", fileName);
     // 1) Base part before underscore
     const raw = fileName.split('_')[0];
 
@@ -136,8 +134,6 @@ function cleanFileName(fileName) {
     s = _removeParens(s);
     s = _removeBrackets(s);
     s = _moveTrailingArticleToFront(s);
-
-    console.log("_titleCase(s): ", _titleCase(s));
 
     return _titleCase(s);
 }

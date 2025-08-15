@@ -640,6 +640,8 @@ ipcMain.handle('open-about-window', async () => {
         const data = await response.json();
         const latestVersion = data.tag_name.replace(/^v/, ''); // Remove 'v' prefix if present
 
+        console.log("latestVersion: ", latestVersion);
+
         const aboutWindow = new BrowserWindow({
             width: 300,
             height: 400,

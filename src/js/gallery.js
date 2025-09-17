@@ -35,6 +35,7 @@ LB.gallery = {
                             emulatorArgs,
                             userDataPath,
                             index: index,
+                            trueIndex: i + 1,
                             platforms,
                             extensions,
                             isEnabled
@@ -43,11 +44,11 @@ LB.gallery = {
                         const container = await buildGallery(params);
                         if (container) {
                             galleriesContainer.appendChild(container);
-                            i++;
                         }
 
                         if (platformName !== 'settings' && prefs.isEnabled) {
                             LB.enabledPlatforms.push(platformName);
+                            i++;
                         }
                     } else if (platformName === 'settings') {
                         const params = {
@@ -56,7 +57,7 @@ LB.gallery = {
                             emulator: 'none',
                             emulatorArgs: 'none',
                             userDataPath,
-                            index: i,
+                            index: 0,
                             platforms,
                             extensions: 'none'
                         };
@@ -71,7 +72,7 @@ LB.gallery = {
                 }
 
                 if (LB.recentlyPlayedPolicy === 'show') {
-                    const recentGallery = await _buildRecentGallery({ userDataPath, index: i });
+                    const recentGallery = await _buildRecentGallery({ userDataPath, index: platforms.length });
                     if (recentGallery) {
                         galleriesContainer.appendChild(recentGallery);
                         i++;
@@ -266,6 +267,7 @@ async function buildGallery(params) {
     const emulatorArgs = params.emulatorArgs;
     const userDataPath = params.userDataPath;
     const index = params.index;
+    const trueIndex = params.trueIndex;
     const platforms = params.platforms;
     const extensions = params.extensions;
     const isEnabled = params.isEnabled;
@@ -281,6 +283,9 @@ async function buildGallery(params) {
     page.classList.add('page');
     page.id = `page${index}`;
     page.setAttribute('data-index', index);
+
+    page.setAttribute('data-trueindex', trueIndex);
+
     page.setAttribute('data-platform', platform);
 
     const pagePrevLink = document.createElement('a');
@@ -345,7 +350,6 @@ async function buildGallery(params) {
 
                 let fileName = path.basename(gameFilePath);
                 let fileNameWithoutExt = LB.utils.stripExtensions(fileName);
-                // console.log("fileNameWithoutExt: ", fileNameWithoutExt);
                 let fileNameClean = LB.utils.cleanFileName(fileNameWithoutExt);
 
                 let dataCommand = `${emulator} ${emulatorArgs} ${gameFilePath}`;

@@ -252,7 +252,6 @@ async function _loadUserData() {
 async function getPrefs() {
     try {
         const preferences = await _loadUserData();
-        console.log("getPrefs: ", preferences);
         return preferences;
     } catch (error) {
         console.error("Error loading preferences:", error);
@@ -300,8 +299,6 @@ async function updatePreference(platformName, key, value) {
 async function getPlatformPreference(platformName, key) {
     try {
         const preferences = await getPrefs();
-
-        console.log("preferences[platformName]: ", preferences[platformName]);
 
         if (!preferences[platformName]) {
             throw new Error(`Platform "${platformName}" not found in preferences.`);

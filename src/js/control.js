@@ -18,6 +18,7 @@ function initSlideShow(platformToDisplay) {
     function updateHomeCarousel(platformIndex) {
         const angleIncrement = 360 / totalSlides;
 
+
         slides.forEach((slide, index) => {
             const angle = angleIncrement * (index - currentIndex);
             slide.style.setProperty('--angle', angle);
@@ -35,6 +36,7 @@ function initSlideShow(platformToDisplay) {
             }
 
             if (platformIndex && slide.dataset.index === platformIndex) {
+                console.log("platformIndex: ", platformIndex);
                 slide.classList.add('active');
             }
 
@@ -207,8 +209,6 @@ function launchGame(gameContainer) {
 
 function initGallery(currentIndex, disabledPlatform) {
 
-    console.log("currentIndex init gal: ", currentIndex);
-
     setGalleryControls(currentIndex);
 
     const header = document.getElementById('header');
@@ -222,8 +222,6 @@ function initGallery(currentIndex, disabledPlatform) {
     let gameContainers = [];
 
     const enabledPages = pages.filter(page => page.dataset.status !== 'disabled');
-
-    let activePlatformIndex;
 
     function initCurrentGallery(page, index) {
 
@@ -306,13 +304,9 @@ function initGallery(currentIndex, disabledPlatform) {
         // Find the active page's position in the enabled array
         const activePos = enabledPages.findIndex(page => Number(page.dataset.index) === currentIndex);
 
-        activePlatformIndex = activePos;
-
         // Determine immediate neighbors
         const prevPage = enabledPages[activePos - 1] || null;
         const nextPage = enabledPages[activePos + 1] || null;
-
-        const isAnim = true;
 
         pages.forEach(page => {
             const pageIndexNumber = Number(page.dataset.index);
@@ -462,10 +456,10 @@ function initGallery(currentIndex, disabledPlatform) {
                 container.classList.toggle('selected', index === menuSelectedIndex);
             });
 
-            menuGameContainers[menuSelectedIndex].scrollIntoView({
-                behavior: "smooth",
-                block: "center"
-            });
+            // menuGameContainers[menuSelectedIndex].scrollIntoView({
+            //     behavior: "smooth",
+            //     block: "center"
+            // });
 
         }
 
@@ -677,8 +671,10 @@ function initGallery(currentIndex, disabledPlatform) {
             document.getElementById('galleries').style.display = 'none';
             window.removeEventListener('keydown', onGalleryKeyDown);
 
-            LB.control.initSlideShow(activePlatformIndex);
-            // LB.control.initSlideShow(LB.kidsMode ? currentIndex - 1 : currentIndex);
+            const index = Number(document.querySelector('.page.active').getAttribute('data-index'));
+            const trueIndex = Number(document.querySelector('.page.active').getAttribute('data-trueindex'));
+
+            LB.control.initSlideShow(LB.disabledPlatformsPolicy === "hide" || LB.kidsMode ? trueIndex : index);
             document.querySelector('header .item-number').textContent = '';
             break;
         case 'q':

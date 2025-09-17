@@ -23,8 +23,7 @@ function buildHomeSlide(platformName, preferences) {
     }
 
     if (platformName !== 'settings' &&
-        ((LB.kidsMode || LB.disabledPlatformsPolicy === 'hide') &&
-         !preferences[platformName]?.isEnabled)) {
+        ((LB.kidsMode || LB.disabledPlatformsPolicy === 'hide') && !preferences[platformName]?.isEnabled)) {
         return null;
     }
 

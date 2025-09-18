@@ -368,7 +368,7 @@ async function buildGallery(params) {
                 const gameContainer = document.createElement('div');
                 gameContainer.classList.add('game-container');
                 // gameContainer.style.height = 'calc(120vw / ' + LB.galleryNumOfCols + ')';
-                gameContainer.title = `${fileNameClean} (${fileNameWithoutExt}) \n\n- Click to launch\n- Righ-click to configure`;
+                gameContainer.title = `${fileNameClean} (${fileNameWithoutExt}) real name: ${fileName} \n\n- Click to launch\n- Righ-click to configure`;
                 gameContainer.setAttribute('data-game-name', fileNameWithoutExt);
                 gameContainer.setAttribute('data-platform', platform);
                 gameContainer.setAttribute('data-command', dataCommand);

@@ -538,10 +538,24 @@ ipcMain.handle('load-preferences', () => {
     const versionNumber = pjson.version;
 
     function getNamedArg(name) {
-        const prefix = `--${name}=`;
-        const arg = process.argv.find(arg => arg.startsWith(prefix));
-        console.log("arg.slice(prefix.length): ", arg.slice(prefix.length));
-        return arg ? arg.slice(prefix.length) : null;
+        try {
+            // Check if process.argv exists and is an array
+            if (!process.argv || !Array.isArray(process.argv)) {
+                return null;
+            }
+
+            const prefix = `--${name}=`;
+            const arg = process.argv.find(arg => arg && typeof arg === 'string' && arg.startsWith(prefix));
+
+            if (!arg) {
+                return null;
+            }
+
+            return arg.slice(prefix.length);
+        } catch (error) {
+            console.error(`Error in getNamedArg for ${name}:`, error);
+            return null;
+        }
     }
 
     if (recents.error) {
@@ -591,7 +605,7 @@ ipcMain.handle('load-preferences', () => {
 });
 
 ipcMain.handle('save-preferences', async (event, prefs) => {
-    console.log("prefs: ", prefs);
+    // console.log("prefs: ", prefs);
     savePreferences(prefs);
 });
 

@@ -352,6 +352,19 @@ function setFooterSize(size) {
     footer.className = `footer-${size}`;
 }
 
+function getDataIndexByPlatform(platformName) {
+    // Get all elements with class "page" that have data-platform attribute
+    const pages = document.querySelectorAll('.page[data-platform]');
+
+    // Find the page with the matching platform name
+    const matchingPage = Array.from(pages).find(page =>
+        page.getAttribute('data-platform') === platformName
+    );
+
+    // Return the data-index if found, otherwise return null or undefined
+    return matchingPage ? matchingPage.getAttribute('data-index') : null;
+}
+
 LB.prefs = {
     load: getPrefs,
     save: updatePreference,
@@ -367,5 +380,6 @@ LB.utils = {
     safeFileName: safeFileName,
     simulateKeyDown: simulateKeyDown,
     getSelectedGame: getSelectedGame,
-    updateControls: updateControls
+    updateControls: updateControls,
+    getDataIndexByPlatform: getDataIndexByPlatform
 };

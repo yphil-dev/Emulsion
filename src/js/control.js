@@ -15,7 +15,7 @@ function initSlideShow(platformToDisplay) {
     const slides = Array.from(slideshow.querySelectorAll('.slide'));
     const totalSlides = slides.length;
     const radius = 90 * totalSlides;
-    let currentIndex = platformToDisplay ? platformToDisplay : 0;
+    let currentIndex = platformToDisplay ? Number(platformToDisplay) : 0;
 
     function updateHomeCarousel(platformIndex) {
         const angleIncrement = 360 / totalSlides;

@@ -43,7 +43,10 @@ LB.prefs.load()
         const galleriesContainer = document.getElementById('galleries');
         galleriesContainer.style.display = 'none';
 
-        const autoSelectIndex = LB.utils.getPlatformInfo(LB.autoSelect).index;
+        // const autoSelectIndex = LB.utils.getPlatformInfo(LB.autoSelect).index;
+
+        const autoSelectIndex = LB.utils.getDataIndexByPlatform(LB.autoSelect);
+
         // const autoOpenIndex = LB.utils.getPlatformInfo(LB.autoOpen);
 
         console.log("autoSelectIndex: ", autoSelectIndex);

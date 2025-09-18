@@ -43,8 +43,13 @@ LB.prefs.load()
         const galleriesContainer = document.getElementById('galleries');
         galleriesContainer.style.display = 'none';
 
+        const autoSelectIndex = LB.utils.getPlatformInfo(LB.autoSelect).index;
+        // const autoOpenIndex = LB.utils.getPlatformInfo(LB.autoOpen);
+
+        console.log("autoSelectIndex: ", autoSelectIndex);
+
         document.getElementById("main").style.display = 'flex';
-        LB.control.initSlideShow();
+        LB.control.initSlideShow(autoSelectIndex || 0);
         document.getElementById("splash").style.display = 'none';
         document.getElementById("footer").style.display = 'flex';
     })

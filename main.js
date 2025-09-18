@@ -129,9 +129,14 @@ ${pjson.name.toLowerCase()} ${pjson.version}
 Usage: ${pjson.name.toLowerCase()} [options]
 
 Options:
-  --media-center         Read-only / kids mode: No config / settings, disabled platforms hidden.
-  --kiosk, --full-screen Start Emulsion in full screen mode.
-  --help                 Show this help message.
+  --kiosk                        Read-only / kids mode: No config / settings, disabled platforms hidden.
+  --full-screen                  Start in full screen mode.
+  --auto-select=[platform_name]  Auto-select [platform_name].
+  --help                         Show this help message.
+
+Platform names:
+atari spectrum c64 nes sms pcengine amiga megadrive gameboy lynx gamegear snes jaguar saturn psx n64 dreamcast ps2 gamecube xbox psp ps3 3ds xbox360 ps4 recents settings
+
     `);
     app.quit();
 }
@@ -325,7 +330,7 @@ function createWindows() {
     mainWindow = new BrowserWindow({
         width: 800,
         height: 600,
-        fullscreen: process.argv.includes('--kiosk') || process.argv.includes('--full-screen'),
+        fullscreen: process.argv.includes('--full-screen'),
         icon: path.join(__dirname, 'img/icon.png'),
         webPreferences: {
             nodeIntegration: true,
@@ -532,6 +537,13 @@ ipcMain.handle('load-preferences', () => {
     const appPath = app.getAppPath();
     const versionNumber = pjson.version;
 
+    function getNamedArg(name) {
+        const prefix = `--${name}=`;
+        const arg = process.argv.find(arg => arg.startsWith(prefix));
+        console.log("arg.slice(prefix.length): ", arg.slice(prefix.length));
+        return arg ? arg.slice(prefix.length) : null;
+    }
+
     if (recents.error) {
         console.log("recent.message: ", recents.message);
     }
@@ -570,7 +582,9 @@ ipcMain.handle('load-preferences', () => {
         preferences.userDataPath = userDataPath;
         preferences.appPath = appPath;
         preferences.versionNumber = versionNumber;
-        preferences.kidsMode = process.argv.includes('--media-center');
+        preferences.kidsMode = process.argv.includes('--kiosk');
+        preferences.autoSelect = getNamedArg('auto-select');
+        // preferences.autoOpen = getNamedArg('auto-open');
         preferences.recents = recents;
         return preferences;
     }

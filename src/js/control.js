@@ -5,6 +5,8 @@
 
 function initSlideShow(platformToDisplay) {
 
+    console.log("platformToDisplay: ", platformToDisplay);
+
     const slideshow = document.getElementById("slideshow");
 
     document.getElementById('header').style.display = 'none';
@@ -18,16 +20,12 @@ function initSlideShow(platformToDisplay) {
     function updateHomeCarousel(platformIndex) {
         const angleIncrement = 360 / totalSlides;
 
-
         slides.forEach((slide, index) => {
             const angle = angleIncrement * (index - currentIndex);
             slide.style.setProperty('--angle', angle);
             slide.style.setProperty('--radius', radius);
 
-            // Remove all state classes before reassigning
-            // slide.classList.remove('active', 'prev-slide', 'next-slide', 'adjacent');
             slide.classList.remove('active', 'prev-slide-3d', 'prev-slide-flat', 'next-slide-3d', 'next-slide-flat', 'adjacent-flat', 'adjacent-3d');
-            // slide.style.opacity = 1;
 
             let is3D = false;
 
@@ -35,37 +33,14 @@ function initSlideShow(platformToDisplay) {
                 is3D = true;
             }
 
-            if (platformIndex && slide.dataset.index === platformIndex) {
-                console.log("platformIndex: ", platformIndex);
-                slide.classList.add('active');
-            }
-
             if (index === currentIndex) {
                 slide.classList.add('active');
             } else if (index === (currentIndex - 1 + totalSlides) % totalSlides) {
-
-                if (is3D) {
-                    slide.classList.add('prev-slide-3d');
-                } else {
-                    slide.classList.add('prev-slide-flat');
-                }
-
+                slide.classList.add(is3D ? 'prev-slide-3d' : 'prev-slide-flat');
             } else if (index === (currentIndex + 1) % totalSlides) {
-
-                if (is3D) {
-                    slide.classList.add('next-slide-3d');
-                } else {
-                    slide.classList.add('next-slide-flat');
-                }
-
+                slide.classList.add(is3D ? 'next-slide-3d' : 'next-slide-flat');
             } else {
-
-                if (is3D) {
-                    slide.classList.add('adjacent-3d');
-                } else {
-                    slide.classList.add('adjacent-flat');
-                }
-
+                slide.classList.add(is3D ? 'adjacent-3d' : 'adjacent-flat');
             }
         });
     }

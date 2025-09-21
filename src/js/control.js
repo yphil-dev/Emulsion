@@ -15,20 +15,21 @@ function initSlideShow(platformToDisplay) {
     const slides = Array.from(slideshow.querySelectorAll('.slide'));
     const totalSlides = slides.length;
     const radius = 90 * totalSlides;
-    let currentIndex = platformToDisplay ? Number(platformToDisplay) : 0;
+    let indexToOpen = platformToDisplay ? Number(platformToDisplay) : 0;
 
-    console.log("(LB.enabledPlatforms.some(platform => platform.index === platformToDisplay): ", (LB.enabledPlatforms.some(platform => platform.index === platformToDisplay)));
+    if (LB.autoSelect && !LB.enabledPlatforms.some(platform => platform === LB.autoSelect)) {
+        initGallery(0, LB.autoSelect);
+        return;
+    }
 
-    // if (!LB.enabledPlatforms.some(platform => platform.index === platformToDisplay)) {
-    //     initGallery(0, LB.autoSelect);
-    //     return;
-    // }
-
-    function updateHomeCarousel() {
+    function updateHomeCarousel(explicitIndex) {
         const angleIncrement = 360 / totalSlides;
 
+        let slideToOpen;
+        let thisSlideIndex;
+
         slides.forEach((slide, index) => {
-            const angle = angleIncrement * (index - currentIndex);
+            const angle = angleIncrement * (index - indexToOpen);
             slide.style.setProperty('--angle', angle);
             slide.style.setProperty('--radius', radius);
 
@@ -40,25 +41,41 @@ function initSlideShow(platformToDisplay) {
                 is3D = true;
             }
 
-            if (Number(slide.dataset.index) === currentIndex) {
+            if (explicitIndex && explicitIndex !== 0) {
+                thisSlideIndex = Number(slide.dataset.index);
+                console.log("LB.autoSelect: ", LB.autoSelect);
+            } else {
+                thisSlideIndex = index;
+            }
+
+            const slideIndex = Number(slide.dataset.index);
+            console.log("explicitIndex: ", explicitIndex);
+
+            if (thisSlideIndex === indexToOpen) {
+                slideToOpen = slide;
                 slide.classList.add('active');
-            } else if (Number(slide.dataset.index) === (currentIndex - 1 + totalSlides) % totalSlides) {
+            } else if (thisSlideIndex === (indexToOpen - 1 + totalSlides) % totalSlides) {
                 slide.classList.add(is3D ? 'prev-slide-3d' : 'prev-slide-flat');
-            } else if (Number(slide.dataset.index) === (currentIndex + 1) % totalSlides) {
+            } else if (thisSlideIndex === (indexToOpen + 1) % totalSlides) {
                 slide.classList.add(is3D ? 'next-slide-3d' : 'next-slide-flat');
             } else {
                 slide.classList.add(is3D ? 'adjacent-3d' : 'adjacent-flat');
             }
         });
+
+        // if (slideToOpen) {
+        //     slideToOpen.click();
+        // }
+
     }
 
     function nextSlide() {
-        currentIndex = (currentIndex + 1) % totalSlides;
+        indexToOpen = (indexToOpen + 1) % totalSlides;
         updateHomeCarousel();
     }
 
     function prevSlide() {
-        currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+        indexToOpen = (indexToOpen - 1 + totalSlides) % totalSlides;
         updateHomeCarousel();
     }
 
@@ -112,7 +129,7 @@ function initSlideShow(platformToDisplay) {
 
             if (activePlatformName === 'recents') {
                 initGallery(LB.totalNumberOfPlatforms);
-            } else if (LB.enabledPlatforms.some(platform => platform.name === activePlatformName)) {
+            } else if (LB.enabledPlatforms.includes(activePlatformName)) {
                 if (activePlatformName === 'settings' && LB.kidsMode) {
                     return;
                 }
@@ -156,7 +173,7 @@ function initSlideShow(platformToDisplay) {
     LB.utils.updateControls('west', 'same', 'same', 'off');
     LB.utils.updateControls('east', 'same', 'Exit');
 
-    updateHomeCarousel(platformToDisplay);
+    updateHomeCarousel(indexToOpen);
 }
 
 function setGalleryControls(currentIndex) {

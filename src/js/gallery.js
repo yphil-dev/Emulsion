@@ -47,17 +47,9 @@ LB.gallery = {
                         }
 
                         if (platformName !== 'settings' && prefs.isEnabled) {
-                            LB.enabledPlatforms.push({
-                                index: i,
-                                name: platformName
-                            });
+                            LB.enabledPlatforms.push(platformName);
                             i++;
                         }
-
-                        // if (platformName !== 'settings' && prefs.isEnabled) {
-                        //     LB.enabledPlatforms.push(platformName);
-                        //     i++;
-                        // }
                     } else if (platformName === 'settings') {
                         const params = {
                             platform: platformName,

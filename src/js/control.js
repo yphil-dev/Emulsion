@@ -41,26 +41,32 @@ function initSlideShow(platformToDisplay) {
                 is3D = true;
             }
 
-            if (explicitIndex && explicitIndex !== 0) {
-                thisSlideIndex = explicitIndex;
-                console.log("LB.autoSelect: ", LB.autoSelect);
+            console.log("indexToOpen, index, slide.id, slide.dataset.index: ", indexToOpen, index, slide.id, slide.dataset.index);
+
+            if (LB.disabledPlatformsPolicy === "hide" && LB.autoSelect) {
+                thisSlideIndex = Number(slide.dataset.index);
             } else {
                 thisSlideIndex = index;
             }
 
-            const slideIndex = Number(slide.dataset.index);
-            console.log("explicitIndex: ", explicitIndex);
-
-            if (index === indexToOpen) {
+            if (thisSlideIndex === indexToOpen) {
                 slideToOpen = slide;
                 slide.classList.add('active');
-            } else if (index === (indexToOpen - 1 + totalSlides) % totalSlides) {
+            } else if (thisSlideIndex === (indexToOpen - 1 + totalSlides) % totalSlides) {
                 slide.classList.add(is3D ? 'prev-slide-3d' : 'prev-slide-flat');
-            } else if (index === (indexToOpen + 1) % totalSlides) {
+            } else if (thisSlideIndex === (indexToOpen + 1) % totalSlides) {
                 slide.classList.add(is3D ? 'next-slide-3d' : 'next-slide-flat');
             } else {
                 slide.classList.add(is3D ? 'adjacent-3d' : 'adjacent-flat');
             }
+
+            if (LB.disabledPlatformsPolicy === "hide" && Number(slide.dataset.index) === indexToOpen) {
+                console.log("slide.id: ", slide.id);
+                slideToOpen = slide;
+                slide.classList.add('active');
+            }
+
+
         });
 
         // if (slideToOpen) {

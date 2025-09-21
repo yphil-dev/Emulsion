@@ -47,9 +47,17 @@ LB.gallery = {
                         }
 
                         if (platformName !== 'settings' && prefs.isEnabled) {
-                            LB.enabledPlatforms.push(platformName);
+                            LB.enabledPlatforms.push({
+                                index: i,
+                                name: platformName
+                            });
                             i++;
                         }
+
+                        // if (platformName !== 'settings' && prefs.isEnabled) {
+                        //     LB.enabledPlatforms.push(platformName);
+                        //     i++;
+                        // }
                     } else if (platformName === 'settings') {
                         const params = {
                             platform: platformName,

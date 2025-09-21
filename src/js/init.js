@@ -11,7 +11,8 @@ const LB = {}; // Launch Break :)
 
 window.ipcRenderer = ipcRenderer;
 
-LB.enabledPlatforms = ['settings'];
+// LB.enabledPlatforms = ['settings'];
+LB.enabledPlatforms = [{index: 0, name: 'settings'}];
 
 LB.isMenuOpen = false;
 

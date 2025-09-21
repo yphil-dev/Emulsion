@@ -17,7 +17,14 @@ function initSlideShow(platformToDisplay) {
     const radius = 90 * totalSlides;
     let currentIndex = platformToDisplay ? Number(platformToDisplay) : 0;
 
-    function updateHomeCarousel(platformIndex) {
+    console.log("(LB.enabledPlatforms.some(platform => platform.index === platformToDisplay): ", (LB.enabledPlatforms.some(platform => platform.index === platformToDisplay)));
+
+    // if (!LB.enabledPlatforms.some(platform => platform.index === platformToDisplay)) {
+    //     initGallery(0, LB.autoSelect);
+    //     return;
+    // }
+
+    function updateHomeCarousel() {
         const angleIncrement = 360 / totalSlides;
 
         slides.forEach((slide, index) => {
@@ -33,11 +40,11 @@ function initSlideShow(platformToDisplay) {
                 is3D = true;
             }
 
-            if (index === currentIndex) {
+            if (Number(slide.dataset.index) === currentIndex) {
                 slide.classList.add('active');
-            } else if (index === (currentIndex - 1 + totalSlides) % totalSlides) {
+            } else if (Number(slide.dataset.index) === (currentIndex - 1 + totalSlides) % totalSlides) {
                 slide.classList.add(is3D ? 'prev-slide-3d' : 'prev-slide-flat');
-            } else if (index === (currentIndex + 1) % totalSlides) {
+            } else if (Number(slide.dataset.index) === (currentIndex + 1) % totalSlides) {
                 slide.classList.add(is3D ? 'next-slide-3d' : 'next-slide-flat');
             } else {
                 slide.classList.add(is3D ? 'adjacent-3d' : 'adjacent-flat');
@@ -105,7 +112,7 @@ function initSlideShow(platformToDisplay) {
 
             if (activePlatformName === 'recents') {
                 initGallery(LB.totalNumberOfPlatforms);
-            } else if (LB.enabledPlatforms.includes(activePlatformName)) {
+            } else if (LB.enabledPlatforms.some(platform => platform.name === activePlatformName)) {
                 if (activePlatformName === 'settings' && LB.kidsMode) {
                     return;
                 }

@@ -7,6 +7,8 @@ function initSlideShow(platformToDisplay) {
 
     console.log("platformToDisplay: ", platformToDisplay);
 
+    let slideToClick;
+
     const slideshow = document.getElementById("slideshow");
 
     document.getElementById('header').style.display = 'none';
@@ -35,6 +37,7 @@ function initSlideShow(platformToDisplay) {
 
             if (index === currentIndex) {
                 slide.classList.add('active');
+                slideToClick = slide;
             } else if (index === (currentIndex - 1 + totalSlides) % totalSlides) {
                 slide.classList.add(is3D ? 'prev-slide-3d' : 'prev-slide-flat');
             } else if (index === (currentIndex + 1) % totalSlides) {
@@ -70,7 +73,8 @@ function initSlideShow(platformToDisplay) {
             event.stopPropagation();
             event.stopImmediatePropagation();
             if (slide.classList.contains('active')) {
-                simulateKeyDown('Enter');
+                console.log("yo: ");
+                LB.utils.simulateKeyDown('Enter');
             }
         });
     });
@@ -150,6 +154,11 @@ function initSlideShow(platformToDisplay) {
     LB.utils.updateControls('east', 'same', 'Exit');
 
     updateHomeCarousel(platformToDisplay);
+
+    // if (LB.autoSelect) {
+    //     slideToClick.click();
+    // }
+
 }
 
 function setGalleryControls(currentIndex) {
@@ -422,7 +431,13 @@ function initGallery(currentIndex, disabledPlatform) {
                 }
                 break;
             case 'Escape':
-                window.location.reload();
+
+                if (LB.autoSelect) {
+                    ipcRenderer.invoke('quit');
+                } else {
+                    window.location.reload();
+                }
+
                 // _closeMenu();
                 break;
             }
@@ -454,9 +469,9 @@ function initGallery(currentIndex, disabledPlatform) {
                 }
             } else {
                 if (event.deltaY > 0) {
-                    simulateKeyDown('ArrowDown');
+                    LB.utils.simulateKeyDown('ArrowDown');
                 } else if (event.deltaY < 0) {
-                    simulateKeyDown('ArrowUp');
+                    LB.utils.simulateKeyDown('ArrowUp');
                 }
             }
         }
@@ -642,6 +657,7 @@ function initGallery(currentIndex, disabledPlatform) {
             }
             break;
         case 'Escape':
+            console.log("Gal Escape: ");
             document.getElementById('slideshow').style.display = 'flex';
             document.getElementById('galleries').style.display = 'none';
             window.removeEventListener('keydown', onGalleryKeyDown);
@@ -681,9 +697,9 @@ function initGallery(currentIndex, disabledPlatform) {
             }
         } else {
             if (event.deltaY > 0) {
-                simulateKeyDown('ArrowDown');
+                LB.utils.simulateKeyDown('ArrowDown');
             } else if (event.deltaY < 0) {
-                simulateKeyDown('ArrowUp');
+                LB.utils.simulateKeyDown('ArrowUp');
             }
         }
     }
@@ -692,32 +708,6 @@ function initGallery(currentIndex, disabledPlatform) {
 
     window.addEventListener('keydown', onGalleryKeyDown);
     updatePagesCarousel(); // Initialize the pages carousel
-}
-
-function simulateKeyDown(key, modifiers = {}) {
-    const keyCodes = {
-        ArrowLeft: 37,
-        ArrowRight: 39,
-        ArrowUp: 38,
-        ArrowDown: 40,
-        Shift: 16,
-        Enter: 13,
-        Escape: 27
-    };
-
-    const keyboardEvent = new KeyboardEvent('keydown', {
-        key,
-        code: key,
-        keyCode: keyCodes[key] || 0,
-        which: keyCodes[key] || 0,
-        shiftKey: modifiers.shift || false,
-        ctrlKey: modifiers.ctrl || false,
-        altKey: modifiers.alt || false,
-        metaKey: modifiers.meta || false,
-        bubbles: true
-    });
-
-    document.dispatchEvent(keyboardEvent);
 }
 
 function initGamepad () {
@@ -805,34 +795,34 @@ function initGamepad () {
 
         switch (buttonIndex) {
         case 0:
-            simulateKeyDown('Enter');
+            LB.utils.simulateKeyDown('Enter');
             break;
         case 1:
-            simulateKeyDown('Escape');
+            LB.utils.simulateKeyDown('Escape');
             break;
         case 2:
-            simulateKeyDown('i');
+            LB.utils.simulateKeyDown('i');
             break;
         case 3:
             console.log("3 (triangle)");
             break;
         case 4:
-            simulateKeyDown('ArrowLeft', { shift: true });
+            LB.utils.simulateKeyDown('ArrowLeft', { shift: true });
             break;
         case 5:
-            simulateKeyDown('ArrowRight', { shift: true });
+            LB.utils.simulateKeyDown('ArrowRight', { shift: true });
             break;
         case 12:
-            simulateKeyDown('ArrowUp');
+            LB.utils.simulateKeyDown('ArrowUp');
             break;
         case 13:
-            simulateKeyDown('ArrowDown');
+            LB.utils.simulateKeyDown('ArrowDown');
             break;
         case 14:
-            simulateKeyDown('ArrowLeft');
+            LB.utils.simulateKeyDown('ArrowLeft');
             break;
         case 15:
-            simulateKeyDown('ArrowRight');
+            LB.utils.simulateKeyDown('ArrowRight');
             break;
         }
     }

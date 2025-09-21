@@ -365,6 +365,32 @@ function getDataIndexByPlatform(platformName) {
     return matchingPage ? matchingPage.getAttribute('data-index') : null;
 }
 
+function simulateKeyDown(key, modifiers = {}) {
+    const keyCodes = {
+        ArrowLeft: 37,
+        ArrowRight: 39,
+        ArrowUp: 38,
+        ArrowDown: 40,
+        Shift: 16,
+        Enter: 13,
+        Escape: 27
+    };
+
+    const keyboardEvent = new KeyboardEvent('keydown', {
+        key,
+        code: key,
+        keyCode: keyCodes[key] || 0,
+        which: keyCodes[key] || 0,
+        shiftKey: modifiers.shift || false,
+        ctrlKey: modifiers.ctrl || false,
+        altKey: modifiers.alt || false,
+        metaKey: modifiers.meta || false,
+        bubbles: true
+    });
+
+    document.dispatchEvent(keyboardEvent);
+}
+
 LB.prefs = {
     load: getPrefs,
     save: updatePreference,
@@ -381,5 +407,6 @@ LB.utils = {
     simulateKeyDown: simulateKeyDown,
     getSelectedGame: getSelectedGame,
     updateControls: updateControls,
-    getDataIndexByPlatform: getDataIndexByPlatform
+    getDataIndexByPlatform: getDataIndexByPlatform,
+    simulateKeyDown: simulateKeyDown
 };

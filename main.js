@@ -249,7 +249,6 @@ function loadPreferences() {
 }
 
 function savePreferences(preferences) {
-    console.log("preferences: ", preferences);
     try {
         const data = JSON.stringify(preferences, null, 4); // Pretty-print the JSON
         fs.writeFileSync(preferencesFilePath, data, 'utf8');

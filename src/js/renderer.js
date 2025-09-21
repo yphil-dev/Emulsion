@@ -52,9 +52,16 @@ LB.prefs.load()
         console.log("autoSelectIndex: ", autoSelectIndex);
 
         document.getElementById("main").style.display = 'flex';
+
         LB.control.initSlideShow(autoSelectIndex || 0);
+
         document.getElementById("splash").style.display = 'none';
         document.getElementById("footer").style.display = 'flex';
+
+        if (LB.autoSelect) {
+            LB.utils.simulateKeyDown('Enter');
+        }
+
     })
     .catch(error => {
         console.error('Failed to load platforms:', error);

@@ -42,7 +42,7 @@ function initSlideShow(platformToDisplay) {
             }
 
             if (explicitIndex && explicitIndex !== 0) {
-                thisSlideIndex = Number(slide.dataset.index);
+                thisSlideIndex = explicitIndex;
                 console.log("LB.autoSelect: ", LB.autoSelect);
             } else {
                 thisSlideIndex = index;
@@ -51,12 +51,12 @@ function initSlideShow(platformToDisplay) {
             const slideIndex = Number(slide.dataset.index);
             console.log("explicitIndex: ", explicitIndex);
 
-            if (thisSlideIndex === indexToOpen) {
+            if (index === indexToOpen) {
                 slideToOpen = slide;
                 slide.classList.add('active');
-            } else if (thisSlideIndex === (indexToOpen - 1 + totalSlides) % totalSlides) {
+            } else if (index === (indexToOpen - 1 + totalSlides) % totalSlides) {
                 slide.classList.add(is3D ? 'prev-slide-3d' : 'prev-slide-flat');
-            } else if (thisSlideIndex === (indexToOpen + 1) % totalSlides) {
+            } else if (index === (indexToOpen + 1) % totalSlides) {
                 slide.classList.add(is3D ? 'next-slide-3d' : 'next-slide-flat');
             } else {
                 slide.classList.add(is3D ? 'adjacent-3d' : 'adjacent-flat');

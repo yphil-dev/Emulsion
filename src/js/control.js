@@ -5,42 +5,48 @@
 
 function initSlideShow(platformToDisplay) {
 
-    console.log("platformToDisplay: ", platformToDisplay);
-
-    let slideToClick;
+    LB.enabledPlatforms.forEach((platform, i) => {
+        console.log(i, platform);
+    });
 
     const slideshow = document.getElementById("slideshow");
-
     document.getElementById('header').style.display = 'none';
-
     document.body.style.display = "block";
-    const slides = Array.from(slideshow.querySelectorAll('.slide'));
+
+    // Only keep enabled slides
+    const slides = Array.from(document.querySelectorAll('#slideshow .slide'));
+
     const totalSlides = slides.length;
     const radius = 90 * totalSlides;
-    let currentIndex = platformToDisplay ? Number(platformToDisplay) : 0;
 
-    function updateHomeCarousel(platformIndex) {
+    // Find start index
+    let currentIndex = 0;
+    if (platformToDisplay) {
+        const idx = slides.findIndex(s => Number(s.dataset.index) === Number(platformToDisplay));
+        if (idx !== -1) currentIndex = idx;
+    }
+
+    function updateHomeCarousel() {
         const angleIncrement = 360 / totalSlides;
 
-        slides.forEach((slide, index) => {
-            const angle = angleIncrement * (index - currentIndex);
+        slides.forEach((slide, i) => {
+            const angle = angleIncrement * (i - currentIndex);
             slide.style.setProperty('--angle', angle);
             slide.style.setProperty('--radius', radius);
 
-            slide.classList.remove('active', 'prev-slide-3d', 'prev-slide-flat', 'next-slide-3d', 'next-slide-flat', 'adjacent-flat', 'adjacent-3d');
+            slide.classList.remove(
+                'active', 'prev-slide-3d', 'prev-slide-flat',
+                'next-slide-3d', 'next-slide-flat',
+                'adjacent-flat', 'adjacent-3d'
+            );
 
-            let is3D = false;
+            const is3D = (LB.homeMenuTheme === '3D');
 
-            if (LB.homeMenuTheme === '3D') {
-                is3D = true;
-            }
-
-            if (index === currentIndex) {
+            if (i === currentIndex) {
                 slide.classList.add('active');
-                slideToClick = slide;
-            } else if (index === (currentIndex - 1 + totalSlides) % totalSlides) {
+            } else if (i === (currentIndex - 1 + totalSlides) % totalSlides) {
                 slide.classList.add(is3D ? 'prev-slide-3d' : 'prev-slide-flat');
-            } else if (index === (currentIndex + 1) % totalSlides) {
+            } else if (i === (currentIndex + 1) % totalSlides) {
                 slide.classList.add(is3D ? 'next-slide-3d' : 'next-slide-flat');
             } else {
                 slide.classList.add(is3D ? 'adjacent-3d' : 'adjacent-flat');
@@ -59,21 +65,15 @@ function initSlideShow(platformToDisplay) {
     }
 
     slideshow.addEventListener('wheel', (event) => {
-        event.preventDefault(); // Prevent default scrolling behavior
-        if (event.deltaY > 0) {
-            nextSlide();
-        } else if (event.deltaY < 0) {
-            prevSlide();
-        }
+        event.preventDefault();
+        event.deltaY > 0 ? nextSlide() : prevSlide();
     });
 
-    // Click to select adjacent slides
-    slides.forEach((slide, index) => {
+    slides.forEach((slide, i) => {
         slide.addEventListener('click', (event) => {
             event.stopPropagation();
             event.stopImmediatePropagation();
             if (slide.classList.contains('active')) {
-                console.log("yo: ");
                 LB.utils.simulateKeyDown('Enter');
             }
         });
@@ -81,9 +81,9 @@ function initSlideShow(platformToDisplay) {
 
     window.addEventListener('keydown', homeKeyDown);
 
-    function homeKeyDown (event) {
+    function homeKeyDown(event) {
         event.stopPropagation();
-        event.stopImmediatePropagation(); // Stops other listeners on the same element
+        event.stopImmediatePropagation();
 
         switch (event.key) {
         case 'ArrowRight':
@@ -92,20 +92,10 @@ function initSlideShow(platformToDisplay) {
         case 'ArrowLeft':
             prevSlide();
             break;
-        case 'Enter':
-
-            let activeGalleryIndex;
-            let activePlatformName;
-            let isPlatformEnabled;
-
-            slides.forEach((slide, index) => {
-                if (slide.classList.contains('active')) {
-                    activePlatformName = slide.dataset.platform;
-                    activeGalleryIndex = Number(slide.dataset.index);
-                    isPlatformEnabled = slide.dataset.isEnabled;
-                    // console.assert(index === Number(slide.dataset.index));
-                }
-            });
+        case 'Enter': {
+            const activeSlide = slides[currentIndex];
+            const activePlatformName = activeSlide.dataset.platform;
+            const activeGalleryIndex = Number(activeSlide.dataset.index);
 
             if (activePlatformName === 'recents') {
                 initGallery(LB.totalNumberOfPlatforms);
@@ -120,29 +110,18 @@ function initSlideShow(platformToDisplay) {
 
             document.getElementById('slideshow').style.display = 'none';
             document.getElementById('galleries').style.display = "flex";
-
             window.removeEventListener('keydown', homeKeyDown);
-
             break;
+        }
         case 'F5':
-            if (event.shiftKey) {
-                ipcRenderer.invoke('restart');
-            } else {
-                window.location.reload();
-            }
+            event.shiftKey ? ipcRenderer.invoke('restart') : window.location.reload();
             break;
         case 'Escape':
             ipcRenderer.invoke('quit');
             break;
         case 'q':
-            if (event.ctrlKey || event.metaKey) { // metaKey = Command on Mac
-                try {
-                    ipcRenderer.invoke('quit').catch(() => {
-                        window.close();
-                    });
-                } catch (e) {
-                    window.close();
-                }
+            if (event.ctrlKey || event.metaKey) {
+                ipcRenderer.invoke('quit').catch(() => window.close());
             }
             break;
         }
@@ -153,13 +132,9 @@ function initSlideShow(platformToDisplay) {
     LB.utils.updateControls('west', 'same', 'same', 'off');
     LB.utils.updateControls('east', 'same', 'Exit');
 
-    updateHomeCarousel(platformToDisplay);
-
-    // if (LB.autoSelect) {
-    //     slideToClick.click();
-    // }
-
+    updateHomeCarousel();
 }
+
 
 function setGalleryControls(currentIndex) {
     if (currentIndex === 0) {
@@ -657,15 +632,14 @@ function initGallery(currentIndex, disabledPlatform) {
             }
             break;
         case 'Escape':
-            console.log("Gal Escape: ");
             document.getElementById('slideshow').style.display = 'flex';
             document.getElementById('galleries').style.display = 'none';
             window.removeEventListener('keydown', onGalleryKeyDown);
 
             const index = Number(document.querySelector('.page.active').getAttribute('data-index'));
-            const trueIndex = Number(document.querySelector('.page.active').getAttribute('data-trueindex'));
 
-            LB.control.initSlideShow(LB.disabledPlatformsPolicy === "hide" || LB.kidsMode ? trueIndex : index);
+            LB.control.initSlideShow(index);
+
             document.querySelector('header .item-number').textContent = '';
             break;
         case 'q':

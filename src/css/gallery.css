@@ -240,13 +240,11 @@ div.platform-container {
   /* max-width: 150px; */
 }
 
-/* Explosion particle */
 .explosion-particle {
   position: absolute;
-  /* border-radius: 50%; */
   pointer-events: none;
   z-index: 9999;
-  transform: translate(var(--x-start), var(--y-start)) scale(1);
+  transform: translate(var(--x-start), var(--y-start)) scale(1) rotate(0deg);
   will-change: transform, opacity;
   animation-name: explode;
   animation-fill-mode: forwards;
@@ -255,11 +253,11 @@ div.platform-container {
 
 @keyframes explode {
   0% {
-    transform: translate(var(--x-start), var(--y-start)) scale(1);
+    transform: translate(var(--x-start), var(--y-start)) scale(1) rotate(0deg);
     opacity: 1;
   }
   100% {
-    transform: translate(var(--x), var(--y)) scale(var(--scale));
+    transform: translate(var(--x), var(--y)) scale(var(--scale)) rotate(var(--rotation));
     opacity: 0;
   }
 }

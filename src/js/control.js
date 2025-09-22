@@ -171,6 +171,7 @@ function explodeGameContainer(gameContainer) {
         const offsetYStart = (Math.random() - 0.5) * 30;
         particle.style.setProperty('--x-start', offsetXStart + 'px');
         particle.style.setProperty('--y-start', offsetYStart + 'px');
+        particle.style.setProperty('--rotation', `${-360 + Math.random() * 720}deg`);
 
         // Position relative to viewport
         particle.style.left = (rect.left + rect.width / 2 - size / 2) + 'px';

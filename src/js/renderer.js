@@ -61,7 +61,9 @@ LB.prefs.load()
         console.log("getPlatformInfo(LB.autoSelect): ", LB.utils.getPlatformInfo(LB.autoSelect));
 
         if (LB.autoSelect && !LB.enabledPlatforms.some(platform => platform === LB.autoSelect)) {
-            LB.control.initGallery(0, LB.autoSelect);
+            if (!LB.kioskMode) {
+                LB.control.initGallery(0, LB.autoSelect);
+            }
             return;
         } else if (LB.autoSelect) {
             LB.utils.simulateKeyDown('Enter');

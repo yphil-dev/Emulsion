@@ -6,7 +6,7 @@
 
 # [Emulsion](https://yphil.gitlab.io/emulsion)
 
-A unified, lightweight frontend for your games. [Website](https://yphil.gitlab.io/emulsion) | [GitLab](https://gitlab.com/yphil/emulsion) (main) | [GitHub](https://github.com/yPhil-gh/Emulsion) | [Blog](https://yphil.gitlab.io/)
+A unified, lightweight frontend for your games ; Ideal for driving an arcade cabinet. [Website](https://yphil.gitlab.io/emulsion) | [GitLab](https://gitlab.com/yphil/emulsion) (master) | [GitHub](https://github.com/yPhil-gh/Emulsion) | [Blog](https://yphil.gitlab.io/)
 
 ![Emulsion](https://yphil.gitlab.io/images/emulsion-screenshot00.png?cache=xyz)
 
@@ -217,9 +217,13 @@ CLI arguments
 
 ```
 Options:
-  --kiosk        Media center / Kids mode: No settings + disabled platforms hidden.
-  --full-screen  Start Emulsion in full screen mode.
-  --help         Show this help message.
+  --kiosk                        No config / settings, disabled platforms hidden.
+  --full-screen                  Start in full screen mode.
+  --auto-select=[platform_name]  Auto-select [platform_name].
+  --help                         Show this help message.
+
+Platform names:
+atari spectrum c64 nes sms pcengine amiga megadrive gameboy lynx gamegear snes jaguar saturn psx n64 dreamcast ps2 gamecube xbox psp ps3 3ds xbox360 ps4 recents settings
 ```
 
 ## Can I help?

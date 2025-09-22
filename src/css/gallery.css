@@ -243,7 +243,7 @@ div.platform-container {
 /* Explosion particle */
 .explosion-particle {
   position: absolute;
-  border-radius: 50%;
+  /* border-radius: 50%; */
   pointer-events: none;
   z-index: 9999;
   transform: translate(var(--x-start), var(--y-start)) scale(1);

@@ -24,7 +24,6 @@ function buildHomeSlide(platformName, preferences) {
 
     if (platformName !== 'settings' &&
         ((LB.kioskMode || LB.disabledPlatformsPolicy === 'hide') && !preferences[platformName]?.isEnabled)) {
-        console.log("wopop!: ");
         return null;
     }
 

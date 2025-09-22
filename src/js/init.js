@@ -228,7 +228,7 @@ async function _loadUserData() {
         LB.userDataPath = preferences.userDataPath;
         LB.baseDir = path.resolve(preferences.appPath);
         LB.versionNumber = preferences.versionNumber;
-        LB.kidsMode = preferences.kidsMode;
+        LB.kioskMode = preferences.kioskMode;
         LB.autoSelect = preferences.autoSelect;
         console.log("LB.autoSelect: ", LB.autoSelect);
         // LB.autoOpen = preferences.autoOpen;
@@ -237,7 +237,7 @@ async function _loadUserData() {
         delete preferences.userDataPath;
         delete preferences.appPath;
         delete preferences.versionNumber;
-        delete preferences.kidsMode;
+        delete preferences.kioskMode;
         delete preferences.autoSelect;
         delete preferences.recents;
 

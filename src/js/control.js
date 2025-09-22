@@ -13,7 +13,6 @@ function initSlideShow(platformToDisplay) {
     document.getElementById('header').style.display = 'none';
     document.body.style.display = "block";
 
-    // Only keep enabled slides
     const slides = Array.from(document.querySelectorAll('#slideshow .slide'));
 
     const totalSlides = slides.length;
@@ -100,7 +99,7 @@ function initSlideShow(platformToDisplay) {
             if (activePlatformName === 'recents') {
                 initGallery(LB.totalNumberOfPlatforms);
             } else if (LB.enabledPlatforms.includes(activePlatformName)) {
-                if (activePlatformName === 'settings' && LB.kidsMode) {
+                if (activePlatformName === 'settings' && LB.kioskMode) {
                     return;
                 }
                 initGallery(activeGalleryIndex);
@@ -611,7 +610,9 @@ function initGallery(currentIndex, disabledPlatform) {
             selectedIndex = gameContainers.length - 1;
             break;
         case 'i':
-            _toggleMenu(gameContainers, selectedIndex, onGalleryKeyDown, isMenuOpen);
+            if (!LB.kioskMode) {
+                _toggleMenu(gameContainers, selectedIndex, onGalleryKeyDown, isMenuOpen);
+            }
             break;
         case 'F5':
             if (event.shiftKey) {

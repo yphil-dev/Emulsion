@@ -257,7 +257,7 @@ function buildSettingsPageContent(platforms) {
 
 async function buildGallery(params) {
 
-    // if (LB.kidsMode && params.platform === 'settings') {
+    // if (LB.kioskMode && params.platform === 'settings') {
     //     return null;
     // }
 
@@ -303,7 +303,12 @@ async function buildGallery(params) {
     let pageContent;
 
     if (platform === "settings") {
-        pageContent = buildSettingsPageContent(platforms);
+        if (LB.kioskMode) {
+            pageContent = document.createElement('div');
+            page.setAttribute('data-status', 'disabled');
+        } else {
+            pageContent = buildSettingsPageContent(platforms);
+        }
     } else {
         pageContent = document.createElement('div');
         pageContent.classList.add('page-content');
@@ -323,7 +328,6 @@ async function buildGallery(params) {
             pageContent.appendChild(gameContainer);
             page.setAttribute('data-status', 'disabled');
             page.appendChild(pageContent);
-            page.classList.add('disabled');
             return page;
         }
 

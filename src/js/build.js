@@ -23,7 +23,8 @@ function buildHomeSlide(platformName, preferences) {
     }
 
     if (platformName !== 'settings' &&
-        ((LB.kidsMode || LB.disabledPlatformsPolicy === 'hide') && !preferences[platformName]?.isEnabled)) {
+        ((LB.kioskMode || LB.disabledPlatformsPolicy === 'hide') && !preferences[platformName]?.isEnabled)) {
+        console.log("wopop!: ");
         return null;
     }
 

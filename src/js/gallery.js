@@ -317,12 +317,11 @@ async function buildGallery(params) {
 
 
         if (!isEnabled) {
-            pageContent.textContent = 'EMPTY';
+            pageContent.textContent = '';
 
             const gameContainer = document.createElement('div');
             gameContainer.classList.add('game-container');
             // gameContainer.style.height = 'calc(120vw / ' + LB.galleryNumOfCols + ')';
-            gameContainer.title = 'Empty';
             gameContainer.setAttribute('data-platform', platform);
 
             pageContent.appendChild(gameContainer);

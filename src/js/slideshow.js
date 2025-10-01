@@ -756,13 +756,19 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
             }
             break;
         case 'Enter':
-            const selectedGameContainer = LB.utils.getSelectedGame(gameContainers, selectedIndex);
-            if (selectedGameContainer.classList.contains('empty-platform-game-container')) {
-                return;
-            }
             if (currentPageIndex === 0) {
-                _toggleMenu(gameContainers, selectedIndex, onGalleryKeyDown, isMenuOpen);
+                // Settings page - find the selected platform container
+                const selectedPlatformContainer = document.querySelector('.game-container.selected');
+                if (selectedPlatformContainer && !selectedPlatformContainer.classList.contains('empty-platform-game-container')) {
+                    const platformName = selectedPlatformContainer.dataset.platform;
+                    const actualIndex = gameContainers.findIndex(c => c.dataset.platform === platformName);
+                    _toggleMenu(gameContainers, actualIndex, onGalleryKeyDown, isMenuOpen, platformName);
+                }
             } else {
+                const selectedGameContainer = LB.utils.getSelectedGame(gameContainers, selectedIndex);
+                if (selectedGameContainer.classList.contains('empty-platform-game-container')) {
+                    return;
+                }
                 launchGame(selectedGameContainer);
             }
             break;

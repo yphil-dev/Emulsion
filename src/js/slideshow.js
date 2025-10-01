@@ -272,7 +272,9 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
         setGalleryControls(isSettingsPage ? 0 : 1);
         gameContainers = Array.from(page.querySelectorAll('.game-container') || []);
 
-        gameContainers.forEach((container, index) => {
+        // Only attach listeners once per page to prevent duplicates
+        if (!page.dataset.listenersAttached) {
+            gameContainers.forEach((container, index) => {
             container.addEventListener('click', (event) => {
                 console.log("event: ", event.currentTarget);
                 if (event.currentTarget.classList.contains('empty-platform-game-container')) {
@@ -298,8 +300,12 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
                 _toggleMenu(gameContainers, parseInt(event.currentTarget.dataset.index), onGalleryKeyDown, false);
             });
 
-            container.classList.remove('selected');
-        });
+                container.classList.remove('selected');
+            });
+            
+            // Mark that listeners have been attached
+            page.dataset.listenersAttached = 'true';
+        }
 
         const firstGameContainer = page.querySelector('.game-container');
         firstGameContainer.classList.add('selected');

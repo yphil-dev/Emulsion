@@ -581,19 +581,19 @@ function initGallery(currentIndex, disabledPlatform) {
                         // Platform is enabled, navigate to its gallery
                         const platformIndex = LB.enabledPlatforms.indexOf(currentMenuPlatform);
                         if (platformIndex !== -1) {
-                            // Switch to gallery view and navigate to this platform
-                            document.getElementById('slideshow').style.display = 'none';
-                            document.getElementById('galleries').style.display = 'flex';
-                            
-                            // Clean up menu
+                            // Clean up menu first
                             LB.imageSrc = imgSrc;
                             document.getElementById('menu').innerHTML = '';
                             menu.style.height = '0';
                             window.removeEventListener('keydown', onMenuKeyDown);
-                            
-                            // Initialize gallery for this platform
-                            LB.control.initGallery(platformIndex + 1); // +1 because index 0 is slideshow
                             isMenuOpen = false;
+                            
+                            // Switch to gallery view and navigate to this platform
+                            document.getElementById('slideshow').style.display = 'none';
+                            document.getElementById('galleries').style.display = 'flex';
+                            
+                            // Initialize gallery for this platform with correct index
+                            LB.control.initGallery(platformIndex + 1); // +1 because index 0 is slideshow
                             return;
                         }
                     }

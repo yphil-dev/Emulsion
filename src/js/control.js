@@ -105,17 +105,15 @@ function initSlideShow(platformToDisplay) {
         case 'Enter': {
             const activeSlide = slides[currentIndex];
             const activePlatformName = activeSlide.dataset.platform;
-            const activeGalleryIndex = Number(activeSlide.dataset.index);
 
-            if (activePlatformName === 'recents') {
-                initGallery(LB.totalNumberOfPlatforms);
-            } else if (LB.enabledPlatforms.includes(activePlatformName)) {
-                if (activePlatformName === 'settings' && LB.kioskMode) {
-                    return;
-                }
-                initGallery(activeGalleryIndex);
-            } else {
-                initGallery(0, activePlatformName);
+            // Always use platform name for navigation - NO MORE INDICES!
+            if (activePlatformName === 'settings' && LB.kioskMode) {
+                return;
+            }
+            
+            // Navigate to platform by name
+            if (activePlatformName) {
+                initGallery(activePlatformName, activePlatformName === 'settings' ? null : activePlatformName);
             }
 
             document.getElementById('slideshow').style.display = 'none';
@@ -223,32 +221,46 @@ function launchGame(gameContainer) {
     });
 }
 
-function initGallery(currentIndex, disabledPlatform) {
-
-    setGalleryControls(currentIndex);
-
+function initGallery(platformNameOrIndex, disabledPlatform) {
     const header = document.getElementById('header');
     header.style.display = 'flex';
 
     const galleries = document.getElementById('galleries');
     const pages = Array.from(galleries.querySelectorAll('.page'));
-    const totalPages = pages.length;
-
-    let currentPageIndex = currentIndex;
+    
+    let currentPlatformName = null;
+    let currentPageIndex = 0;
     let gameContainers = [];
 
+    // Find the target page by platform name or fallback to index
+    let targetPage = null;
+    if (typeof platformNameOrIndex === 'string') {
+        // Name-based lookup (preferred)
+        targetPage = pages.find(page => page.dataset.platform === platformNameOrIndex);
+        currentPlatformName = platformNameOrIndex;
+    } else if (typeof platformNameOrIndex === 'number') {
+        // Index-based lookup (fallback for prev/next navigation only)
+        targetPage = pages.find(page => Number(page.dataset.index) === platformNameOrIndex);
+        currentPlatformName = targetPage?.dataset.platform;
+    }
+
+    if (!targetPage) {
+        console.error('Could not find page for:', platformNameOrIndex);
+        return;
+    }
+
+    currentPageIndex = Number(targetPage.dataset.index);
     const enabledPages = pages.filter(page => page.dataset.status !== 'disabled');
 
-    function initCurrentGallery(page, index) {
-
+    function initCurrentGallery(page) {
         page.scrollIntoView({
             behavior: "smooth",
             block: "start",
         });
 
-        setGalleryControls(index);
-
-        currentPageIndex = index;
+        // Set controls based on platform type
+        const isSettingsPage = page.dataset.platform === 'settings';
+        setGalleryControls(isSettingsPage ? 0 : 1);
         gameContainers = Array.from(page.querySelectorAll('.game-container') || []);
 
         gameContainers.forEach((container, index) => {
@@ -292,8 +304,8 @@ function initGallery(currentIndex, disabledPlatform) {
         const pluralize = (count, singular, plural = `${singular}s`) =>
               count === 1 ? singular : plural;
 
-        const count = index === 0 ? gameContainers.length - 1 : gameContainers.length;
-        const itemType = index === 0 ? 'platform' : 'game';
+        const count = currentPageIndex === 0 ? gameContainers.length - 1 : gameContainers.length;
+        const itemType = currentPageIndex === 0 ? 'platform' : 'game';
 
         document.querySelector('header .item-number').textContent = count;
         document.querySelector('header .item-type').textContent =
@@ -318,7 +330,7 @@ function initGallery(currentIndex, disabledPlatform) {
               .sort((a, b) => Number(a.dataset.index) - Number(b.dataset.index));
 
         // Find the active page's position in the enabled array
-        const activePos = enabledPages.findIndex(page => Number(page.dataset.index) === currentIndex);
+        const activePos = enabledPages.findIndex(page => Number(page.dataset.index) === currentPageIndex);
 
         // Determine immediate neighbors
         const prevPage = enabledPages[activePos - 1] || null;
@@ -333,8 +345,8 @@ function initGallery(currentIndex, disabledPlatform) {
                 return;
             }
 
-            if (pageIndexNumber === currentIndex) {
-                initCurrentGallery(page, currentIndex);
+            if (pageIndexNumber === currentPageIndex) {
+                initCurrentGallery(page);
                 page.classList.add('active');
             } else if (prevPage && Number(prevPage.dataset.index) === pageIndexNumber) {
                 page.classList.add('prev');
@@ -349,19 +361,21 @@ function initGallery(currentIndex, disabledPlatform) {
 
     function goToNextPage() {
         // Find the index of the current page in the enabledPages array
-        const currentEnabledIndex = enabledPages.findIndex(page => Number(page.dataset.index) === currentIndex);
+        const currentEnabledIndex = enabledPages.findIndex(page => Number(page.dataset.index) === currentPageIndex);
         const nextEnabledIndex = (currentEnabledIndex + 1) % enabledPages.length;
 
-        // Update currentIndex to the next enabled page's dataset.index
-        currentIndex = Number(enabledPages[nextEnabledIndex].dataset.index);
+        // Update currentPageIndex to the next enabled page's dataset.index
+        currentPageIndex = Number(enabledPages[nextEnabledIndex].dataset.index);
+        currentPlatformName = enabledPages[nextEnabledIndex].dataset.platform;
 
         updatePagesCarousel();
     }
 
     function goToPrevPage() {
-        const currentEnabledIndex = enabledPages.findIndex(page => Number(page.dataset.index) === currentIndex);
+        const currentEnabledIndex = enabledPages.findIndex(page => Number(page.dataset.index) === currentPageIndex);
         const prevEnabledIndex = (currentEnabledIndex - 1 + enabledPages.length) % enabledPages.length;
-        currentIndex = Number(enabledPages[prevEnabledIndex].dataset.index);
+        currentPageIndex = Number(enabledPages[prevEnabledIndex].dataset.index);
+        currentPlatformName = enabledPages[prevEnabledIndex].dataset.platform;
         updatePagesCarousel();
     }
 
@@ -578,24 +592,21 @@ function initGallery(currentIndex, disabledPlatform) {
                 try {
                     const isEnabled = await LB.prefs.getValue(currentMenuPlatform, 'isEnabled');
                     if (isEnabled) {
-                        // Platform is enabled, navigate to its gallery
-                        const platformIndex = LB.enabledPlatforms.indexOf(currentMenuPlatform);
-                        if (platformIndex !== -1) {
-                            // Clean up menu first
-                            LB.imageSrc = imgSrc;
-                            document.getElementById('menu').innerHTML = '';
-                            menu.style.height = '0';
-                            window.removeEventListener('keydown', onMenuKeyDown);
-                            isMenuOpen = false;
-                            
-                            // Switch to gallery view and navigate to this platform
-                            document.getElementById('slideshow').style.display = 'none';
-                            document.getElementById('galleries').style.display = 'flex';
-                            
-                            // Initialize gallery for this platform with correct index
-                            LB.control.initGallery(platformIndex + 1); // +1 because index 0 is slideshow
-                            return;
-                        }
+                        // Platform is enabled, navigate to its gallery using NAME-BASED navigation
+                        // Clean up menu first
+                        LB.imageSrc = imgSrc;
+                        document.getElementById('menu').innerHTML = '';
+                        menu.style.height = '0';
+                        window.removeEventListener('keydown', onMenuKeyDown);
+                        isMenuOpen = false;
+                        
+                        // Switch to gallery view and navigate to this platform BY NAME
+                        document.getElementById('slideshow').style.display = 'none';
+                        document.getElementById('galleries').style.display = 'flex';
+                        
+                        // Initialize gallery for this platform using PLATFORM NAME - NO INDICES!
+                        LB.control.initGallery(currentMenuPlatform);
+                        return;
                     }
                 } catch (error) {
                     console.error('Error checking platform status:', error);

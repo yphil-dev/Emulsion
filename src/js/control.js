@@ -18,11 +18,21 @@ function initSlideShow(platformToDisplay) {
     const totalSlides = slides.length;
     const radius = 90 * totalSlides;
 
-    // Find start index
+    // Find start index - support both name-based and index-based
     let currentIndex = 0;
     if (platformToDisplay) {
-        const idx = slides.findIndex(s => Number(s.dataset.index) === Number(platformToDisplay));
-        if (idx !== -1) currentIndex = idx;
+        if (typeof platformToDisplay === 'string') {
+            // Name-based lookup
+            const foundIndex = slides.findIndex(s => 
+                s.dataset.platform === platformToDisplay ||
+                s.dataset.name === platformToDisplay
+            );
+            if (foundIndex !== -1) currentIndex = foundIndex;
+        } else {
+            // Index-based lookup (legacy)
+            const idx = slides.findIndex(s => Number(s.dataset.index) === Number(platformToDisplay));
+            if (idx !== -1) currentIndex = idx;
+        }
     }
 
     function updateHomeCarousel() {
@@ -42,6 +52,7 @@ function initSlideShow(platformToDisplay) {
             const is3D = (LB.homeMenuTheme === '3D');
 
             if (i === currentIndex) {
+                window.currentPlatformName = slide.dataset.platform;
                 slide.classList.add('active');
             } else if (i === (currentIndex - 1 + totalSlides) % totalSlides) {
                 slide.classList.add(is3D ? 'prev-slide-3d' : 'prev-slide-flat');

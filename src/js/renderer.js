@@ -41,24 +41,15 @@ LB.prefs.load()
         });
 
         const galleriesContainer = document.getElementById('galleries');
-        galleriesContainer.style.display = 'none';
-
-        // const autoSelectIndex = LB.utils.getPlatformInfo(LB.autoSelect).index;
 
         const autoSelectIndex = LB.utils.getDataIndexByPlatform(LB.autoSelect);
 
-        // const autoOpenIndex = LB.utils.getPlatformInfo(LB.autoOpen);
-
-        console.log("autoSelectIndex: ", autoSelectIndex);
-
-        document.getElementById("main").style.display = 'flex';
-
         LB.control.initSlideShow(autoSelectIndex || 0);
 
+        galleriesContainer.style.display = 'none';
+        document.getElementById("main").style.display = 'flex';
         document.getElementById("splash").style.display = 'none';
         document.getElementById("footer").style.display = 'flex';
-
-        console.log("getPlatformInfo(LB.autoSelect): ", LB.utils.getPlatformInfo(LB.autoSelect));
 
         if (LB.autoSelect && !LB.enabledPlatforms.some(platform => platform === LB.autoSelect)) {
             if (!LB.kioskMode) {
@@ -73,11 +64,4 @@ LB.prefs.load()
     .catch(error => {
         console.error('Failed to load platforms:', error);
     });
-
-window.addEventListener('contextmenu', (event) => {
-    event.preventDefault();
-    if (event.target.nodeName === 'INPUT' || event.target.nodeName === 'TEXTAREA') {
-        ipcRenderer.send('show-context-menu', { x: event.x, y: event.y });
-    }
-});
 

@@ -117,7 +117,7 @@ async function _buildRecentGallery({ userDataPath, index }) {
         gameContainer.classList.add('game-container');
 
         const date = new Date(recent.date);
-        gameContainer.title = `${recent.gameName} (${recent.platform}) - Last played on ${date.toLocaleString()} \n\n- Click to launch`;
+        gameContainer.title = `${recent.gameName} (${recent.platform}) - Last played on ${date.toLocaleString()} \n\n- Click to launch with ${recent.emulator}\n- Righ-click to configure`;
 
         gameContainer.setAttribute('data-game-name', recent.fileName);
         gameContainer.setAttribute('data-platform', recent.platform);
@@ -256,10 +256,6 @@ function buildSettingsPageContent(platforms) {
 }
 
 async function buildGallery(params) {
-
-    // if (LB.kioskMode && params.platform === 'settings') {
-    //     return null;
-    // }
 
     const platform = params.platform;
     const gamesDir = params.gamesDir;

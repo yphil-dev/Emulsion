@@ -463,14 +463,8 @@ function initGallery(currentIndex, disabledPlatform) {
                 }
                 break;
             case 'Escape':
-
-                if (LB.autoSelect) {
-                    ipcRenderer.invoke('quit');
-                } else {
-                    window.location.reload();
-                }
-
-                // _closeMenu();
+                // Smart navigation - close menu and return to appropriate view
+                _closeMenu();
                 break;
             }
 

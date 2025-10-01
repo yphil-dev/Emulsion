@@ -383,6 +383,7 @@ function initGallery(currentIndex, disabledPlatform) {
         const controls = document.getElementById('controls');
 
         let menuSelectedIndex = 1;
+        let currentMenuPlatform = null; // Track the current platform for this menu
 
         const selectedGame = LB.utils.getSelectedGame(gameContainers, selectedIndex);
         // const selectedGameImg = selectedGame.querySelector('.game-image');
@@ -541,12 +542,15 @@ function initGallery(currentIndex, disabledPlatform) {
                 if (index === selectedIndex) {
 
                     if (container.classList.contains('settings')) {
-                        const platformForm = LB.build.platformForm(platformToOpen || container.dataset.platform);
+                        const platformName = platformToOpen || container.dataset.platform;
+                        currentMenuPlatform = platformName; // Store the platform name
+                        const platformForm = LB.build.platformForm(platformName);
                         menuContainer.appendChild(platformForm);
                     } else {
                         const gameImage = container.querySelector('img');
                         const gameName = container.dataset.gameName;
                         const platformName = platformToOpen || container.dataset.platform;
+                        currentMenuPlatform = platformName; // Store the platform name
                         const gameMenuContainer = LB.build.gameMenu(gameName, gameImage, platformName);
                         menuContainer.appendChild(gameMenuContainer);
                         await LB.build.populateGameMenu(gameMenuContainer, gameName, platformName);
@@ -570,48 +574,31 @@ function initGallery(currentIndex, disabledPlatform) {
             const menuContainer = document.getElementById('menu');
             const platformForm = menuContainer.querySelector('.platform-menu-container');
             
-            if (platformForm) {
-                // This is a platform menu - determine which platform it is
-                let currentPlatform = disabledPlatform;
-                
-                // If disabledPlatform is not set, try to detect from the form
-                if (!currentPlatform) {
-                    const platformImage = platformForm.querySelector('img[src*="/platforms/"]');
-                    if (platformImage) {
-                        const src = platformImage.src;
-                        const match = src.match(/\/platforms\/([^.]+)\.png/);
-                        if (match) {
-                            currentPlatform = match[1];
+            if (platformForm && currentMenuPlatform && currentMenuPlatform !== 'settings') {
+                try {
+                    const isEnabled = await LB.prefs.getValue(currentMenuPlatform, 'isEnabled');
+                    if (isEnabled) {
+                        // Platform is enabled, navigate to its gallery
+                        const platformIndex = LB.enabledPlatforms.indexOf(currentMenuPlatform);
+                        if (platformIndex !== -1) {
+                            // Switch to gallery view and navigate to this platform
+                            document.getElementById('slideshow').style.display = 'none';
+                            document.getElementById('galleries').style.display = 'flex';
+                            
+                            // Clean up menu
+                            LB.imageSrc = imgSrc;
+                            document.getElementById('menu').innerHTML = '';
+                            menu.style.height = '0';
+                            window.removeEventListener('keydown', onMenuKeyDown);
+                            
+                            // Initialize gallery for this platform
+                            LB.control.initGallery(platformIndex + 1); // +1 because index 0 is slideshow
+                            isMenuOpen = false;
+                            return;
                         }
                     }
-                }
-                
-                if (currentPlatform && currentPlatform !== 'settings') {
-                    try {
-                        const isEnabled = await LB.prefs.getValue(currentPlatform, 'isEnabled');
-                        if (isEnabled) {
-                            // Platform is enabled, navigate to its gallery
-                            const platformIndex = LB.enabledPlatforms.indexOf(currentPlatform);
-                            if (platformIndex !== -1) {
-                                // Switch to gallery view and navigate to this platform
-                                document.getElementById('slideshow').style.display = 'none';
-                                document.getElementById('galleries').style.display = 'flex';
-                                
-                                // Clean up menu
-                                LB.imageSrc = imgSrc;
-                                document.getElementById('menu').innerHTML = '';
-                                menu.style.height = '0';
-                                window.removeEventListener('keydown', onMenuKeyDown);
-                                
-                                // Initialize gallery for this platform
-                                LB.control.initGallery(platformIndex + 1); // +1 because index 0 is slideshow
-                                isMenuOpen = false;
-                                return;
-                            }
-                        }
-                    } catch (error) {
-                        console.error('Error checking platform status:', error);
-                    }
+                } catch (error) {
+                    console.error('Error checking platform status:', error);
                 }
             }
 

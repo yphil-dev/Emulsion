@@ -339,16 +339,8 @@ function _buildPrefsForm() {
     saveButton.addEventListener('click', _saveButtonClick);
 
     function _cancelButtonClick(event) {
-
-        const escapeKeyEvent = new KeyboardEvent('keydown', {
-            key: 'Escape',
-            keyCode: 27,
-            code: 'Escape', // The physical key on the keyboard
-            which: 27,     // Same as keyCode
-            bubbles: true
-        });
-
-        document.dispatchEvent(escapeKeyEvent);
+        // Smart navigation - return to slideshow without reload
+        LB.control.initSlideShow('settings');
     }
 
     async function _saveButtonClick() {
@@ -764,16 +756,8 @@ function buildPlatformForm(platformName) {
     saveButton.addEventListener('click', _saveButtonClick);
 
     function _cancelButtonClick(event) {
-
-        const escapeKeyEvent = new KeyboardEvent('keydown', {
-            key: 'Escape',
-            keyCode: 27,
-            code: 'Escape', // The physical key on the keyboard
-            which: 27,     // Same as keyCode
-            bubbles: true
-        });
-
-        document.dispatchEvent(escapeKeyEvent);
+        // Smart navigation - return to current platform without reload
+        LB.control.initSlideShow(platformName);
     }
 
     async function _saveButtonClick(event) {

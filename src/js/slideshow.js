@@ -282,7 +282,7 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
                     // Get platform name directly from the clicked element's dataset
                     const platformName = event.currentTarget.dataset.platform;
                     console.log('Opening settings menu for platform:', platformName);
-                    _toggleMenu(Array.from(document.querySelectorAll('.game-container') || []), event.currentTarget.dataset.index / 1, onGalleryKeyDown, false, platformName);
+                    _toggleMenu(gameContainers, index, onGalleryKeyDown, false, platformName);
                 } else {
                     launchGame(event.currentTarget);
                 }
@@ -569,14 +569,17 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
 
                     if (container.classList.contains('settings')) {
                         const platformName = platformToOpen || container.dataset.platform;
-                        currentMenuPlatform = platformName; // Store the platform name
+                        // Store platform name in menu container for reliable access later
+                        menuContainer.dataset.menuPlatform = platformName;
+                        console.log('Opening menu for platform:', platformName, 'stored in menu container');
                         const platformForm = LB.build.platformForm(platformName);
                         menuContainer.appendChild(platformForm);
                     } else {
                         const gameImage = container.querySelector('img');
                         const gameName = container.dataset.gameName;
                         const platformName = platformToOpen || container.dataset.platform;
-                        currentMenuPlatform = platformName; // Store the platform name
+                        // Store platform name in menu container for reliable access later
+                        menuContainer.dataset.menuPlatform = platformName;
                         const gameMenuContainer = LB.build.gameMenu(gameName, gameImage, platformName);
                         menuContainer.appendChild(gameMenuContainer);
                         await LB.build.populateGameMenu(gameMenuContainer, gameName, platformName);

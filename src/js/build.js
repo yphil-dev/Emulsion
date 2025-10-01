@@ -917,16 +917,20 @@ function buildPlatformForm(platformName) {
     async function _batchButtonClick(event) {
         console.log("Batch download started");
 
-        if (!gamesDirInput.value) {
-            gamesDirSubLabel.textContent = 'This field cannot be empty';
-            return;
-        }
-
         // Find games with missing images in the current platform
         const pages = document.querySelectorAll('#galleries .page');
         const currentPlatformPage = Array.from(pages).find(page =>
             page.dataset.platform === platformName
         );
+
+        console.log("LB.prefs: ", await LB.prefs.getValue(currentPlatformPage.dataset.platform, 'isEnabled'));
+
+        if (!gamesDirInput.value) {
+            gamesDirSubLabel.textContent = 'This field cannot be empty';
+            return;
+        }
+
+        console.log("currentPlatformPage: ", currentPlatformPage.dataset.platform);
 
         if (!currentPlatformPage) {
             console.error("Platform page not found");

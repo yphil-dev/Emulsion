@@ -1,13 +1,9 @@
-// menu.js - Clean menu management module
-// No imports - uses global LB object
-
 let menuState = {
     isOpen: false,
     selectedIndex: 1,
     menuType: null, // 'platform' or 'game'
     previousKeyDownListener: null // Store the previous listener to restore
 };
-
 
 // Menu keyboard navigation handler
 function onMenuKeyDown(event) {
@@ -527,7 +523,7 @@ function buildPlatformForm(platformName) {
     batchButton.classList.add('button', 'button-browse');
     batchButton.textContent = 'Go';
 
-    batchButton.addEventListener('click', _batchButtonClick);
+    batchButton.addEventListener('click', batchButtonClick);
 
     batchCtn.appendChild(batchIcon);
     batchCtn.appendChild(batchInput);
@@ -878,7 +874,7 @@ function buildPlatformForm(platformName) {
         }
     }
 
-    async function _batchButtonClick(event) {
+    async function batchButtonClick(event) {
         console.log("Batch download started");
 
         // Find games with missing images in the current platform
@@ -886,8 +882,6 @@ function buildPlatformForm(platformName) {
         const currentPlatformPage = Array.from(pages).find(page =>
             page.dataset.platform === platformName
         );
-
-        console.log("LB.prefs: ", await LB.prefs.getValue(currentPlatformPage.dataset.platform, 'isEnabled'));
 
         if (!gamesDirInput.value) {
             gamesDirSubLabel.textContent = 'This field cannot be empty';
@@ -901,7 +895,7 @@ function buildPlatformForm(platformName) {
             return;
         }
 
-        const games = currentPlatformPage.querySelectorAll(".game-container[data-image-missing]");
+        const games = currentPlatformPage.querySelectorAll(".game-container[data-missing-image]");
         if (!games.length) {
             console.warn("No games with missing images found");
             batchSubLabel.textContent = 'No missing images found';
@@ -1143,6 +1137,40 @@ async function populateGameMenu(gameMenuContainer, gameName, platformName) {
       });
     }
   });
+}
+
+function createManualSelectButton(gameName, platformName, imgElem) {
+    const btn = document.createElement('button');
+    btn.classList.add('button');
+    btn.title = 'Select image';
+    btn.innerHTML = '<i class="fa fa-plus" aria-hidden="true"></i>';
+
+    btn.addEventListener('click', async e => {
+        e.stopPropagation();
+
+        // Ask the main process to show a file picker
+        const srcPath = await ipcRenderer.invoke('pick-image');
+        if (!srcPath) return;  // user cancelled
+
+        // Destination in user data covers folder
+        const destPath = path.join(
+            LB.userDataPath,
+            'covers',
+            platformName,
+            `${gameName}.jpg`
+        );
+
+        // Update the img element to the new file (with cache‐bust)
+        imgElem.src = `file://${destPath}?${Date.now()}`;
+
+        // Tell main to copy the file
+        const ok = await ipcRenderer.invoke('save-cover', srcPath, destPath);
+        console.log(ok
+                    ? `Cover saved to ${destPath}`
+                    : 'Failed to save cover');
+    });
+
+    return btn;
 }
 
 function buildCurrentGameImgContainer(gameName, image, platformName) {

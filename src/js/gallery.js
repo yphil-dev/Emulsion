@@ -382,6 +382,7 @@ async function buildGallery(params) {
 
                 if (!isImgExists) {
                     gameImage.classList.add('missing-image');
+                    gameContainer.setAttribute('data-missing-image', true);
                 }
 
                 // Set explicit width and height attributes

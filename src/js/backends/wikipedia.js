@@ -2,7 +2,6 @@
 
 export const fetchImages = async (gameName) => {
     try {
-        const sanitizedName = LB.utils.cleanFileName(gameName);
 
         // Search pages containing the game name
         const searchUrl = new URL('https://en.wikipedia.org/w/api.php');
@@ -10,7 +9,7 @@ export const fetchImages = async (gameName) => {
         searchUrl.searchParams.set('format', 'json');
         searchUrl.searchParams.set('origin', '*');
         searchUrl.searchParams.set('list', 'search');
-        searchUrl.searchParams.set('srsearch', sanitizedName);
+        searchUrl.searchParams.set('srsearch', gameName);
         searchUrl.searchParams.set('srlimit', '10');
 
         const searchResp = await fetch(searchUrl.toString());
@@ -80,17 +79,3 @@ export const fetchImages = async (gameName) => {
     }
 };
 
-// Integrate with existing LB global object
-if (typeof LB !== 'undefined') {
-    if (!LB.backends) LB.backends = {};
-    LB.backends.wikipedia = {
-        fetchImages
-    };
-} else {
-    // Fallback for CommonJS if needed
-    if (typeof module !== 'undefined' && module.exports) {
-        module.exports = {
-            fetchImages
-        };
-    }
-}

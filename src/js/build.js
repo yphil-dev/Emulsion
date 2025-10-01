@@ -33,40 +33,6 @@ function buildHomeSlide(platformName, preferences) {
     return slide;
 }
 
-function createManualSelectButton(gameName, platformName, imgElem) {
-    const btn = document.createElement('button');
-    btn.classList.add('button');
-    btn.title = 'Select image';
-    btn.innerHTML = '<i class="fa fa-plus" aria-hidden="true"></i>';
-
-    btn.addEventListener('click', async e => {
-        e.stopPropagation();
-
-        // Ask the main process to show a file picker
-        const srcPath = await ipcRenderer.invoke('pick-image');
-        if (!srcPath) return;  // user cancelled
-
-        // Destination in user data covers folder
-        const destPath = path.join(
-            LB.userDataPath,
-            'covers',
-            platformName,
-            `${gameName}.jpg`
-        );
-
-        // Update the img element to the new file (with cache‐bust)
-        imgElem.src = `file://${destPath}?${Date.now()}`;
-
-        // Tell main to copy the file
-        const ok = await ipcRenderer.invoke('save-cover', srcPath, destPath);
-        console.log(ok
-                    ? `Cover saved to ${destPath}`
-                    : 'Failed to save cover');
-    });
-
-    return btn;
-}
-
 LB.build = {
     homeSlide: buildHomeSlide,
 };

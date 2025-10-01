@@ -274,7 +274,7 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
 
         // Only attach listeners once per page to prevent duplicates
         if (!page.dataset.listenersAttached) {
-            gameContainers.forEach((container, index) => {
+            gameContainers.forEach((container) => {
             container.addEventListener('click', (event) => {
                 console.log("event: ", event.currentTarget);
                 if (event.currentTarget.classList.contains('empty-platform-game-container')) {
@@ -284,7 +284,12 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
                     // Get platform name directly from the clicked element's dataset
                     const platformName = event.currentTarget.dataset.platform;
                     console.log('Opening settings menu for platform:', platformName);
-                    _toggleMenu(gameContainers, index, onGalleryKeyDown, false, platformName);
+                    
+                    // Find the actual index in gameContainers by matching platform name
+                    const actualIndex = gameContainers.findIndex(c => c.dataset.platform === platformName);
+                    console.log('Found container at index:', actualIndex);
+                    
+                    _toggleMenu(gameContainers, actualIndex, onGalleryKeyDown, false, platformName);
                 } else {
                     launchGame(event.currentTarget);
                 }

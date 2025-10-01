@@ -141,6 +141,30 @@ async function populateGameMenu(gameMenuContainer, gameName, platformName) {
         container.classList.add('menu-game-container');
         container.style.height = 'calc(120vw / ' + LB.galleryNumOfCols + ')';
         container.appendChild(img);
+
+        // Add source icon overlay
+        const sourceIcon = document.createElement('div');
+        sourceIcon.classList.add('source-icon');
+        
+        // Map source names to FontAwesome icons
+        let iconClass = 'fa-question'; // default fallback
+        switch (source.toLowerCase()) {
+          case 'wikipedia':
+            iconClass = 'fa-wikipedia-w';
+            break;
+          case 'giantbomb':
+            iconClass = 'fa-bomb';
+            break;
+          case 'steamgriddb':
+          case 'steamgrid':
+            iconClass = 'fa-steam';
+            break;
+        }
+        
+        sourceIcon.innerHTML = `<i class="fa ${iconClass}" aria-hidden="true"></i>`;
+        sourceIcon.title = `Source: ${source}`;
+        container.appendChild(sourceIcon);
+
         gameMenuContainer.appendChild(container);
 
         img.onload = () => requestAnimationFrame(() => { img.style.opacity = '1'; });

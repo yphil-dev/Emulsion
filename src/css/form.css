@@ -319,3 +319,25 @@ div.form-icon {
 .extension-input-row input {
     width: 80px;
 }
+
+/* Source icon overlay for game menu images */
+.source-icon {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 4px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.source-icon i {
+    font-size: 14px;
+}
+
+.menu-game-container {
+    position: relative;
+}

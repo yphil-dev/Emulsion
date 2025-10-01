@@ -537,8 +537,11 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
         }
 
         const downloadImage = async (imgSrc, platform, gameName) => {
+            console.log("LB.preferences: ", LB.preferences[platform].gamesDir);
+
+            const gamesDir = `${LB.preferences[platform].gamesDir}`;
             try {
-                const result = await ipcRenderer.invoke('download-image', imgSrc, platform, gameName);
+                const result = await ipcRenderer.invoke('download-image', imgSrc, platform, gameName, gamesDir);
                 if (result.success) {
                     console.log(`Image saved at ${result.path}`);
                     return result.path;  // Return the saved image path on success
@@ -670,8 +673,6 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
             if (imgSrc) {
                 const selectedGameImg = selectedGame.querySelector('.game-image');
                 if (!selectedGameImg) return;
-
-                selectedGame.classList.add('loading');
 
                 // Call downloadImage first, and then update the image once it succeeds
                 const savedImagePath = await downloadImage(imgSrc, selectedGame.dataset.platform, selectedGame.dataset.gameName);

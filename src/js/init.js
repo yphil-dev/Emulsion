@@ -1,11 +1,6 @@
 // All the libs used are required here
-const { ipcRenderer, shell } = require('electron');
-let fs = require('fs');
+const { ipcRenderer } = require('electron');
 const path = require('path');
-const fsp = require('fs').promises;
-const axios = require('axios');
-const { promisify } = require('util');
-const readFile = promisify(fs.readFile);
 
 const LB = {}; // Launch Break :)
 

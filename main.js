@@ -266,9 +266,11 @@ const createDirectoryIfNeeded = (dirPath) => {
     }
 };
 
-const downloadAndSaveImage = async (imgSrc, platform, gameName) => {
-    const saveDir = path.join(app.getPath('userData'), 'covers', platform);
-    const savePath = path.join(saveDir, `${gameName}.jpg`);
+const downloadAndSaveImage = async (imgSrc, platform, gameName, gamesDir) => {
+
+    const extension = imgSrc.split('.').pop();
+    const saveDir = path.join(gamesDir, 'images');
+    const savePath = path.join(saveDir, `${gameName}.${extension}`);
     createDirectoryIfNeeded(saveDir);
 
     try {
@@ -363,9 +365,9 @@ ipcMain.on('show-context-menu', (event, params) => {
     menu.popup({ window: mainWindow });
 });
 
-ipcMain.handle('download-image', async (event, imgSrc, platform, gameName) => {
+ipcMain.handle('download-image', async (event, imgSrc, platform, gameName, imagesDir) => {
     try {
-        const savedImagePath = await downloadAndSaveImage(imgSrc, platform, gameName);
+        const savedImagePath = await downloadAndSaveImage(imgSrc, platform, gameName, imagesDir);
         return { success: true, path: savedImagePath };
     } catch (error) {
         return { success: false, error: error.message };

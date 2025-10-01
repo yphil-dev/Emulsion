@@ -49,6 +49,8 @@ function initSlideShow(platformToDisplay) {
 
             if (i === currentIndex) {
                 window.currentPlatformName = slide.dataset.platform;
+                // Set currentPlatform when slide is active
+                LB.currentPlatform = slide.dataset.platform;
                 slide.classList.add('active');
             } else if (i === (currentIndex - 1 + totalSlides) % totalSlides) {
                 slide.classList.add(is3D ? 'prev-slide-3d' : 'prev-slide-flat');
@@ -257,13 +259,6 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
 
     currentPageIndex = Number(targetPage.dataset.index);
     const enabledPages = pages.filter(page => page.dataset.status !== 'disabled');
-    
-    // Set global current platform
-    if (currentPlatformName && currentPlatformName !== 'settings') {
-        window.LB.currentPlatform = currentPlatformName;
-    } else {
-        window.LB.currentPlatform = null;
-    }
 
     function initCurrentGallery(page) {
         page.scrollIntoView({
@@ -390,6 +385,9 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
         // Update currentPageIndex to the next enabled page's dataset.index
         currentPageIndex = Number(enabledPages[nextEnabledIndex].dataset.index);
         currentPlatformName = enabledPages[nextEnabledIndex].dataset.platform;
+        
+        // Set currentPlatform when browsing platforms
+        LB.currentPlatform = currentPlatformName;
 
         updatePagesCarousel();
     }
@@ -399,6 +397,10 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
         const prevEnabledIndex = (currentEnabledIndex - 1 + enabledPages.length) % enabledPages.length;
         currentPageIndex = Number(enabledPages[prevEnabledIndex].dataset.index);
         currentPlatformName = enabledPages[prevEnabledIndex].dataset.platform;
+        
+        // Set currentPlatform when browsing platforms
+        LB.currentPlatform = currentPlatformName;
+        
         updatePagesCarousel();
     }
 
@@ -509,6 +511,10 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
 
         gameContainers.forEach((container, index) => {
             container.classList.toggle('selected', index === selectedIndex);
+            // Set currentPlatform when platform container is selected in settings page
+            if (index === selectedIndex && currentPageIndex === 0 && container.dataset.platform) {
+                LB.currentPlatform = container.dataset.platform;
+            }
         });
 
         if (!event.shiftKey && selectedIndex < gameContainers.length && selectedIndex > 0) {

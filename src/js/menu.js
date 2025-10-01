@@ -8,10 +8,6 @@ let menuState = {
     previousKeyDownListener: null // Store the previous listener to restore
 };
 
-// Global current platform - always tracked except in slideshow/settings
-if (!window.LB.currentPlatform) {
-    window.LB.currentPlatform = null;
-}
 
 // Menu keyboard navigation handler
 function onMenuKeyDown(event) {
@@ -277,9 +273,6 @@ async function closePlatformMenu() {
                 menuState.isOpen = false;
                 menuState.menuType = null;
                 
-                // Update global current platform
-                window.LB.currentPlatform = platformName;
-                
                 console.log('Navigating to enabled platform:', platformName);
                 
                 // Switch to gallery view
@@ -344,7 +337,7 @@ async function closeGameMenu(imgSrc) {
     }
 
     // Download and update image if provided
-    if (imgSrc && window.LB.currentPlatform) {
+    if (imgSrc && LB.currentPlatform) {
         const gameContainers = Array.from(document.querySelectorAll('.game-container'));
         const selectedGame = gameContainers.find(c => c.classList.contains('selected'));
         

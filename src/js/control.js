@@ -566,6 +566,39 @@ function initGallery(currentIndex, disabledPlatform) {
 
             document.getElementById('menu').removeEventListener('click', onMenuClick);
 
+            // Check if we're closing a platform menu and should navigate to platform gallery
+            const menuContainer = document.getElementById('menu');
+            const platformForm = menuContainer.querySelector('.platform-menu-container');
+            
+            if (platformForm && disabledPlatform) {
+                // This is a platform menu - check if platform is enabled and navigate accordingly
+                try {
+                    const isEnabled = await LB.prefs.getValue(disabledPlatform, 'isEnabled');
+                    if (isEnabled) {
+                        // Platform is enabled, navigate to its gallery
+                        const platformIndex = LB.enabledPlatforms.indexOf(disabledPlatform);
+                        if (platformIndex !== -1) {
+                            // Switch to gallery view and navigate to this platform
+                            document.getElementById('slideshow').style.display = 'none';
+                            document.getElementById('galleries').style.display = 'flex';
+                            
+                            // Clean up menu
+                            LB.imageSrc = imgSrc;
+                            document.getElementById('menu').innerHTML = '';
+                            menu.style.height = '0';
+                            window.removeEventListener('keydown', onMenuKeyDown);
+                            
+                            // Initialize gallery for this platform
+                            LB.control.initGallery(platformIndex + 1); // +1 because index 0 is slideshow
+                            isMenuOpen = false;
+                            return;
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error checking platform status:', error);
+                }
+            }
+
             updatePagesCarousel();
 
             // LB.utils.updateControls('west', 'same', 'Fetch cover', 'on');

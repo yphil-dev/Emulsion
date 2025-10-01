@@ -281,11 +281,7 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
                     const platformName = event.currentTarget.dataset.platform;
                     console.log('Opening settings menu for platform:', platformName);
 
-                    // Find the actual index in gameContainers by matching platform name
-                    const actualIndex = gameContainers.findIndex(c => c.dataset.platform === platformName);
-                    console.log('Found container at index:', actualIndex);
-
-                    _toggleMenu(gameContainers, actualIndex, onGalleryKeyDown, false, platformName);
+                    LB.menu.openPlatformMenu(platformName, handleMenuClose);
                 } else {
                     launchGame(event.currentTarget);
                 }
@@ -298,7 +294,7 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
                 if (event.currentTarget.classList.contains('empty-platform-game-container')) {
                     return;
                 }
-                _toggleMenu(gameContainers, parseInt(event.currentTarget.dataset.index), onGalleryKeyDown, false);
+                LB.menu.openGameMenu(event.currentTarget, handleMenuClose);
             });
 
                 container.classList.remove('selected');
@@ -398,306 +394,25 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
         updatePagesCarousel();
     }
 
-    let isMenuOpen = false;
     let selectedIndex = 0;
 
-    if (disabledPlatform) {
-        _toggleMenu(Array.from(document.querySelectorAll('.game-container') || []), selectedIndex, onGalleryKeyDown, isMenuOpen, disabledPlatform);
-    }
-
-    function _toggleMenu(gameContainers, selectedIndex, keyDownListener, isMenuOpen, platformToOpen) {
-
-        const menu = document.getElementById('menu');
-        const menuContainer = document.getElementById('menu');
-
-        // const footer = document.getElementById('footer');
-        // const footerMenuContainer = document.getElementById('footer-menu-container');
-
-        const controls = document.getElementById('controls');
-
-        let menuSelectedIndex = 1;
-        let currentMenuPlatform = null; // Track the current platform for this menu
-
-        const selectedGame = LB.utils.getSelectedGame(gameContainers, selectedIndex);
-        // const selectedGameImg = selectedGame.querySelector('.game-image');
-
-        function onMenuKeyDown(event) {
-
-            event.stopPropagation();
-            event.stopImmediatePropagation(); // Stops other listeners on the same element
-            const menuGameContainers = Array.from(menu.querySelectorAll('.menu-game-container'));
-            // console.log("menuGameContainers len: ", menuGameContainers.length);
-
-            switch (event.key) {
-            case 'ArrowRight':
-                if (event.shiftKey) {
-                    // nextPage();
-                } else {
-                    menuSelectedIndex = (menuSelectedIndex + 1) % menuGameContainers.length;
-                    // selectedIndex = (selectedIndex + 1) % gameContainers.length;
-                }
-                break;
-
-            case 'ArrowLeft':
-                if (event.shiftKey) {
-                    // prevPage();
-                } else {
-                    if (menuSelectedIndex !== 1) {
-                        menuSelectedIndex = (menuSelectedIndex - 1 + menuGameContainers.length) % menuGameContainers.length;
-                    }
-                }
-                break;
-
-            case 'ArrowUp':
-                if (menuSelectedIndex > LB.galleryNumOfCols) {
-                    menuSelectedIndex = Math.max(menuSelectedIndex - LB.galleryNumOfCols, 0);
-                }
-                break;
-            case 'ArrowDown':
-                menuSelectedIndex = Math.min(menuSelectedIndex + LB.galleryNumOfCols, menuGameContainers.length);
-                break;
-
-            case 'PageUp':
-                // 10 rows up
-                menuSelectedIndex = Math.max(
-                    menuSelectedIndex - LB.galleryNumOfCols * 10,
-                    0
-                );
-                break;
-
-            case 'PageDown':
-                // 10 rows down
-                menuSelectedIndex = Math.min(
-                    menuSelectedIndex + LB.galleryNumOfCols * 10,
-                    menuGameContainers.length - 1
-                );
-                break;
-
-            case 'Home':
-                // go to first item
-                menuSelectedIndex = 0;
-                break;
-
-            case 'End':
-                // go to last item
-                menuSelectedIndex = menuGameContainers.length - 1;
-                break;
-
-            case 'Enter':
-                const menuSelectedGame = LB.utils.getSelectedGame(menuGameContainers, menuSelectedIndex);
-                const menuSelectedGameImg = menuSelectedGame.querySelector('.game-image');
-                _closeMenu(menuSelectedGameImg.src);
-                break;
-
-            case 'F5':
-                if (event.shiftKey) {
-                    ipcRenderer.invoke('restart');
-                } else {
-                    window.location.reload();
-                }
-                break;
-            case 'Escape':
-                // Smart navigation - close menu and return to appropriate view
-                _closeMenu();
-                break;
-            }
-
-            menuGameContainers.forEach((container, index) => {
-                container.classList.toggle('selected', index === menuSelectedIndex);
-            });
-
-            // menuGameContainers[menuSelectedIndex].scrollIntoView({
-            //     behavior: "smooth",
-            //     block: "center"
-            // });
-
-        }
-
-        function onMenuClick(event) {
-            if (event.target.src) {
-                _closeMenu(event.target.src);
-            }
-        }
-
-        function onMenuWheel(event) {
-            // event.preventDefault();
-            if (event.shiftKey) {
-                if (event.deltaY > 0) {
-                    goToNextPage();
-                } else if (event.deltaY < 0) {
-                    goToPrevPage();
-                }
-            } else {
-                if (event.deltaY > 0) {
-                    LB.utils.simulateKeyDown('ArrowDown');
-                } else if (event.deltaY < 0) {
-                    LB.utils.simulateKeyDown('ArrowUp');
-                }
-            }
-        }
-
-        const downloadImage = async (imgSrc, platform, gameName) => {
-            console.log("LB.preferences: ", LB.preferences[platform].gamesDir);
-
-            const gamesDir = `${LB.preferences[platform].gamesDir}`;
-            try {
-                const result = await ipcRenderer.invoke('download-image', imgSrc, platform, gameName, gamesDir);
-                if (result.success) {
-                    console.log(`Image saved at ${result.path}`);
-                    return result.path;  // Return the saved image path on success
-                } else {
-                    console.error(`Error saving image: ${result.error}`);
-                    return null;
-                }
-            } catch (error) {
-                console.error('Error communicating with main process:', error);
-                alert('Failed to save image');
-                return null;
-            }
-        };
-
-        function _openMenu(platformToOpen) {
-
-            LB.utils.updateControls('west', 'same', '', 'off');
-            LB.utils.updateControls('dpad', 'same', '', 'off');
-            LB.utils.updateControls('shoulders', 'same', '', 'off');
-
-            menu.style.height = '85vh';
-
-            document.querySelector('#header .prev-link').style.opacity = 0;
-            document.querySelector('#header .next-link').style.opacity = 0;
-
-            menuContainer.innerHTML = '';
-
-            window.removeEventListener('keydown', keyDownListener);
-            window.addEventListener('keydown', onMenuKeyDown);
-            menuContainer.addEventListener('wheel', onMenuWheel);
-            menuContainer.addEventListener('click', onMenuClick);
-
-            gameContainers.forEach(async (container, index) => {
-                if (index === selectedIndex) {
-
-                    if (container.classList.contains('settings')) {
-                        const platformName = platformToOpen || container.dataset.platform;
-                        // Store platform name in menu container for reliable access later
-                        menuContainer.dataset.menuPlatform = platformName;
-                        console.log('Opening menu for platform:', platformName, 'stored in menu container');
-                        const platformForm = LB.build.platformForm(platformName);
-                        menuContainer.appendChild(platformForm);
-                    } else {
-                        const gameImage = container.querySelector('img');
-                        const gameName = container.dataset.gameName;
-                        const platformName = platformToOpen || container.dataset.platform;
-                        // Store platform name in menu container for reliable access later
-                        menuContainer.dataset.menuPlatform = platformName;
-                        const gameMenuContainer = LB.build.gameMenu(gameName, gameImage, platformName);
-                        menuContainer.appendChild(gameMenuContainer);
-                        await LB.build.populateGameMenu(gameMenuContainer, gameName, platformName);
-
-                        document.querySelector('header .platform-name').textContent = LB.utils.cleanFileName(gameName);
-                        document.querySelector('header .item-type').textContent = '';
-                        document.querySelector('header .item-number').textContent = '';
-
-                    }
-
-                }
-            });
-
-        }
-
-        async function _closeMenu(imgSrc) {
-
-            document.getElementById('menu').removeEventListener('click', onMenuClick);
-
-            // Check if we're closing a platform menu and should navigate to platform gallery
-            const menuContainer = document.getElementById('menu');
-            const platformForm = menuContainer.querySelector('.platform-menu-container');
-
-            if (platformForm) {
-                // Get platform name directly from the selected game container's dataset
-                const selectedGameContainer = LB.utils.getSelectedGame(gameContainers, selectedIndex);
-                const platformNameFromDOM = selectedGameContainer ? selectedGameContainer.dataset.platform : null;
-
-                console.log('Closing menu for platform:', platformNameFromDOM, 'from DOM element');
-
-                if (platformNameFromDOM && platformNameFromDOM !== 'settings') {
-                    try {
-                        const isEnabled = await LB.prefs.getValue(platformNameFromDOM, 'isEnabled');
-                        if (isEnabled) {
-                            // Platform is enabled, navigate to its gallery using NAME-BASED navigation
-                            // Clean up menu first
-                            LB.imageSrc = imgSrc;
-                            document.getElementById('menu').innerHTML = '';
-                            menu.style.height = '0';
-                            window.removeEventListener('keydown', onMenuKeyDown);
-                            isMenuOpen = false;
-
-                            // Switch to gallery view and navigate to this platform BY NAME
-                            document.getElementById('slideshow').style.display = 'none';
-                            document.getElementById('galleries').style.display = 'flex';
-
-                            // Initialize gallery for this platform using PLATFORM NAME - NO INDICES!
-                            console.log('Navigating to platform gallery:', platformNameFromDOM);
-                            initGallery(platformNameFromDOM);
-                            return;
-                        }
-                    } catch (error) {
-                        console.error('Error checking platform status:', error);
-                    }
-                }
-            }
-
-            updatePagesCarousel();
-
-            // LB.utils.updateControls('west', 'same', 'Fetch cover', 'on');
-            LB.utils.updateControls('dpad', 'same', 'Browse', 'on');
-
-            document.querySelector('header .prev-link').style.opacity = 1;
-            document.querySelector('header .next-link').style.opacity = 1;
-
-            LB.imageSrc = imgSrc;
-            document.getElementById('menu').innerHTML = '';
-            // footer.style.height = '100px'; // original height
-
-            menu.style.height = '0';
-
-            // controls.style.display = 'flex';
-            window.removeEventListener('keydown', onMenuKeyDown);
-            window.addEventListener('keydown', keyDownListener);
-
-            selectedGame.scrollIntoView({
-                behavior: "smooth",
-                block: "center"
-            });
-
-            if (imgSrc) {
-                const selectedGameImg = selectedGame.querySelector('.game-image');
-                if (!selectedGameImg) return;
-
-                // Call downloadImage first, and then update the image once it succeeds
-                const savedImagePath = await downloadImage(imgSrc, selectedGame.dataset.platform, selectedGame.dataset.gameName);
-
-                if (savedImagePath) {
-
-                    selectedGameImg.src = savedImagePath + '?t=' + new Date().getTime(); // Refresh with timestamp
-
-                    selectedGameImg.onload = () => {
-                        selectedGame.classList.remove('loading');
-                    };
-                }
-            }
-
-            isMenuOpen = false;
-        }
-
-        if (!isMenuOpen) {
-            _openMenu(disabledPlatform);
-            isMenuOpen = true;
+    // Menu close callback handler
+    function handleMenuClose(result) {
+        if (result && result.navigateTo) {
+            // Platform was enabled, navigate to it
+            document.getElementById('slideshow').style.display = 'none';
+            document.getElementById('galleries').style.display = 'flex';
+            initGallery(result.navigateTo);
         } else {
-            _closeMenu();
-            isMenuOpen = false;
+            // Normal close, refresh current page
+            updatePagesCarousel();
         }
     }
+
+    if (disabledPlatform) {
+        LB.menu.openPlatformMenu(disabledPlatform, handleMenuClose);
+    }
+
 
     const _moveRows = (selectedIndex, rowsToMove) => {
         const col = selectedIndex % LB.galleryNumOfCols;
@@ -742,7 +457,10 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
             break;
         case 'i':
             if (!LB.kioskMode) {
-                _toggleMenu(gameContainers, selectedIndex, onGalleryKeyDown, isMenuOpen);
+                const selectedContainer = gameContainers[selectedIndex];
+                if (selectedContainer) {
+                    LB.menu.openGameMenu(selectedContainer, handleMenuClose);
+                }
             }
             break;
         case 'F5':
@@ -758,8 +476,7 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
                 const selectedPlatformContainer = document.querySelector('.game-container.selected');
                 if (selectedPlatformContainer && !selectedPlatformContainer.classList.contains('empty-platform-game-container')) {
                     const platformName = selectedPlatformContainer.dataset.platform;
-                    const actualIndex = gameContainers.findIndex(c => c.dataset.platform === platformName);
-                    _toggleMenu(gameContainers, actualIndex, onGalleryKeyDown, isMenuOpen, platformName);
+                    LB.menu.openPlatformMenu(platformName, handleMenuClose);
                 }
             } else {
                 const selectedGameContainer = LB.utils.getSelectedGame(gameContainers, selectedIndex);

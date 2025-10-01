@@ -919,6 +919,8 @@ function initGamepad () {
 }
 
 function showQuitConfirmationDialog() {
+    // Store reference to current slideshow handler
+    const currentHomeKeyDown = window.homeKeyDownHandler || null;
     // Create dialog overlay
     const overlay = document.createElement('div');
     overlay.id = 'quit-confirmation-overlay';
@@ -1054,6 +1056,7 @@ function showQuitConfirmationDialog() {
     function closeDialog() {
         document.body.removeChild(overlay);
         document.removeEventListener('keydown', onDialogKeyDown, true);
+        window.removeEventListener('keydown', onDialogKeyDown, true);
     }
 
     function confirmQuit() {
@@ -1107,11 +1110,17 @@ function showQuitConfirmationDialog() {
         }
     });
 
-    // Set up keyboard handling - CAPTURE ALL EVENTS with highest priority
-    // Remove existing listeners
+    // COMPLETELY BLOCK ALL KEYBOARD EVENTS
+    // Remove ALL existing listeners
+    const allListeners = window.getEventListeners ? window.getEventListeners(window) : null;
+    
+    // Brute force: remove all keydown listeners
     window.removeEventListener('keydown', homeKeyDown);
-    // Add dialog listener with capture=true for highest priority
+    document.removeEventListener('keydown', homeKeyDown);
+    
+    // Add dialog listener with capture=true for ABSOLUTE highest priority
     document.addEventListener('keydown', onDialogKeyDown, true);
+    window.addEventListener('keydown', onDialogKeyDown, true);
     
     // Initialize button selection
     updateButtonSelection();

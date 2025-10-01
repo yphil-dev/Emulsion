@@ -111,9 +111,16 @@ function initSlideShow(platformToDisplay) {
                 return;
             }
             
-            // Navigate to platform by name
-            if (activePlatformName) {
-                initGallery(activePlatformName, activePlatformName === 'settings' ? null : activePlatformName);
+            // Check if platform is enabled or disabled
+            if (activePlatformName === 'recents' || activePlatformName === 'settings') {
+                // Special platforms - go directly to gallery
+                initGallery(activePlatformName);
+            } else if (LB.enabledPlatforms.includes(activePlatformName)) {
+                // Enabled platform - go directly to platform gallery
+                initGallery(activePlatformName);
+            } else {
+                // Disabled platform - open menu (if policy allows showing disabled platforms)
+                initGallery('settings', activePlatformName);
             }
 
             document.getElementById('slideshow').style.display = 'none';

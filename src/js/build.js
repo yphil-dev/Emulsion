@@ -67,7 +67,7 @@ function createManualSelectButton(gameName, platformName, imgElem) {
     return btn;
 }
 
-function buildGameMenu(gameName, image, platformName) {
+function buildCurrentGameImgContainer(gameName, image, platformName) {
     const gameMenuContainer = document.createElement('div');
     gameMenuContainer.classList.add('page-content');
     gameMenuContainer.style.gridTemplateColumns = `repeat(${LB.galleryNumOfCols}, 1fr)`;
@@ -137,10 +137,13 @@ async function populateGameMenu(gameMenuContainer, gameName, platformName) {
         img.style.opacity = '0';
         img.style.transition = 'opacity 0.3s ease-in';
 
-        const container = document.createElement('div');
-        container.classList.add('menu-game-container');
-        container.style.height = 'calc(120vw / ' + LB.galleryNumOfCols + ')';
-        container.appendChild(img);
+        const menuGameContainer = document.createElement('div');
+          menuGameContainer.classList.add('menu-game-container');
+          menuGameContainer.setAttribute('data-platform', platformName);
+          menuGameContainer.setAttribute('data-game-name', gameName);
+
+        menuGameContainer.style.height = 'calc(120vw / ' + LB.galleryNumOfCols + ')';
+        menuGameContainer.appendChild(img);
 
         // Add source icon overlay
         const sourceIcon = document.createElement('div');
@@ -163,9 +166,9 @@ async function populateGameMenu(gameMenuContainer, gameName, platformName) {
 
         sourceIcon.innerHTML = `<i class="fa ${iconClass}" aria-hidden="true"></i>`;
         sourceIcon.title = `Source: ${source}`;
-        container.appendChild(sourceIcon);
+        menuGameContainer.appendChild(sourceIcon);
 
-        gameMenuContainer.appendChild(container);
+        gameMenuContainer.appendChild(menuGameContainer);
 
         img.onload = () => requestAnimationFrame(() => { img.style.opacity = '1'; });
         img.onerror = () => console.warn('Failed to load image:', url);
@@ -1005,7 +1008,7 @@ function buildPlatformForm(platformName) {
 
 LB.build = {
     homeSlide: buildHomeSlide,
-    gameMenu: buildGameMenu,
+    buildCurrentGameImgContainer: buildCurrentGameImgContainer,
     platformForm: buildPlatformForm,
     populateGameMenu: populateGameMenu
 };

@@ -1053,7 +1053,7 @@ function showQuitConfirmationDialog() {
 
     function closeDialog() {
         document.body.removeChild(overlay);
-        window.removeEventListener('keydown', onDialogKeyDown);
+        document.removeEventListener('keydown', onDialogKeyDown, true);
     }
 
     function confirmQuit() {
@@ -1067,10 +1067,12 @@ function showQuitConfirmationDialog() {
         window.addEventListener('keydown', homeKeyDown);
     }
 
-    // Keyboard and gamepad handler
+    // Keyboard and gamepad handler - CAPTURE ALL EVENTS
     function onDialogKeyDown(event) {
+        // STOP ALL KEYBOARD EVENTS from propagating
         event.preventDefault();
         event.stopPropagation();
+        event.stopImmediatePropagation();
 
         switch (event.key) {
             case 'ArrowLeft':
@@ -1088,6 +1090,9 @@ function showQuitConfirmationDialog() {
             case 'Escape':
                 cancelQuit();
                 break;
+            default:
+                // Block ALL other keys
+                break;
         }
     }
 
@@ -1102,9 +1107,11 @@ function showQuitConfirmationDialog() {
         }
     });
 
-    // Set up keyboard handling - remove slideshow listener and add dialog listener
+    // Set up keyboard handling - CAPTURE ALL EVENTS with highest priority
+    // Remove existing listeners
     window.removeEventListener('keydown', homeKeyDown);
-    window.addEventListener('keydown', onDialogKeyDown);
+    // Add dialog listener with capture=true for highest priority
+    document.addEventListener('keydown', onDialogKeyDown, true);
     
     // Initialize button selection
     updateButtonSelection();

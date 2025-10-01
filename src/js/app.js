@@ -9,9 +9,9 @@ const axios = require('axios');
 
 // Import all modules
 import * as utils from './utils.js';
-import * as constants from './constants.js';
 import * as preferences from './preferences.js';
 import * as theme from './theme.js';
+import { PLATFORMS, getPlatformInfo } from './constants.js';
 
 // Make Node.js modules globally available (required by existing code)
 window.ipcRenderer = ipcRenderer;
@@ -35,10 +35,13 @@ const LB = {
         stripExtensions: utils.stripExtensions,
         cleanFileName: utils.cleanFileName,
         getDataIndexByPlatform: utils.getDataIndexByPlatform,
-        getPlatformInfo: constants.getPlatformInfo,
+        getPlatformInfo: getPlatformInfo,
         applyTheme: (themeName) => theme.applyTheme(themeName, LB.baseDir),
         setFooterSize: theme.setFooterSize
     },
+    
+    // Expose PLATFORMS constant
+    PLATFORMS: PLATFORMS,
     
     // Expose preferences functions
     prefs: {
@@ -60,9 +63,10 @@ LB.initialized = new Promise((resolve) => {
 // Export everything for modules that want to use imports directly
 export {
     utils,
-    constants,
     preferences,
     theme,
+    PLATFORMS,
+    getPlatformInfo,
     LB
 };
 

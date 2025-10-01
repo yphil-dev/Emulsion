@@ -1,5 +1,6 @@
 // SINGLE SOURCE OF TRUTH - Platforms definition
-const PLATFORMS = [
+// This is the only place where platforms are defined!
+export const PLATFORMS = [
     { name: "atari", vendor: "Atari", displayName: "2600", extensions: [".zip"], nbGames: 0 },
     { name: "spectrum", vendor: "Sinclair", displayName: "ZX Spectrum", extensions: [".zip"], nbGames: 0 },
     { name: "c64", vendor: "Commodore", displayName: "Commodore 64", extensions: [".zip"], nbGames: 0 },
@@ -27,39 +28,33 @@ const PLATFORMS = [
     { name: "ps4", vendor: "Sony", displayName: "PlayStation 4", extensions: [".iso"], nbGames: 0 }
 ];
 
-function getPlatformInfo(platformName) {
+export function getPlatformInfo(platformName) {
     // Find platform info from PLATFORMS array
     const platform = PLATFORMS.find(p => p.name === platformName);
     if (platform) {
-        return { vendor: platform.vendor,
-                 name: platform.displayName
-               };
+        return { 
+            vendor: platform.vendor,
+            name: platform.displayName,
+            index: PLATFORMS.indexOf(platform) + 1  // +1 because settings is index 0
+        };
     }
 
     // Fallback for settings and recents
     if (platformName === 'settings') {
-        return { vendor: 'Emulsion', name: 'Settings' };
+        return { vendor: 'Emulsion', name: 'Settings', index: 0 };
     }
     if (platformName === 'recents') {
-        return { vendor: 'Emulsion', name: 'Recents' };
+        return { vendor: 'Emulsion', name: 'Recents', index: PLATFORMS.length + 1 };
     }
 
     // Final fallback
-    return { vendor: platformName, name: platformName };
+    return { vendor: platformName, name: platformName, index: -1 };
 }
 
-// Integrate with existing LB global object
-if (typeof LB !== 'undefined') {
-    LB.platforms = {
+// For CommonJS compatibility (Node.js/Electron main process)
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
         PLATFORMS,
         getPlatformInfo
     };
-} else {
-    // Fallback for CommonJS if needed
-    if (typeof module !== 'undefined' && module.exports) {
-        module.exports = {
-            PLATFORMS,
-            getPlatformInfo
-        };
-    }
 }

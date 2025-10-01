@@ -279,8 +279,9 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
                     return;
                 }
                 if (event.currentTarget.classList.contains('settings')) {
-                    // Use platform name instead of index for settings menu
+                    // Get platform name directly from the clicked element's dataset
                     const platformName = event.currentTarget.dataset.platform;
+                    console.log('Opening settings menu for platform:', platformName);
                     _toggleMenu(Array.from(document.querySelectorAll('.game-container') || []), event.currentTarget.dataset.index / 1, onGalleryKeyDown, false, platformName);
                 } else {
                     launchGame(event.currentTarget);
@@ -599,28 +600,37 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
             const menuContainer = document.getElementById('menu');
             const platformForm = menuContainer.querySelector('.platform-menu-container');
             
-            if (platformForm && currentMenuPlatform && currentMenuPlatform !== 'settings') {
-                try {
-                    const isEnabled = await LB.prefs.getValue(currentMenuPlatform, 'isEnabled');
-                    if (isEnabled) {
-                        // Platform is enabled, navigate to its gallery using NAME-BASED navigation
-                        // Clean up menu first
-                        LB.imageSrc = imgSrc;
-                        document.getElementById('menu').innerHTML = '';
-                        menu.style.height = '0';
-                        window.removeEventListener('keydown', onMenuKeyDown);
-                        isMenuOpen = false;
-                        
-                        // Switch to gallery view and navigate to this platform BY NAME
-                        document.getElementById('slideshow').style.display = 'none';
-                        document.getElementById('galleries').style.display = 'flex';
-                        
-                        // Initialize gallery for this platform using PLATFORM NAME - NO INDICES!
-                        initGallery(currentMenuPlatform);
-                        return;
+            if (platformForm) {
+                // Get platform name directly from the selected game container's dataset
+                const selectedGameContainer = LB.utils.getSelectedGame(gameContainers, selectedIndex);
+                const platformNameFromDOM = selectedGameContainer ? selectedGameContainer.dataset.platform : null;
+                
+                console.log('Closing menu for platform:', platformNameFromDOM, 'from DOM element');
+                
+                if (platformNameFromDOM && platformNameFromDOM !== 'settings') {
+                    try {
+                        const isEnabled = await LB.prefs.getValue(platformNameFromDOM, 'isEnabled');
+                        if (isEnabled) {
+                            // Platform is enabled, navigate to its gallery using NAME-BASED navigation
+                            // Clean up menu first
+                            LB.imageSrc = imgSrc;
+                            document.getElementById('menu').innerHTML = '';
+                            menu.style.height = '0';
+                            window.removeEventListener('keydown', onMenuKeyDown);
+                            isMenuOpen = false;
+                            
+                            // Switch to gallery view and navigate to this platform BY NAME
+                            document.getElementById('slideshow').style.display = 'none';
+                            document.getElementById('galleries').style.display = 'flex';
+                            
+                            // Initialize gallery for this platform using PLATFORM NAME - NO INDICES!
+                            console.log('Navigating to platform gallery:', platformNameFromDOM);
+                            initGallery(platformNameFromDOM);
+                            return;
+                        }
+                    } catch (error) {
+                        console.error('Error checking platform status:', error);
                     }
-                } catch (error) {
-                    console.error('Error checking platform status:', error);
                 }
             }
 

@@ -755,25 +755,26 @@ function buildPlatformForm(platformName) {
 
     saveButton.addEventListener('click', _saveButtonClick);
 
-    function _cancelButtonClick(event) {
-        // Smart navigation for disabled platforms
-        LB.prefs.getValue(platformName, 'isEnabled')
-            .then((isEnabled) => {
-                if (isEnabled) {
-                    // Platform is enabled, return to its gallery
-                    LB.control.initSlideShow(platformName);
-                } else if (LB.disabledPlatformsPolicy === 'hide') {
-                    // Platform is disabled and policy is hide, return to slideshow
-                    LB.control.initSlideShow(0);
-                } else {
-                    // Platform is disabled but policy is show, return to platform
-                    LB.control.initSlideShow(platformName);
-                }
-            })
-            .catch(() => {
-                // Fallback to slideshow if we can't determine status
+    async function _cancelButtonClick(event) {
+        try {
+            // Smart navigation for disabled platforms
+            const isEnabled = await LB.prefs.getValue(platformName, 'isEnabled');
+            
+            if (isEnabled) {
+                // Platform is enabled, return to its gallery
+                LB.control.initSlideShow(platformName);
+            } else if (LB.disabledPlatformsPolicy === 'hide') {
+                // Platform is disabled and policy is hide, return to slideshow
                 LB.control.initSlideShow(0);
-            });
+            } else {
+                // Platform is disabled but policy is show, return to platform
+                LB.control.initSlideShow(platformName);
+            }
+        } catch (error) {
+            console.error('Error in cancel button:', error);
+            // Fallback to slideshow if we can't determine status
+            LB.control.initSlideShow(0);
+        }
     }
 
     async function _saveButtonClick(event) {

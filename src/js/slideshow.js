@@ -416,7 +416,8 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
         return Math.min(Math.max(newIndex, 0), gameContainers.length - 1);
     };
 
-    function onGalleryKeyDown(event) {
+    // Store gallery keyboard handler globally so menu can restore it
+    window.currentGalleryKeyDown = function onGalleryKeyDown(event) {
         switch (event.key) {
         case 'ArrowRight':
             if (event.shiftKey) {
@@ -537,7 +538,7 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
 
     galleries.addEventListener('wheel', onGalleryWheel);
 
-    window.addEventListener('keydown', onGalleryKeyDown);
+    window.addEventListener('keydown', window.currentGalleryKeyDown);
     updatePagesCarousel(); // Initialize the pages carousel
 }
 

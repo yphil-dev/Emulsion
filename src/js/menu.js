@@ -4,7 +4,8 @@
 let menuState = {
     isOpen: false,
     selectedIndex: 1,
-    menuType: null // 'platform' or 'game'
+    menuType: null, // 'platform' or 'game'
+    previousKeyDownListener: null // Store the previous listener to restore
 };
 
 // Global current platform - always tracked except in slideshow/settings
@@ -175,6 +176,11 @@ async function openPlatformMenu(platformName) {
     const platformForm = window.LB.build.platformForm(platformName);
     menuContainer.appendChild(platformForm);
 
+    // Remove current keyboard listener (typically gallery handler)
+    if (window.currentGalleryKeyDown) {
+        window.removeEventListener('keydown', window.currentGalleryKeyDown);
+    }
+    
     // Attach event listeners
     window.addEventListener('keydown', onMenuKeyDown);
     menuContainer.addEventListener('wheel', onMenuWheel);
@@ -227,6 +233,11 @@ async function openGameMenu(gameContainer) {
     document.querySelector('header .item-type').textContent = '';
     document.querySelector('header .item-number').textContent = '';
 
+    // Remove current keyboard listener (typically gallery handler)
+    if (window.currentGalleryKeyDown) {
+        window.removeEventListener('keydown', window.currentGalleryKeyDown);
+    }
+    
     // Attach event listeners
     window.addEventListener('keydown', onMenuKeyDown);
     menuContainer.addEventListener('wheel', onMenuWheel);
@@ -282,7 +293,7 @@ async function closePlatformMenu() {
         }
     }
 
-    // Normal close - stay on current page
+    // Normal close - stay on current page and restore gallery handler
     LB.utils.updateControls('dpad', 'same', 'Browse', 'on');
     document.querySelector('header .prev-link').style.opacity = 1;
     document.querySelector('header .next-link').style.opacity = 1;
@@ -291,6 +302,11 @@ async function closePlatformMenu() {
     menu.style.height = '0';
     menuState.isOpen = false;
     menuState.menuType = null;
+    
+    // Restore gallery keyboard handler
+    if (window.currentGalleryKeyDown) {
+        window.addEventListener('keydown', window.currentGalleryKeyDown);
+    }
     
     console.log('Platform menu closed');
 }
@@ -313,7 +329,7 @@ async function closeGameMenu(imgSrc) {
     menuContainer.removeEventListener('wheel', onMenuWheel);
     menuContainer.removeEventListener('click', onMenuClick);
 
-    // Normal menu close
+    // Normal menu close and restore gallery handler
     LB.utils.updateControls('dpad', 'same', 'Browse', 'on');
     document.querySelector('header .prev-link').style.opacity = 1;
     document.querySelector('header .next-link').style.opacity = 1;
@@ -321,6 +337,11 @@ async function closeGameMenu(imgSrc) {
     window.LB.imageSrc = imgSrc;
     menuContainer.innerHTML = '';
     menu.style.height = '0';
+    
+    // Restore gallery keyboard handler
+    if (window.currentGalleryKeyDown) {
+        window.addEventListener('keydown', window.currentGalleryKeyDown);
+    }
 
     // Download and update image if provided
     if (imgSrc && window.LB.currentPlatform) {

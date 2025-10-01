@@ -755,26 +755,15 @@ function buildPlatformForm(platformName) {
 
     saveButton.addEventListener('click', _saveButtonClick);
 
-    async function _cancelButtonClick(event) {
-        try {
-            // Smart navigation for disabled platforms
-            const isEnabled = await LB.prefs.getValue(platformName, 'isEnabled');
-            
-            if (isEnabled) {
-                // Platform is enabled, return to its gallery
-                LB.control.initSlideShow(platformName);
-            } else if (LB.disabledPlatformsPolicy === 'hide') {
-                // Platform is disabled and policy is hide, return to slideshow
-                LB.control.initSlideShow(0);
-            } else {
-                // Platform is disabled but policy is show, return to platform
-                LB.control.initSlideShow(platformName);
-            }
-        } catch (error) {
-            console.error('Error in cancel button:', error);
-            // Fallback to slideshow if we can't determine status
-            LB.control.initSlideShow(0);
-        }
+    function _cancelButtonClick(event) {
+        // Simulate escape key to close menu properly
+        const escapeEvent = new KeyboardEvent('keydown', {
+            key: 'Escape',
+            keyCode: 27,
+            which: 27,
+            bubbles: true
+        });
+        document.dispatchEvent(escapeEvent);
     }
 
     async function _saveButtonClick(event) {

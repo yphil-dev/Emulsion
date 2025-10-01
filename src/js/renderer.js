@@ -4,7 +4,9 @@ window.topMenuSlider = document.getElementById("top-menu-slider");
 
 LB.control.initGamepad();
 
-LB.prefs.load()
+// Wait for LB initialization before proceeding
+LB.initialized
+    .then(() => LB.prefs.load())
     .then((preferences) => {
 
         LB.galleryNumOfCols = preferences.settings.numberOfColumns;
@@ -64,4 +66,3 @@ LB.prefs.load()
     .catch(error => {
         console.error('Failed to load platforms:', error);
     });
-

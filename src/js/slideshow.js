@@ -89,6 +89,8 @@ function initSlideShow(platformToDisplay) {
         });
     });
 
+    // Make homeKeyDown globally accessible for dialog cleanup
+    window.currentHomeKeyDown = homeKeyDown;
     window.addEventListener('keydown', homeKeyDown);
 
     function homeKeyDown(event) {
@@ -1066,8 +1068,10 @@ function showQuitConfirmationDialog() {
 
     function cancelQuit() {
         closeDialog();
-        // Restore slideshow keyboard listener
-        window.addEventListener('keydown', homeKeyDown);
+        // Restore slideshow keyboard listener using global reference
+        if (window.currentHomeKeyDown) {
+            window.addEventListener('keydown', window.currentHomeKeyDown);
+        }
     }
 
     // Keyboard and gamepad handler - CAPTURE ALL EVENTS
@@ -1114,9 +1118,11 @@ function showQuitConfirmationDialog() {
     // Remove ALL existing listeners
     const allListeners = window.getEventListeners ? window.getEventListeners(window) : null;
     
-    // Brute force: remove all keydown listeners
-    window.removeEventListener('keydown', homeKeyDown);
-    document.removeEventListener('keydown', homeKeyDown);
+    // Brute force: remove all keydown listeners using the global reference
+    if (window.currentHomeKeyDown) {
+        window.removeEventListener('keydown', window.currentHomeKeyDown);
+        document.removeEventListener('keydown', window.currentHomeKeyDown);
+    }
     
     // Add dialog listener with capture=true for ABSOLUTE highest priority
     document.addEventListener('keydown', onDialogKeyDown, true);

@@ -16,7 +16,9 @@
     "main": "main.js",
     "scripts": {
         "start": "electron . --no-sandbox",
-        "prebuild": "rm -rf ./dist ./out ./node_modules ./repack ./tmp && npm install",
+        "prebuild": "rm -rf ./dist ./out ./node_modules ./repack ./tmp",
+        "install:linux": "npm install sdl2-gamecontroller",
+        "postinstall": "node -e \"if (process.platform === 'linux' && !process.env.CI) require('child_process').execSync('npm run install:linux', {stdio: 'inherit'})\"",
         "build": "electron-builder --config builder.yml --linux"
     },
     "devDependencies": {

@@ -4,10 +4,13 @@
 let menuState = {
     isOpen: false,
     selectedIndex: 1,
-    currentPlatform: null,
-    keyDownListener: null,
-    onCloseCallback: null
+    menuType: null // 'platform' or 'game'
 };
+
+// Global current platform - always tracked except in slideshow/settings
+if (!window.LB.currentPlatform) {
+    window.LB.currentPlatform = null;
+}
 
 // Menu keyboard navigation handler
 function onMenuKeyDown(event) {
@@ -60,7 +63,11 @@ function onMenuKeyDown(event) {
         case 'Enter':
             const selectedGame = LB.utils.getSelectedGame(menuGameContainers, menuState.selectedIndex);
             const selectedImg = selectedGame.querySelector('.game-image');
-            LB.menu.closeMenu(selectedImg.src);
+            if (menuState.menuType === 'platform') {
+                LB.menu.closePlatformMenu();
+            } else {
+                LB.menu.closeGameMenu(selectedImg.src);
+            }
             break;
 
         case 'F5':
@@ -72,7 +79,11 @@ function onMenuKeyDown(event) {
             break;
 
         case 'Escape':
-            LB.menu.closeMenu();
+            if (menuState.menuType === 'platform') {
+                LB.menu.closePlatformMenu();
+            } else {
+                LB.menu.closeGameMenu();
+            }
             break;
     }
 
@@ -85,14 +96,17 @@ function onMenuKeyDown(event) {
 // Menu click handler
 function onMenuClick(event) {
     if (event.target.src) {
-        LB.menu.closeMenu(event.target.src);
+        if (menuState.menuType === 'platform') {
+            LB.menu.closePlatformMenu();
+        } else {
+            LB.menu.closeGameMenu(event.target.src);
+        }
     }
 }
 
 // Menu scroll handler
 function onMenuWheel(event) {
     if (event.shiftKey) {
-        // Let the page navigation handle this
         return;
     }
     
@@ -130,9 +144,8 @@ async function downloadImage(imgSrc, platform, gameName) {
 /**
  * Open menu for a platform settings page
  * @param {string} platformName - Name of the platform
- * @param {Function} onClose - Callback when menu closes
  */
-async function openPlatformMenu(platformName, onClose) {
+async function openPlatformMenu(platformName) {
     if (menuState.isOpen) {
         console.warn('Menu already open');
         return;
@@ -143,8 +156,7 @@ async function openPlatformMenu(platformName, onClose) {
     
     // Store state
     menuState.isOpen = true;
-    menuState.currentPlatform = platformName;
-    menuState.onCloseCallback = onClose;
+    menuState.menuType = 'platform';
     menuState.selectedIndex = 1;
 
     // Update UI
@@ -174,9 +186,8 @@ async function openPlatformMenu(platformName, onClose) {
 /**
  * Open menu for a game cover art selection
  * @param {HTMLElement} gameContainer - The game container element
- * @param {Function} onClose - Callback when menu closes
  */
-async function openGameMenu(gameContainer, onClose) {
+async function openGameMenu(gameContainer) {
     if (menuState.isOpen) {
         console.warn('Menu already open');
         return;
@@ -191,8 +202,7 @@ async function openGameMenu(gameContainer, onClose) {
 
     // Store state
     menuState.isOpen = true;
-    menuState.currentPlatform = platformName;
-    menuState.onCloseCallback = onClose;
+    menuState.menuType = 'game';
     menuState.selectedIndex = 1;
 
     // Update UI
@@ -226,12 +236,72 @@ async function openGameMenu(gameContainer, onClose) {
 }
 
 /**
- * Close the currently open menu
+ * Close platform settings menu
+ */
+async function closePlatformMenu() {
+    if (!menuState.isOpen || menuState.menuType !== 'platform') {
+        console.warn('No platform menu to close');
+        return;
+    }
+
+    const menu = document.getElementById('menu');
+    const menuContainer = document.getElementById('menu');
+
+    // Get the platform name from the menu
+    const platformName = menuContainer.dataset.menuPlatform;
+
+    // Remove event listeners
+    window.removeEventListener('keydown', onMenuKeyDown);
+    menuContainer.removeEventListener('wheel', onMenuWheel);
+    menuContainer.removeEventListener('click', onMenuClick);
+
+    // Check if platform was enabled
+    if (platformName && platformName !== 'settings') {
+        try {
+            const isEnabled = await LB.prefs.getValue(platformName, 'isEnabled');
+            if (isEnabled) {
+                // Platform was enabled - navigate to it
+                menuContainer.innerHTML = '';
+                menu.style.height = '0';
+                menuState.isOpen = false;
+                menuState.menuType = null;
+                
+                // Update global current platform
+                window.LB.currentPlatform = platformName;
+                
+                console.log('Navigating to enabled platform:', platformName);
+                
+                // Switch to gallery view
+                document.getElementById('slideshow').style.display = 'none';
+                document.getElementById('galleries').style.display = 'flex';
+                LB.control.initGallery(platformName);
+                return;
+            }
+        } catch (error) {
+            console.error('Error checking platform status:', error);
+        }
+    }
+
+    // Normal close - stay on current page
+    LB.utils.updateControls('dpad', 'same', 'Browse', 'on');
+    document.querySelector('header .prev-link').style.opacity = 1;
+    document.querySelector('header .next-link').style.opacity = 1;
+
+    menuContainer.innerHTML = '';
+    menu.style.height = '0';
+    menuState.isOpen = false;
+    menuState.menuType = null;
+    
+    console.log('Platform menu closed');
+}
+
+/**
+ * Close game cover art menu
  * @param {string} imgSrc - Optional image source to save
  */
-async function closeMenu(imgSrc) {
-    if (!menuState.isOpen) {
-        console.warn('No menu to close');
+async function closeGameMenu(imgSrc) {
+    if (!menuState.isOpen || menuState.menuType !== 'game') {
+        console.warn('No game menu to close');
         return;
     }
 
@@ -243,34 +313,6 @@ async function closeMenu(imgSrc) {
     menuContainer.removeEventListener('wheel', onMenuWheel);
     menuContainer.removeEventListener('click', onMenuClick);
 
-    // Check if closing platform menu with enabled platform
-    const platformForm = menuContainer.querySelector('.platform-menu-container');
-    if (platformForm && menuState.currentPlatform && menuState.currentPlatform !== 'settings') {
-        try {
-            const isEnabled = await LB.prefs.getValue(menuState.currentPlatform, 'isEnabled');
-            if (isEnabled) {
-                // Platform was enabled, navigate to its gallery
-                window.LB.imageSrc = imgSrc;
-                menuContainer.innerHTML = '';
-                menu.style.height = '0';
-                
-                const callback = menuState.onCloseCallback;
-                menuState.isOpen = false;
-                menuState.onCloseCallback = null;
-                
-                console.log('Navigating to enabled platform:', menuState.currentPlatform);
-                
-                // Call the callback with navigation request
-                if (callback) {
-                    callback({ navigateTo: menuState.currentPlatform, imgSrc });
-                }
-                return;
-            }
-        } catch (error) {
-            console.error('Error checking platform status:', error);
-        }
-    }
-
     // Normal menu close
     LB.utils.updateControls('dpad', 'same', 'Browse', 'on');
     document.querySelector('header .prev-link').style.opacity = 1;
@@ -281,7 +323,7 @@ async function closeMenu(imgSrc) {
     menu.style.height = '0';
 
     // Download and update image if provided
-    if (imgSrc && menuState.currentPlatform) {
+    if (imgSrc && window.LB.currentPlatform) {
         const gameContainers = Array.from(document.querySelectorAll('.game-container'));
         const selectedGame = gameContainers.find(c => c.classList.contains('selected'));
         
@@ -311,16 +353,10 @@ async function closeMenu(imgSrc) {
         }
     }
 
-    // Call close callback
-    const callback = menuState.onCloseCallback;
     menuState.isOpen = false;
-    menuState.onCloseCallback = null;
+    menuState.menuType = null;
     
-    if (callback) {
-        callback({ imgSrc });
-    }
-    
-    console.log('Menu closed');
+    console.log('Game menu closed');
 }
 
 /**
@@ -335,6 +371,7 @@ function isMenuOpen() {
 LB.menu = {
     openPlatformMenu,
     openGameMenu,
-    closeMenu,
+    closePlatformMenu,
+    closeGameMenu,
     isMenuOpen
 };

@@ -130,6 +130,7 @@ function initSlideShow(platformToDisplay) {
             event.shiftKey ? ipcRenderer.invoke('restart') : window.location.reload();
             break;
         case 'Escape':
+            console.log("HOME Escape: ");
             showQuitConfirmationDialog();
             break;
         case 'q':
@@ -256,6 +257,13 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
 
     currentPageIndex = Number(targetPage.dataset.index);
     const enabledPages = pages.filter(page => page.dataset.status !== 'disabled');
+    
+    // Set global current platform
+    if (currentPlatformName && currentPlatformName !== 'settings') {
+        window.LB.currentPlatform = currentPlatformName;
+    } else {
+        window.LB.currentPlatform = null;
+    }
 
     function initCurrentGallery(page) {
         page.scrollIntoView({
@@ -281,7 +289,7 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
                     const platformName = event.currentTarget.dataset.platform;
                     console.log('Opening settings menu for platform:', platformName);
 
-                    LB.menu.openPlatformMenu(platformName, handleMenuClose);
+                    LB.menu.openPlatformMenu(platformName);
                 } else {
                     launchGame(event.currentTarget);
                 }
@@ -294,7 +302,7 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
                 if (event.currentTarget.classList.contains('empty-platform-game-container')) {
                     return;
                 }
-                LB.menu.openGameMenu(event.currentTarget, handleMenuClose);
+                LB.menu.openGameMenu(event.currentTarget);
             });
 
                 container.classList.remove('selected');
@@ -396,21 +404,8 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
 
     let selectedIndex = 0;
 
-    // Menu close callback handler
-    function handleMenuClose(result) {
-        if (result && result.navigateTo) {
-            // Platform was enabled, navigate to it
-            document.getElementById('slideshow').style.display = 'none';
-            document.getElementById('galleries').style.display = 'flex';
-            initGallery(result.navigateTo);
-        } else {
-            // Normal close, refresh current page
-            updatePagesCarousel();
-        }
-    }
-
     if (disabledPlatform) {
-        LB.menu.openPlatformMenu(disabledPlatform, handleMenuClose);
+        LB.menu.openPlatformMenu(disabledPlatform);
     }
 
 
@@ -459,7 +454,7 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
             if (!LB.kioskMode) {
                 const selectedContainer = gameContainers[selectedIndex];
                 if (selectedContainer) {
-                    LB.menu.openGameMenu(selectedContainer, handleMenuClose);
+                    LB.menu.openGameMenu(selectedContainer);
                 }
             }
             break;
@@ -476,7 +471,7 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
                 const selectedPlatformContainer = document.querySelector('.game-container.selected');
                 if (selectedPlatformContainer && !selectedPlatformContainer.classList.contains('empty-platform-game-container')) {
                     const platformName = selectedPlatformContainer.dataset.platform;
-                    LB.menu.openPlatformMenu(platformName, handleMenuClose);
+                    LB.menu.openPlatformMenu(platformName);
                 }
             } else {
                 const selectedGameContainer = LB.utils.getSelectedGame(gameContainers, selectedIndex);

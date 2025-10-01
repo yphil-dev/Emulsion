@@ -145,7 +145,7 @@ async function populateGameMenu(gameMenuContainer, gameName, platformName) {
         // Add source icon overlay
         const sourceIcon = document.createElement('div');
         sourceIcon.classList.add('source-icon');
-        
+
         // Map source names to FontAwesome icons
         let iconClass = 'fa-question'; // default fallback
         switch (source.toLowerCase()) {
@@ -160,7 +160,7 @@ async function populateGameMenu(gameMenuContainer, gameName, platformName) {
             iconClass = 'fa-steam';
             break;
         }
-        
+
         sourceIcon.innerHTML = `<i class="fa ${iconClass}" aria-hidden="true"></i>`;
         sourceIcon.title = `Source: ${source}`;
         container.appendChild(sourceIcon);
@@ -722,7 +722,7 @@ function buildPlatformForm(platformName) {
     formContainer.appendChild(gamesDirGroup);
     formContainer.appendChild(emulatorGroup);
     formContainer.appendChild(batchGroup);
-    formContainer.appendChild(extensionsGroup);  // <-- New addition
+    formContainer.appendChild(extensionsGroup);
     formContainer.appendChild(emulatorArgsGroup);
 
     const formContainerButtons = document.createElement('div');
@@ -924,10 +924,10 @@ function buildPlatformForm(platformName) {
 
         // Find games with missing images in the current platform
         const pages = document.querySelectorAll('#galleries .page');
-        const currentPlatformPage = Array.from(pages).find(page => 
+        const currentPlatformPage = Array.from(pages).find(page =>
             page.dataset.platform === platformName
         );
-        
+
         if (!currentPlatformPage) {
             console.error("Platform page not found");
             return;
@@ -968,7 +968,7 @@ function buildPlatformForm(platformName) {
                 // Use the existing download-image system
                 const result = await ipcRenderer.invoke('download-image', url, platformName, gameName);
                 const progressText = document.getElementById("progress-text");
-                
+
                 if (result.success && progressText) {
                     const imgEl = gameContainer.querySelector("img");
                     if (imgEl) {
@@ -991,6 +991,10 @@ function buildPlatformForm(platformName) {
     }
 
     formContainer.appendChild(formContainerButtons);
+
+    const formContainerVSpacerDiv = document.createElement('div');
+    formContainerVSpacerDiv.classList.add('spacer-div');
+    formContainer.appendChild(formContainerVSpacerDiv);
 
     return formContainer;
 }

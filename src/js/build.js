@@ -361,15 +361,54 @@ function _buildPrefsForm() {
                 numberOfColumns = 12;
             }
 
-            await LB.prefs.save('settings', 'numberOfColumns', numberOfColumns);
-            await LB.prefs.save('settings', 'footerSize', footerSizeRadios.find(radio => radio.checked)?.value);
-            await LB.prefs.save('settings', 'homeMenuTheme', homeMenuThemeRadios.find(radio => radio.checked)?.value);
-            await LB.prefs.save('settings', 'theme', themeRadios.find(radio => radio.checked)?.value);
-            await LB.prefs.save('settings', 'disabledPlatformsPolicy', disabledPlatformsPolicyRadios.find(radio => radio.checked)?.value);
-            await LB.prefs.save('settings', 'recentlyPlayedPolicy', recentlyPlayedPolicyRadios.find(radio => radio.checked)?.value);
-            await LB.prefs.save('settings', 'steamGridAPIKey', steamGridAPIKeyInput.value);
-            await LB.prefs.save('settings', 'giantBombAPIKey', giantBombAPIKeyInput.value);
-            window.location.reload();
+            // Collect new values
+            const newPrefs = {
+                numberOfColumns,
+                footerSize: footerSizeRadios.find(radio => radio.checked)?.value,
+                homeMenuTheme: homeMenuThemeRadios.find(radio => radio.checked)?.value,
+                theme: themeRadios.find(radio => radio.checked)?.value,
+                disabledPlatformsPolicy: disabledPlatformsPolicyRadios.find(radio => radio.checked)?.value,
+                recentlyPlayedPolicy: recentlyPlayedPolicyRadios.find(radio => radio.checked)?.value,
+                steamGridAPIKey: steamGridAPIKeyInput.value,
+                giantBombAPIKey: giantBombAPIKeyInput.value
+            };
+
+            // Save preferences
+            await LB.prefs.save('settings', 'numberOfColumns', newPrefs.numberOfColumns);
+            await LB.prefs.save('settings', 'footerSize', newPrefs.footerSize);
+            await LB.prefs.save('settings', 'homeMenuTheme', newPrefs.homeMenuTheme);
+            await LB.prefs.save('settings', 'theme', newPrefs.theme);
+            await LB.prefs.save('settings', 'disabledPlatformsPolicy', newPrefs.disabledPlatformsPolicy);
+            await LB.prefs.save('settings', 'recentlyPlayedPolicy', newPrefs.recentlyPlayedPolicy);
+            await LB.prefs.save('settings', 'steamGridAPIKey', newPrefs.steamGridAPIKey);
+            await LB.prefs.save('settings', 'giantBombAPIKey', newPrefs.giantBombAPIKey);
+
+            // Detect changes that require reload
+            const somethingImportantChanged =
+                newPrefs.numberOfColumns !== LB.galleryNumOfCols ||
+                newPrefs.disabledPlatformsPolicy !== LB.disabledPlatformsPolicy ||
+                newPrefs.recentlyPlayedPolicy !== LB.recentlyPlayedPolicy ||
+                newPrefs.steamGridAPIKey !== (LB.steamGridAPIKey || '') ||
+                newPrefs.giantBombAPIKey !== (LB.giantBombAPIKey || '');
+
+            // Update LB to reflect changes
+            Object.assign(LB, {
+                galleryNumOfCols: newPrefs.numberOfColumns,
+                footerSize: newPrefs.footerSize,
+                homeMenuTheme: newPrefs.homeMenuTheme,
+                theme: newPrefs.theme,
+                disabledPlatformsPolicy: newPrefs.disabledPlatformsPolicy,
+                recentlyPlayedPolicy: newPrefs.recentlyPlayedPolicy,
+                steamGridAPIKey: newPrefs.steamGridAPIKey,
+                giantBombAPIKey: newPrefs.giantBombAPIKey
+            });
+
+            if (somethingImportantChanged) {
+                window.location.reload();
+            } else {
+                // Smart navigation - return to slideshow without reload
+                LB.control.initSlideShow('settings');
+            }
         } catch (error) {
             console.error('Failed to save preferences:', error);
         }
@@ -763,12 +802,34 @@ function buildPlatformForm(platformName) {
               .filter(ext => ext.length > 1);  // Filter out empty/. only
 
         try {
+            // Get current platform status before saving
+            const wasEnabled = await LB.prefs.getValue(platformName, 'isEnabled').catch(() => false);
+            const willBeEnabled = statusCheckBox.checked;
+            const statusChanged = wasEnabled !== willBeEnabled;
+
+            // Save all preferences
             await LB.prefs.save(platformName, 'isEnabled', statusCheckBox.checked);
             await LB.prefs.save(platformName, 'gamesDir', gamesDirInput.value);
             await LB.prefs.save(platformName, 'emulator', emulatorInput.value);
             await LB.prefs.save(platformName, 'extensions', extensions);
             await LB.prefs.save(platformName, 'emulatorArgs', emulatorArgsInput.value);
-            window.location.reload();
+
+            if (statusChanged) {
+                // Platform status changed - reload required
+                window.location.reload();
+            } else {
+                // Smart navigation - return to current platform without reload
+                if (willBeEnabled) {
+                    // Platform is enabled, return to its gallery
+                    LB.control.initSlideShow(platformName);
+                } else if (LB.disabledPlatformsPolicy === 'hide') {
+                    // Platform is disabled and policy is hide, return to slideshow
+                    LB.control.initSlideShow(0);
+                } else {
+                    // Platform is disabled but policy is show, return to platform
+                    LB.control.initSlideShow(platformName);
+                }
+            }
         } catch (error) {
             console.error('Failed to save preferences:', error);
         }

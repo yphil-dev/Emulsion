@@ -695,9 +695,17 @@ function initGallery(currentIndex, disabledPlatform) {
             document.getElementById('galleries').style.display = 'none';
             window.removeEventListener('keydown', onGalleryKeyDown);
 
-            const index = Number(document.querySelector('.page.active').getAttribute('data-index'));
+            // Smart navigation - return to current platform using name-based navigation
+            const activePage = document.querySelector('.page.active');
+            const currentPlatformName = activePage ? activePage.dataset.platform : null;
 
-            LB.control.initSlideShow(index);
+            if (currentPlatformName) {
+                LB.control.initSlideShow(currentPlatformName);
+            } else {
+                // Fallback to index-based if platform name not found
+                const index = Number(activePage?.getAttribute('data-index') || 0);
+                LB.control.initSlideShow(index);
+            }
 
             document.querySelector('header .item-number').textContent = '';
             break;

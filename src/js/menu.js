@@ -850,11 +850,11 @@ function buildPlatformForm(platformName) {
             // Inner fill
             const fill = document.createElement("div");
             fill.id = "progress-fill";
-            fill.class = "progress-fill";
 
             // Inner text
             const text = document.createElement("div");
             text.id = "progress-text";
+            text.classList.add('success');
 
             container.appendChild(fill);
             container.appendChild(text);
@@ -942,12 +942,13 @@ function buildPlatformForm(platformName) {
                 if (result) {
                     const imgEl = gameContainer.querySelector("img");
                     if (imgEl) {
-                        imgEl.src = result.path + '?t=' + Date.now();
+                        imgEl.src = result + '?t=' + Date.now();
                         gameContainer.removeAttribute('data-image-missing');
                     }
-                    progressText.textContent = `Found: ${gameName}`;
-                } else if (progressText) {
-                    progressText.textContent = `Failed: ${gameName}`;
+                    progressText.textContent = gameName;
+                } else {
+                    progressText.classList.remove('success');
+                    progressText.textContent = gameName;
                 }
 
             } catch (err) {

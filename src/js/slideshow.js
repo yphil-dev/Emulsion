@@ -275,7 +275,6 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
         if (!page.dataset.listenersAttached) {
             gameContainers.forEach((container) => {
             container.addEventListener('click', (event) => {
-                console.log("event: ", event.currentTarget);
                 if (event.currentTarget.classList.contains('empty-platform-game-container')) {
                     return;
                 }
@@ -385,7 +384,7 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
         // Update currentPageIndex to the next enabled page's dataset.index
         currentPageIndex = Number(enabledPages[nextEnabledIndex].dataset.index);
         currentPlatformName = enabledPages[nextEnabledIndex].dataset.platform;
-        
+
         // Set currentPlatform when browsing platforms
         LB.currentPlatform = currentPlatformName;
 
@@ -397,10 +396,10 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
         const prevEnabledIndex = (currentEnabledIndex - 1 + enabledPages.length) % enabledPages.length;
         currentPageIndex = Number(enabledPages[prevEnabledIndex].dataset.index);
         currentPlatformName = enabledPages[prevEnabledIndex].dataset.platform;
-        
+
         // Set currentPlatform when browsing platforms
         LB.currentPlatform = currentPlatformName;
-        
+
         updatePagesCarousel();
     }
 

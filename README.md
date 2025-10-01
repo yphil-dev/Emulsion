@@ -4,234 +4,278 @@
 [![LiberaPay](https://img.shields.io/liberapay/receives/yphil.svg?logo=liberapay&style=flat)](https://liberapay.com/yphil/donate)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Support_Me-FF5E5B?logo=ko-fi&logoColor=white&style=flat)](https://ko-fi.com/yphil)
 
-# [Emulsion](https://yphil.gitlab.io/emulsion)
+<div align="center">
 
-A unified, lightweight frontend for your games ; Ideal for driving an arcade cabinet. [Website](https://yphil.gitlab.io/emulsion) | [GitLab](https://gitlab.com/yphil/emulsion) (master) | [GitHub](https://github.com/yPhil-gh/Emulsion) | [Blog](https://yphil.gitlab.io/)
+# 🎮 Emulsion
 
-![Emulsion](https://yphil.gitlab.io/images/emulsion-screenshot00.png?cache=xyz)
+### *The Ultimate Frontend for Your Gaming Collection*
 
-- [Installation](#installation)
-  - [Package](#package)
-  - [Source](#source)
-- [Configuration](#configuration)
-  - [QuickStart](#quickstart)
-  - [Settings](#settings)
-- [Usage](#usage)
-  - [Controls](#controls)
-  - [Command Line Interface](#command-line-interface)
+**One interface. All your emulators. Zero hassle.**
 
-## Features
+[🌐 Website](https://yphil.gitlab.io/emulsion) • [📦 Download](https://github.com/yPhil-gh/emulsion/releases/latest) • [📖 Docs](#configuration) • [💬 Community](https://gitlab.com/yphil/emulsion/-/issues)
 
-Emulsion
-- Unifies all *your* emulators in a single interface
-- Allows you to have your games stored in multiple locations / drives
-- Lets you *precisely* select game cover art from multiple backends
-- Works with both keyboard, mouse and (any) game controller
-- Adapts itself responsively to the size of the screen
+![Emulsion Hero](https://yphil.gitlab.io/images/emulsion-screenshot00.png?cache=xyz)
 
-These features set it apart from solutions that:
-- Centralize the emulators config files (which Emulsion doesn't do)
-- Handle controller configuration (often unreliably)
-- Handle cover art downloads automatically / unattended / or even externally, without selection options
+</div>
 
-Emulsion is *reproductible*: Thanks to [its single **standard** config file](#configuration), you can install a full gaming PC in one command, and It-Won't-Move, like randomly greet you with a tedious game controller calibration dialog because it somehow forgot it.
+---
 
-## Installation
+## ✨ Why Emulsion?
 
-### Package
+**Tired of juggling dozens of different emulator interfaces?** Emulsion brings everything together in one beautiful, responsive frontend that just works.
 
-Latest Package releases (recommended)
+### 🚀 Key Features
 
-- [Linux Deb](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_amd64.deb)
-- [Linux AppImage](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_x86_64.AppImage)
-- [Windows (unsigned)](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_x64.exe)
-- [Other Releases](https://github.com/yphil-gh/emulsion/releases/latest)
+- **🎯 True Unification** - All your emulators, one elegant interface
+- **📂 Flexible Storage** - Games across multiple drives? No problem!
+- **🖼️ Smart Cover Art** - Manually curate your collection with images from multiple sources
+- **🎮 Universal Input** - Keyboard, mouse, or any game controller
+- **📱 Responsive Design** - Adapts perfectly to any screen size
+- **🔧 Non-Invasive** - Doesn't mess with your emulator configs
+- **⚡ Reproducible** - One config file = instant gaming PC setup
+- **🏠 Arcade Ready** - Perfect for driving an arcade cabinet
 
-### Source
+### 💎 What Makes It Different
 
-- `npm install ; npm start`
+Unlike other solutions that try to do everything (and often break things), Emulsion focuses on what matters:
 
-## Configuration
+- ✅ **Respects your setup** - Works with YOUR emulators, YOUR way
+- ✅ **No controller drama** - Uses your existing configurations
+- ✅ **Curated art selection** - YOU choose the perfect cover, not some algorithm
+- ✅ **Rock solid** - It Won't Randomly Forget Your Setup™
+- ✅ **One config file** - Backup, restore, or share your entire setup in seconds
 
-### QuickStart
+---
 
-1. Get some games for a platform, let's say NES ;
-2. Download an emulator for that platform, let's say Nestopia: `sudo atp install nestopia` ;
-3. (Optional) Check the documentation: `nestopia --help` ;
-4. (Optional) Test that everything works in the CLI: `nestopia --fullscreen /games/nes/game.zip` ;
-5. Open Emulsion: **Settings** / **NES** ;
-   1. **Games Directory**: Click "Browse" and select the directory where you put your NES games ;
-   2. **Emulator**: nestopia ;
-   3. **Extensions**: Enter ".zip" (NB it's already the default) ;
-6. That's it, everything is saved in the configuration file, now ; Happy gaming !
+## 📥 Installation
 
-#### NB
-- You configuration file is in `~/.config/emulsion/preferences.json`
-- With a game selected, press the image download key to select a cover art image ; it works right of the box, but you'll have better results by using the [Backends API keys](#backends-api-keys).
-- The images are in `~/.config/emulsion/covers/[platform name]/[game name].jpg`.
+### 🎁 Pre-built Packages (Recommended)
 
-### Settings
+<table>
+<tr>
+<td width="50%">
 
-![Emulsion](https://yphil.gitlab.io/images/emulsion-01-platform_config.png?xxx)
+#### 🐧 Linux
 
-For each platform / machine, you can configure:
+- [**Debian Package (.deb)**](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_amd64.deb)
+- [**AppImage**](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_x86_64.AppImage)
 
-- **Games Directory**
+</td>
+<td width="50%">
 
-The directory where the games are stored for that platform ; Enter a path or better, use the Browse button.
+#### 🪟 Windows
 
-- **Emulator**
+- [**Installer (.exe)**](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_x64.exe)  
+  *(Note: Unsigned, you may need to allow it)*
 
-The emulator for that platform. The name of a program installed on your machine, or use the Browse button to select an emulator executable.
+</td>
+</tr>
+</table>
 
-- **Emulator Arguments**
+👉 [**All Releases**](https://github.com/yphil-gh/emulsion/releases/latest)
 
-The *optional* arguments for that emulator ; Most don't need any, [read on](#emulator-tips).
+### 🛠️ From Source
 
-#### Emulator tips
-
-Here is a non exhaustive list of emulators that you can use in Emulsion ; These are just what I use on my current machine, for inspiration.
-
-| Platform   | Emulator                                                     | Emulator Arguments       | Extensions (1)  |
-|------------|--------------------------------------------------------------|--------------------------|-----------------|
-| NES        | **[Nestopia](https://nestopia.sourceforge.net/)** (2)        | `--fullscreen`           | `.zip`          |
-| NES        | **[Mednafen](https://mednafen.github.io/)**                  |                          | `.zip`          |
-| SMS        | Mednafen                                                     |                          | `.zip`          |
-| PC Engine  | Mednafen                                                     |                          | `.pce`          |
-| Amiga      | **[AmiBerry](https://github.com/BlitterStudio/amiberry)**    |                          | `.lha`, `.adf`  |
-| Mega Drive | [Blastem](https://www.retrodev.com/blastem/)                 | `-m gen -f`              | `.md `          |
-| SNES       | [Mesen](https://www.mesen.ca/)                               |                          | `.smc`          |
-| Jaguar     | [BigPEmu](https://www.richwhitehouse.com/jaguar/)            |                          | `.jag`          |
-| Saturn     | Mednafen                                                     |                          | `.cue`          |
-| PSX        | [DuckStation](https://github.com/stenzek/duckstation)        | `-fullscreen -nogui`     | `.srm`          |
-| N64        | **[Mupen64Plus](https://mupen64plus.org/)**                  |                          | `.z64`          |
-| Dreamcast  | [Flycast](https://github.com/flyinghead/flycast)             |                          | `.gdi`, `.cdi`  |
-| PS2        | **[PCSX2](https://pcsx2.net/)**                              | `-nogui -fullscreen`     | `.bin`, `.iso`  |
-| GameCube   | [Dolphin Emulator](https://dolphin-emu.org/)                 | `-b -e`                  | `.iso`, `.ciso` |
-| Xbox       | [xemu](https://xemu.app/)                                    | `-full-screen -dvd_path` | `.xiso.iso`     |
-| PSP        | [PPSSPP](https://www.ppsspp.org/)                            |                          | `.iso`          |
-| PS3        | [RPCS3](https://rpcs3.net/)                                  | `--no-gui`               | `.SFO`          |
-| X-Box 630  | [Xenia Canary](https://github.com/xenia-canary/xenia-canary) |                          | `.iso`          |
-
-**NB**
-- **1** The extensions in this list are set as default in Emulsion
-- **2** All the names **in bold** are directly installed from the normal system (Ubuntu box) repo / app store:
-
-`mednafen nestopia amiberry mupen64plus pcsx2`
-
-The other emulators can all be installed with appImage.
-
-#### Cover art
-
-Press the <kbd>□</kbd> button or the <kbd>I</kbd> key to set the cover art image of the selected game.
-
-##### backends API Keys
-
-Some cover art download backends (SteamGridDB and GiantBomb) require authentication ; The key is free and easy to obtain:
-
-- **GiantBomb**
-  - get your key at https://www.giantbomb.com/api/
-
-- **SteamGridDB**
-  - Create or log into your [Steam](https://store.steampowered.com/) account ;
-  - Get your [API](https://www.steamgriddb.com/api/v2) key by login in to https://www.steamgriddb.com and open the preferences menu.
-
-Paste the key into the corresponding field in the [Emulsion settings form](#settings) ; click Save.
-The other backends require no authentication, but you'll find **way more images** leveraging all the backends.
-
-If you can - after you [donated to this project](https://yphil.gitlab.io/ext/support.html) of course, thank you very much 🙂 please consider supporting those backends ; They do a great job of keeping our common culture aliv... Well, existing.
-
-##### All backends
-  - [SteamGridDB](https://www.steamgriddb.com/) (API)
-  - [GiantBomb](https://www.giantbomb.com/api/) (API)
-  - [MobyGames](mobygames.com) (Web)
-  - [Exotica](https://www.exotica.org.uk/) (Web)
-  - [Wikipedia](https://en.wikipedia.org/w/index.php?title=Category:Amiga_game_covers) (Amiga) (Web)
-  - [UVList](https://www.uvlist.net/) (Web)
-
-...More to come.
-
-## Usage
-
-### Controls
-
-- **Home**
-
-Platforms / machines home carousel
-
-| Action                      | Keyboard                       | Game controller                                |
-|-----------------------------|--------------------------------|------------------------------------------------|
-| Navigate between machines   | <kbd>←</kbd> / <kbd>→</kbd>    | D-Pad Left / Right <kbd>◄</kbd> / <kbd>►</kbd> |
-| Select highlighted platform | <kbd>Enter</kbd>               | Cross / A / South <kbd>⤫</kbd>                 |
-| Exit Emulsion               | <kbd>Ctrl</kbd> + <kbd>Q</kbd> | Circle / B / East <kbd>○</kbd>                 |
-
-- **Game Galleries**
-
-Games (and plaforms config) pages
-
-| Action                                    | Keyboard                                                  | Game controller                |
-|-------------------------------------------|-----------------------------------------------------------|--------------------------------|
-| Browse games                              | <kbd>←</kbd> / <kbd>→</kbd> / <kbd>↑</kbd> / <kbd>↓</kbd> | DPad                           |
-| Browse machines / platforms               | <kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd>            | <kbd>L1</kbd> / <kbd>R1</kbd>  |
-| Jump 10 rows                              | <kbd>Page Up</kbd> / <kbd>Page Down</kbd>                 |                                |
-| Jump to first / last game                 | <kbd>Home</kbd> / <kbd>End</kbd>                          |                                |
-| **Launch** selected **game** 🚀           | <kbd>Enter</kbd>                                          | Cross / A / South <kbd>⤫</kbd> |
-| Open game / cover image menu              | <kbd>I</kbd>                                              | Square / X / West <kbd>□</kbd> |
-| Return to home screen / machines menu (1) | <kbd>Escape</kbd>                                         | Circle / B / East <kbd>○</kbd> |
-
-**1**: Only works on Linux ([for now](https://github.com/IBM/sdl2-gamecontroller/issues/16)).
-
-- **Game cover art image menu**
-
-Game config / download cover art menu
-
-| Action                      | Keyboard                                                  | Game controller                |
-|-----------------------------|-----------------------------------------------------------|--------------------------------|
-| Navigate image thumbnails   | <kbd>←</kbd> / <kbd>→</kbd> / <kbd>↑</kbd> / <kbd>↓</kbd> | DPad                           |
-| Select / save image         | <kbd>Enter</kbd>                                          | Cross / A / South <kbd>⤫</kbd> |
-
-- **Global controls**
-
-Works everywhere
-
-| Action                                           | Keyboard                                          | Game controller                                |
-|--------------------------------------------------|---------------------------------------------------|------------------------------------------------|
-| Back                                             | <kbd>Escape</kbd>                                 | D-Pad Left / Right <kbd>◄</kbd> / <kbd>►</kbd> |
-| Select                                           | <kbd>Enter</kbd>                                  | Cross / A / South <kbd>⤫</kbd>                 |
-| Exit Emulsion                                    | <kbd>Ctrl</kbd> + <kbd>Q</kbd>                    | Circle / B / East <kbd>○</kbd>                 |
-| Quit game / Exit emulator and return to Emulsion | <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>K</kbd> | Select / Share + <kbd>▼</kbd>                  |
-| Reload Emulsion                                  | <kbd>F5</kbd>                                     |                                                |
-| Restart Emulsion                                 | <kbd>Shift</kbd> + <kbd>F5</kbd>                  | Select / Share + <kbd>▲</kbd>                  |
-
-- **Mouse**
-  - Left Click: Home: Select platform, Menu: Select and save cover art image, Gallery: **launch game** 🚀
-  - Right-Click: Open contextual game menu
-  - Mouse Wheel: Scroll / browse machines / games
-
-- **Contextual help**
-  - Control hints appear in the footer based on current screen.
-
-### Command Line Interface
-
-CLI arguments
-
+```bash
+npm install && npm start
 ```
+
+---
+
+## 🚀 Quick Start
+
+**Get gaming in 5 minutes:**
+
+1. **🎮 Get some games** - Let's say NES ROMs
+2. **📦 Install an emulator** - e.g., `sudo apt install nestopia`
+3. **🔧 Open Emulsion** → Settings → NES
+   - 📁 **Games Directory**: Browse to your NES games folder
+   - 🎯 **Emulator**: Enter `nestopia`
+   - 📝 **Extensions**: `.zip` (already default!)
+4. **🎉 Done!** - Start gaming!
+
+> 💡 **Pro Tip**: Your config lives in `~/.config/emulsion/preferences.json` - back it up!
+
+---
+
+## ⚙️ Configuration
+
+![Settings Screenshot](https://yphil.gitlab.io/images/emulsion-01-platform_config.png?xxx)
+
+### Per-Platform Settings
+
+| Setting | Description |
+|---------|-------------|
+| **📁 Games Directory** | Where your ROMs live for this platform |
+| **🎮 Emulator** | The emulator executable (name or full path) |
+| **⚙️ Emulator Arguments** | Optional flags (most emulators don't need any) |
+| **📝 Extensions** | File types to scan for (e.g., `.zip`, `.iso`) |
+
+### 🎮 Emulator Quick Reference
+
+Here's what works great on our machines:
+
+| Platform | 🏆 Recommended Emulator | Arguments | Extensions |
+|----------|------------------------|-----------|------------|
+| NES | **[Nestopia](https://nestopia.sourceforge.net/)** | `--fullscreen` | `.zip` |
+| SMS | **[Mednafen](https://mednafen.github.io/)** | | `.zip` |
+| Amiga | **[AmiBerry](https://github.com/BlitterStudio/amiberry)** | | `.lha`, `.adf` |
+| Mega Drive | [Blastem](https://www.retrodev.com/blastem/) | `-m gen -f` | `.md` |
+| SNES | [Mesen](https://www.mesen.ca/) | | `.smc` |
+| PSX | [DuckStation](https://github.com/stenzek/duckstation) | `-fullscreen -nogui` | `.cue` |
+| N64 | **[Mupen64Plus](https://mupen64plus.org/)** | | `.z64` |
+| Dreamcast | [Flycast](https://github.com/flyinghead/flycast) | | `.gdi`, `.cdi` |
+| PS2 | **[PCSX2](https://pcsx2.net/)** | `-nogui -fullscreen` | `.iso` |
+| GameCube | [Dolphin](https://dolphin-emu.org/) | `-b -e` | `.iso`, `.ciso` |
+| PS3 | [RPCS3](https://rpcs3.net/) | `--no-gui` | `.SFO` |
+
+**Bold names** = Available in Ubuntu repos! Install with: `apt install nestopia mednafen amiberry mupen64plus pcsx2`
+
+---
+
+## 🖼️ Cover Art Magic
+
+Press <kbd>□</kbd> or <kbd>I</kbd> to browse and select the perfect cover art for any game.
+
+### 🔑 API Keys (Optional but Recommended)
+
+Get **way more images** by adding these free API keys:
+
+#### 🎨 SteamGridDB
+1. Login at [steamgriddb.com](https://www.steamgriddb.com/)
+2. Get your key from Preferences
+3. Paste into Emulsion Settings
+
+#### 🎮 GiantBomb
+1. Get your free key at [giantbomb.com/api](https://www.giantbomb.com/api/)
+2. Paste into Emulsion Settings
+
+### 📚 All Image Sources
+
+- 🔐 [SteamGridDB](https://www.steamgriddb.com/) (API - Best coverage)
+- 🔐 [GiantBomb](https://www.giantbomb.com/api/) (API - Great metadata)
+- 🌐 [MobyGames](https://mobygames.com) (Web scraping)
+- 🌐 [Exotica](https://www.exotica.org.uk/) (Web scraping)
+- 🌐 [Wikipedia](https://en.wikipedia.org/) (Web scraping)
+- 🌐 [UVList](https://www.uvlist.net/) (Web scraping)
+
+*Images are saved to `~/.config/emulsion/covers/[platform]/[game].jpg`*
+
+---
+
+## 🎯 Controls
+
+### 🏠 Home Screen
+
+| Action | ⌨️ Keyboard | 🎮 Controller |
+|--------|------------|--------------|
+| Navigate platforms | <kbd>←</kbd> <kbd>→</kbd> | <kbd>◄</kbd> <kbd>►</kbd> D-Pad |
+| Select platform | <kbd>Enter</kbd> | <kbd>⤫</kbd> A/Cross |
+| Exit | <kbd>Ctrl+Q</kbd> | <kbd>○</kbd> B/Circle |
+
+### 📚 Game Gallery
+
+| Action | ⌨️ Keyboard | 🎮 Controller |
+|--------|------------|--------------|
+| Browse games | <kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd> | D-Pad |
+| Switch platforms | <kbd>Shift+←</kbd> <kbd>Shift+→</kbd> | <kbd>L1</kbd> <kbd>R1</kbd> |
+| Jump 10 rows | <kbd>PgUp</kbd> <kbd>PgDn</kbd> | - |
+| **🚀 LAUNCH GAME** | <kbd>Enter</kbd> | <kbd>⤫</kbd> A/Cross |
+| Cover art menu | <kbd>I</kbd> | <kbd>□</kbd> X/Square |
+| Back to home | <kbd>Esc</kbd> | <kbd>○</kbd> B/Circle |
+
+### 🌍 Global Shortcuts
+
+| Action | ⌨️ Keyboard | 🎮 Controller |
+|--------|------------|--------------|
+| Kill emulator (return to Emulsion) | <kbd>Ctrl+Shift+K</kbd> | Select + <kbd>▼</kbd> |
+| Reload Emulsion | <kbd>F5</kbd> | - |
+| Restart Emulsion | <kbd>Shift+F5</kbd> | Select + <kbd>▲</kbd> |
+
+### 🖱️ Mouse Support
+
+- **Left Click**: Launch game / Select cover art
+- **Right Click**: Open game menu
+- **Scroll Wheel**: Navigate
+
+*💡 Contextual hints appear in the footer based on current screen*
+
+---
+
+## 💻 Command Line
+
+```bash
+emulsion [options]
+
 Options:
-  --kiosk                        No config / settings, disabled platforms hidden.
-  --full-screen                  Start in full screen mode.
-  --auto-select=[platform_name]  Auto-select [platform_name].
-  --help                         Show this help message.
+  --kiosk                        🔒 Read-only mode (perfect for kids/arcade)
+  --full-screen                  🖥️ Start fullscreen
+  --auto-select=PLATFORM         ⚡ Jump directly to a platform
+  --help                         ❓ Show this help
 
-Platform names:
-atari spectrum c64 nes sms pcengine amiga megadrive gameboy lynx gamegear snes jaguar saturn psx n64 dreamcast ps2 gamecube xbox psp ps3 3ds xbox360 ps4 recents settings
+Available platforms:
+  atari spectrum c64 nes sms pcengine amiga megadrive 
+  gameboy lynx gamegear snes jaguar saturn psx n64 
+  dreamcast ps2 gamecube xbox psp ps3 3ds xbox360 ps4 
+  recents settings
 ```
 
-## Can I help?
+**Example:**
+```bash
+emulsion --kiosk --full-screen --auto-select=snes
+```
 
-Why of course, thank you for asking
+---
 
-- [Donate](https://yphil.gitlab.io/ext/support.html)
-- [Report usage problems / suggestions](https://gitlab.com/yphil/emulsion/-/issues)
-- [Contribute code](https://gitlab.com/yphil/emulsion/-/issues)
+## 🤝 Contributing
 
-This repository is a mirror of https://gitlab.com/yphil/emulsion the official [Emulsion](https://yphil.gitlab.io/emulsion) repo. [Back to top ↑](#emulsion)
+### 💰 Support the Project
+
+Love Emulsion? Consider supporting development:
+
+<div align="center">
+
+[![LiberaPay](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/yphil/donate)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Buy_Me_Coffee-FF5E5B?logo=ko-fi&logoColor=white&style=for-the-badge)](https://ko-fi.com/yphil)
+
+</div>
+
+### 🐛 Found a Bug?
+
+[Report it on GitLab](https://gitlab.com/yphil/emulsion/-/issues) - We track everything there!
+
+### 💡 Have an Idea?
+
+[Open an issue](https://gitlab.com/yphil/emulsion/-/issues) and let's discuss it!
+
+### 👨‍💻 Want to Code?
+
+[Check out our issues](https://gitlab.com/yphil/emulsion/-/issues) - contributions welcome!
+
+---
+
+## 📜 License
+
+Emulsion is open source under the [MIT License](LICENSE).
+
+---
+
+## 🔗 Links
+
+- 🌐 [Website](https://yphil.gitlab.io/emulsion)
+- 📦 [Releases](https://github.com/yPhil-gh/emulsion/releases)
+- 🔧 [GitLab (Primary)](https://gitlab.com/yphil/emulsion)
+- 🔨 [GitHub (Mirror)](https://github.com/yPhil-gh/Emulsion)
+- 📝 [Blog](https://yphil.gitlab.io/)
+
+---
+
+<div align="center">
+
+**Made with ❤️ by gamers, for gamers**
+
+*This repository is a mirror of the official [GitLab repo](https://gitlab.com/yphil/emulsion)*
+
+[⬆️ Back to top](#-emulsion)
+
+</div>

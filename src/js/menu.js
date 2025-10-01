@@ -912,6 +912,7 @@ function buildPlatformForm(platformName) {
 
             try {
                 // Use the existing fetch-images system
+
                 const urls = await new Promise((resolve) => {
                     ipcRenderer.send('fetch-images', gameName, platformName, LB.steamGridAPIKey, LB.giantBombAPIKey);
                     ipcRenderer.once('image-urls', (event, urls) => resolve(urls));
@@ -928,10 +929,17 @@ function buildPlatformForm(platformName) {
                 if (!url) continue;
 
                 // Use the existing download-image system
-                const result = await ipcRenderer.invoke('download-image', url, platformName, gameName);
+                // const result = await ipcRenderer.invoke('download-image', url, platformName, gameName);
+
+                const result = await downloadImage(
+                    url,
+                    platformName,
+                    gameName
+                );
+
                 const progressText = document.getElementById("progress-text");
 
-                if (result.success && progressText) {
+                if (result) {
                     const imgEl = gameContainer.querySelector("img");
                     if (imgEl) {
                         imgEl.src = result.path + '?t=' + Date.now();

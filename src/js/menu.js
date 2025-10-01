@@ -1,6 +1,5 @@
 // menu.js - Clean menu management module
-import { updateControls, getSelectedGame, cleanFileName, simulateKeyDown } from './utils.js';
-import { getValue } from './preferences.js';
+// No imports - uses global LB object
 
 let menuState = {
     isOpen: false,
@@ -59,9 +58,9 @@ function onMenuKeyDown(event) {
             break;
 
         case 'Enter':
-            const selectedGame = getSelectedGame(menuGameContainers, menuState.selectedIndex);
+            const selectedGame = LB.utils.getSelectedGame(menuGameContainers, menuState.selectedIndex);
             const selectedImg = selectedGame.querySelector('.game-image');
-            closeMenu(selectedImg.src);
+            LB.menu.closeMenu(selectedImg.src);
             break;
 
         case 'F5':
@@ -73,7 +72,7 @@ function onMenuKeyDown(event) {
             break;
 
         case 'Escape':
-            closeMenu();
+            LB.menu.closeMenu();
             break;
     }
 
@@ -86,7 +85,7 @@ function onMenuKeyDown(event) {
 // Menu click handler
 function onMenuClick(event) {
     if (event.target.src) {
-        closeMenu(event.target.src);
+        LB.menu.closeMenu(event.target.src);
     }
 }
 
@@ -98,9 +97,9 @@ function onMenuWheel(event) {
     }
     
     if (event.deltaY > 0) {
-        simulateKeyDown('ArrowDown');
+        LB.utils.simulateKeyDown('ArrowDown');
     } else if (event.deltaY < 0) {
-        simulateKeyDown('ArrowUp');
+        LB.utils.simulateKeyDown('ArrowUp');
     }
 }
 
@@ -133,7 +132,7 @@ async function downloadImage(imgSrc, platform, gameName) {
  * @param {string} platformName - Name of the platform
  * @param {Function} onClose - Callback when menu closes
  */
-export async function openPlatformMenu(platformName, onClose) {
+async function openPlatformMenu(platformName, onClose) {
     if (menuState.isOpen) {
         console.warn('Menu already open');
         return;
@@ -149,9 +148,9 @@ export async function openPlatformMenu(platformName, onClose) {
     menuState.selectedIndex = 1;
 
     // Update UI
-    updateControls('west', 'same', '', 'off');
-    updateControls('dpad', 'same', '', 'off');
-    updateControls('shoulders', 'same', '', 'off');
+    LB.utils.updateControls('west', 'same', '', 'off');
+    LB.utils.updateControls('dpad', 'same', '', 'off');
+    LB.utils.updateControls('shoulders', 'same', '', 'off');
     
     menu.style.height = '85vh';
     document.querySelector('#header .prev-link').style.opacity = 0;
@@ -177,7 +176,7 @@ export async function openPlatformMenu(platformName, onClose) {
  * @param {HTMLElement} gameContainer - The game container element
  * @param {Function} onClose - Callback when menu closes
  */
-export async function openGameMenu(gameContainer, onClose) {
+async function openGameMenu(gameContainer, onClose) {
     if (menuState.isOpen) {
         console.warn('Menu already open');
         return;
@@ -197,9 +196,9 @@ export async function openGameMenu(gameContainer, onClose) {
     menuState.selectedIndex = 1;
 
     // Update UI
-    updateControls('west', 'same', '', 'off');
-    updateControls('dpad', 'same', '', 'off');
-    updateControls('shoulders', 'same', '', 'off');
+    LB.utils.updateControls('west', 'same', '', 'off');
+    LB.utils.updateControls('dpad', 'same', '', 'off');
+    LB.utils.updateControls('shoulders', 'same', '', 'off');
     
     menu.style.height = '85vh';
     document.querySelector('#header .prev-link').style.opacity = 0;
@@ -214,7 +213,7 @@ export async function openGameMenu(gameContainer, onClose) {
     await window.LB.build.populateGameMenu(gameMenuContainer, gameName, platformName);
 
     // Update header
-    document.querySelector('header .platform-name').textContent = cleanFileName(gameName);
+    document.querySelector('header .platform-name').textContent = LB.utils.cleanFileName(gameName);
     document.querySelector('header .item-type').textContent = '';
     document.querySelector('header .item-number').textContent = '';
 
@@ -230,7 +229,7 @@ export async function openGameMenu(gameContainer, onClose) {
  * Close the currently open menu
  * @param {string} imgSrc - Optional image source to save
  */
-export async function closeMenu(imgSrc) {
+async function closeMenu(imgSrc) {
     if (!menuState.isOpen) {
         console.warn('No menu to close');
         return;
@@ -248,7 +247,7 @@ export async function closeMenu(imgSrc) {
     const platformForm = menuContainer.querySelector('.platform-menu-container');
     if (platformForm && menuState.currentPlatform && menuState.currentPlatform !== 'settings') {
         try {
-            const isEnabled = await getValue(menuState.currentPlatform, 'isEnabled');
+            const isEnabled = await LB.prefs.getValue(menuState.currentPlatform, 'isEnabled');
             if (isEnabled) {
                 // Platform was enabled, navigate to its gallery
                 window.LB.imageSrc = imgSrc;
@@ -273,7 +272,7 @@ export async function closeMenu(imgSrc) {
     }
 
     // Normal menu close
-    updateControls('dpad', 'same', 'Browse', 'on');
+    LB.utils.updateControls('dpad', 'same', 'Browse', 'on');
     document.querySelector('header .prev-link').style.opacity = 1;
     document.querySelector('header .next-link').style.opacity = 1;
 
@@ -328,6 +327,14 @@ export async function closeMenu(imgSrc) {
  * Check if menu is currently open
  * @returns {boolean}
  */
-export function isMenuOpen() {
+function isMenuOpen() {
     return menuState.isOpen;
 }
+
+// Export to global LB object
+LB.menu = {
+    openPlatformMenu,
+    openGameMenu,
+    closeMenu,
+    isMenuOpen
+};

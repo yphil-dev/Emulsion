@@ -104,80 +104,6 @@ function buildCurrentGameImgContainer(gameName, image, platformName) {
     return gameMenuContainer;
 }
 
-async function populateGameMenu(gameMenuContainer, gameName, platformName) {
-  const dummyContainer = gameMenuContainer.querySelector('.dummy-game-container');
-  const currentImageElem = gameMenuContainer.querySelector('img.current-image');
-
-  ipcRenderer.send('fetch-images', gameName, platformName, LB.steamGridAPIKey, LB.giantBombAPIKey);
-
-  ipcRenderer.once('image-urls', (event, urls) => {
-    if (urls.length === 0) {
-      // Clear placeholder
-      dummyContainer.textContent = '';
-
-      // Icon + message
-      const iconP = document.createElement('p');
-      iconP.innerHTML = `<i class="fa fa-binoculars fa-5x" aria-hidden="true"></i>`;
-      const msgP  = document.createElement('p');
-      msgP.textContent = `No cover art found`;
-
-      // Layout
-      dummyContainer.append(iconP, msgP);
-      dummyContainer.style.gridColumn = `2 / calc(${LB.galleryNumOfCols} + 1)`;
-      dummyContainer.style.animation = 'unset';
-    } else {
-      // Replace placeholder with real results
-      dummyContainer.remove();
-
-      urls.forEach(({ url, source }) => {
-        const img = new Image();
-        img.src = url;
-        img.title = `${gameName}\n\n- Found on ${source}\n- Click to download and save`;
-        img.classList.add('game-image');
-        img.style.opacity = '0';
-        img.style.transition = 'opacity 0.3s ease-in';
-
-        const menuGameContainer = document.createElement('div');
-          menuGameContainer.classList.add('menu-game-container');
-          menuGameContainer.setAttribute('data-platform', platformName);
-          menuGameContainer.setAttribute('data-game-name', gameName);
-
-        menuGameContainer.style.height = 'calc(120vw / ' + LB.galleryNumOfCols + ')';
-        menuGameContainer.appendChild(img);
-
-        // Add source icon overlay
-        const sourceIcon = document.createElement('div');
-        sourceIcon.classList.add('source-icon');
-
-        // Map source names to FontAwesome icons
-        let iconClass = 'fa-question'; // default fallback
-        switch (source.toLowerCase()) {
-          case 'wikipedia':
-            iconClass = 'fa-wikipedia-w';
-            break;
-          case 'giantbomb':
-            iconClass = 'fa-bomb';
-            break;
-          case 'steamgriddb':
-          case 'steamgrid':
-            iconClass = 'fa-steam';
-            break;
-        }
-
-        sourceIcon.innerHTML = `<i class="fa ${iconClass}" aria-hidden="true"></i>`;
-        sourceIcon.title = `Source: ${source}`;
-        menuGameContainer.appendChild(sourceIcon);
-
-        gameMenuContainer.appendChild(menuGameContainer);
-
-        img.onload = () => requestAnimationFrame(() => { img.style.opacity = '1'; });
-        img.onerror = () => console.warn('Failed to load image:', url);
-
-      });
-    }
-  });
-}
-
 function _buildPrefsFormItem(name, iconName, type, description, shortDescription, value, onChangeFct) {
 
     let input;
@@ -1010,5 +936,4 @@ LB.build = {
     homeSlide: buildHomeSlide,
     buildCurrentGameImgContainer: buildCurrentGameImgContainer,
     platformForm: buildPlatformForm,
-    populateGameMenu: populateGameMenu
 };

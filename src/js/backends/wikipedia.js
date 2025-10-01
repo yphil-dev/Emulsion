@@ -1,72 +1,96 @@
-// src/js/backends/wikipedia.js
-import axios from 'axios';
-import * as cheerio from 'cheerio';
+// Wikipedia API-based image fetcher (no more scraping)
 
-export const fetchImages = async (gameName, platform = '') => {
-
-    console.log("\n");
-    console.log(`Searching Wikipedia for ${gameName} (${platform})`);
-
+export const fetchImages = async (gameName) => {
     try {
-        const firstLetter = gameName.charAt(0).toUpperCase();
-        const categoryUrl = `https://en.wikipedia.org/w/index.php?title=Category:Amiga_game_covers&from=${firstLetter}`;
+        const sanitizedName = LB.utils.cleanFileName(gameName);
 
-        const searchResponse = await axios.get(categoryUrl);
-        if (searchResponse.status !== 200) return [];
+        // Search pages containing the game name
+        const searchUrl = new URL('https://en.wikipedia.org/w/api.php');
+        searchUrl.searchParams.set('action', 'query');
+        searchUrl.searchParams.set('format', 'json');
+        searchUrl.searchParams.set('origin', '*');
+        searchUrl.searchParams.set('list', 'search');
+        searchUrl.searchParams.set('srsearch', sanitizedName);
+        searchUrl.searchParams.set('srlimit', '10');
 
-        const $ = cheerio.load(searchResponse.data);
-        const baseGameName = gameName
-            .replace(/\s*v?\d+\.\d+.*$/i, '')
-            .toLowerCase();
+        const searchResp = await fetch(searchUrl.toString());
+        if (!searchResp.ok) return [];
+        const searchData = await searchResp.json();
 
-        let gamePagePath = null;
+        const pageTitles = (searchData.query?.search || []).map(p => p.title);
+        if (!pageTitles.length) return [];
 
-        // Search through category links
-        $('div.mw-category-group a').each((i, el) => {
-            const href = $(el).attr('href') || '';
-            const title = $(el).attr('title') || '';
+        const fileTitles = [];
 
-            const normalized = href
-                .replace('/wiki/File:', '')
-                .replace(/_Coverart\.png$/i, '')
-                .replace(/_/g, ' ')
-                .toLowerCase();
+        for (const title of pageTitles) {
+            const imagesUrl = new URL('https://en.wikipedia.org/w/api.php');
+            imagesUrl.searchParams.set('action', 'query');
+            imagesUrl.searchParams.set('format', 'json');
+            imagesUrl.searchParams.set('origin', '*');
+            imagesUrl.searchParams.set('titles', title);
+            imagesUrl.searchParams.set('prop', 'images');
+            imagesUrl.searchParams.set('imlimit', 'max');
 
-            if (normalized.includes(baseGameName) ||
-               title.toLowerCase().includes(baseGameName)) {
-                gamePagePath = href;
-                return false; // Break loop
+            const resp = await fetch(imagesUrl.toString());
+            if (!resp.ok) continue;
+
+            const data = await resp.json();
+            const pages = Object.values(data.query.pages || {});
+            for (const page of pages) {
+                const imgs = page.images || [];
+                for (const img of imgs) {
+                    const t = img.title?.toLowerCase();
+                    if (t && (t.includes('cover') || t.includes('box') || t.includes('case'))) {
+                        fileTitles.push(img.title);
+                    }
+                }
             }
-        });
+        }
 
-        if (!gamePagePath) return [];
+        if (!fileTitles.length) return [];
 
-        // Fetch image page
-        const gamePageUrl = `https://en.wikipedia.org${gamePagePath}`;
-        const gamePageResponse = await axios.get(gamePageUrl);
-        if (gamePageResponse.status !== 200) return [];
+        const images = [];
+        for (const fileTitle of fileTitles) {
+            const infoUrl = new URL('https://en.wikipedia.org/w/api.php');
+            infoUrl.searchParams.set('action', 'query');
+            infoUrl.searchParams.set('format', 'json');
+            infoUrl.searchParams.set('origin', '*');
+            infoUrl.searchParams.set('titles', fileTitle);
+            infoUrl.searchParams.set('prop', 'imageinfo');
+            infoUrl.searchParams.set('iiprop', 'url');
 
-        const gamePage$ = cheerio.load(gamePageResponse.data);
-        const imgSources = [];
+            const infoResp = await fetch(infoUrl.toString());
+            if (!infoResp.ok) continue;
+            const infoData = await infoResp.json();
 
-        // Extract all full-resolution images
-        gamePage$('div.fullImageLink a').each((i, el) => {
-            const href = gamePage$(el).attr('href');
-            if (href) {
-                imgSources.push(href.startsWith('//')
-                    ? `https:${href}`
-                    : href
-                );
+            const page = Object.values(infoData.query.pages)[0];
+            const url = page?.imageinfo?.[0]?.url;
+
+            if (url) {
+                // In NORMAL mode we keep source for consistency
+                images.push({ url, source: 'wikipedia' });
             }
-        });
+        }
 
-        return imgSources.map(url => ({
-            url,
-            source: 'Wikipedia'
-        }));
+        return images;
 
     } catch (err) {
         console.error(`[Wikipedia] Error: ${err.message}`);
         return [];
     }
 };
+
+// Integrate with existing LB global object
+if (typeof LB !== 'undefined') {
+    if (!LB.backends) LB.backends = {};
+    LB.backends.wikipedia = {
+        fetchImages
+    };
+} else {
+    // Fallback for CommonJS if needed
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = {
+            fetchImages
+        };
+    }
+}

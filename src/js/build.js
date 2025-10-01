@@ -484,6 +484,40 @@ function buildPlatformForm(platformName) {
     emulatorGroup.appendChild(emulatorCtn);
     emulatorGroup.appendChild(emulatorSubLabel);
 
+    // ======== BATCH DOWNLOAD SECTION ========
+    const batchGroup = document.createElement('div');
+
+    const batchIcon = document.createElement('div');
+    batchIcon.classList.add('form-icon');
+    batchIcon.innerHTML = '<i class="form-icon fa fa-2x fa-file-image-o" aria-hidden="true"></i>';
+
+    const batchInputLabel = document.createElement('label');
+    batchInputLabel.textContent = "Get all cover images";
+
+    const batchSubLabel = document.createElement('span');
+    batchSubLabel.id = 'batch-sub-label';
+    batchSubLabel.classList.add('sub-label');
+
+    const batchInput = createProgressBar();
+    batchInput.classList.add('input');
+
+    const batchCtn = document.createElement('div');
+    batchCtn.classList.add('dual-ctn');
+
+    const batchButton = document.createElement('button');
+    batchButton.classList.add('button', 'button-browse');
+    batchButton.textContent = 'Go';
+
+    batchButton.addEventListener('click', _batchButtonClick);
+
+    batchCtn.appendChild(batchIcon);
+    batchCtn.appendChild(batchInput);
+    batchCtn.appendChild(batchButton);
+
+    batchInputLabel.appendChild(batchSubLabel);
+    batchGroup.appendChild(batchInputLabel);
+    batchGroup.appendChild(batchCtn);
+
     // ======== NEW EXTENSIONS SECTION ========
     const extensionsGroup = document.createElement('div');
 
@@ -632,6 +666,7 @@ function buildPlatformForm(platformName) {
     formContainer.appendChild(statusLabel);
     formContainer.appendChild(gamesDirGroup);
     formContainer.appendChild(emulatorGroup);
+    formContainer.appendChild(batchGroup);
     formContainer.appendChild(extensionsGroup);  // <-- New addition
     formContainer.appendChild(emulatorArgsGroup);
 
@@ -767,6 +802,117 @@ function buildPlatformForm(platformName) {
 
         row.appendChild(input);
         return row;
+    }
+
+    // Helper functions for batch download
+    function createProgressBar() {
+        let container = document.getElementById("progress-container");
+        if (!container) {
+            // Outer container
+            container = document.createElement("div");
+            container.id = "progress-container";
+
+            // Inner fill
+            const fill = document.createElement("div");
+            fill.id = "progress-fill";
+            fill.class = "progress-fill";
+
+            // Inner text
+            const text = document.createElement("div");
+            text.id = "progress-text";
+
+            container.appendChild(fill);
+            container.appendChild(text);
+
+            // Prepend it somewhere sensible
+            document.body.prepend(container);
+        }
+
+        return container;
+    }
+
+    // Helper to update progress
+    function setProgress(current, total) {
+        const fill = document.getElementById("progress-fill");
+        if (fill && total > 0) {
+            fill.style.width = `${(current / total) * 100}%`;
+        }
+    }
+
+    async function _batchButtonClick(event) {
+        console.log("Batch download started");
+
+        if (!gamesDirInput.value) {
+            gamesDirSubLabel.textContent = 'This field cannot be empty';
+            return;
+        }
+
+        // Find games with missing images in the current platform
+        const pages = document.querySelectorAll('#galleries .page');
+        const currentPlatformPage = Array.from(pages).find(page => 
+            page.dataset.platform === platformName
+        );
+        
+        if (!currentPlatformPage) {
+            console.error("Platform page not found");
+            return;
+        }
+
+        const games = currentPlatformPage.querySelectorAll(".game-container[data-image-missing]");
+        if (!games.length) {
+            console.warn("No games with missing images found");
+            batchSubLabel.textContent = 'No missing images found';
+            return;
+        }
+
+        console.log(`Found ${games.length} games with missing images`);
+
+        for (let i = 0; i < games.length; i++) {
+            setProgress(i + 1, games.length);
+
+            const gameContainer = games[i];
+            const gameName = gameContainer.dataset.gameName;
+
+            try {
+                // Use the existing fetch-images system
+                const urls = await new Promise((resolve) => {
+                    ipcRenderer.send('fetch-images', gameName, platformName, LB.steamGridAPIKey, LB.giantBombAPIKey);
+                    ipcRenderer.once('image-urls', (event, urls) => resolve(urls));
+                });
+
+                if (!urls.length) {
+                    const progressText = document.getElementById("progress-text");
+                    if (progressText) progressText.textContent = `Not Found: ${gameName}`;
+                    console.warn(`No image found for ${gameName}`);
+                    continue;
+                }
+
+                const url = typeof urls[0] === 'string' ? urls[0] : urls[0]?.url;
+                if (!url) continue;
+
+                // Use the existing download-image system
+                const result = await ipcRenderer.invoke('download-image', url, platformName, gameName);
+                const progressText = document.getElementById("progress-text");
+                
+                if (result.success && progressText) {
+                    const imgEl = gameContainer.querySelector("img");
+                    if (imgEl) {
+                        imgEl.src = result.path + '?t=' + Date.now();
+                        gameContainer.removeAttribute('data-image-missing');
+                    }
+                    progressText.textContent = `Found: ${gameName}`;
+                } else if (progressText) {
+                    progressText.textContent = `Failed: ${gameName}`;
+                }
+
+            } catch (err) {
+                console.error(`❌ Failed batch for ${gameName}:`, err);
+            }
+        }
+
+        console.log("✅ Batch download finished");
+        const progressText = document.getElementById("progress-text");
+        if (progressText) progressText.textContent = 'Batch download complete!';
     }
 
     formContainer.appendChild(formContainerButtons);

@@ -67,42 +67,7 @@ function createManualSelectButton(gameName, platformName, imgElem) {
     return btn;
 }
 
-function buildCurrentGameImgContainer(gameName, image, platformName) {
-    const gameMenuContainer = document.createElement('div');
-    gameMenuContainer.classList.add('page-content');
-    gameMenuContainer.style.gridTemplateColumns = `repeat(${LB.galleryNumOfCols}, 1fr)`;
 
-    const currentImageContainer = document.createElement('div');
-    currentImageContainer.classList.add('menu-game-container');
-    currentImageContainer.style.height = 'calc(120vw / ' + LB.galleryNumOfCols + ')';
-
-    const currentImage = document.createElement('img');
-    currentImage.src = image.src;
-    currentImage.className = 'current-image';
-    currentImage.alt = 'Current game image';
-
-    const gameLabel = document.createElement('div');
-    gameLabel.classList.add('game-label');
-    // gameLabel.textContent = 'Current Image';
-
-    const manualBtn = createManualSelectButton(gameName, platformName, currentImage);
-
-    gameLabel.appendChild(manualBtn);
-
-    currentImageContainer.appendChild(currentImage);
-    currentImageContainer.appendChild(gameLabel);
-
-    gameMenuContainer.appendChild(currentImageContainer);
-
-    const dummyGameContainer = document.createElement('div');
-    dummyGameContainer.classList.add('menu-game-container', 'dummy-game-container');
-    dummyGameContainer.style.height = 'calc(120vw / ' + LB.galleryNumOfCols + ')';
-    dummyGameContainer.innerHTML = `Searching...`;
-
-    gameMenuContainer.appendChild(dummyGameContainer);
-
-    return gameMenuContainer;
-}
 
 function _buildPrefsFormItem(name, iconName, type, description, shortDescription, value, onChangeFct) {
 
@@ -934,6 +899,5 @@ function buildPlatformForm(platformName) {
 
 LB.build = {
     homeSlide: buildHomeSlide,
-    buildCurrentGameImgContainer: buildCurrentGameImgContainer,
     platformForm: buildPlatformForm,
 };

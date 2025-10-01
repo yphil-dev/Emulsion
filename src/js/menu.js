@@ -220,7 +220,7 @@ async function openGameMenu(gameContainer) {
     menuContainer.innerHTML = '';
     menuContainer.dataset.menuPlatform = platformName;
 
-    const currentGameImgContainer = LB.build.buildCurrentGameImgContainer(gameName, gameImage, platformName);
+    const currentGameImgContainer = buildCurrentGameImgContainer(gameName, gameImage, platformName);
     menuContainer.appendChild(currentGameImgContainer);
     await populateGameMenu(currentGameImgContainer, gameName, platformName);
 
@@ -314,6 +314,43 @@ async function populateGameMenu(gameMenuContainer, gameName, platformName) {
       });
     }
   });
+}
+
+function buildCurrentGameImgContainer(gameName, image, platformName) {
+    const gameMenuContainer = document.createElement('div');
+    gameMenuContainer.classList.add('page-content');
+    gameMenuContainer.style.gridTemplateColumns = `repeat(${LB.galleryNumOfCols}, 1fr)`;
+
+    const currentImageContainer = document.createElement('div');
+    currentImageContainer.classList.add('menu-game-container');
+    currentImageContainer.style.height = 'calc(120vw / ' + LB.galleryNumOfCols + ')';
+
+    const currentImage = document.createElement('img');
+    currentImage.src = image.src;
+    currentImage.className = 'current-image';
+    currentImage.alt = 'Current game image';
+
+    const gameLabel = document.createElement('div');
+    gameLabel.classList.add('game-label');
+    // gameLabel.textContent = 'Current Image';
+
+    const manualBtn = createManualSelectButton(gameName, platformName, currentImage);
+
+    gameLabel.appendChild(manualBtn);
+
+    currentImageContainer.appendChild(currentImage);
+    currentImageContainer.appendChild(gameLabel);
+
+    gameMenuContainer.appendChild(currentImageContainer);
+
+    const dummyGameContainer = document.createElement('div');
+    dummyGameContainer.classList.add('menu-game-container', 'dummy-game-container');
+    dummyGameContainer.style.height = 'calc(120vw / ' + LB.galleryNumOfCols + ')';
+    dummyGameContainer.innerHTML = `Searching...`;
+
+    gameMenuContainer.appendChild(dummyGameContainer);
+
+    return gameMenuContainer;
 }
 
 /**

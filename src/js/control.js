@@ -132,7 +132,7 @@ function initSlideShow(platformToDisplay) {
             event.shiftKey ? ipcRenderer.invoke('restart') : window.location.reload();
             break;
         case 'Escape':
-            ipcRenderer.invoke('quit');
+            showQuitConfirmationDialog();
             break;
         case 'q':
             if (event.ctrlKey || event.metaKey) {
@@ -916,6 +916,198 @@ function initGamepad () {
         }
     }
 
+}
+
+function showQuitConfirmationDialog() {
+    // Create dialog overlay
+    const overlay = document.createElement('div');
+    overlay.id = 'quit-confirmation-overlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+        backdrop-filter: blur(5px);
+    `;
+
+    // Create dialog box
+    const dialog = document.createElement('div');
+    dialog.style.cssText = `
+        background: linear-gradient(135deg, #2c3e50, #34495e);
+        border: 2px solid #3498db;
+        border-radius: 15px;
+        padding: 30px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        max-width: 400px;
+        width: 90%;
+    `;
+
+    // Create title
+    const title = document.createElement('h2');
+    title.textContent = 'Really quit?';
+    title.style.cssText = `
+        color: #ecf0f1;
+        margin: 0 0 20px 0;
+        font-size: 24px;
+        font-weight: bold;
+    `;
+
+    // Create button container
+    const buttonContainer = document.createElement('div');
+    buttonContainer.style.cssText = `
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin-top: 20px;
+    `;
+
+    // Create OK button
+    const okButton = document.createElement('button');
+    okButton.textContent = 'OK';
+    okButton.id = 'quit-ok-button';
+    okButton.style.cssText = `
+        background: #e74c3c;
+        color: white;
+        border: 2px solid #c0392b;
+        border-radius: 8px;
+        padding: 12px 24px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s;
+        min-width: 80px;
+    `;
+
+    // Create Cancel button
+    const cancelButton = document.createElement('button');
+    cancelButton.textContent = 'Cancel';
+    cancelButton.id = 'quit-cancel-button';
+    cancelButton.style.cssText = `
+        background: #95a5a6;
+        color: white;
+        border: 2px solid #7f8c8d;
+        border-radius: 8px;
+        padding: 12px 24px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s;
+        min-width: 80px;
+    `;
+
+    // Add hover effects
+    const addHoverEffect = (button, hoverColor, normalColor) => {
+        button.addEventListener('mouseenter', () => {
+            button.style.background = hoverColor;
+            button.style.transform = 'scale(1.05)';
+        });
+        button.addEventListener('mouseleave', () => {
+            button.style.background = normalColor;
+            button.style.transform = 'scale(1)';
+        });
+    };
+
+    addHoverEffect(okButton, '#c0392b', '#e74c3c');
+    addHoverEffect(cancelButton, '#7f8c8d', '#95a5a6');
+
+    // Assemble dialog
+    buttonContainer.appendChild(okButton);
+    buttonContainer.appendChild(cancelButton);
+    dialog.appendChild(title);
+    dialog.appendChild(buttonContainer);
+    overlay.appendChild(dialog);
+
+    // Add to document
+    document.body.appendChild(overlay);
+
+    // Dialog state
+    let selectedButton = 'cancel'; // Default to cancel for safety
+    
+    function updateButtonSelection() {
+        // Reset both buttons
+        okButton.style.background = '#e74c3c';
+        okButton.style.transform = 'scale(1)';
+        cancelButton.style.background = '#95a5a6';
+        cancelButton.style.transform = 'scale(1)';
+        
+        // Highlight selected button
+        if (selectedButton === 'ok') {
+            okButton.style.background = '#c0392b';
+            okButton.style.transform = 'scale(1.1)';
+            okButton.style.boxShadow = '0 0 15px rgba(231, 76, 60, 0.6)';
+            cancelButton.style.boxShadow = 'none';
+        } else {
+            cancelButton.style.background = '#7f8c8d';
+            cancelButton.style.transform = 'scale(1.1)';
+            cancelButton.style.boxShadow = '0 0 15px rgba(149, 165, 166, 0.6)';
+            okButton.style.boxShadow = 'none';
+        }
+    }
+
+    function closeDialog() {
+        document.body.removeChild(overlay);
+        window.removeEventListener('keydown', onDialogKeyDown);
+    }
+
+    function confirmQuit() {
+        closeDialog();
+        ipcRenderer.invoke('quit');
+    }
+
+    function cancelQuit() {
+        closeDialog();
+    }
+
+    // Keyboard and gamepad handler
+    function onDialogKeyDown(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        switch (event.key) {
+            case 'ArrowLeft':
+            case 'ArrowRight':
+                selectedButton = selectedButton === 'ok' ? 'cancel' : 'ok';
+                updateButtonSelection();
+                break;
+            case 'Enter':
+                if (selectedButton === 'ok') {
+                    confirmQuit();
+                } else {
+                    cancelQuit();
+                }
+                break;
+            case 'Escape':
+                cancelQuit();
+                break;
+        }
+    }
+
+    // Button click handlers
+    okButton.addEventListener('click', confirmQuit);
+    cancelButton.addEventListener('click', cancelQuit);
+    
+    // Overlay click to cancel
+    overlay.addEventListener('click', (event) => {
+        if (event.target === overlay) {
+            cancelQuit();
+        }
+    });
+
+    // Set up keyboard handling
+    window.addEventListener('keydown', onDialogKeyDown);
+    
+    // Initialize button selection
+    updateButtonSelection();
+    
+    // Focus the dialog for accessibility
+    dialog.focus();
 }
 
 LB.control = {

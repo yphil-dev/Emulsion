@@ -570,32 +570,48 @@ function initGallery(currentIndex, disabledPlatform) {
             const menuContainer = document.getElementById('menu');
             const platformForm = menuContainer.querySelector('.platform-menu-container');
             
-            if (platformForm && disabledPlatform) {
-                // This is a platform menu - check if platform is enabled and navigate accordingly
-                try {
-                    const isEnabled = await LB.prefs.getValue(disabledPlatform, 'isEnabled');
-                    if (isEnabled) {
-                        // Platform is enabled, navigate to its gallery
-                        const platformIndex = LB.enabledPlatforms.indexOf(disabledPlatform);
-                        if (platformIndex !== -1) {
-                            // Switch to gallery view and navigate to this platform
-                            document.getElementById('slideshow').style.display = 'none';
-                            document.getElementById('galleries').style.display = 'flex';
-                            
-                            // Clean up menu
-                            LB.imageSrc = imgSrc;
-                            document.getElementById('menu').innerHTML = '';
-                            menu.style.height = '0';
-                            window.removeEventListener('keydown', onMenuKeyDown);
-                            
-                            // Initialize gallery for this platform
-                            LB.control.initGallery(platformIndex + 1); // +1 because index 0 is slideshow
-                            isMenuOpen = false;
-                            return;
+            if (platformForm) {
+                // This is a platform menu - determine which platform it is
+                let currentPlatform = disabledPlatform;
+                
+                // If disabledPlatform is not set, try to detect from the form
+                if (!currentPlatform) {
+                    const platformImage = platformForm.querySelector('img[src*="/platforms/"]');
+                    if (platformImage) {
+                        const src = platformImage.src;
+                        const match = src.match(/\/platforms\/([^.]+)\.png/);
+                        if (match) {
+                            currentPlatform = match[1];
                         }
                     }
-                } catch (error) {
-                    console.error('Error checking platform status:', error);
+                }
+                
+                if (currentPlatform && currentPlatform !== 'settings') {
+                    try {
+                        const isEnabled = await LB.prefs.getValue(currentPlatform, 'isEnabled');
+                        if (isEnabled) {
+                            // Platform is enabled, navigate to its gallery
+                            const platformIndex = LB.enabledPlatforms.indexOf(currentPlatform);
+                            if (platformIndex !== -1) {
+                                // Switch to gallery view and navigate to this platform
+                                document.getElementById('slideshow').style.display = 'none';
+                                document.getElementById('galleries').style.display = 'flex';
+                                
+                                // Clean up menu
+                                LB.imageSrc = imgSrc;
+                                document.getElementById('menu').innerHTML = '';
+                                menu.style.height = '0';
+                                window.removeEventListener('keydown', onMenuKeyDown);
+                                
+                                // Initialize gallery for this platform
+                                LB.control.initGallery(platformIndex + 1); // +1 because index 0 is slideshow
+                                isMenuOpen = false;
+                                return;
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error checking platform status:', error);
+                    }
                 }
             }
 

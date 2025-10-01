@@ -360,7 +360,7 @@ async function buildGallery(params) {
                     gameFilePath = getEbootPath(gameFilePath);
                 }
 
-                let coverImagePath = findImageFile(path.join(userDataPath, "covers", platform), fileNameWithoutExt);
+                let coverImagePath = findImageFile(path.join(gamesDir, 'images'), fileNameWithoutExt);
 
                 const isImgExists = fs.existsSync(coverImagePath);
 

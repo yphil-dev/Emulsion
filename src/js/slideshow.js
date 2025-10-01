@@ -5,10 +5,6 @@
 
 function initSlideShow(platformToDisplay) {
 
-    LB.enabledPlatforms.forEach((platform, i) => {
-        console.log(i, platform);
-    });
-
     const slideshow = document.getElementById("slideshow");
     document.getElementById('header').style.display = 'none';
     document.body.style.display = "block";
@@ -23,7 +19,7 @@ function initSlideShow(platformToDisplay) {
     if (platformToDisplay) {
         if (typeof platformToDisplay === 'string') {
             // Name-based lookup
-            const foundIndex = slides.findIndex(s => 
+            const foundIndex = slides.findIndex(s =>
                 s.dataset.platform === platformToDisplay ||
                 s.dataset.name === platformToDisplay
             );
@@ -112,7 +108,7 @@ function initSlideShow(platformToDisplay) {
             if (activePlatformName === 'settings' && LB.kioskMode) {
                 return;
             }
-            
+
             // Check if platform is enabled or disabled
             if (activePlatformName === 'recents' || activePlatformName === 'settings') {
                 // Special platforms - go directly to gallery
@@ -236,7 +232,7 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
 
     const galleries = document.getElementById('galleries');
     const pages = Array.from(galleries.querySelectorAll('.page'));
-    
+
     let currentPlatformName = null;
     let currentPageIndex = 0;
     let gameContainers = [];
@@ -284,11 +280,11 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
                     // Get platform name directly from the clicked element's dataset
                     const platformName = event.currentTarget.dataset.platform;
                     console.log('Opening settings menu for platform:', platformName);
-                    
+
                     // Find the actual index in gameContainers by matching platform name
                     const actualIndex = gameContainers.findIndex(c => c.dataset.platform === platformName);
                     console.log('Found container at index:', actualIndex);
-                    
+
                     _toggleMenu(gameContainers, actualIndex, onGalleryKeyDown, false, platformName);
                 } else {
                     launchGame(event.currentTarget);
@@ -307,7 +303,7 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
 
                 container.classList.remove('selected');
             });
-            
+
             // Mark that listeners have been attached
             page.dataset.listenersAttached = 'true';
         }
@@ -613,14 +609,14 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
             // Check if we're closing a platform menu and should navigate to platform gallery
             const menuContainer = document.getElementById('menu');
             const platformForm = menuContainer.querySelector('.platform-menu-container');
-            
+
             if (platformForm) {
                 // Get platform name directly from the selected game container's dataset
                 const selectedGameContainer = LB.utils.getSelectedGame(gameContainers, selectedIndex);
                 const platformNameFromDOM = selectedGameContainer ? selectedGameContainer.dataset.platform : null;
-                
+
                 console.log('Closing menu for platform:', platformNameFromDOM, 'from DOM element');
-                
+
                 if (platformNameFromDOM && platformNameFromDOM !== 'settings') {
                     try {
                         const isEnabled = await LB.prefs.getValue(platformNameFromDOM, 'isEnabled');
@@ -632,11 +628,11 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
                             menu.style.height = '0';
                             window.removeEventListener('keydown', onMenuKeyDown);
                             isMenuOpen = false;
-                            
+
                             // Switch to gallery view and navigate to this platform BY NAME
                             document.getElementById('slideshow').style.display = 'none';
                             document.getElementById('galleries').style.display = 'flex';
-                            
+
                             // Initialize gallery for this platform using PLATFORM NAME - NO INDICES!
                             console.log('Navigating to platform gallery:', platformNameFromDOM);
                             initGallery(platformNameFromDOM);
@@ -1064,14 +1060,14 @@ function showQuitConfirmationDialog() {
 
     // Dialog state
     let selectedButton = 'cancel'; // Default to cancel for safety
-    
+
     function updateButtonSelection() {
         // Reset both buttons
         okButton.style.background = '#e74c3c';
         okButton.style.transform = 'scale(1)';
         cancelButton.style.background = '#95a5a6';
         cancelButton.style.transform = 'scale(1)';
-        
+
         // Highlight selected button
         if (selectedButton === 'ok') {
             okButton.style.background = '#c0392b';
@@ -1137,7 +1133,7 @@ function showQuitConfirmationDialog() {
     // Button click handlers
     okButton.addEventListener('click', confirmQuit);
     cancelButton.addEventListener('click', cancelQuit);
-    
+
     // Overlay click to cancel
     overlay.addEventListener('click', (event) => {
         if (event.target === overlay) {
@@ -1148,20 +1144,20 @@ function showQuitConfirmationDialog() {
     // COMPLETELY BLOCK ALL KEYBOARD EVENTS
     // Remove ALL existing listeners
     const allListeners = window.getEventListeners ? window.getEventListeners(window) : null;
-    
+
     // Brute force: remove all keydown listeners using the global reference
     if (window.currentHomeKeyDown) {
         window.removeEventListener('keydown', window.currentHomeKeyDown);
         document.removeEventListener('keydown', window.currentHomeKeyDown);
     }
-    
+
     // Add dialog listener with capture=true for ABSOLUTE highest priority
     document.addEventListener('keydown', onDialogKeyDown, true);
     window.addEventListener('keydown', onDialogKeyDown, true);
-    
+
     // Initialize button selection
     updateButtonSelection();
-    
+
     // Focus the dialog for accessibility
     dialog.focus();
 }

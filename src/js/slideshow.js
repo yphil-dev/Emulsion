@@ -279,7 +279,9 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
                     return;
                 }
                 if (event.currentTarget.classList.contains('settings')) {
-                    _toggleMenu(Array.from(document.querySelectorAll('.game-container') || []), event.currentTarget.dataset.index / 1, onGalleryKeyDown, false, disabledPlatform);
+                    // Use platform name instead of index for settings menu
+                    const platformName = event.currentTarget.dataset.platform;
+                    _toggleMenu(Array.from(document.querySelectorAll('.game-container') || []), event.currentTarget.dataset.index / 1, onGalleryKeyDown, false, platformName);
                 } else {
                     launchGame(event.currentTarget);
                 }

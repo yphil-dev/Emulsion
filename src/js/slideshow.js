@@ -1063,6 +1063,8 @@ function showQuitConfirmationDialog() {
 
     function cancelQuit() {
         closeDialog();
+        // Restore slideshow keyboard listener
+        window.addEventListener('keydown', homeKeyDown);
     }
 
     // Keyboard and gamepad handler
@@ -1100,7 +1102,8 @@ function showQuitConfirmationDialog() {
         }
     });
 
-    // Set up keyboard handling
+    // Set up keyboard handling - remove slideshow listener and add dialog listener
+    window.removeEventListener('keydown', homeKeyDown);
     window.addEventListener('keydown', onDialogKeyDown);
     
     // Initialize button selection

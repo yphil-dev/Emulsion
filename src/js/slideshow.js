@@ -616,7 +616,7 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
                         document.getElementById('galleries').style.display = 'flex';
                         
                         // Initialize gallery for this platform using PLATFORM NAME - NO INDICES!
-                        LB.control.initGallery(currentMenuPlatform);
+                        initGallery(currentMenuPlatform);
                         return;
                     }
                 } catch (error) {
@@ -752,11 +752,10 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
             const currentPlatformName = activePage ? activePage.dataset.platform : null;
 
             if (currentPlatformName) {
-                LB.control.initSlideShow(currentPlatformName);
+                initSlideShow(currentPlatformName);
             } else {
-                // Fallback to index-based if platform name not found
-                const index = Number(activePage?.getAttribute('data-index') || 0);
-                LB.control.initSlideShow(index);
+                // Fallback to first platform
+                initSlideShow(0);
             }
 
             document.querySelector('header .item-number').textContent = '';

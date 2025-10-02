@@ -61,7 +61,7 @@ LB.initialized
             }
             return;
         } else if (LB.autoSelect) {
-            LB.utils.simulateKeyDown('Enter');
+            simulateKeyDown('Enter');
         }
 
     })

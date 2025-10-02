@@ -1,5 +1,5 @@
 import { getPlatformInfo } from './platforms.js';
-import { getSelectedGame, updateControls, applyTheme } from './utils.js';
+import { getSelectedGame, updateControls, applyTheme, simulateKeyDown } from './utils.js';
 
 let menuState = {
     isOpen: false,
@@ -107,9 +107,9 @@ function onMenuWheel(event) {
     }
 
     if (event.deltaY > 0) {
-        LB.utils.simulateKeyDown('ArrowDown');
+        simulateKeyDown('ArrowDown');
     } else if (event.deltaY < 0) {
-        LB.utils.simulateKeyDown('ArrowUp');
+        simulateKeyDown('ArrowUp');
     }
 }
 

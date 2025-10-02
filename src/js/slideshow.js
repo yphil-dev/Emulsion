@@ -1,5 +1,5 @@
 import { getPlatformInfo } from './platforms.js';
-import { getSelectedGame, updateControls } from './utils.js';
+import { getSelectedGame, updateControls, simulateKeyDown } from './utils.js';
 
 function initSlideShow(platformToDisplay) {
 
@@ -80,7 +80,7 @@ function initSlideShow(platformToDisplay) {
             event.stopPropagation();
             event.stopImmediatePropagation();
             if (slide.classList.contains('active')) {
-                LB.utils.simulateKeyDown('Enter');
+                simulateKeyDown('Enter');
             }
         });
     });
@@ -534,9 +534,9 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
             }
         } else {
             if (event.deltaY > 0) {
-                LB.utils.simulateKeyDown('ArrowDown');
+                simulateKeyDown('ArrowDown');
             } else if (event.deltaY < 0) {
-                LB.utils.simulateKeyDown('ArrowUp');
+                simulateKeyDown('ArrowUp');
             }
         }
     }
@@ -632,34 +632,34 @@ function initGamepad () {
 
         switch (buttonIndex) {
         case 0:
-            LB.utils.simulateKeyDown('Enter');
+            simulateKeyDown('Enter');
             break;
         case 1:
-            LB.utils.simulateKeyDown('Escape');
+            simulateKeyDown('Escape');
             break;
         case 2:
-            LB.utils.simulateKeyDown('i');
+            simulateKeyDown('i');
             break;
         case 3:
             console.log("3 (triangle)");
             break;
         case 4:
-            LB.utils.simulateKeyDown('ArrowLeft', { shift: true });
+            simulateKeyDown('ArrowLeft', { shift: true });
             break;
         case 5:
-            LB.utils.simulateKeyDown('ArrowRight', { shift: true });
+            simulateKeyDown('ArrowRight', { shift: true });
             break;
         case 12:
-            LB.utils.simulateKeyDown('ArrowUp');
+            simulateKeyDown('ArrowUp');
             break;
         case 13:
-            LB.utils.simulateKeyDown('ArrowDown');
+            simulateKeyDown('ArrowDown');
             break;
         case 14:
-            LB.utils.simulateKeyDown('ArrowLeft');
+            simulateKeyDown('ArrowLeft');
             break;
         case 15:
-            LB.utils.simulateKeyDown('ArrowRight');
+            simulateKeyDown('ArrowRight');
             break;
         }
     }

@@ -443,9 +443,11 @@ function buildPlatformForm(platformName) {
     const gamesDirLabel = document.createElement('label');
     gamesDirLabel.textContent = 'Games directory';
 
-    const gamesDirSubLabel = document.createElement('label');
+    const gamesDirSubLabel = document.createElement('span');
     gamesDirSubLabel.id = 'games-dir-sub-label';
     gamesDirSubLabel.classList.add('sub-label');
+
+    gamesDirLabel.appendChild(gamesDirSubLabel);
 
     const gamesDirButton = document.createElement('button');
     gamesDirButton.classList.add('button', 'button-browse', 'info');
@@ -464,7 +466,6 @@ function buildPlatformForm(platformName) {
 
     gamesDirGroup.appendChild(gamesDirLabel);
     gamesDirGroup.appendChild(gamesDirCtn);
-    gamesDirGroup.appendChild(gamesDirSubLabel);
 
     const emulatorGroup = document.createElement('div');
 
@@ -475,9 +476,11 @@ function buildPlatformForm(platformName) {
     const emulatorInputLabel = document.createElement('label');
     emulatorInputLabel.textContent = "Emulator";
 
-    const emulatorSubLabel = document.createElement('label');
+    const emulatorSubLabel = document.createElement('span');
     emulatorSubLabel.id = 'emulator-sub-label';
     emulatorSubLabel.classList.add('sub-label');
+
+    emulatorInputLabel.appendChild(emulatorSubLabel);
 
     const emulatorInput = document.createElement('input');
     emulatorInput.type = 'text';
@@ -497,7 +500,6 @@ function buildPlatformForm(platformName) {
 
     emulatorGroup.appendChild(emulatorInputLabel);
     emulatorGroup.appendChild(emulatorCtn);
-    emulatorGroup.appendChild(emulatorSubLabel);
 
     // ======== BATCH DOWNLOAD SECTION ========
     const batchGroup = document.createElement('div');
@@ -750,21 +752,32 @@ function buildPlatformForm(platformName) {
         document.dispatchEvent(escapeEvent);
     }
 
-    async function _saveButtonClick(event) {
+    async function _saveButtonClick() {
 
-        if (!gamesDirInput.value) {
-            gamesDirSubLabel.textContent = 'This field cannot be empty';
-            return;
+        console.log("emulatorInput.value: ", emulatorInput.value);
+        console.log("gamesDirInput.value: ", gamesDirInput.value);
+
+        function validateForm() {
+            let valid = true;
+
+            if (!gamesDirInput.value) {
+                gamesDirSubLabel.textContent = 'This field cannot be empty';
+                valid = false;
+            } else {
+                gamesDirSubLabel.textContent = '';
+            }
+
+            if (!emulatorInput.value) {
+                emulatorSubLabel.textContent = 'This field cannot be empty';
+                valid = false;
+            } else {
+                emulatorSubLabel.textContent = '';
+            }
+
+            return valid;
         }
 
-        gamesDirSubLabel.textContent = '';
-
-        if (!emulatorInput.value) {
-            emulatorSubLabel.textContent = 'This field cannot be empty';
-            return;
-        }
-
-        emulatorSubLabel.textContent = '';
+        if (!validateForm()) return;
 
         // Process extensions
         const extensions = Array.from(extensionsInputsContainer.querySelectorAll('input'))
@@ -943,7 +956,7 @@ function buildPlatformForm(platformName) {
                     const imgEl = gameContainer.querySelector("img");
                     if (imgEl) {
                         imgEl.src = result + '?t=' + Date.now();
-                        gameContainer.removeAttribute('data-image-missing');
+                        gameContainer.removeAttribute('data-missing-image');
                     }
                     progressText.textContent = gameName;
                 } else {

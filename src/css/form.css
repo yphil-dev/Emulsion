@@ -43,7 +43,7 @@ button {
 label {
   display: flex !important;
   flex-direction: row;
-  align-items: center;
+  align-items: baseline;
 
   font-family: var(--font-second);
   font-weight: normal;
@@ -51,6 +51,11 @@ label {
   font-size: 1em;
   margin-left: 60px;
 }
+
+#form-status-label {
+  align-items: center;
+}
+
 
 label.checkbox {
   font-family: var(--font-main);
@@ -64,6 +69,7 @@ label.checkbox {
 }
 
 .sub-label {
+  margin-left: 0.5em;
   color: red;
   font-size: 0.6em
 }

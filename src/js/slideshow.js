@@ -723,7 +723,6 @@ function showQuitConfirmationDialog() {
 
     function closeDialog() {
         overlay.style.display = 'none';
-        document.removeEventListener('keydown', onDialogKeyDown, true);
         window.removeEventListener('keydown', onDialogKeyDown, true);
     }
 
@@ -787,11 +786,9 @@ function showQuitConfirmationDialog() {
     // Brute force: remove all keydown listeners using the global reference
     if (window.currentHomeKeyDown) {
         window.removeEventListener('keydown', window.currentHomeKeyDown);
-        document.removeEventListener('keydown', window.currentHomeKeyDown);
     }
 
     // Add dialog listener with capture=true for ABSOLUTE highest priority
-    document.addEventListener('keydown', onDialogKeyDown, true);
     window.addEventListener('keydown', onDialogKeyDown, true);
 
     // Initialize button selection

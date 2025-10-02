@@ -26,13 +26,6 @@ const LB = {
     enabledPlatforms: ['settings'],
     isMenuOpen: false,
 
-    // Expose utility functions
-    utils: {
-        cleanFileName: utils.cleanFileName,
-        getPlatformInfo: getPlatformInfo,
-        setFooterSize: theme.setFooterSize
-    },
-
     // Expose PLATFORMS constant
     PLATFORMS: PLATFORMS,
 

@@ -1,5 +1,5 @@
 import { getPlatformInfo } from './platforms.js';
-import { getSelectedGame, updateControls, applyTheme, simulateKeyDown } from './utils.js';
+import { getSelectedGame, updateControls, applyTheme, simulateKeyDown, cleanFileName, setFooterSize } from './utils.js';
 
 let menuState = {
     isOpen: false,
@@ -250,7 +250,7 @@ function buildSettingsMenu() {
     const numberOfColumnsGroup = numberOfColumns.group;
     const numberOfColumnsInput = numberOfColumns.input;
 
-    const footerSize = buildPrefsFormItem('footerSize', 'arrows', ['small', 'medium', 'big'], '', 'Footer menu size', LB.footerSize, LB.utils.setFooterSize);
+    const footerSize = buildPrefsFormItem('footerSize', 'arrows', ['small', 'medium', 'big'], '', 'Footer menu size', LB.footerSize, setFooterSize);
     const footerSizeGroup = footerSize.group;
     const footerSizeRadios = footerSize.radios;
 
@@ -1073,7 +1073,7 @@ async function openGameMenu(gameContainer) {
     await populateGameMenu(currentGameImgContainer, gameName, platformName);
 
     // Update header
-    document.querySelector('header .platform-name').textContent = LB.utils.cleanFileName(gameName);
+    document.querySelector('header .platform-name').textContent = cleanFileName(gameName);
     document.querySelector('header .item-type').textContent = '';
     document.querySelector('header .item-number').textContent = '';
 

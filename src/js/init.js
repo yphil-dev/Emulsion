@@ -54,38 +54,6 @@ const PREDEFINED_TITLES = {
     NHL94:          'NHL 94',
 };
 
-function cleanFileName(fileName) {
-    // 1) Base part before underscore
-    const raw = fileName.split('_')[0];
-
-    // 2) Remove all trailing "(…)" or "[…]"
-    const noParens = raw.replace(/\s*[\(\[].*?[\)\]]/g, '');
-
-    // 3) Split into [core, subtitle] on first " - "
-    const [corePart, subtitlePart] = noParens.split(/\s-\s(.+)$/);
-
-    // 4) Build lookup key from corePart: remove non-alphanumerics, uppercase
-    const key = corePart.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
-
-    // 5) If exception exists, return it + suffix (if any)
-    if (PREDEFINED_TITLES[key]) {
-        return subtitlePart
-            ? `${PREDEFINED_TITLES[key]} - ${subtitlePart}`   // preserve subtitle
-            : PREDEFINED_TITLES[key];
-    }
-
-    // 6) Fallback to your original pipeline on the full raw filename
-    let s = _removeAfterUnderscore(fileName);
-    s = _splitSpecial(s);
-    s = _splitCamelCase(s);
-    s = _splitAcronym(s);
-    s = _removeParens(s);
-    s = _removeBrackets(s);
-    s = _moveTrailingArticleToFront(s);
-
-    return _titleCase(s);
-}
-
 function _removeAfterUnderscore(s) {
     return s.split('_')[0];
 }
@@ -232,11 +200,6 @@ async function getPlatformPreference(platformName, key) {
     }
 }
 
-function setFooterSize(size) {
-    const footer = document.getElementById('footer');
-    footer.className = `footer-${size}`;
-}
-
 function simulateKeyDown(key, modifiers = {}) {
     const keyCodes = {
         ArrowLeft: 37,
@@ -270,8 +233,6 @@ LB.prefs = {
 };
 
 LB.utils = {
-    setFooterSize: setFooterSize,
-    cleanFileName: cleanFileName,
     simulateKeyDown: simulateKeyDown,
     simulateKeyDown: simulateKeyDown
 };

@@ -3,6 +3,7 @@ window.topMenu = document.getElementById("top-menu");
 window.topMenuSlider = document.getElementById("top-menu-slider");
 import { PLATFORMS } from './platforms.js';
 import { applyTheme, setFooterSize } from './utils.js';
+import { buildHomeSlide } from './slideshow.js';
 
 LB.control.initGamepad();
 
@@ -38,7 +39,7 @@ LB.initialized
         LB.totalNumberOfPlatforms = platforms.length - 1;
 
         platforms.forEach((platform) => {
-            const homeSlide = LB.build.homeSlide(platform, preferences);
+            const homeSlide = buildHomeSlide(platform, preferences);
             if (homeSlide) {
                 slideshow.appendChild(homeSlide);
             }

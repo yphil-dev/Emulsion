@@ -1,5 +1,5 @@
 import { getPlatformInfo, PLATFORMS } from './platforms.js';
-import { safeFileName, stripExtensions } from './utils.js';
+import { safeFileName, cleanFileName, stripExtensions } from './utils.js';
 
 // LB.gallery.buildGalleries now also builds the "recent" gallery
 LB.gallery = {
@@ -346,7 +346,7 @@ async function buildGallery(params) {
 
                 let fileName = path.basename(gameFilePath);
                 let fileNameWithoutExt = stripExtensions(fileName);
-                let fileNameClean = LB.utils.cleanFileName(fileNameWithoutExt);
+                let fileNameClean = cleanFileName(fileNameWithoutExt);
 
                 let dataCommand = `${emulator} ${emulatorArgs} ${gameFilePath}`;
 

@@ -28,7 +28,6 @@ const LB = {
 
     // Expose utility functions
     utils: {
-        stripExtensions: utils.stripExtensions,
         cleanFileName: utils.cleanFileName,
         getPlatformInfo: getPlatformInfo,
         setFooterSize: theme.setFooterSize

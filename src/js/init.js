@@ -43,22 +43,6 @@ function simulateKeyDown(key) {
     document.dispatchEvent(keyboardEvent);
 }
 
-function safeFileName(fileName) {
-
-    const illegalRe = /[\/\?<>\\:\*\|"]/g;
-    const controlRe = /[\x00-\x1f\x80-\x9f]/g;
-    const reservedRe = /^\.+$/;
-    const windowsReservedRe = /^(con|prn|aux|nul|com[0-9]|lpt[0-9])(\..*)?$/i;
-    const windowsTrailingRe = /[\. ]+$/;
-
-    return fileName
-        .replace(/[\s]/g, '_') // Replace spaces with underscores
-        .replace(illegalRe, '') // Remove invalid characters
-        .replace(controlRe, '') // Remove control characters
-        .replace(reservedRe, '') // Remove trailing dots
-        .replace(/^\s+|\s+$/g, '') || 'default_filename'; // Prevent empty names
-}
-
 // Uppercase ALPHANUMER1C
 const PREDEFINED_TITLES = {
     VRALLY2:        'V-Rally 2',
@@ -301,7 +285,6 @@ LB.utils = {
     setFooterSize: setFooterSize,
     stripExtensions: stripExtensions,
     cleanFileName: cleanFileName,
-    safeFileName: safeFileName,
     simulateKeyDown: simulateKeyDown,
     simulateKeyDown: simulateKeyDown
 };

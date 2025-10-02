@@ -1,4 +1,5 @@
 import { getPlatformInfo, PLATFORMS } from './platforms.js';
+import { safeFileName } from './utils.js';
 
 // LB.gallery.buildGalleries now also builds the "recent" gallery
 LB.gallery = {
@@ -351,7 +352,7 @@ async function buildGallery(params) {
 
                 if (platform === 'ps3') {
                     const ps3GameTitle = await getPs3GameTitle(gameFilePath);
-                    fileNameWithoutExt = LB.utils.safeFileName(ps3GameTitle);
+                    fileNameWithoutExt = safeFileName(ps3GameTitle);
                     fileNameClean = ps3GameTitle;
                     gameFilePath = getEbootPath(gameFilePath);
                 }

@@ -32,6 +32,7 @@ jobs:
       - name: Install Linux dependencies
         run: |
           sudo apt-get update
+          sudo snap install snapcraft --classic
           sudo apt-get install -y dpkg fakeroot jq npm bash fuse cmake libsdl2-dev
 
       - name: Build Linux packages

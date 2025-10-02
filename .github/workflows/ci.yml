@@ -34,16 +34,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y dpkg fakeroot jq npm bash fuse cmake libsdl2-dev
 
-      - name: Download AppImage tool
-        run: |
-          curl -L -o appimagetool-x86_64.AppImage \
-            https://github.com/AppImage/AppImageKit/releases/latest/download/appimagetool-x86_64.AppImage
-          chmod +x appimagetool-x86_64.AppImage
-
       - name: Build and post-process Linux packages
-        run: |
-          chmod +x build.sh # this runs npm install
-          ./build.sh    # runs `electron-builder --linux` under the hood and auto-publishes :contentReference[oaicite:7]{index=7}
+        run: npx electron-builder --config builder.yml --linux
 
   # 5. Build Windows (NSIS .exe) and auto-publish on tag
   build_windows:

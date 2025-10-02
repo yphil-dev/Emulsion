@@ -1,4 +1,5 @@
 import { getPlatformInfo } from './platforms.js';
+import { getSelectedGame, updateControls } from './utils.js';
 
 function initSlideShow(platformToDisplay) {
 
@@ -142,10 +143,10 @@ function initSlideShow(platformToDisplay) {
         }
     }
 
-    LB.utils.updateControls('dpad', 'button-dpad-ew', 'Browse<br>Platforms', 'on');
-    LB.utils.updateControls('shoulders', 'same', 'Browse<br>Platforms', 'off');
-    LB.utils.updateControls('west', 'same', 'same', 'off');
-    LB.utils.updateControls('east', 'same', 'Exit');
+    updateControls('dpad', 'button-dpad-ew', 'Browse<br>Platforms', 'on');
+    updateControls('shoulders', 'same', 'Browse<br>Platforms', 'off');
+    updateControls('west', 'same', 'same', 'off');
+    updateControls('east', 'same', 'Exit');
 
     updateHomeCarousel();
 }
@@ -153,15 +154,15 @@ function initSlideShow(platformToDisplay) {
 
 function setGalleryControls(currentIndex) {
     if (currentIndex === 0) {
-        LB.utils.updateControls('dpad', 'button-dpad-nesw', 'Browse<br>Platforms', 'on');
-        LB.utils.updateControls('shoulders', 'same', 'Browse<br>Platforms', 'off');
-        LB.utils.updateControls('west', 'same', 'Fetch<br>cover', 'off');
+        updateControls('dpad', 'button-dpad-nesw', 'Browse<br>Platforms', 'on');
+        updateControls('shoulders', 'same', 'Browse<br>Platforms', 'off');
+        updateControls('west', 'same', 'Fetch<br>cover', 'off');
     } else {
-        LB.utils.updateControls('dpad', 'button-dpad-nesw', 'Browse<br>Games', 'on');
-        LB.utils.updateControls('west', 'same', 'Fetch<br>cover', 'on');
-        LB.utils.updateControls('shoulders', 'same', 'Browse<br>Platforms', 'on');
+        updateControls('dpad', 'button-dpad-nesw', 'Browse<br>Games', 'on');
+        updateControls('west', 'same', 'Fetch<br>cover', 'on');
+        updateControls('shoulders', 'same', 'Browse<br>Platforms', 'on');
     }
-    LB.utils.updateControls('east', 'same', 'Back');
+    updateControls('east', 'same', 'Back');
 }
 
 function explodeGameContainer(gameContainer) {
@@ -475,7 +476,7 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
                     LB.menu.openPlatformMenu(platformName);
                 }
             } else {
-                const selectedGameContainer = LB.utils.getSelectedGame(gameContainers, selectedIndex);
+                const selectedGameContainer = getSelectedGame(gameContainers, selectedIndex);
                 if (selectedGameContainer.classList.contains('empty-platform-game-container')) {
                     return;
                 }

@@ -27,14 +27,49 @@ export function updateControls(section, newIcon, newText, display) {
     }
 }
 
+
+const path = require('path');
+
+export function applyTheme(theme) {
+    const body = document.querySelector('body');
+    const menu = document.getElementById('menu');
+
+    const baseDir = LB.baseDir.endsWith('/')
+          ? LB.baseDir.slice(0, -1)
+          : LB.baseDir;
+
+    const bgPath = path.join(LB.baseDir, 'img', 'themes', theme, 'background.png');
+    const bgImageUrl = `url("file://${bgPath.replace(/\\/g, '/')}")`;
+
+    body.style.backgroundImage = bgImageUrl;
+    menu.style.backgroundImage = bgImageUrl;
+
+    menu.style.transition = 'filter 1s';
+    menu.style.filter = 'opacity(0.5)';
+
+    body.classList.remove('theme-day', 'theme-night', 'theme-default');
+    body.classList.add(`theme-${theme}`);
+
+    menu.style.transition = 'filter 1s, color 1s';
+    menu.style.filter = 'opacity(0.5)';
+
+    setTimeout(() => {
+        menu.style.backgroundImage = bgImageUrl;
+        menu.style.filter = 'opacity(1)';
+    }, 100);
+}
+
+export function setFooterSize(size) {
+    const footer = document.getElementById('footer');
+    footer.className = `footer-${size}`;
+}
+
 export function getSelectedGame(gameContainers, selectedIndex) {
-    let selectedContainer;
-    gameContainers.forEach(async (container, index) => {
-        if (index === selectedIndex) {
-            selectedContainer = container;
-        }
-    });
-    return selectedContainer || null;
+    // Direct access if index is valid
+    if (selectedIndex >= 0 && selectedIndex < gameContainers.length) {
+        return gameContainers[selectedIndex];
+    }
+    return null;
 }
 
 export function simulateKeyDown(key, modifiers = {}) {
@@ -180,11 +215,4 @@ function _titleCase(s) {
             return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
         })
         .join(' ');
-}
-
-export function getDataIndexByPlatform(platformName) {
-    const matchingPage = Array.from(document.querySelectorAll('.page')).find(page =>
-        page.getAttribute('data-platform') === platformName
-    );
-    return matchingPage ? matchingPage.getAttribute('data-index') : null;
 }

@@ -1,4 +1,5 @@
 import { getPlatformInfo } from './platforms.js';
+import { getSelectedGame, updateControls, applyTheme } from './utils.js';
 
 let menuState = {
     isOpen: false,
@@ -56,7 +57,7 @@ function onMenuKeyDown(event) {
             break;
 
         case 'Enter':
-            const selectedGame = LB.utils.getSelectedGame(menuGameContainers, menuState.selectedIndex);
+            const selectedGame = getSelectedGame(menuGameContainers, menuState.selectedIndex);
             const selectedImg = selectedGame.querySelector('.game-image');
             if (menuState.menuType === 'platform') {
                 LB.menu.closePlatformMenu();
@@ -257,7 +258,7 @@ function buildSettingsMenu() {
     const homeMenuThemeGroup = homeMenuTheme.group;
     const homeMenuThemeRadios = homeMenuTheme.radios;
 
-    const theme = buildPrefsFormItem('theme', 'eyedropper', ['default', 'day', 'night'], '', 'Emulsion Theme', LB.theme, LB.utils.applyTheme);
+    const theme = buildPrefsFormItem('theme', 'eyedropper', ['default', 'day', 'night'], '', 'Emulsion Theme', LB.theme, applyTheme);
     const themeGroup = theme.group;
     const themeRadios = theme.radios;
 
@@ -1004,9 +1005,9 @@ async function openPlatformMenu(platformName) {
     menuState.selectedIndex = 1;
 
     // Update UI
-    LB.utils.updateControls('west', 'same', '', 'off');
-    LB.utils.updateControls('dpad', 'same', '', 'off');
-    LB.utils.updateControls('shoulders', 'same', '', 'off');
+    updateControls('west', 'same', '', 'off');
+    updateControls('dpad', 'same', '', 'off');
+    updateControls('shoulders', 'same', '', 'off');
 
     menu.style.height = '85vh';
     document.querySelector('#header .prev-link').style.opacity = 0;
@@ -1055,9 +1056,9 @@ async function openGameMenu(gameContainer) {
     menuState.selectedIndex = 1;
 
     // Update UI
-    LB.utils.updateControls('west', 'same', '', 'off');
-    LB.utils.updateControls('dpad', 'same', '', 'off');
-    LB.utils.updateControls('shoulders', 'same', '', 'off');
+    updateControls('west', 'same', '', 'off');
+    updateControls('dpad', 'same', '', 'off');
+    updateControls('shoulders', 'same', '', 'off');
 
     menu.style.height = '85vh';
     document.querySelector('#header .prev-link').style.opacity = 0;
@@ -1279,7 +1280,7 @@ async function closePlatformMenu() {
     }
 
     // Normal close - stay on current page and restore gallery handler
-    LB.utils.updateControls('dpad', 'same', 'Browse', 'on');
+    updateControls('dpad', 'same', 'Browse', 'on');
     document.querySelector('header .prev-link').style.opacity = 1;
     document.querySelector('header .next-link').style.opacity = 1;
 
@@ -1315,7 +1316,7 @@ async function closeGameMenu(imgSrc) {
     menuContainer.removeEventListener('click', onMenuClick);
 
     // Normal menu close and restore gallery handler
-    LB.utils.updateControls('dpad', 'same', 'Browse', 'on');
+    updateControls('dpad', 'same', 'Browse', 'on');
     document.querySelector('header .prev-link').style.opacity = 1;
     document.querySelector('header .next-link').style.opacity = 1;
 

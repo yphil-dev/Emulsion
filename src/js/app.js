@@ -29,14 +29,11 @@ const LB = {
     // Expose utility functions
     utils: {
         updateControls: utils.updateControls,
-        getSelectedGame: utils.getSelectedGame,
         simulateKeyDown: utils.simulateKeyDown,
         safeFileName: utils.safeFileName,
         stripExtensions: utils.stripExtensions,
         cleanFileName: utils.cleanFileName,
-        getDataIndexByPlatform: utils.getDataIndexByPlatform,
         getPlatformInfo: getPlatformInfo,
-        applyTheme: (themeName) => theme.applyTheme(themeName, LB.baseDir),
         setFooterSize: theme.setFooterSize
     },
 

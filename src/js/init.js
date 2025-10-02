@@ -37,19 +37,6 @@ function updateControls(section, newIcon, newText, display) {
     }
 }
 
-
-function getSelectedGame(gameContainers, selectedIndex) {
-    let selectedContainer;
-    gameContainers.forEach(async (container, index) => {
-        if (index === selectedIndex) {
-            selectedContainer = container;
-        }
-
-    });
-    return selectedContainer || null;
-}
-
-
 function simulateKeyDown(key) {
     const keyCode = key === 'ArrowDown' ? 40 : 38;
     const keyboardEvent = new KeyboardEvent('keydown', {
@@ -279,45 +266,9 @@ async function getPlatformPreference(platformName, key) {
     }
 }
 
-function applyTheme(theme) {
-    const body = document.querySelector('body');
-    const menu = document.getElementById('menu');
-
-    const baseDir = LB.baseDir.endsWith('/')
-          ? LB.baseDir.slice(0, -1)
-          : LB.baseDir;
-
-    const bgPath = path.join(LB.baseDir, 'img', 'themes', theme, 'background.png');
-    const bgImageUrl = `url("file://${bgPath.replace(/\\/g, '/')}")`;
-
-    body.style.backgroundImage = bgImageUrl;
-    menu.style.backgroundImage = bgImageUrl;
-
-    menu.style.transition = 'filter 1s';
-    menu.style.filter = 'opacity(0.5)';
-
-    body.classList.remove('theme-day', 'theme-night', 'theme-default');
-    body.classList.add(`theme-${theme}`);
-
-    menu.style.transition = 'filter 1s, color 1s';
-    menu.style.filter = 'opacity(0.5)';
-
-    setTimeout(() => {
-        menu.style.backgroundImage = bgImageUrl;
-        menu.style.filter = 'opacity(1)';
-    }, 100);
-}
-
 function setFooterSize(size) {
     const footer = document.getElementById('footer');
     footer.className = `footer-${size}`;
-}
-
-function getDataIndexByPlatform(platformName) {
-    const matchingPage = Array.from(document.querySelectorAll('.page')).find(page =>
-        page.getAttribute('data-platform') === platformName
-    );
-    return matchingPage ? matchingPage.getAttribute('data-index') : null;
 }
 
 function simulateKeyDown(key, modifiers = {}) {
@@ -353,14 +304,10 @@ LB.prefs = {
 };
 
 LB.utils = {
-    applyTheme: applyTheme,
     setFooterSize: setFooterSize,
     stripExtensions: stripExtensions,
     cleanFileName: cleanFileName,
     safeFileName: safeFileName,
     simulateKeyDown: simulateKeyDown,
-    getSelectedGame: getSelectedGame,
-    updateControls: updateControls,
-    getDataIndexByPlatform: getDataIndexByPlatform,
     simulateKeyDown: simulateKeyDown
 };

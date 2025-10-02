@@ -1,6 +1,8 @@
 const slideshow = document.getElementById("slideshow");
 window.topMenu = document.getElementById("top-menu");
 window.topMenuSlider = document.getElementById("top-menu-slider");
+import { PLATFORMS } from './platforms.js';
+import { applyTheme, setFooterSize } from './utils.js';
 
 LB.control.initGamepad();
 
@@ -18,8 +20,8 @@ LB.initialized
         LB.disabledPlatformsPolicy = preferences.settings.disabledPlatformsPolicy;
         LB.recentlyPlayedPolicy = preferences.settings.recentlyPlayedPolicy;
 
-        LB.utils.setFooterSize(LB.footerSize);
-        LB.utils.applyTheme(LB.theme);
+        setFooterSize(LB.footerSize);
+        applyTheme(LB.theme);
 
         return { preferences };
 
@@ -44,7 +46,7 @@ LB.initialized
 
         const galleriesContainer = document.getElementById('galleries');
 
-        const autoSelectIndex = LB.utils.getDataIndexByPlatform(LB.autoSelect);
+        const autoSelectIndex = PLATFORMS.findIndex(p => p.name === LB.autoSelect);
 
         LB.control.initSlideShow(autoSelectIndex || 0);
 

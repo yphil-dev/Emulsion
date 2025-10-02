@@ -4,12 +4,13 @@ window.topMenuSlider = document.getElementById("top-menu-slider");
 import { PLATFORMS } from './platforms.js';
 import { applyTheme, setFooterSize } from './utils.js';
 import { buildHomeSlide } from './slideshow.js';
+import { loadPreferences } from './preferences.js';
 
 LB.control.initGamepad();
 
 // Wait for LB initialization before proceeding
 LB.initialized
-    .then(() => LB.prefs.load())
+    .then(() => loadPreferences())
     .then((preferences) => {
 
         LB.galleryNumOfCols = preferences.settings.numberOfColumns;

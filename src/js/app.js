@@ -26,9 +26,6 @@ const LB = {
     enabledPlatforms: ['settings'],
     isMenuOpen: false,
 
-    // Expose PLATFORMS constant
-    PLATFORMS: PLATFORMS,
-
     // Expose preferences functions
     prefs: {
         load: preferences.loadPreferences,

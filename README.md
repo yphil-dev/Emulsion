@@ -154,12 +154,9 @@ Get **way more images** by adding these free API keys:
 
 - [SteamGridDB](https://www.steamgriddb.com/) (API - Best coverage)
 - [GiantBomb](https://www.giantbomb.com/api/) (API - Great metadata)
-- [MobyGames](https://mobygames.com) (Web scraping)
-- [Exotica](https://www.exotica.org.uk/) (Web scraping)
-- [Wikipedia](https://en.wikipedia.org/) (Web scraping)
-- [UVList](https://www.uvlist.net/) (Web scraping)
+- [Wikipedia](https://en.wikipedia.org/) (API - Surprising)
 
-*Images are saved to `~/.config/emulsion/covers/[platform]/[game].jpg`*
+Images are saved to the platform games / roms directory.
 
 ---
 

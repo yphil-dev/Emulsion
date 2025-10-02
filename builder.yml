@@ -30,7 +30,7 @@ linux:
   target:
     - AppImage
     - deb
-    - rpm
+    - apk
     - snap
 
   # AppImage / deb metadata

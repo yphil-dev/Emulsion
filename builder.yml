@@ -30,16 +30,12 @@ linux:
   target:
     - AppImage
     - deb
-    - rpm
     - apk
     - snap
 
   # AppImage / deb metadata
   icon: "img/icon.png"
   category: Utility
-
-rpm:
-  # This prevents the autoupdate metadata generation that's failing
 
 win:
   target:

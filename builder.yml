@@ -34,19 +34,8 @@ linux:
     - AppImage
     - deb
     - rpm
-    - snap
   icon: "img/icon.png"
   category: Utility
-
-snap:
-  # Required: Snap confinement level
-  confinement: strict
-  # Required: Snap grade (stable for public apps)
-  grade: stable
-  # Required: Summary/description
-  summary: A fast and minimalistic image viewer
-  description: |
-    Emulsion is a fast and modular games launcher
 
 win:
   target:

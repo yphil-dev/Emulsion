@@ -21,7 +21,7 @@ function initSlideShow(platformToDisplay) {
             // Name-based lookup
             const foundIndex = slides.findIndex(s =>
                 s.dataset.platform === platformToDisplay ||
-                s.dataset.name === platformToDisplay
+                    s.dataset.name === platformToDisplay
             );
             if (foundIndex !== -1) currentIndex = foundIndex;
         } else {
@@ -90,6 +90,8 @@ function initSlideShow(platformToDisplay) {
     // Make homeKeyDown globally accessible for dialog cleanup
     window.currentHomeKeyDown = homeKeyDown;
     window.addEventListener('keydown', homeKeyDown);
+
+    console.log("window.currentHomeKeyDown: ", window.currentHomeKeyDown);
 
     function homeKeyDown(event) {
         event.stopPropagation();
@@ -274,30 +276,30 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
         // Only attach listeners once per page to prevent duplicates
         if (!page.dataset.listenersAttached) {
             gameContainers.forEach((container) => {
-            container.addEventListener('click', (event) => {
-                if (event.currentTarget.classList.contains('empty-platform-game-container')) {
-                    return;
-                }
-                if (event.currentTarget.classList.contains('settings')) {
-                    // Get platform name directly from the clicked element's dataset
-                    const platformName = event.currentTarget.dataset.platform;
-                    console.log('Opening settings menu for platform:', platformName);
+                container.addEventListener('click', (event) => {
+                    if (event.currentTarget.classList.contains('empty-platform-game-container')) {
+                        return;
+                    }
+                    if (event.currentTarget.classList.contains('settings')) {
+                        // Get platform name directly from the clicked element's dataset
+                        const platformName = event.currentTarget.dataset.platform;
+                        console.log('Opening settings menu for platform:', platformName);
 
-                    LB.menu.openPlatformMenu(platformName);
-                } else {
-                    launchGame(event.currentTarget);
-                }
-            });
+                        LB.menu.openPlatformMenu(platformName);
+                    } else {
+                        launchGame(event.currentTarget);
+                    }
+                });
 
-            // right-click (contextmenu) handler
-            container.addEventListener('contextmenu', (event) => {
-                event.preventDefault(); // Prevent the default context menu
+                // right-click (contextmenu) handler
+                container.addEventListener('contextmenu', (event) => {
+                    event.preventDefault(); // Prevent the default context menu
 
-                if (event.currentTarget.classList.contains('empty-platform-game-container')) {
-                    return;
-                }
-                LB.menu.openGameMenu(event.currentTarget);
-            });
+                    if (event.currentTarget.classList.contains('empty-platform-game-container')) {
+                        return;
+                    }
+                    LB.menu.openGameMenu(event.currentTarget);
+                });
 
                 container.classList.remove('selected');
             });
@@ -720,7 +722,7 @@ function showQuitConfirmationDialog() {
     }
 
     function closeDialog() {
-        document.body.removeChild(overlay);
+        overlay.style.display = 'none';
         document.removeEventListener('keydown', onDialogKeyDown, true);
         window.removeEventListener('keydown', onDialogKeyDown, true);
     }
@@ -746,24 +748,24 @@ function showQuitConfirmationDialog() {
         event.stopImmediatePropagation();
 
         switch (event.key) {
-            case 'ArrowLeft':
-            case 'ArrowRight':
-                selectedButton = selectedButton === 'ok' ? 'cancel' : 'ok';
-                updateButtonSelection();
-                break;
-            case 'Enter':
-                if (selectedButton === 'ok') {
-                    confirmQuit();
-                } else {
-                    cancelQuit();
-                }
-                break;
-            case 'Escape':
+        case 'ArrowLeft':
+        case 'ArrowRight':
+            selectedButton = selectedButton === 'ok' ? 'cancel' : 'ok';
+            updateButtonSelection();
+            break;
+        case 'Enter':
+            if (selectedButton === 'ok') {
+                confirmQuit();
+            } else {
                 cancelQuit();
-                break;
-            default:
-                // Block ALL other keys
-                break;
+            }
+            break;
+        case 'Escape':
+            cancelQuit();
+            break;
+        default:
+            // Block ALL other keys
+            break;
         }
     }
 

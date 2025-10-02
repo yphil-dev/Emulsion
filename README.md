@@ -8,7 +8,7 @@
 
 # Emulsion
 
-### *The Ultimate Frontend for Your Gaming Collection*
+### *Better gaming throught chemistry*
 
 **One interface. All your emulators. Zero hassle.**
 
@@ -22,13 +22,13 @@
 
 ## Why Emulsion?
 
-**Tired of juggling dozens of different emulator interfaces?** Emulsion brings everything together in one beautiful, responsive frontend that just works.
+Emulsion brings everything together in one beautiful, responsive frontend that just works.
 
 ### Key Features
 
 - **True Unification** - All your emulators, one elegant interface
 - **Flexible Storage** - Games across multiple drives? No problem!
-- **Smart Cover Art** - Manually curate your collection with images from multiple sources
+- **Smart Cover Art** - Manually curate your collection with images from multiple sources, or batch-download in real time
 - **Universal Input** - Keyboard, mouse, or any game controller
 - **Responsive Design** - Adapts perfectly to any screen size
 - **Non-Invasive** - Doesn't mess with your emulator configs
@@ -40,8 +40,8 @@
 Unlike other solutions that try to do everything (and often break things), Emulsion focuses on what matters:
 
 - ✅ **Respects your setup** - Works with YOUR emulators, YOUR way
-- ✅ **No controller drama** - Uses your existing configurations
-- ✅ **Curated art selection** - YOU choose the perfect cover, not some algorithm
+- ✅ **No controller drama** - Uses your existing configurations and never forgets it (won't even ask)
+- ✅ **Curated art selection** - YOU choose the perfect cover - amongst many, see "backends" - not some algorithm
 - ✅ **Rock solid** - It Won't Randomly Forget Your Setup™
 - ✅ **One config file** - Backup, restore, or share your entire setup in seconds
 
@@ -51,26 +51,17 @@ Unlike other solutions that try to do everything (and often break things), Emuls
 
 ### Pre-built Packages (Recommended)
 
-<table>
-<tr>
-<td width="50%">
 
 #### Linux
 
-- [**Debian Package (.deb)**](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_amd64.deb)
+- [**Debian / Ubuntu Package**](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_amd64.deb)
+- [**RPM Package**](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_x86_64.rpm)
 - [**AppImage**](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_x86_64.AppImage)
-
-</td>
-<td width="50%">
 
 #### Windows
 
-- [**Installer (.exe)**](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_x64.exe)
-  *(Note: Unsigned, you may need to allow it)*
+- [**Executable**](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_x64.exe)
 
-</td>
-</tr>
-</table>
 
 👉 [**All Releases**](https://github.com/yphil-gh/emulsion/releases/latest)
 

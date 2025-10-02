@@ -222,7 +222,6 @@ function loadPreferences() {
                                 platformPreferences === null ||
                                 typeof platformPreferences.isEnabled !== 'boolean' ||
                                 typeof platformPreferences.gamesDir !== 'string' ||
-                                typeof platformPreferences.index !== 'number' ||
                                 typeof platformPreferences.emulator !== 'string' ||
                                 typeof platformPreferences.emulatorArgs !== 'string'
                         ) {
@@ -491,13 +490,12 @@ const defaultPreferences = {
     }
 };
 
-// Import PLATFORMS from single source of truth
+// Import PLATFORMS from single source of truth (SSOT)
 import { PLATFORMS } from './src/js/platforms.js';
 
 PLATFORMS.forEach((platform, index) => {
     defaultPreferences[platform.name] = {
         isEnabled: false,
-        index: index + 1, // Starts at 1 because SETTINGS IS INDEX 0
         gamesDir: "",
         emulator: "",
         emulatorArgs: "",

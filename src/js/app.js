@@ -6,12 +6,12 @@ const path = require('path');
 const fs = require('fs');
 const fsp = require('fs').promises;
 const axios = require('axios');
+import { PLATFORMS, getPlatformInfo } from './platforms.js';
 
 // Import all modules
 import * as utils from './utils.js';
 import * as preferences from './preferences.js';
 import * as theme from './theme.js';
-import { PLATFORMS, getPlatformInfo } from './constants.js';
 
 // Make Node.js modules globally available (required by existing code)
 window.ipcRenderer = ipcRenderer;
@@ -25,7 +25,7 @@ window.axios = axios;
 const LB = {
     enabledPlatforms: ['settings'],
     isMenuOpen: false,
-    
+
     // Expose utility functions
     utils: {
         updateControls: utils.updateControls,
@@ -39,10 +39,10 @@ const LB = {
         applyTheme: (themeName) => theme.applyTheme(themeName, LB.baseDir),
         setFooterSize: theme.setFooterSize
     },
-    
+
     // Expose PLATFORMS constant
     PLATFORMS: PLATFORMS,
-    
+
     // Expose preferences functions
     prefs: {
         load: preferences.loadPreferences,
@@ -60,21 +60,11 @@ LB.initialized = new Promise((resolve) => {
     initResolve = resolve;
 });
 
-// Export everything for modules that want to use imports directly
-export {
-    utils,
-    preferences,
-    theme,
-    PLATFORMS,
-    getPlatformInfo,
-    LB
-};
-
 // Initialize app data on load
 async function initializeApp() {
     try {
         const appData = await preferences.loadAppData();
-        
+
         LB.userDataPath = appData.userDataPath;
         LB.baseDir = appData.baseDir;
         LB.versionNumber = appData.versionNumber;
@@ -84,7 +74,7 @@ async function initializeApp() {
         LB.preferences = appData.preferences;
         LB.galleryNumOfCols = appData.preferences.settings.numberOfColumns;
         LB.homeMenuTheme = appData.preferences.settings.homeMenuTheme;
-        
+
         console.log('App initialized successfully');
         initResolve(); // Signal that initialization is complete
     } catch (error) {

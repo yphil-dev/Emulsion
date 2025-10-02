@@ -6,3 +6,12 @@ tmp/
 /out/
 /DEBIAN
 emulsion.desktop
+
+# Temporary files
+.tmp/
+tmp/
+temp/
+**/tmp/
+
+# Test files
+**/test.html

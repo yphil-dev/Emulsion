@@ -1,3 +1,4 @@
+import { getPlatformInfo, PLATFORMS } from './platforms.js';
 
 // LB.gallery.buildGalleries now also builds the "recent" gallery
 LB.gallery = {
@@ -25,8 +26,7 @@ LB.gallery = {
                             emulatorArgs = prefs.emulatorArgs;
                             extensions = prefs.extensions;
                             isEnabled = prefs.isEnabled;
-                            // Use the index defined in the preferences for that platform
-                            index = prefs.index;
+                            index = PLATFORMS.findIndex(p => p.name === platformName);
                         }
                         const params = {
                             platform: platformName,
@@ -35,7 +35,6 @@ LB.gallery = {
                             emulatorArgs,
                             userDataPath,
                             index: index,
-                            trueIndex: i + 1,
                             platforms,
                             extensions,
                             isEnabled
@@ -219,7 +218,7 @@ function buildSettingsPageContent(platforms) {
         platformContainer.setAttribute('data-platform', platformName);
         platformContainer.setAttribute('data-index', i);
 
-        const platformInfo = LB.utils.getPlatformInfo(platformName);
+        const platformInfo = getPlatformInfo(platformName);
 
         const platformNameElement = document.createElement('div');
         platformNameElement.classList.add('platform-info');
@@ -263,7 +262,6 @@ async function buildGallery(params) {
     const emulatorArgs = params.emulatorArgs;
     const userDataPath = params.userDataPath;
     const index = params.index;
-    const trueIndex = params.trueIndex;
     const platforms = params.platforms;
     const extensions = params.extensions;
     const isEnabled = params.isEnabled;
@@ -279,8 +277,6 @@ async function buildGallery(params) {
     page.classList.add('page');
     page.id = `page${index}`;
     page.setAttribute('data-index', index);
-
-    page.setAttribute('data-trueindex', trueIndex);
 
     page.setAttribute('data-platform', platform);
 

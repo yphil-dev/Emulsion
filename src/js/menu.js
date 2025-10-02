@@ -1,3 +1,5 @@
+import { getPlatformInfo } from './platforms.js';
+
 let menuState = {
     isOpen: false,
     selectedIndex: 1,
@@ -422,7 +424,7 @@ function buildPlatformForm(platformName) {
     const statusLabelPlatormName = document.createElement('span');
     statusLabelPlatormName.id = 'form-status-label-platform-name';
 
-    const platformInfo = LB.utils.getPlatformInfo(platformName);
+    const platformInfo = getPlatformInfo(platformName);
 
     statusLabelPlatormName.innerHTML = `${platformInfo.name} is&nbsp;`;
 

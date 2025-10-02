@@ -1,7 +1,4 @@
-// document.getElementById('closeAbout').addEventListener('click', () => {
-//     document.getElementById('aboutContainer').style.display = 'none';
-//     document.getElementById('aboutContent').innerHTML = '';
-// });
+import { getPlatformInfo } from './platforms.js';
 
 function initSlideShow(platformToDisplay) {
 
@@ -316,7 +313,7 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
             block: "center"
         });
 
-        const platformInfo = LB.utils.getPlatformInfo(page.dataset.platform);
+        const platformInfo = getPlatformInfo(page.dataset.platform);
 
         document.querySelector('header .platform-name').textContent = platformInfo.name;
 

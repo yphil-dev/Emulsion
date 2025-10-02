@@ -1,7 +1,8 @@
 // SINGLE SOURCE OF TRUTH - Platforms definition
 // This is the only place where platforms are defined!
 export const PLATFORMS = [
-    { name: "atari", vendor: "Atari", displayName: "2600", extensions: [".zip"], nbGames: 0 },
+    { name: "atari", vendor: "Atari", displayName: "2600 - 5800", extensions: [".zip"], nbGames: 0 },
+    { name: "amstrad", vendor: "Amstrad", displayName: "GX4000 - CPC - PS204", extensions: [".zip"], nbGames: 0 },
     { name: "spectrum", vendor: "Sinclair", displayName: "ZX Spectrum", extensions: [".zip"], nbGames: 0 },
     { name: "c64", vendor: "Commodore", displayName: "Commodore 64", extensions: [".zip"], nbGames: 0 },
     { name: "nes", vendor: "Nintendo", displayName: "NES", extensions: [".zip"], nbGames: 0 },
@@ -15,7 +16,7 @@ export const PLATFORMS = [
     { name: "snes", vendor: "Nintendo", displayName: "SNES", extensions: [".smc"], nbGames: 0 },
     { name: "jaguar", vendor: "Atari", displayName: "Jaguar", extensions: [".jag"], nbGames: 0 },
     { name: "saturn", vendor: "Sega", displayName: "Saturn", extensions: [".cue"], nbGames: 0 },
-    { name: "psx", vendor: "Sony", displayName: "PlayStation", extensions: [".cue"], nbGames: 0 },
+    { name: "ps1", vendor: "Sony", displayName: "PlayStation", extensions: [".cue"], nbGames: 0 },
     { name: "n64", vendor: "Nintendo", displayName: "Nintendo 64", extensions: [".z64"], nbGames: 0 },
     { name: "dreamcast", vendor: "Sega", displayName: "Dreamcast", extensions: [".gdi", ".cdi"], nbGames: 0 },
     { name: "ps2", vendor: "Sony", displayName: "PlayStation 2", extensions: [".bin", ".iso"], nbGames: 0 },
@@ -32,7 +33,7 @@ export function getPlatformInfo(platformName) {
     // Find platform info from PLATFORMS array
     const platform = PLATFORMS.find(p => p.name === platformName);
     if (platform) {
-        return { 
+        return {
             vendor: platform.vendor,
             name: platform.displayName,
             index: PLATFORMS.indexOf(platform) + 1  // +1 because settings is index 0

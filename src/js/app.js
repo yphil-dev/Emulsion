@@ -28,7 +28,6 @@ const LB = {
 
     // Expose utility functions
     utils: {
-        updateControls: utils.updateControls,
         simulateKeyDown: utils.simulateKeyDown,
         safeFileName: utils.safeFileName,
         stripExtensions: utils.stripExtensions,

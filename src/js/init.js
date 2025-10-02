@@ -2,13 +2,7 @@
 const { ipcRenderer } = require('electron');
 const path = require('path');
 
-const LB = {}; // Launch Break :)
-
 window.ipcRenderer = ipcRenderer;
-
-LB.enabledPlatforms = ['settings'];
-
-LB.isMenuOpen = false;
 
 function updateControls(section, newIcon, newText, display) {
     const sectionDiv = document.getElementById(section);

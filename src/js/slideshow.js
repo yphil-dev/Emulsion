@@ -667,92 +667,20 @@ function initGamepad () {
 }
 
 function showQuitConfirmationDialog() {
+    console.log("showQuitConfirmationDialog: ");
     // Store reference to current slideshow handler
     const currentHomeKeyDown = window.homeKeyDownHandler || null;
-    // Create dialog overlay
-    const overlay = document.createElement('div');
-    overlay.id = 'quit-confirmation-overlay';
-    overlay.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.8);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 10000;
-        backdrop-filter: blur(5px);
-    `;
 
-    // Create dialog box
-    const dialog = document.createElement('div');
-    dialog.style.cssText = `
-        background: linear-gradient(135deg, #2c3e50, #34495e);
-        border: 2px solid #3498db;
-        border-radius: 15px;
-        padding: 30px;
-        text-align: center;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        max-width: 400px;
-        width: 90%;
-    `;
-
-    // Create title
-    const title = document.createElement('h2');
-    title.textContent = 'Really quit?';
-    title.style.cssText = `
-        color: #ecf0f1;
-        margin: 0 0 20px 0;
-        font-size: 24px;
-        font-weight: bold;
-    `;
-
-    // Create button container
-    const buttonContainer = document.createElement('div');
-    buttonContainer.style.cssText = `
-        display: flex;
-        gap: 20px;
-        justify-content: center;
-        margin-top: 20px;
-    `;
-
-    // Create OK button
-    const okButton = document.createElement('button');
+    const overlay = document.getElementById('quit-confirmation-overlay');
+    const dialog = document.getElementById('quit-confirmation-dialog');
+    const title = document.getElementById('quit-confirmation-title');
+    title.textContent = 'Really, quit?';
+    const buttonContainer = document.getElementById('quit-confirmation-buttons');
+    const okButton = document.getElementById('quit-ok-button');
     okButton.textContent = 'OK';
-    okButton.id = 'quit-ok-button';
-    okButton.style.cssText = `
-        background: #e74c3c;
-        color: white;
-        border: 2px solid #c0392b;
-        border-radius: 8px;
-        padding: 12px 24px;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.2s;
-        min-width: 80px;
-    `;
-
-    // Create Cancel button
-    const cancelButton = document.createElement('button');
+    const cancelButton = document.getElementById('quit-cancel-button');
     cancelButton.textContent = 'Cancel';
-    cancelButton.id = 'quit-cancel-button';
-    cancelButton.style.cssText = `
-        background: #95a5a6;
-        color: white;
-        border: 2px solid #7f8c8d;
-        border-radius: 8px;
-        padding: 12px 24px;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.2s;
-        min-width: 80px;
-    `;
 
-    // Add hover effects
     const addHoverEffect = (button, hoverColor, normalColor) => {
         button.addEventListener('mouseenter', () => {
             button.style.background = hoverColor;
@@ -766,16 +694,6 @@ function showQuitConfirmationDialog() {
 
     addHoverEffect(okButton, '#c0392b', '#e74c3c');
     addHoverEffect(cancelButton, '#7f8c8d', '#95a5a6');
-
-    // Assemble dialog
-    buttonContainer.appendChild(okButton);
-    buttonContainer.appendChild(cancelButton);
-    dialog.appendChild(title);
-    dialog.appendChild(buttonContainer);
-    overlay.appendChild(dialog);
-
-    // Add to document
-    document.body.appendChild(overlay);
 
     // Dialog state
     let selectedButton = 'cancel'; // Default to cancel for safety
@@ -876,6 +794,9 @@ function showQuitConfirmationDialog() {
 
     // Initialize button selection
     updateButtonSelection();
+
+    overlay.style.display = 'flex';
+    dialog.style.display = 'flex';
 
     // Focus the dialog for accessibility
     dialog.focus();

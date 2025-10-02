@@ -34,8 +34,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y dpkg fakeroot jq npm bash fuse cmake libsdl2-dev
 
-      - name: Build and post-process Linux packages
-        run: npx electron-builder --config builder.yml --linux
+      - name: Build Linux packages
+        run: |
+          npm install
+          npx electron-builder --config builder.yml --linux
 
   # 5. Build Windows (NSIS .exe) and auto-publish on tag
   build_windows:

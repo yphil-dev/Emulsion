@@ -34,6 +34,7 @@ linux:
     - AppImage
     - deb
     - rpm
+    - snap
   icon: "img/icon.png"
   category: Utility
   snap:

@@ -24,13 +24,17 @@ extraResources:
     filter:
       - "**/*"
 
+publish:
+  provider: github
+  generateUpdatesFilesForAllChannels: false
+
 linux:
   executableName: emulsion
 
   target:
     - AppImage
     - deb
-    - snap
+    - rpm
 
   # AppImage / deb metadata
   icon: "img/icon.png"

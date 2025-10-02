@@ -27,10 +27,6 @@ extraResources:
 linux:
   executableName: emulsion
 
-  # CLI flags to append when your users launch the app but that dont really work, now don't it :|
-  executableArgs:
-    - --no-sandbox
-
   target:
     - AppImage
     - deb

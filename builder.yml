@@ -30,15 +30,43 @@ publish:
 
 linux:
   executableName: emulsion
-
   target:
     - AppImage
     - deb
     - rpm
-
-  # AppImage / deb metadata
   icon: "img/icon.png"
   category: Utility
+  snap:
+    # Required: Snap confinement level
+    confinement: strict
+    # Required: Snap grade (stable for public apps)
+    grade: stable
+    # Required: Summary/description
+    summary: A fast and minimalistic image viewer
+    description: |
+      Emulsion is a fast and modular games launcher
+
+    # Permissions - adjust based on your app's needs
+    plugs:
+      - network
+      - network-bind
+      - home
+      - removable-media
+      - desktop
+      - desktop-legacy
+      - x11
+
+    # Desktop integration
+    desktop:
+      # Make sure this matches your actual desktop file name
+      Desktop: usr/share/applications/emulsion.desktop
+
+    # AppArmor profile template
+    appArmorTemplate: default
+
+    # Environment variables if needed
+    environment:
+      DISABLE_WAYLAND: 1
 
 win:
   target:

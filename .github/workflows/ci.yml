@@ -34,11 +34,10 @@ jobs:
           sudo apt-get update
           sudo snap install snapcraft --classic
           sudo apt-get install -y dpkg fakeroot jq npm bash fuse cmake libsdl2-dev
+          npm install
 
       - name: Build Linux packages
-        run: |
-          npm install
-          npx electron-builder --config builder.yml --linux
+        run: npx electron-builder --config builder.yml --linux
 
   # 5. Build Windows (NSIS .exe) and auto-publish on tag
   build_windows:

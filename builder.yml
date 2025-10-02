@@ -30,8 +30,6 @@ linux:
   target:
     - AppImage
     - deb
-    - apk
-    - snap
 
   # AppImage / deb metadata
   icon: "img/icon.png"

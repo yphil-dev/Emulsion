@@ -38,6 +38,9 @@ linux:
   icon: "img/icon.png"
   category: Utility
 
+rpm:
+  # This prevents the autoupdate metadata generation that's failing
+
 win:
   target:
     - nsis

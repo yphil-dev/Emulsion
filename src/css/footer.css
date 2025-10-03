@@ -109,6 +109,6 @@ footer {
   transition: all 0.3s ease;
 }
 
-#east:hover {
+.control-item.hover:hover {
   color: var(--color-outline-selected);
 }

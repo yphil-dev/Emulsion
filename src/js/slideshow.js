@@ -1,7 +1,7 @@
 import { getPlatformInfo } from './platforms.js';
 import { getSelectedGame, updateControls, simulateKeyDown } from './utils.js';
 
-function initSlideShow(platformToDisplay) {
+export function initSlideShow(platformToDisplay) {
 
     const slideshow = document.getElementById("slideshow");
     document.getElementById('header').style.display = 'none';
@@ -89,8 +89,6 @@ function initSlideShow(platformToDisplay) {
     window.currentHomeKeyDown = homeKeyDown;
     window.addEventListener('keydown', homeKeyDown);
 
-    console.log("window.currentHomeKeyDown: ", window.currentHomeKeyDown);
-
     function homeKeyDown(event) {
         event.stopPropagation();
         event.stopImmediatePropagation();
@@ -147,6 +145,10 @@ function initSlideShow(platformToDisplay) {
     updateControls('shoulders', 'same', 'Browse<br>Platforms', 'off');
     updateControls('west', 'same', 'same', 'off');
     updateControls('east', 'same', 'Exit');
+
+    document.querySelector('footer .back').onclick = function() {
+        simulateKeyDown('Escape');
+    };
 
     updateHomeCarousel();
 }

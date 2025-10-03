@@ -3,7 +3,7 @@ window.topMenu = document.getElementById("top-menu");
 window.topMenuSlider = document.getElementById("top-menu-slider");
 import { PLATFORMS } from './platforms.js';
 import { applyTheme, setFooterSize } from './utils.js';
-import { buildHomeSlide } from './slideshow.js';
+import { buildHomeSlide, initSlideShow } from './slideshow.js';
 import { loadPreferences } from './preferences.js';
 
 LB.control.initGamepad();
@@ -50,7 +50,7 @@ LB.initialized
 
         const autoSelectIndex = PLATFORMS.findIndex(p => p.name === LB.autoSelect);
 
-        LB.control.initSlideShow(autoSelectIndex || 0);
+        initSlideShow(autoSelectIndex || 0);
 
         galleriesContainer.style.display = 'none';
         document.getElementById("main").style.display = 'flex';

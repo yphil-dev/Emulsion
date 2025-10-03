@@ -95,7 +95,7 @@ export async function updatePreference(platformName, key, value) {
     }
 }
 
-export async function getPlatformPreference(platformName, key) {
+export async function getPreference(platformName, key) {
     try {
         const preferences = await loadPreferences();
 

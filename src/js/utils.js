@@ -225,6 +225,12 @@ export function toggleHeaderNavLinks(display) {
     })
 }
 
+export function handleKeyDownListeners(context) {
+    const slideshow = document.getElementById('slideshow');
+    const galleries = document.getElementById('galleries');
+    const menu = document.getElementById('menu');
+}
+
 export function toggleHeader(display) {
     document.getElementById('header').style.display = display === 'show' ? 'flex' : 'none';
 }

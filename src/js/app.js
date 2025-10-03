@@ -24,14 +24,6 @@ window.axios = axios;
 // As we migrate, we'll remove these and use direct imports instead
 const LB = {
     enabledPlatforms: ['settings'],
-    isMenuOpen: false,
-
-    // Expose preferences functions
-    prefs: {
-        load: preferences.loadPreferences,
-        save: preferences.updatePreference,
-        getValue: preferences.getPlatformPreference
-    }
 };
 
 // Make LB globally available for backward compatibility

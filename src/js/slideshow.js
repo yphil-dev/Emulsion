@@ -34,7 +34,7 @@ export function initSlideShow(platformToDisplay) {
         }
     }
 
-    function updateHomeCarousel() {
+    function updateSlideShow() {
         const angleIncrement = 360 / totalSlides;
 
         slides.forEach((slide, i) => {
@@ -67,12 +67,12 @@ export function initSlideShow(platformToDisplay) {
 
     function nextSlide() {
         currentIndex = (currentIndex + 1) % totalSlides;
-        updateHomeCarousel();
+        updateSlideShow();
     }
 
     function prevSlide() {
         currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
-        updateHomeCarousel();
+        updateSlideShow();
     }
 
     slideshow.addEventListener('wheel', (event) => {
@@ -155,7 +155,7 @@ export function initSlideShow(platformToDisplay) {
         simulateKeyDown('Escape');
     };
 
-    updateHomeCarousel();
+    updateSlideShow();
 }
 
 export function buildHomeSlide(platformName, preferences) {
@@ -382,7 +382,7 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
 
     }
 
-    function updatePagesCarousel() {
+    function updateGallery() {
         // Filter out disabled pages and sort by dataset.index
         const enabledPages = pages
               .filter(page => page.dataset.status !== 'disabled')
@@ -430,7 +430,7 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
         // Set currentPlatform when browsing platforms
         LB.currentPlatform = currentPlatformName;
 
-        updatePagesCarousel();
+        updateGallery();
     }
 
     function goToPrevPage() {
@@ -442,7 +442,7 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
         // Set currentPlatform when browsing platforms
         LB.currentPlatform = currentPlatformName;
 
-        updatePagesCarousel();
+        updateGallery();
     }
 
     let selectedIndex = 0;
@@ -586,7 +586,7 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
     galleries.addEventListener('wheel', onGalleryWheel);
 
     window.addEventListener('keydown', window.currentGalleryKeyDown);
-    updatePagesCarousel(); // Initialize the pages carousel
+    updateGallery(); // Initialize the pages carousel
 }
 
 function initGamepad () {

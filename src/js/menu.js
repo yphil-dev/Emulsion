@@ -1,5 +1,5 @@
 import { getPlatformInfo } from './platforms.js';
-import { updatePreference } from './preferences.js';
+import { updatePreference, getPreference } from './preferences.js';
 import { getSelectedGame,
          updateFooterControls,
          applyTheme,
@@ -588,7 +588,7 @@ function buildPlatformForm(platformName) {
     });
 
     // Load existing extensions from preferences
-    LB.prefs.getValue(platformName, 'extensions')
+    getPreference(platformName, 'extensions')
         .then(extensions => {
             const initialExtensions = extensions || ['.iso'];
             initialExtensions.forEach((ext, index) => {
@@ -645,7 +645,7 @@ function buildPlatformForm(platformName) {
     cancelButton.classList.add('button');
     cancelButton.textContent = 'Cancel';
 
-    LB.prefs.getValue(platformName, 'gamesDir')
+    getPreference(platformName, 'gamesDir')
         .then((value) => {
             gamesDirInput.value = value;
         })
@@ -653,7 +653,7 @@ function buildPlatformForm(platformName) {
             console.error('Failed to get platform preference:', error);
         });
 
-    LB.prefs.getValue(platformName, 'emulator')
+    getPreference(platformName, 'emulator')
         .then((value) => {
             emulatorInput.value = value;
         })
@@ -661,7 +661,7 @@ function buildPlatformForm(platformName) {
             console.error('Failed to get platform preference:', error);
         });
 
-    LB.prefs.getValue(platformName, 'emulatorArgs')
+    getPreference(platformName, 'emulatorArgs')
         .then((value) => {
             emulatorArgsInput.value = value;
         })
@@ -703,7 +703,7 @@ function buildPlatformForm(platformName) {
     formContainerButtons.appendChild(helpButton);
     formContainerButtons.appendChild(saveButton);
 
-    LB.prefs.getValue(platformName, 'isEnabled')
+    getPreference(platformName, 'isEnabled')
         .then((value) => {
             statusCheckBox.checked = value;
             statusLabelPlatormStatus.textContent = value ? 'On' : 'Off';
@@ -800,7 +800,7 @@ function buildPlatformForm(platformName) {
 
         try {
             // Get current platform status before saving
-            const wasEnabled = await LB.prefs.getValue(platformName, 'isEnabled').catch(() => false);
+            const wasEnabled = await getPreference(platformName, 'isEnabled').catch(() => false);
             const willBeEnabled = statusCheckBox.checked;
             const statusChanged = wasEnabled !== willBeEnabled;
 
@@ -1261,7 +1261,7 @@ async function closePlatformMenu() {
     // Check if platform was enabled
     if (platformName && platformName !== 'settings') {
         try {
-            const isEnabled = await LB.prefs.getValue(platformName, 'isEnabled');
+            const isEnabled = await getPreference(platformName, 'isEnabled');
             if (isEnabled) {
                 // Platform was enabled - navigate to it
                 menuContainer.innerHTML = '';

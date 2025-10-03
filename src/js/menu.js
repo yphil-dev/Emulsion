@@ -992,11 +992,7 @@ function buildPlatformForm(platformName) {
     return formContainer;
 }
 
-/**
- * Open menu for a platform settings page
- * @param {string} platformName - Name of the platform
- */
-async function openPlatformMenu(platformName) {
+export async function openPlatformMenu(platformName) {
     if (menuState.isOpen) {
         console.warn('Menu already open');
         return;

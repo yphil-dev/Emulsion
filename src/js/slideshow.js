@@ -1,4 +1,5 @@
 import { getPlatformInfo } from './platforms.js';
+import { openPlatformMenu } from './menu.js';
 import { getSelectedGame,
          updateFooterControls,
          simulateKeyDown,
@@ -324,7 +325,7 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
                         const platformName = event.currentTarget.dataset.platform;
                         console.log('Opening settings menu for platform:', platformName);
 
-                        LB.menu.openPlatformMenu(platformName);
+                        openPlatformMenu(platformName);
                     } else {
                         launchGame(event.currentTarget);
                     }
@@ -447,7 +448,7 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
     let selectedIndex = 0;
 
     if (disabledPlatform) {
-        LB.menu.openPlatformMenu(disabledPlatform);
+        openPlatformMenu(disabledPlatform);
     }
 
 
@@ -514,7 +515,7 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
                 const selectedPlatformContainer = document.querySelector('.game-container.selected');
                 if (selectedPlatformContainer && !selectedPlatformContainer.classList.contains('empty-platform-game-container')) {
                     const platformName = selectedPlatformContainer.dataset.platform;
-                    LB.menu.openPlatformMenu(platformName);
+                    openPlatformMenu(platformName);
                 }
             } else {
                 const selectedGameContainer = getSelectedGame(gameContainers, selectedIndex);

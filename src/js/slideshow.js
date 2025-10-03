@@ -1,11 +1,15 @@
 import { getPlatformInfo } from './platforms.js';
-import { getSelectedGame, updateControls, simulateKeyDown } from './utils.js';
+import { getSelectedGame,
+         updateFooterControls,
+         simulateKeyDown,
+         toggleHeaderNavLinks,
+         toggleHeader } from './utils.js';
 
 export function initSlideShow(platformToDisplay) {
 
     const slideshow = document.getElementById("slideshow");
-    document.getElementById('header').style.display = 'none';
-    document.body.style.display = "block";
+
+    toggleHeader('hide');
 
     const slides = Array.from(document.querySelectorAll('#slideshow .slide'));
 
@@ -141,10 +145,10 @@ export function initSlideShow(platformToDisplay) {
         }
     }
 
-    updateControls('dpad', 'button-dpad-ew', 'Browse<br>Platforms', 'on');
-    updateControls('shoulders', 'same', 'Browse<br>Platforms', 'off');
-    updateControls('west', 'same', 'same', 'off');
-    updateControls('east', 'same', 'Exit');
+    updateFooterControls('dpad', 'button-dpad-ew', 'Browse<br>Platforms', 'on');
+    updateFooterControls('shoulders', 'same', 'Browse<br>Platforms', 'off');
+    updateFooterControls('west', 'same', 'same', 'off');
+    updateFooterControls('east', 'same', 'Exit');
 
     document.querySelector('footer .back').onclick = function() {
         simulateKeyDown('Escape');
@@ -190,15 +194,15 @@ export function buildHomeSlide(platformName, preferences) {
 
 function setGalleryControls(currentIndex) {
     if (currentIndex === 0) {
-        updateControls('dpad', 'button-dpad-nesw', 'Browse<br>Platforms', 'on');
-        updateControls('shoulders', 'same', 'Browse<br>Platforms', 'off');
-        updateControls('west', 'same', 'Fetch<br>cover', 'off');
+        updateFooterControls('dpad', 'button-dpad-nesw', 'Browse<br>Platforms', 'on');
+        updateFooterControls('shoulders', 'same', 'Browse<br>Platforms', 'off');
+        updateFooterControls('west', 'same', 'Fetch<br>cover', 'off');
     } else {
-        updateControls('dpad', 'button-dpad-nesw', 'Browse<br>Games', 'on');
-        updateControls('west', 'same', 'Fetch<br>cover', 'on');
-        updateControls('shoulders', 'same', 'Browse<br>Platforms', 'on');
+        updateFooterControls('dpad', 'button-dpad-nesw', 'Browse<br>Games', 'on');
+        updateFooterControls('west', 'same', 'Fetch<br>cover', 'on');
+        updateFooterControls('shoulders', 'same', 'Browse<br>Platforms', 'on');
     }
-    updateControls('east', 'same', 'Back');
+    updateFooterControls('east', 'same', 'Back');
 }
 
 function explodeGameContainer(gameContainer) {
@@ -266,8 +270,9 @@ function launchGame(gameContainer) {
 }
 
 function initGallery(platformNameOrIndex, disabledPlatform) {
-    const header = document.getElementById('header');
-    header.style.display = 'flex';
+
+    toggleHeader('show');
+    toggleHeaderNavLinks('show');
 
     const galleries = document.getElementById('galleries');
     const pages = Array.from(galleries.querySelectorAll('.page'));

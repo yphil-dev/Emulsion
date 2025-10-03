@@ -281,18 +281,6 @@ async function buildGallery(params) {
 
     page.setAttribute('data-platform', platform);
 
-    const pagePrevLink = document.createElement('a');
-    pagePrevLink.classList.add('page-link');
-    pagePrevLink.textContent = "Prev";
-
-    const pageTitle = document.createElement('div');
-    pageTitle.classList.add('page-title');
-    pageTitle.textContent = platform;
-
-    const pageNextLink = document.createElement('a');
-    pageNextLink.classList.add('page-link');
-    pageNextLink.textContent = "Next";
-
     let pageContent;
 
     if (platform === "settings") {
@@ -307,7 +295,6 @@ async function buildGallery(params) {
         pageContent.classList.add('page-content');
 
         pageContent.style.gridTemplateColumns = `repeat(${LB.galleryNumOfCols}, 1fr)`;
-
 
         if (!isEnabled) {
             pageContent.textContent = '';

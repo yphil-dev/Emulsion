@@ -1,5 +1,11 @@
 import { getPlatformInfo } from './platforms.js';
-import { getSelectedGame, updateControls, applyTheme, simulateKeyDown, cleanFileName, setFooterSize } from './utils.js';
+import { getSelectedGame,
+         updateFooterControls,
+         applyTheme,
+         simulateKeyDown,
+         cleanFileName,
+         setFooterSize,
+         toggleHeaderNavLinks } from './utils.js';
 
 let menuState = {
     isOpen: false,
@@ -1005,13 +1011,13 @@ async function openPlatformMenu(platformName) {
     menuState.selectedIndex = 1;
 
     // Update UI
-    updateControls('west', 'same', '', 'off');
-    updateControls('dpad', 'same', '', 'off');
-    updateControls('shoulders', 'same', '', 'off');
+    updateFooterControls('west', 'same', '', 'off');
+    updateFooterControls('dpad', 'same', '', 'off');
+    updateFooterControls('shoulders', 'same', '', 'off');
 
     menu.style.height = '85vh';
-    document.querySelector('#header .prev-link').style.opacity = 0;
-    document.querySelector('#header .next-link').style.opacity = 0;
+
+    toggleHeaderNavLinks('hide')
 
     // Clear and populate menu
     menuContainer.innerHTML = '';
@@ -1056,9 +1062,9 @@ async function openGameMenu(gameContainer) {
     menuState.selectedIndex = 1;
 
     // Update UI
-    updateControls('west', 'same', '', 'off');
-    updateControls('dpad', 'same', '', 'off');
-    updateControls('shoulders', 'same', '', 'off');
+    updateFooterControls('west', 'same', '', 'off');
+    updateFooterControls('dpad', 'same', '', 'off');
+    updateFooterControls('shoulders', 'same', '', 'off');
 
     menu.style.height = '85vh';
     document.querySelector('#header .prev-link').style.opacity = 0;
@@ -1280,7 +1286,7 @@ async function closePlatformMenu() {
     }
 
     // Normal close - stay on current page and restore gallery handler
-    updateControls('dpad', 'same', 'Browse', 'on');
+    updateFooterControls('dpad', 'same', 'Browse', 'on');
     document.querySelector('header .prev-link').style.opacity = 1;
     document.querySelector('header .next-link').style.opacity = 1;
 
@@ -1316,7 +1322,7 @@ async function closeGameMenu(imgSrc) {
     menuContainer.removeEventListener('click', onMenuClick);
 
     // Normal menu close and restore gallery handler
-    updateControls('dpad', 'same', 'Browse', 'on');
+    updateFooterControls('dpad', 'same', 'Browse', 'on');
     document.querySelector('header .prev-link').style.opacity = 1;
     document.querySelector('header .next-link').style.opacity = 1;
 

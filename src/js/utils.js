@@ -1,6 +1,6 @@
 // DOM and UI utility functions
 
-export function updateControls(section, newIcon, newText, display) {
+export function updateFooterControls(section, newIcon, newText, display) {
     const sectionDiv = document.getElementById(section);
     if (!sectionDiv) {
         console.warn(`Section '${section}' not found!`);
@@ -215,4 +215,16 @@ function _titleCase(s) {
             return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
         })
         .join(' ');
+}
+
+export function toggleHeaderNavLinks(display) {
+    const links = document.querySelectorAll('header .pages-nav-links');
+
+    links.forEach((link, i) => {
+        link.style.opacity = display === 'show' ? 1 : 0;
+    })
+}
+
+export function toggleHeader(display) {
+    document.getElementById('header').style.display = display === 'show' ? 'flex' : 'none';
 }

@@ -4,7 +4,7 @@ const path = require('path');
 
 window.ipcRenderer = ipcRenderer;
 
-function updateControls(section, newIcon, newText, display) {
+function updateFooterControls(section, newIcon, newText, display) {
     const sectionDiv = document.getElementById(section);
     if (!sectionDiv) {
         console.warn(`Section '${section}' not found!`);

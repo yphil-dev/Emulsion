@@ -8,9 +8,7 @@ import { loadPreferences } from './preferences.js';
 
 LB.control.initGamepad();
 
-// Wait for LB initialization before proceeding
-LB.initialized
-    .then(() => loadPreferences())
+loadPreferences()
     .then((preferences) => {
 
         LB.galleryNumOfCols = preferences.settings.numberOfColumns;

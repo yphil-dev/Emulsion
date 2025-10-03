@@ -37,12 +37,6 @@ const LB = {
 // Make LB globally available for backward compatibility
 window.LB = LB;
 
-// Create a promise that other scripts can wait for
-let initResolve;
-LB.initialized = new Promise((resolve) => {
-    initResolve = resolve;
-});
-
 // Initialize app data on load
 async function initializeApp() {
     try {

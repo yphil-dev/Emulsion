@@ -1,4 +1,5 @@
 import { getPlatformInfo } from './platforms.js';
+import { updatePreference } from './preferences.js';
 import { getSelectedGame,
          updateFooterControls,
          applyTheme,
@@ -359,14 +360,14 @@ function buildSettingsMenu() {
             };
 
             // Save preferences
-            await LB.prefs.save('settings', 'numberOfColumns', newPrefs.numberOfColumns);
-            await LB.prefs.save('settings', 'footerSize', newPrefs.footerSize);
-            await LB.prefs.save('settings', 'homeMenuTheme', newPrefs.homeMenuTheme);
-            await LB.prefs.save('settings', 'theme', newPrefs.theme);
-            await LB.prefs.save('settings', 'disabledPlatformsPolicy', newPrefs.disabledPlatformsPolicy);
-            await LB.prefs.save('settings', 'recentlyPlayedPolicy', newPrefs.recentlyPlayedPolicy);
-            await LB.prefs.save('settings', 'steamGridAPIKey', newPrefs.steamGridAPIKey);
-            await LB.prefs.save('settings', 'giantBombAPIKey', newPrefs.giantBombAPIKey);
+            await updatePreference('settings', 'numberOfColumns', newPrefs.numberOfColumns);
+            await updatePreference('settings', 'footerSize', newPrefs.footerSize);
+            await updatePreference('settings', 'homeMenuTheme', newPrefs.homeMenuTheme);
+            await updatePreference('settings', 'theme', newPrefs.theme);
+            await updatePreference('settings', 'disabledPlatformsPolicy', newPrefs.disabledPlatformsPolicy);
+            await updatePreference('settings', 'recentlyPlayedPolicy', newPrefs.recentlyPlayedPolicy);
+            await updatePreference('settings', 'steamGridAPIKey', newPrefs.steamGridAPIKey);
+            await updatePreference('settings', 'giantBombAPIKey', newPrefs.giantBombAPIKey);
 
             // Detect changes that require reload
             const somethingImportantChanged =
@@ -804,11 +805,11 @@ function buildPlatformForm(platformName) {
             const statusChanged = wasEnabled !== willBeEnabled;
 
             // Save all preferences
-            await LB.prefs.save(platformName, 'isEnabled', statusCheckBox.checked);
-            await LB.prefs.save(platformName, 'gamesDir', gamesDirInput.value);
-            await LB.prefs.save(platformName, 'emulator', emulatorInput.value);
-            await LB.prefs.save(platformName, 'extensions', extensions);
-            await LB.prefs.save(platformName, 'emulatorArgs', emulatorArgsInput.value);
+            await updatePreference(platformName, 'isEnabled', statusCheckBox.checked);
+            await updatePreference(platformName, 'gamesDir', gamesDirInput.value);
+            await updatePreference(platformName, 'emulator', emulatorInput.value);
+            await updatePreference(platformName, 'extensions', extensions);
+            await updatePreference(platformName, 'emulatorArgs', emulatorArgsInput.value);
 
             if (statusChanged) {
                 // Platform status changed - reload required

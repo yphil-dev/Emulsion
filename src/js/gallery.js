@@ -72,7 +72,7 @@ LB.gallery = {
                 }
 
                 if (LB.recentlyPlayedPolicy === 'show') {
-                    const recentGallery = await _buildRecentGallery({ userDataPath, index: platforms.length });
+                    const recentGallery = await buildRecentGallery({ userDataPath, index: platforms.length });
                     if (recentGallery) {
                         galleriesContainer.appendChild(recentGallery);
                         i++;
@@ -88,7 +88,7 @@ LB.gallery = {
     }
 };
 
-async function _buildRecentGallery({ userDataPath, index }) {
+async function buildRecentGallery({ userDataPath, index }) {
     let recents = LB.recents;
 
     if (!recents || recents.length === 0 || recents.error) {

@@ -478,7 +478,8 @@ ipcMain.on('run-command', (event, data) => {
 
 const defaultPreferences = {
     settings: {
-        index: 0,
+        isEnabled: true,
+        // index: 0,
         numberOfColumns: 6,
         footerSize: "medium",
         homeMenuTheme: "flat",

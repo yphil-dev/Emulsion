@@ -1,4 +1,5 @@
 import { getPlatformInfo } from './platforms.js';
+import { initSlideShow } from './slideshow.js';
 import { updatePreference, getPreference } from './preferences.js';
 import { getSelectedGame,
          updateFooterControls,
@@ -12,88 +13,30 @@ let menuState = {
     isOpen: false,
     selectedIndex: 1,
     menuType: null, // 'platform' or 'game'
-    previousKeyDownListener: null // Store the previous listener to restore
 };
 
 // Menu keyboard navigation handler
-function onMenuKeyDown(event) {
+function onPlatformMenuKeyDown(event) {
     event.stopPropagation();
     event.stopImmediatePropagation();
 
-    const menu = document.getElementById('menu');
-    const menuGameContainers = Array.from(menu.querySelectorAll('.menu-game-container'));
-    const galleryNumOfCols = window.LB.galleryNumOfCols;
-
     switch (event.key) {
-        case 'ArrowRight':
-            if (!event.shiftKey) {
-                menuState.selectedIndex = (menuState.selectedIndex + 1) % menuGameContainers.length;
-            }
-            break;
+    case 'Enter':
+        console.log("Enter: ");
+        break;
 
-        case 'ArrowLeft':
-            if (!event.shiftKey && menuState.selectedIndex !== 1) {
-                menuState.selectedIndex = (menuState.selectedIndex - 1 + menuGameContainers.length) % menuGameContainers.length;
-            }
-            break;
+    case 'F5':
+        if (event.shiftKey) {
+            ipcRenderer.invoke('restart');
+        } else {
+            window.location.reload();
+        }
+        break;
 
-        case 'ArrowUp':
-            if (menuState.selectedIndex > galleryNumOfCols) {
-                menuState.selectedIndex = Math.max(menuState.selectedIndex - galleryNumOfCols, 0);
-            }
-            break;
-
-        case 'ArrowDown':
-            menuState.selectedIndex = Math.min(menuState.selectedIndex + galleryNumOfCols, menuGameContainers.length - 1);
-            break;
-
-        case 'PageUp':
-            menuState.selectedIndex = Math.max(menuState.selectedIndex - galleryNumOfCols * 10, 0);
-            break;
-
-        case 'PageDown':
-            menuState.selectedIndex = Math.min(menuState.selectedIndex + galleryNumOfCols * 10, menuGameContainers.length - 1);
-            break;
-
-        case 'Home':
-            menuState.selectedIndex = 0;
-            break;
-
-        case 'End':
-            menuState.selectedIndex = menuGameContainers.length - 1;
-            break;
-
-        case 'Enter':
-            const selectedGame = getSelectedGame(menuGameContainers, menuState.selectedIndex);
-            const selectedImg = selectedGame.querySelector('.game-image');
-            if (menuState.menuType === 'platform') {
-                LB.menu.closePlatformMenu();
-            } else {
-                LB.menu.closeGameMenu(selectedImg.src);
-            }
-            break;
-
-        case 'F5':
-            if (event.shiftKey) {
-                ipcRenderer.invoke('restart');
-            } else {
-                window.location.reload();
-            }
-            break;
-
-        case 'Escape':
-            if (menuState.menuType === 'platform') {
-                LB.menu.closePlatformMenu();
-            } else {
-                LB.menu.closeGameMenu();
-            }
-            break;
+    case 'Escape':
+        closePlatformMenu();
+        break;
     }
-
-    // Update visual selection
-    menuGameContainers.forEach((container, index) => {
-        container.classList.toggle('selected', index === menuState.selectedIndex);
-    });
 }
 
 // Menu click handler
@@ -994,13 +937,13 @@ function buildPlatformForm(platformName) {
 }
 
 export async function openPlatformMenu(platformName) {
-    if (menuState.isOpen) {
-        console.warn('Menu already open');
-        return;
-    }
+
+    const galleries = document.getElementById('galleries');
+    galleries.style.display = 'none';
+
+    window.addEventListener('keydown', onPlatformMenuKeyDown);
 
     const menu = document.getElementById('menu');
-    const menuContainer = document.getElementById('menu');
 
     // Store state
     menuState.isOpen = true;
@@ -1017,21 +960,13 @@ export async function openPlatformMenu(platformName) {
     toggleHeaderNavLinks('hide')
 
     // Clear and populate menu
-    menuContainer.innerHTML = '';
-    menuContainer.dataset.menuPlatform = platformName;
+    menu.innerHTML = '';
+    menu.dataset.menuPlatform = platformName;
 
     const platformForm = buildPlatformForm(platformName);
-    menuContainer.appendChild(platformForm);
+    menu.appendChild(platformForm);
 
-    // Remove current keyboard listener (typically gallery handler)
-    if (window.currentGalleryKeyDown) {
-        window.removeEventListener('keydown', window.currentGalleryKeyDown);
-    }
-
-    // Attach event listeners
-    window.addEventListener('keydown', onMenuKeyDown);
-    menuContainer.addEventListener('wheel', onMenuWheel);
-    menuContainer.addEventListener('click', onMenuClick);
+    menu.style.display = 'flex';
 
     console.log('Platform menu opened for:', platformName);
 }
@@ -1085,10 +1020,10 @@ async function openGameMenu(gameContainer) {
         window.removeEventListener('keydown', window.currentGalleryKeyDown);
     }
 
-    // Attach event listeners
-    window.addEventListener('keydown', onMenuKeyDown);
-    menuContainer.addEventListener('wheel', onMenuWheel);
-    menuContainer.addEventListener('click', onMenuClick);
+    // // Attach event listeners
+    // window.addEventListener('keydown', onMenuKeyDown);
+    // menuContainer.addEventListener('wheel', onMenuWheel);
+    // menuContainer.addEventListener('click', onMenuClick);
 
     console.log('Game menu opened for:', gameName, 'platform:', platformName);
 }
@@ -1242,62 +1177,24 @@ function buildCurrentGameImgContainer(gameName, image, platformName) {
  * Close platform settings menu
  */
 async function closePlatformMenu() {
-    if (!menuState.isOpen || menuState.menuType !== 'platform') {
-        console.warn('No platform menu to close');
-        return;
-    }
+
+    window.removeEventListener('keydown', onPlatformMenuKeyDown);
 
     const menu = document.getElementById('menu');
-    const menuContainer = document.getElementById('menu');
-
-    // Get the platform name from the menu
-    const platformName = menuContainer.dataset.menuPlatform;
-
-    // Remove event listeners
-    window.removeEventListener('keydown', onMenuKeyDown);
-    menuContainer.removeEventListener('wheel', onMenuWheel);
-    menuContainer.removeEventListener('click', onMenuClick);
-
-    // Check if platform was enabled
-    if (platformName && platformName !== 'settings') {
-        try {
-            const isEnabled = await getPreference(platformName, 'isEnabled');
-            if (isEnabled) {
-                // Platform was enabled - navigate to it
-                menuContainer.innerHTML = '';
-                menu.style.height = '0';
-                menuState.isOpen = false;
-                menuState.menuType = null;
-
-                console.log('Navigating to enabled platform:', platformName);
-
-                // Switch to gallery view
-                document.getElementById('slideshow').style.display = 'none';
-                document.getElementById('galleries').style.display = 'flex';
-                LB.control.initGallery(platformName);
-                return;
-            }
-        } catch (error) {
-            console.error('Error checking platform status:', error);
-        }
-    }
 
     // Normal close - stay on current page and restore gallery handler
     updateFooterControls('dpad', 'same', 'Browse', 'on');
     document.querySelector('header .prev-link').style.opacity = 1;
     document.querySelector('header .next-link').style.opacity = 1;
 
-    menuContainer.innerHTML = '';
-    menu.style.height = '0';
-    menuState.isOpen = false;
-    menuState.menuType = null;
+    menu.style.display = 'none';
 
-    // Restore gallery keyboard handler
-    if (window.currentGalleryKeyDown) {
-        window.addEventListener('keydown', window.currentGalleryKeyDown);
-    }
+    window.addEventListener('keydown', window.currentGalleryKeyDown);
 
-    console.log('Platform menu closed');
+    console.log('Platform menu closed ', window.currentPlatformName);
+
+    initSlideShow(window.currentPlatformName);
+
 }
 
 /**
@@ -1314,9 +1211,8 @@ async function closeGameMenu(imgSrc) {
     const menuContainer = document.getElementById('menu');
 
     // Remove event listeners
-    window.removeEventListener('keydown', onMenuKeyDown);
-    menuContainer.removeEventListener('wheel', onMenuWheel);
-    menuContainer.removeEventListener('click', onMenuClick);
+    // menuContainer.removeEventListener('wheel', onMenuWheel);
+    // menuContainer.removeEventListener('click', onMenuClick);
 
     // Normal menu close and restore gallery handler
     updateFooterControls('dpad', 'same', 'Browse', 'on');

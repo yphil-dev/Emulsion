@@ -45,7 +45,6 @@ async function initializeApp() {
         LB.homeMenuTheme = appData.preferences.settings.homeMenuTheme;
 
         console.log('App initialized successfully');
-        initResolve(); // Signal that initialization is complete
     } catch (error) {
         console.error('Failed to initialize app:', error);
         throw error;

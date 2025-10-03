@@ -10,6 +10,9 @@ export function initSlideShow(platformToDisplay) {
 
     const slideshow = document.getElementById("slideshow");
 
+    document.getElementById('slideshow').style.display = 'flex';
+    document.getElementById('galleries').style.display = "none";
+
     toggleHeader('hide');
 
     const slides = Array.from(document.querySelectorAll('#slideshow .slide'));
@@ -90,11 +93,11 @@ export function initSlideShow(platformToDisplay) {
         });
     });
 
-    // Make homeKeyDown globally accessible for dialog cleanup
-    window.currentHomeKeyDown = homeKeyDown;
-    window.addEventListener('keydown', homeKeyDown);
+    // Make slideShowKeyDown globally accessible for dialog cleanup
+    // window.currentHomeKeyDown = slideShowKeyDown;
+    window.addEventListener('keydown', slideShowKeyDown);
 
-    function homeKeyDown(event) {
+    function slideShowKeyDown(event) {
         event.stopPropagation();
         event.stopImmediatePropagation();
 
@@ -106,29 +109,25 @@ export function initSlideShow(platformToDisplay) {
             prevSlide();
             break;
         case 'Enter': {
+
             const activeSlide = slides[currentIndex];
             const activePlatformName = activeSlide.dataset.platform;
 
-            // Always use platform name for navigation - NO MORE INDICES!
             if (activePlatformName === 'settings' && LB.kioskMode) {
                 return;
             }
 
-            // Check if platform is enabled or disabled
-            if (activePlatformName === 'recents' || activePlatformName === 'settings') {
-                // Special platforms - go directly to gallery
+            const isEnabled = activeSlide.dataset.isEnabled === "true";
+
+            if (isEnabled) {
                 initGallery(activePlatformName);
-            } else if (LB.enabledPlatforms.includes(activePlatformName)) {
-                // Enabled platform - go directly to platform gallery
-                initGallery(activePlatformName);
+                document.getElementById('galleries').style.display = "flex";
             } else {
-                // Disabled platform - open menu (if policy allows showing disabled platforms)
                 initGallery('settings', activePlatformName);
             }
 
             document.getElementById('slideshow').style.display = 'none';
-            document.getElementById('galleries').style.display = "flex";
-            window.removeEventListener('keydown', homeKeyDown);
+            window.removeEventListener('keydown', slideShowKeyDown);
             break;
         }
         case 'F5':
@@ -179,6 +178,7 @@ export function buildHomeSlide(platformName, preferences) {
 
     if (platformName === 'recents') {
         slide.setAttribute('data-index', LB.totalNumberOfPlatforms);
+        slide.setAttribute('data-is-enabled', true);
         return slide;
     }
 
@@ -270,7 +270,12 @@ function launchGame(gameContainer) {
     });
 }
 
-function initGallery(platformNameOrIndex, disabledPlatform) {
+export function initGallery(platformName, disabledPlatform) {
+
+    if (disabledPlatform) {
+        openPlatformMenu(disabledPlatform);
+        return;
+    }
 
     toggleHeader('show');
     toggleHeaderNavLinks('show');
@@ -284,20 +289,8 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
 
     // Find the target page by platform name or fallback to index
     let targetPage = null;
-    if (typeof platformNameOrIndex === 'string') {
-        // Name-based lookup (preferred)
-        targetPage = pages.find(page => page.dataset.platform === platformNameOrIndex);
-        currentPlatformName = platformNameOrIndex;
-    } else if (typeof platformNameOrIndex === 'number') {
-        // Index-based lookup (fallback for prev/next navigation only)
-        targetPage = pages.find(page => Number(page.dataset.index) === platformNameOrIndex);
-        currentPlatformName = targetPage?.dataset.platform;
-    }
-
-    if (!targetPage) {
-        console.error('Could not find page for:', platformNameOrIndex);
-        return;
-    }
+    targetPage = pages.find(page => page.dataset.platform === platformName);
+    currentPlatformName = platformName;
 
     currentPageIndex = Number(targetPage.dataset.index);
     const enabledPages = pages.filter(page => page.dataset.status !== 'disabled');
@@ -446,11 +439,6 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
     }
 
     let selectedIndex = 0;
-
-    if (disabledPlatform) {
-        openPlatformMenu(disabledPlatform);
-    }
-
 
     const _moveRows = (selectedIndex, rowsToMove) => {
         const col = selectedIndex % LB.galleryNumOfCols;
@@ -711,7 +699,7 @@ function initGamepad () {
 function showQuitConfirmationDialog() {
     console.log("showQuitConfirmationDialog: ");
     // Store reference to current slideshow handler
-    const currentHomeKeyDown = window.homeKeyDownHandler || null;
+    const currentHomeKeyDown = window.slideShowKeyDownHandler || null;
 
     const overlay = document.getElementById('quit-confirmation-overlay');
     const dialog = document.getElementById('quit-confirmation-dialog');

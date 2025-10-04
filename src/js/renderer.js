@@ -57,7 +57,7 @@ loadPreferences()
 
         if (LB.autoSelect && !LB.enabledPlatforms.some(platform => platform === LB.autoSelect)) {
             if (!LB.kioskMode) {
-                LB.control.initGallery('settings', LB.autoSelect);
+                LB.control.initGallery(0, LB.autoSelect);
             }
             return;
         } else if (LB.autoSelect) {

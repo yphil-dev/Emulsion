@@ -72,7 +72,7 @@ LB.gallery = {
                 }
 
                 if (LB.recentlyPlayedPolicy === 'show') {
-                    const recentGallery = await buildRecentGallery({ userDataPath, index: platforms.length });
+                    const recentGallery = await _buildRecentGallery({ userDataPath, index: platforms.length });
                     if (recentGallery) {
                         galleriesContainer.appendChild(recentGallery);
                         i++;
@@ -88,7 +88,7 @@ LB.gallery = {
     }
 };
 
-async function buildRecentGallery({ userDataPath, index }) {
+async function _buildRecentGallery({ userDataPath, index }) {
     let recents = LB.recents;
 
     if (!recents || recents.length === 0 || recents.error) {
@@ -255,6 +255,15 @@ function buildSettingsPageContent(platforms) {
     return pageContent;
 }
 
+function incrementNbGames(platformName) {
+    const platform = PLATFORMS.find(p => p.name === platformName);
+    if (platform) {
+        platform.nbGames++;
+    } else {
+        console.warn(`Platform not found: ${platformName}`);
+    }
+}
+
 async function buildGallery(params) {
 
     const platform = params.platform;
@@ -368,6 +377,8 @@ async function buildGallery(params) {
                     gameImage.classList.add('missing-image');
                     gameContainer.setAttribute('data-missing-image', true);
                 }
+
+                incrementNbGames(platform);
 
                 // Set explicit width and height attributes
                 // gameImage.width = columnWidth; // Set width attribute

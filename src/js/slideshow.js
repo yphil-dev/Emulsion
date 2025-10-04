@@ -1,4 +1,4 @@
-import { getPlatformInfo } from './platforms.js';
+import { getPlatformInfo, PLATFORMS } from './platforms.js';
 import { openPlatformMenu } from './menu.js';
 import { getSelectedGame,
          updateFooterControls,
@@ -9,9 +9,6 @@ import { getSelectedGame,
 export function initSlideShow(platformToDisplay) {
 
     const slideshow = document.getElementById("slideshow");
-
-    document.getElementById('slideshow').style.display = 'flex';
-    document.getElementById('galleries').style.display = "none";
 
     toggleHeader('hide');
 
@@ -93,11 +90,11 @@ export function initSlideShow(platformToDisplay) {
         });
     });
 
-    // Make slideShowKeyDown globally accessible for dialog cleanup
-    // window.currentHomeKeyDown = slideShowKeyDown;
-    window.addEventListener('keydown', slideShowKeyDown);
+    // Make homeKeyDown globally accessible for dialog cleanup
+    window.currentHomeKeyDown = homeKeyDown;
+    window.addEventListener('keydown', homeKeyDown);
 
-    function slideShowKeyDown(event) {
+    function homeKeyDown(event) {
         event.stopPropagation();
         event.stopImmediatePropagation();
 
@@ -109,25 +106,29 @@ export function initSlideShow(platformToDisplay) {
             prevSlide();
             break;
         case 'Enter': {
-
             const activeSlide = slides[currentIndex];
             const activePlatformName = activeSlide.dataset.platform;
 
+            // Always use platform name for navigation - NO MORE INDICES!
             if (activePlatformName === 'settings' && LB.kioskMode) {
                 return;
             }
 
-            const isEnabled = activeSlide.dataset.isEnabled === "true";
-
-            if (isEnabled) {
+            // Check if platform is enabled or disabled
+            if (activePlatformName === 'recents' || activePlatformName === 'settings') {
+                // Special platforms - go directly to gallery
                 initGallery(activePlatformName);
-                document.getElementById('galleries').style.display = "flex";
+            } else if (LB.enabledPlatforms.includes(activePlatformName)) {
+                // Enabled platform - go directly to platform gallery
+                initGallery(activePlatformName);
             } else {
+                // Disabled platform - open menu (if policy allows showing disabled platforms)
                 initGallery('settings', activePlatformName);
             }
 
             document.getElementById('slideshow').style.display = 'none';
-            window.removeEventListener('keydown', slideShowKeyDown);
+            document.getElementById('galleries').style.display = "flex";
+            window.removeEventListener('keydown', homeKeyDown);
             break;
         }
         case 'F5':
@@ -178,7 +179,6 @@ export function buildHomeSlide(platformName, preferences) {
 
     if (platformName === 'recents') {
         slide.setAttribute('data-index', LB.totalNumberOfPlatforms);
-        slide.setAttribute('data-is-enabled', true);
         return slide;
     }
 
@@ -270,12 +270,7 @@ function launchGame(gameContainer) {
     });
 }
 
-export function initGallery(platformName, disabledPlatform) {
-
-    if (disabledPlatform) {
-        openPlatformMenu(disabledPlatform);
-        return;
-    }
+function initGallery(platformNameOrIndex, disabledPlatform) {
 
     toggleHeader('show');
     toggleHeaderNavLinks('show');
@@ -289,8 +284,20 @@ export function initGallery(platformName, disabledPlatform) {
 
     // Find the target page by platform name or fallback to index
     let targetPage = null;
-    targetPage = pages.find(page => page.dataset.platform === platformName);
-    currentPlatformName = platformName;
+    if (typeof platformNameOrIndex === 'string') {
+        // Name-based lookup (preferred)
+        targetPage = pages.find(page => page.dataset.platform === platformNameOrIndex);
+        currentPlatformName = platformNameOrIndex;
+    } else if (typeof platformNameOrIndex === 'number') {
+        // Index-based lookup (fallback for prev/next navigation only)
+        targetPage = pages.find(page => Number(page.dataset.index) === platformNameOrIndex);
+        currentPlatformName = targetPage?.dataset.platform;
+    }
+
+    if (!targetPage) {
+        console.error('Could not find page for:', platformNameOrIndex);
+        return;
+    }
 
     currentPageIndex = Number(targetPage.dataset.index);
     const enabledPages = pages.filter(page => page.dataset.status !== 'disabled');
@@ -349,21 +356,23 @@ export function initGallery(platformName, disabledPlatform) {
             block: "center"
         });
 
-        const platformInfo = getPlatformInfo(page.dataset.platform);
+        // const platformInfo = getPlatformInfo(page.dataset.platform);
 
-        document.querySelector('header .platform-name').textContent = platformInfo.name;
+        // document.querySelector('header .platform-name').textContent = platformInfo.name;
 
-        const pluralize = (count, singular, plural = `${singular}s`) =>
-              count === 1 ? singular : plural;
+        // const pluralize = (count, singular, plural = `${singular}s`) =>
+        //       count === 1 ? singular : plural;
 
-        const count = currentPageIndex === 0 ? gameContainers.length - 1 : gameContainers.length;
-        const itemType = currentPageIndex === 0 ? 'platform' : 'game';
+        // const count = currentPageIndex === 0 ? gameContainers.length - 1 : gameContainers.length;
+        // const itemType = currentPageIndex === 0 ? 'platform' : 'game';
 
-        document.querySelector('header .item-number').textContent = count;
-        document.querySelector('header .item-type').textContent =
-            ` ${pluralize(count, itemType)}`;
+        // document.querySelector('header .item-number').textContent = count;
+        // document.querySelector('header .item-type').textContent =
+        //     ` ${pluralize(count, itemType)}`;
 
-        document.querySelector('header .platform-image').style.backgroundImage = `url('../../img/platforms/${page.dataset.platform}.png')`;
+        // document.querySelector('header .platform-image').style.backgroundImage = `url('../../img/platforms/${page.dataset.platform}.png')`;
+
+        updateHeader(page.dataset.platform);
 
         document.querySelector('header .prev-link').onclick = function() {
             goToPrevPage();
@@ -439,6 +448,11 @@ export function initGallery(platformName, disabledPlatform) {
     }
 
     let selectedIndex = 0;
+
+    if (disabledPlatform) {
+        openPlatformMenu(disabledPlatform);
+    }
+
 
     const _moveRows = (selectedIndex, rowsToMove) => {
         const col = selectedIndex % LB.galleryNumOfCols;
@@ -699,7 +713,7 @@ function initGamepad () {
 function showQuitConfirmationDialog() {
     console.log("showQuitConfirmationDialog: ");
     // Store reference to current slideshow handler
-    const currentHomeKeyDown = window.slideShowKeyDownHandler || null;
+    const currentHomeKeyDown = window.homeKeyDownHandler || null;
 
     const overlay = document.getElementById('quit-confirmation-overlay');
     const dialog = document.getElementById('quit-confirmation-dialog');
@@ -827,6 +841,42 @@ function showQuitConfirmationDialog() {
 
     // Focus the dialog for accessibility
     dialog.focus();
+}
+
+function getPlatformByName(platformName) {
+    return PLATFORMS.find(p => p.name === platformName);
+}
+
+export function updateHeader(platformName, gameName) {
+
+    const header = document.getElementById("header");
+
+    const settingsPlatform = { nbGames: PLATFORMS.length };
+
+    const platform = platformName === 'settings' ? settingsPlatform : getPlatformByName(platformName);
+
+    let itemType = 'game';
+
+    if (platformName === 'settings') {
+        itemType = 'platform';
+    }
+
+    if (gameName) {
+        itemType = 'image';
+    }
+
+    const count = platform?.nbGames;
+
+    const pluralize = (count, singular, plural = `${singular}s`) =>
+          count === 1 ? singular : plural;
+
+    header.querySelector('.platform-name').textContent = gameName ? gameName : platformName;
+    header.querySelector('.item-number').textContent = count;
+    header.querySelector('.item-type').textContent =
+        ` ${pluralize(count, itemType)}`;
+
+    header.querySelector('.platform-image').style.backgroundImage = `url('../../img/platforms/${platformName}.png')`;
+
 }
 
 LB.control = {

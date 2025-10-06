@@ -336,7 +336,7 @@ function buildSettingsMenu() {
 
     function _cancelButtonClick(event) {
         // Smart navigation - return to slideshow without reload
-        LB.control.initSlideShow('settings');
+        initSlideShow('settings');
     }
 
     async function _saveButtonClick() {
@@ -395,7 +395,7 @@ function buildSettingsMenu() {
                 window.location.reload();
             } else {
                 // Smart navigation - return to slideshow without reload
-                LB.control.initSlideShow('settings');
+                initSlideShow('settings');
             }
         } catch (error) {
             console.error('Failed to save preferences:', error);
@@ -820,13 +820,13 @@ function buildPlatformForm(platformName) {
                 // Smart navigation - return to current platform without reload
                 if (willBeEnabled) {
                     // Platform is enabled, return to its gallery
-                    LB.control.initSlideShow(platformName);
+                    initSlideShow(platformName);
                 } else if (LB.disabledPlatformsPolicy === 'hide') {
                     // Platform is disabled and policy is hide, return to slideshow
-                    LB.control.initSlideShow(0);
+                    initSlideShow(0);
                 } else {
                     // Platform is disabled but policy is show, return to platform
-                    LB.control.initSlideShow(platformName);
+                    initSlideShow(platformName);
                 }
             }
         } catch (error) {
@@ -1257,8 +1257,6 @@ async function closePlatformMenu() {
     menuState.menuType = null;
 
     initSlideShow(platformName);
-
-    console.log('Platform menu closed');
 }
 
 /**

@@ -270,7 +270,7 @@ function launchGame(gameContainer) {
     });
 }
 
-function initGallery(platformNameOrIndex, disabledPlatform) {
+export function initGallery(platformNameOrIndex, disabledPlatform) {
 
     toggleHeader('show');
     toggleHeaderNavLinks('show');
@@ -591,7 +591,7 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
     updateGallery(true); // Initialize the pages carousel
 }
 
-function initGamepad () {
+export function initGamepad () {
     const gamepads = navigator.getGamepads();
     const connected = Array.from(gamepads).some(gamepad => gamepad !== null);
 
@@ -882,5 +882,4 @@ export function updateHeader(platformName, gameName) {
 LB.control = {
     initGallery: initGallery,
     initSlideShow: initSlideShow,
-    initGamepad: initGamepad
 };

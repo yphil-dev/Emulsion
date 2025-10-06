@@ -15,8 +15,6 @@ async function _loadUserData() {
         const autoSelect = preferences.autoSelect;
         const recents = preferences.recents;
 
-        console.log("autoSelect: ", autoSelect);
-
         delete preferences.userDataPath;
         delete preferences.appPath;
         delete preferences.versionNumber;

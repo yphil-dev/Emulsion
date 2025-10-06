@@ -1,11 +1,11 @@
 import { PLATFORMS } from './platforms.js';
 import { applyTheme, setFooterSize } from './utils.js';
-import { buildHomeSlide, initSlideShow } from './slideshow.js';
+import { buildHomeSlide, initSlideShow, initGallery, initGamepad } from './slideshow.js';
 import { loadPreferences } from './preferences.js';
 
 const slideshow = document.getElementById("slideshow");
 
-LB.control.initGamepad();
+initGamepad();
 
 loadPreferences()
     .then((preferences) => {
@@ -56,7 +56,7 @@ loadPreferences()
 
         if (LB.autoSelect && !LB.enabledPlatforms.some(platform => platform === LB.autoSelect)) {
             if (!LB.kioskMode) {
-                LB.control.initGallery(0, LB.autoSelect);
+                initGallery(0, LB.autoSelect);
             }
             return;
         } else if (LB.autoSelect) {

@@ -2,6 +2,7 @@ import { getPlatformInfo, PLATFORMS } from './platforms.js';
 import { openPlatformMenu, openGameMenu } from './menu.js';
 import { getSelectedGameContainer,
          updateFooterControls,
+         setKeydown,
          simulateKeyDown,
          toggleHeaderNavLinks,
          toggleHeader } from './utils.js';
@@ -9,6 +10,10 @@ import { getSelectedGameContainer,
 export function initSlideShow(platformToDisplay) {
 
     const slideshow = document.getElementById("slideshow");
+    const galleries = document.getElementById("galleries");
+
+    galleries.style.display = 'none';
+    slideshow.style.display = 'flex';
 
     toggleHeader('hide');
 
@@ -90,10 +95,6 @@ export function initSlideShow(platformToDisplay) {
         });
     });
 
-    // Make homeKeyDown globally accessible for dialog cleanup
-    window.currentHomeKeyDown = homeKeyDown;
-    window.addEventListener('keydown', homeKeyDown);
-
     function homeKeyDown(event) {
         event.stopPropagation();
         event.stopImmediatePropagation();
@@ -123,12 +124,11 @@ export function initSlideShow(platformToDisplay) {
                 initGallery(activePlatformName);
             } else {
                 // Disabled platform - open menu (if policy allows showing disabled platforms)
-                initGallery('settings', activePlatformName);
+                openPlatformMenu(activePlatformName);
             }
 
             document.getElementById('slideshow').style.display = 'none';
             document.getElementById('galleries').style.display = "flex";
-            window.removeEventListener('keydown', homeKeyDown);
             break;
         }
         case 'F5':
@@ -155,6 +155,7 @@ export function initSlideShow(platformToDisplay) {
         simulateKeyDown('Escape');
     };
 
+    setKeydown(homeKeyDown);
     updateSlideShow();
 }
 
@@ -326,6 +327,7 @@ export function initGallery(platformNameOrIndex, disabledPlatform) {
                         console.log('Opening settings menu for platform:', platformName);
 
                         openPlatformMenu(platformName);
+                        // return;
                     } else {
                         launchGame(event.currentTarget);
                     }
@@ -498,10 +500,7 @@ export function initGallery(platformNameOrIndex, disabledPlatform) {
             break;
         case 'i':
             if (!LB.kioskMode) {
-                const selectedContainer = gameContainers[selectedIndex];
-                if (selectedContainer) {
-                    openGameMenu(selectedContainer);
-                }
+                openGameMenu(gameContainers[selectedIndex]);
             }
             break;
         case 'F5':
@@ -518,6 +517,7 @@ export function initGallery(platformNameOrIndex, disabledPlatform) {
                 if (selectedPlatformContainer && !selectedPlatformContainer.classList.contains('empty-platform-game-container')) {
                     const platformName = selectedPlatformContainer.dataset.platform;
                     openPlatformMenu(platformName);
+                    // return;
                 }
             } else {
                 const selectedGameContainer = getSelectedGameContainer(gameContainers, selectedIndex);
@@ -530,7 +530,6 @@ export function initGallery(platformNameOrIndex, disabledPlatform) {
         case 'Escape':
             document.getElementById('slideshow').style.display = 'flex';
             document.getElementById('galleries').style.display = 'none';
-            window.removeEventListener('keydown', galleryKeyDown);
 
             // Smart navigation - return to current platform using name-based navigation
             const activePage = document.querySelector('.page.active');
@@ -587,7 +586,8 @@ export function initGallery(platformNameOrIndex, disabledPlatform) {
 
     galleries.addEventListener('wheel', onGalleryWheel);
 
-    window.addEventListener('keydown', galleryKeyDown);
+    setKeydown(galleryKeyDown);
+
     updateGallery(true); // Initialize the pages carousel
 }
 
@@ -765,7 +765,7 @@ function showQuitConfirmationDialog() {
 
     function closeDialog() {
         overlay.style.display = 'none';
-        window.removeEventListener('keydown', onDialogKeyDown, true);
+        window.removeEventListener('keydown', quitDialogKeyDown, true);
     }
 
     function confirmQuit() {
@@ -776,13 +776,17 @@ function showQuitConfirmationDialog() {
     function cancelQuit() {
         closeDialog();
         // Restore slideshow keyboard listener using global reference
-        if (window.currentHomeKeyDown) {
-            window.addEventListener('keydown', window.currentHomeKeyDown);
-        }
+        // if (LB.currentHomeKeyDown) {
+        //     window.addEventListener('keydown', LB.currentHomeKeyDown);
+        // }
+
+        // setKeydown(homeKeyDown);
+
+
     }
 
     // Keyboard and gamepad handler - CAPTURE ALL EVENTS
-    function onDialogKeyDown(event) {
+    function quitDialogKeyDown(event) {
         // STOP ALL KEYBOARD EVENTS from propagating
         event.preventDefault();
         event.stopPropagation();
@@ -826,12 +830,14 @@ function showQuitConfirmationDialog() {
     const allListeners = window.getEventListeners ? window.getEventListeners(window) : null;
 
     // Brute force: remove all keydown listeners using the global reference
-    if (window.currentHomeKeyDown) {
-        window.removeEventListener('keydown', window.currentHomeKeyDown);
+    if (LB.currentHomeKeyDown) {
+        window.removeEventListener('keydown', LB.currentHomeKeyDown);
     }
 
     // Add dialog listener with capture=true for ABSOLUTE highest priority
-    window.addEventListener('keydown', onDialogKeyDown, true);
+    // window.addEventListener('keydown', quitDialogKeyDown, true);
+
+    setKeydown(quitDialogKeyDown);
 
     // Initialize button selection
     updateButtonSelection();
@@ -878,8 +884,3 @@ export function updateHeader(platformName, gameName) {
     header.querySelector('.platform-image').style.backgroundImage = `url('../../img/platforms/${platformName}.png')`;
 
 }
-
-LB.control = {
-    initGallery: initGallery,
-    initSlideShow: initSlideShow,
-};

@@ -5,7 +5,7 @@ import { getSelectedGameContainer,
          updateFooterControls,
          applyTheme,
          simulateKeyDown,
-         cleanFileName,
+         setKeydown,
          setFooterSize,
          toggleHeaderNavLinks } from './utils.js';
 
@@ -16,7 +16,23 @@ let menuState = {
     previousKeyDownListener: null // Store the previous listener to restore
 };
 
-// Menu keyboard navigation handler
+function platformMenuKeyDown(event) {
+
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+
+    switch (event.key) {
+
+    case 'Escape':
+        console.log("Escape: ");
+        closePlatformMenu();
+        // initSlideShow('settings');
+
+        break;
+    }
+
+}
+
 function gameMenuKeyDown(event) {
 
     event.stopPropagation();
@@ -24,7 +40,7 @@ function gameMenuKeyDown(event) {
 
     const menu = document.getElementById('menu');
     const menuGameContainers = Array.from(menu.querySelectorAll('.menu-game-container'));
-    const galleryNumOfCols = window.LB.galleryNumOfCols;
+    const galleryNumOfCols = LB.galleryNumOfCols;
 
     switch (event.key) {
     case 'ArrowRight':
@@ -995,7 +1011,7 @@ function buildPlatformForm(platformName) {
     return formContainer;
 }
 
-export async function openPlatformMenu(platformName) {
+export function openPlatformMenu(platformName) {
     if (menuState.isOpen) {
         console.warn('Menu already open');
         return;
@@ -1016,7 +1032,7 @@ export async function openPlatformMenu(platformName) {
 
     menu.style.height = '85vh';
 
-    toggleHeaderNavLinks('hide')
+    toggleHeaderNavLinks('hide');
 
     // Clear and populate menu
     menuContainer.innerHTML = '';
@@ -1025,8 +1041,8 @@ export async function openPlatformMenu(platformName) {
     const platformForm = buildPlatformForm(platformName);
     menuContainer.appendChild(platformForm);
 
-    // Attach event listeners
-    window.addEventListener('keydown', gameMenuKeyDown);
+    setKeydown(platformMenuKeyDown);
+
     menuContainer.addEventListener('wheel', onMenuWheel);
     menuContainer.addEventListener('click', onMenuClick);
 
@@ -1069,12 +1085,11 @@ export async function openGameMenu(gameContainer) {
     menuContainer.appendChild(currentGameImgContainer);
     await populateGameMenu(currentGameImgContainer, gameName, platformName);
 
-    // Attach event listeners
-    window.addEventListener('keydown', gameMenuKeyDown);
+    setKeydown(gameMenuKeyDown);
+
     menuContainer.addEventListener('wheel', onMenuWheel);
     menuContainer.addEventListener('click', onMenuClick);
 
-    console.log('Game menu opened for:', gameName, 'platform:', platformName);
 }
 
 async function populateGameMenu(gameMenuContainer, gameName, platformName) {
@@ -1241,7 +1256,7 @@ async function closePlatformMenu() {
     const platformName = menuContainer.dataset.menuPlatform;
 
     // Remove event listeners
-    window.removeEventListener('keydown', gameMenuKeyDown);
+    // window.removeEventListener('keydown', gameMenuKeyDown);
     menuContainer.removeEventListener('wheel', onMenuWheel);
     menuContainer.removeEventListener('click', onMenuClick);
 
@@ -1251,12 +1266,13 @@ async function closePlatformMenu() {
     document.querySelector('header .prev-link').style.opacity = 1;
     document.querySelector('header .next-link').style.opacity = 1;
 
+    initSlideShow(platformName);
+
     menuContainer.innerHTML = '';
     menu.style.height = '0';
     menuState.isOpen = false;
     menuState.menuType = null;
 
-    initSlideShow(platformName);
 }
 
 /**
@@ -1273,7 +1289,7 @@ async function closeGameMenu(imgSrc) {
     const menuContainer = document.getElementById('menu');
 
     // Remove event listeners
-    window.removeEventListener('keydown', gameMenuKeyDown);
+    // window.removeEventListener('keydown', gameMenuKeyDown);
     menuContainer.removeEventListener('wheel', onMenuWheel);
     menuContainer.removeEventListener('click', onMenuClick);
 
@@ -1296,10 +1312,12 @@ async function closeGameMenu(imgSrc) {
             if (selectedGameImg) {
                 selectedGame.classList.add('loading');
 
+                const gameName = selectedGame.dataset.gameName;
+
                 const savedImagePath = await downloadImage(
                     imgSrc,
                     selectedGame.dataset.platform,
-                    selectedGame.dataset.gameName
+                    gameName
                 );
 
                 if (savedImagePath) {
@@ -1320,5 +1338,5 @@ async function closeGameMenu(imgSrc) {
     menuState.isOpen = false;
     menuState.menuType = null;
 
-    console.log('Game menu closed');
+    setKeydown('previous');
 }

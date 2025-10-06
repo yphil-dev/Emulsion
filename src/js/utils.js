@@ -234,3 +234,44 @@ export function handleKeyDownListeners(context) {
 export function toggleHeader(display) {
     document.getElementById('header').style.display = display === 'show' ? 'flex' : 'none';
 }
+
+export function setKeydown(newHandler) {
+    // Initialize the storage if it doesn't exist
+    if (!LB._keydownHistory) LB._keydownHistory = [];
+
+    // Remove the currently active handler if any
+    if (LB.currentKeydownHandler) {
+        window.removeEventListener('keydown', LB.currentKeydownHandler);
+        console.log('[keydown] Removed current handler:', LB.currentKeydownHandler.name || '(anonymous)');
+    }
+
+    // Case 1: restore the previous handler
+    if (newHandler === 'previous') {
+        const previousHandler = LB._keydownHistory.pop(); // get the last one
+        if (previousHandler) {
+            window.addEventListener('keydown', previousHandler);
+            LB.currentKeydownHandler = previousHandler;
+            console.log('[keydown] Restored previous handler:', previousHandler.name || '(anonymous)');
+        } else {
+            LB.currentKeydownHandler = null;
+            console.log('[keydown] No previous handler to restore.');
+        }
+        return;
+    }
+
+    // Case 2: install a new handler
+    if (typeof newHandler === 'function') {
+        // Push the current one (if any) to history before replacing
+        if (LB.currentKeydownHandler) {
+            LB._keydownHistory.push(LB.currentKeydownHandler);
+        }
+
+        window.addEventListener('keydown', newHandler);
+        LB.currentKeydownHandler = newHandler;
+        console.log('[keydown] Added new handler:', newHandler.name || '(anonymous)');
+    } else {
+        console.warn('[keydown] Invalid handler passed to setKeydown:', newHandler);
+    }
+}
+
+

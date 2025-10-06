@@ -1,5 +1,5 @@
 import { getPlatformInfo, PLATFORMS } from './platforms.js';
-import { openPlatformMenu } from './menu.js';
+import { openPlatformMenu, openGameMenu } from './menu.js';
 import { getSelectedGameContainer,
          updateFooterControls,
          simulateKeyDown,
@@ -338,7 +338,7 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
                     if (event.currentTarget.classList.contains('empty-platform-game-container')) {
                         return;
                     }
-                    LB.menu.openGameMenu(event.currentTarget);
+                    openGameMenu(event.currentTarget);
                 });
 
                 container.classList.remove('selected');
@@ -500,7 +500,7 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
             if (!LB.kioskMode) {
                 const selectedContainer = gameContainers[selectedIndex];
                 if (selectedContainer) {
-                    LB.menu.openGameMenu(selectedContainer);
+                    openGameMenu(selectedContainer);
                 }
             }
             break;

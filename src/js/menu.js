@@ -69,9 +69,9 @@ function gameMenuKeyDown(event) {
         const selectedGameContainer = getSelectedGameContainer(menuGameContainers, menuState.selectedIndex);
         const selectedImg = selectedGameContainer.querySelector('.game-image');
         if (menuState.menuType === 'platform') {
-            LB.menu.closePlatformMenu();
+            closePlatformMenu();
         } else {
-            LB.menu.closeGameMenu(selectedImg.src);
+            closeGameMenu(selectedImg.src);
         }
         break;
 
@@ -85,9 +85,9 @@ function gameMenuKeyDown(event) {
 
     case 'Escape':
         if (menuState.menuType === 'platform') {
-            LB.menu.closePlatformMenu();
+            closePlatformMenu();
         } else {
-            LB.menu.closeGameMenu();
+            closeGameMenu();
         }
         break;
     }
@@ -102,9 +102,9 @@ function gameMenuKeyDown(event) {
 function onMenuClick(event) {
     if (event.target.src) {
         if (menuState.menuType === 'platform') {
-            LB.menu.closePlatformMenu();
+            closePlatformMenu();
         } else {
-            LB.menu.closeGameMenu(event.target.src);
+            closeGameMenu(event.target.src);
         }
     }
 }
@@ -1033,11 +1033,7 @@ export async function openPlatformMenu(platformName) {
     console.log('Platform menu opened for:', platformName);
 }
 
-/**
- * Open menu for a game cover art selection
- * @param {HTMLElement} gameContainer - The game container element
- */
-async function openGameMenu(gameContainer) {
+export async function openGameMenu(gameContainer) {
     if (menuState.isOpen) {
         console.warn('Menu already open');
         return;
@@ -1351,10 +1347,3 @@ async function closeGameMenu(imgSrc) {
 
     console.log('Game menu closed');
 }
-
-LB.menu = {
-    openPlatformMenu,
-    openGameMenu,
-    closePlatformMenu,
-    closeGameMenu,
-};

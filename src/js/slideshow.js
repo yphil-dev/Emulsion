@@ -706,33 +706,21 @@ export function initGamepad () {
 function showQuitConfirmationDialog() {
 
     const overlay = document.getElementById('quit-confirmation-overlay');
-    const dialog = document.getElementById('quit-confirmation-dialog');
-    const title = document.getElementById('quit-confirmation-title');
-    title.textContent = 'Really, quit?';
-
     const okButton = document.getElementById('quit-ok-button');
-    okButton.textContent = 'OK';
-
     const cancelButton = document.getElementById('quit-cancel-button');
-    cancelButton.textContent = 'Cancel';
 
     let selectedButton = 'cancel';
 
-    function updateButtonSelection() {
-        if (selectedButton === 'ok') {
-            console.log("OK: ");
-            okButton.focus();
-            cancelButton.blur();
-        } else {
-            console.log("yo!: ");
-            cancelButton.focus();
-            okButton.blur();
-        }
+    function openDialog() {
+        setKeydown(quitDialogKeyDown);
+        overlay.style.display = 'flex';
+        okButton.blur();
+        cancelButton.focus();
     }
 
     function closeDialog() {
         overlay.style.display = 'none';
-        setKeydown('previous');
+        initSlideShow(LB.currentPlatform);
     }
 
     function confirmQuit() {
@@ -745,55 +733,36 @@ function showQuitConfirmationDialog() {
     }
 
     function quitDialogKeyDown(event) {
-        event.preventDefault();
+        // event.preventDefault();
         event.stopPropagation();
         event.stopImmediatePropagation();
 
         switch (event.key) {
         case 'ArrowLeft':
         case 'ArrowRight':
-            selectedButton = selectedButton === 'ok' ? 'cancel' : 'ok';
-            updateButtonSelection();
-            break;
-        case 'Enter':
-            if (selectedButton === 'ok') {
-                confirmQuit();
-            } else {
-                cancelQuit();
-            }
+            const buttons = [okButton, cancelButton];
+            const currentIndex = buttons.indexOf(document.activeElement);
+            const direction = event.key === 'ArrowRight' ? 1 : -1;
+            const nextIndex = (currentIndex + direction + buttons.length) % buttons.length;
+            buttons[nextIndex].focus();
+            selectedButton = buttons[nextIndex] === okButton ? 'ok' : 'cancel';
             break;
         case 'Escape':
             cancelQuit();
             break;
-        default:
-            // Block ALL other keys
-            break;
         }
     }
 
-    // Button click handlers
+    // Button click handlers (but also somehow handles KB input..?)
     okButton.addEventListener('click', confirmQuit);
     cancelButton.addEventListener('click', cancelQuit);
-
-    // Overlay click to cancel
     overlay.addEventListener('click', (event) => {
         if (event.target === overlay) {
             cancelQuit();
         }
     });
 
-    setKeydown(quitDialogKeyDown);
-
-    overlay.style.display = 'flex';
-    dialog.style.display = 'flex';
-
-    // Focus the dialog for accessibility
-    dialog.focus();
-
-    // Initialize button selection
-    okButton.blur();
-    cancelButton.focus();
-
+    openDialog();
 }
 
 function getPlatformByName(platformName) {

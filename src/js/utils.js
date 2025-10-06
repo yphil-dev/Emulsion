@@ -64,7 +64,7 @@ export function setFooterSize(size) {
     footer.className = `footer-${size}`;
 }
 
-export function getSelectedGame(gameContainers, selectedIndex) {
+export function getSelectedGameContainer(gameContainers, selectedIndex) {
     // Direct access if index is valid
     if (selectedIndex >= 0 && selectedIndex < gameContainers.length) {
         return gameContainers[selectedIndex];

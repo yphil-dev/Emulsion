@@ -1,7 +1,7 @@
 import { getPlatformInfo } from './platforms.js';
 import { updateHeader } from './slideshow.js';
 import { updatePreference, getPreference } from './preferences.js';
-import { getSelectedGame,
+import { getSelectedGameContainer,
          updateFooterControls,
          applyTheme,
          simulateKeyDown,
@@ -17,7 +17,8 @@ let menuState = {
 };
 
 // Menu keyboard navigation handler
-function onMenuKeyDown(event) {
+function gameMenuKeyDown(event) {
+
     event.stopPropagation();
     event.stopImmediatePropagation();
 
@@ -65,8 +66,8 @@ function onMenuKeyDown(event) {
             break;
 
         case 'Enter':
-            const selectedGame = getSelectedGame(menuGameContainers, menuState.selectedIndex);
-            const selectedImg = selectedGame.querySelector('.game-image');
+            const selectedGameContainer = getSelectedGameContainer(menuGameContainers, menuState.selectedIndex);
+            const selectedImg = selectedGameContainer.querySelector('.game-image');
             if (menuState.menuType === 'platform') {
                 LB.menu.closePlatformMenu();
             } else {
@@ -1024,13 +1025,8 @@ export async function openPlatformMenu(platformName) {
     const platformForm = buildPlatformForm(platformName);
     menuContainer.appendChild(platformForm);
 
-    // Remove current keyboard listener (typically gallery handler)
-    if (window.currentGalleryKeyDown) {
-        window.removeEventListener('keydown', window.currentGalleryKeyDown);
-    }
-
     // Attach event listeners
-    window.addEventListener('keydown', onMenuKeyDown);
+    window.addEventListener('keydown', gameMenuKeyDown);
     menuContainer.addEventListener('wheel', onMenuWheel);
     menuContainer.addEventListener('click', onMenuClick);
 
@@ -1081,15 +1077,10 @@ async function openGameMenu(gameContainer) {
     document.querySelector('header .item-type').textContent = '';
     document.querySelector('header .item-number').textContent = '';
 
-    // Remove current keyboard listener (typically gallery handler)
-    if (window.currentGalleryKeyDown) {
-        window.removeEventListener('keydown', window.currentGalleryKeyDown);
-    }
-
     updateHeader(platformName, gameName);
 
     // Attach event listeners
-    window.addEventListener('keydown', onMenuKeyDown);
+    window.addEventListener('keydown', gameMenuKeyDown);
     menuContainer.addEventListener('wheel', onMenuWheel);
     menuContainer.addEventListener('click', onMenuClick);
 
@@ -1257,7 +1248,7 @@ async function closePlatformMenu() {
     const platformName = menuContainer.dataset.menuPlatform;
 
     // Remove event listeners
-    window.removeEventListener('keydown', onMenuKeyDown);
+    window.removeEventListener('keydown', gameMenuKeyDown);
     menuContainer.removeEventListener('wheel', onMenuWheel);
     menuContainer.removeEventListener('click', onMenuClick);
 
@@ -1295,11 +1286,6 @@ async function closePlatformMenu() {
     menuState.isOpen = false;
     menuState.menuType = null;
 
-    // Restore gallery keyboard handler
-    if (window.currentGalleryKeyDown) {
-        window.addEventListener('keydown', window.currentGalleryKeyDown);
-    }
-
     console.log('Platform menu closed');
 }
 
@@ -1317,7 +1303,7 @@ async function closeGameMenu(imgSrc) {
     const menuContainer = document.getElementById('menu');
 
     // Remove event listeners
-    window.removeEventListener('keydown', onMenuKeyDown);
+    window.removeEventListener('keydown', gameMenuKeyDown);
     menuContainer.removeEventListener('wheel', onMenuWheel);
     menuContainer.removeEventListener('click', onMenuClick);
 
@@ -1329,11 +1315,6 @@ async function closeGameMenu(imgSrc) {
     window.LB.imageSrc = imgSrc;
     menuContainer.innerHTML = '';
     menu.style.height = '0';
-
-    // Restore gallery keyboard handler
-    if (window.currentGalleryKeyDown) {
-        window.addEventListener('keydown', window.currentGalleryKeyDown);
-    }
 
     // Download and update image if provided
     if (imgSrc && LB.currentPlatform) {

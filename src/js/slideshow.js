@@ -1,6 +1,6 @@
 import { getPlatformInfo, PLATFORMS } from './platforms.js';
 import { openPlatformMenu } from './menu.js';
-import { getSelectedGame,
+import { getSelectedGameContainer,
          updateFooterControls,
          simulateKeyDown,
          toggleHeaderNavLinks,
@@ -385,6 +385,7 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
     }
 
     function updateGallery() {
+
         // Filter out disabled pages and sort by dataset.index
         const enabledPages = pages
               .filter(page => page.dataset.status !== 'disabled')
@@ -461,8 +462,7 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
         return Math.min(Math.max(newIndex, 0), gameContainers.length - 1);
     };
 
-    // Store gallery keyboard handler globally so menu can restore it
-    window.currentGalleryKeyDown = function onGalleryKeyDown(event) {
+    function galleryKeyDown(event) {
         switch (event.key) {
         case 'ArrowRight':
             if (event.shiftKey) {
@@ -520,7 +520,7 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
                     openPlatformMenu(platformName);
                 }
             } else {
-                const selectedGameContainer = getSelectedGame(gameContainers, selectedIndex);
+                const selectedGameContainer = getSelectedGameContainer(gameContainers, selectedIndex);
                 if (selectedGameContainer.classList.contains('empty-platform-game-container')) {
                     return;
                 }
@@ -530,7 +530,7 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
         case 'Escape':
             document.getElementById('slideshow').style.display = 'flex';
             document.getElementById('galleries').style.display = 'none';
-            window.removeEventListener('keydown', onGalleryKeyDown);
+            window.removeEventListener('keydown', galleryKeyDown);
 
             // Smart navigation - return to current platform using name-based navigation
             const activePage = document.querySelector('.page.active');
@@ -566,7 +566,7 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
                 block: "center"
             });
         }
-    }
+    };
 
     function onGalleryWheel(event) {
         event.preventDefault();
@@ -587,8 +587,8 @@ function initGallery(platformNameOrIndex, disabledPlatform) {
 
     galleries.addEventListener('wheel', onGalleryWheel);
 
-    window.addEventListener('keydown', window.currentGalleryKeyDown);
-    updateGallery(); // Initialize the pages carousel
+    window.addEventListener('keydown', galleryKeyDown);
+    updateGallery(true); // Initialize the pages carousel
 }
 
 function initGamepad () {

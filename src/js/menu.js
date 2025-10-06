@@ -1,5 +1,5 @@
 import { getPlatformInfo } from './platforms.js';
-import { updateHeader } from './slideshow.js';
+import { updateHeader, initSlideShow } from './slideshow.js';
 import { updatePreference, getPreference } from './preferences.js';
 import { getSelectedGameContainer,
          updateFooterControls,
@@ -1227,9 +1227,7 @@ function buildCurrentGameImgContainer(gameName, image, platformName) {
     return gameMenuContainer;
 }
 
-/**
- * Close platform settings menu
- */
+// Close platform settings menu
 async function closePlatformMenu() {
     if (!menuState.isOpen || menuState.menuType !== 'platform') {
         console.warn('No platform menu to close');
@@ -1247,32 +1245,9 @@ async function closePlatformMenu() {
     menuContainer.removeEventListener('wheel', onMenuWheel);
     menuContainer.removeEventListener('click', onMenuClick);
 
-    // Check if platform was enabled
-    if (platformName && platformName !== 'settings') {
-        try {
-            const isEnabled = await getPreference(platformName, 'isEnabled');
-            if (isEnabled) {
-                // Platform was enabled - navigate to it
-                menuContainer.innerHTML = '';
-                menu.style.height = '0';
-                menuState.isOpen = false;
-                menuState.menuType = null;
-
-                console.log('Navigating to enabled platform:', platformName);
-
-                // Switch to gallery view
-                document.getElementById('slideshow').style.display = 'none';
-                document.getElementById('galleries').style.display = 'flex';
-                LB.control.initGallery(platformName);
-                return;
-            }
-        } catch (error) {
-            console.error('Error checking platform status:', error);
-        }
-    }
-
     // Normal close - stay on current page and restore gallery handler
     updateFooterControls('dpad', 'same', 'Browse', 'on');
+
     document.querySelector('header .prev-link').style.opacity = 1;
     document.querySelector('header .next-link').style.opacity = 1;
 
@@ -1280,6 +1255,8 @@ async function closePlatformMenu() {
     menu.style.height = '0';
     menuState.isOpen = false;
     menuState.menuType = null;
+
+    initSlideShow(platformName);
 
     console.log('Platform menu closed');
 }

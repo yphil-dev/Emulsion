@@ -1,7 +1,8 @@
-import { getPlatformInfo, PLATFORMS } from './platforms.js';
+import { getPlatformInfo } from './platforms.js';
 import { openPlatformMenu, openGameMenu } from './menu.js';
 import { getSelectedGameContainer,
          updateFooterControls,
+         updateHeader,
          setKeydown,
          simulateKeyDown,
          toggleHeaderNavLinks,
@@ -146,8 +147,8 @@ export function initSlideShow(platformToDisplay) {
         }
     }
 
-    updateFooterControls('dpad', 'button-dpad-ew', 'Browse<br>Platforms', 'on');
-    updateFooterControls('shoulders', 'same', 'Browse<br>Platforms', 'off');
+    updateFooterControls('dpad', 'button-dpad-ew', 'Platforms', 'on');
+    updateFooterControls('shoulders', 'same', 'Platforms', 'off');
     updateFooterControls('west', 'same', 'same', 'off');
     updateFooterControls('east', 'same', 'Exit');
 
@@ -196,13 +197,13 @@ export function buildHomeSlide(platformName, preferences) {
 
 function setGalleryFooterControls(currentIndex) {
     if (currentIndex === 0) {
-        updateFooterControls('dpad', 'button-dpad-nesw', 'Browse<br>Platforms', 'on');
+        updateFooterControls('dpad', 'button-dpad-nesw', 'Platforms', 'on');
         updateFooterControls('shoulders', 'same', 'Browse<br>Platforms', 'off');
         updateFooterControls('west', 'same', 'Fetch<br>cover', 'off');
     } else {
-        updateFooterControls('dpad', 'button-dpad-nesw', 'Browse<br>Games', 'on');
-        updateFooterControls('west', 'same', 'Fetch<br>cover', 'on');
-        updateFooterControls('shoulders', 'same', 'Browse<br>Platforms', 'on');
+        updateFooterControls('dpad', 'button-dpad-nesw', 'Games', 'on');
+        updateFooterControls('west', 'same', 'Cover', 'on');
+        updateFooterControls('shoulders', 'same', 'Platforms', 'on');
     }
     updateFooterControls('east', 'same', 'Back');
 }
@@ -278,6 +279,7 @@ export function initGallery(platformNameOrIndex, disabledPlatform) {
 
     const galleries = document.getElementById('galleries');
     const pages = Array.from(galleries.querySelectorAll('.page'));
+    const header = document.getElementById('header');
 
     let currentPlatformName = null;
     let currentPageIndex = 0;
@@ -577,7 +579,17 @@ export function initGallery(platformNameOrIndex, disabledPlatform) {
         }
     }
 
+    function onHeaderWheel(event) {
+        event.preventDefault();
+        if (event.deltaY > 0) {
+            goToNextPage();
+        } else if (event.deltaY < 0) {
+            goToPrevPage();
+        }
+    }
+
     galleries.addEventListener('wheel', onGalleryWheel);
+    header.addEventListener('wheel', onHeaderWheel);
 
     setKeydown(galleryKeyDown);
 
@@ -765,38 +777,3 @@ function showQuitConfirmationDialog() {
     openDialog();
 }
 
-function getPlatformByName(platformName) {
-    return PLATFORMS.find(p => p.name === platformName);
-}
-
-export function updateHeader(platformName, gameName) {
-
-    const header = document.getElementById("header");
-
-    const settingsPlatform = { nbGames: PLATFORMS.length };
-
-    const platform = platformName === 'settings' ? settingsPlatform : getPlatformByName(platformName);
-
-    let itemType = 'game';
-    let count = platform?.nbGames;
-
-    if (platformName === 'settings') {
-        itemType = 'platform';
-    }
-
-    if (gameName) {
-        itemType = 'image';
-        count = 0;
-    }
-
-
-    const pluralize = (count, singular, plural = `${singular}s`) =>
-          count === 1 ? singular : plural;
-
-    header.querySelector('.platform-name').textContent = gameName ? gameName : platformName;
-    header.querySelector('.item-number').textContent = count;
-    header.querySelector('.item-type').textContent = pluralize(count, itemType);
-
-    header.querySelector('.platform-image').style.backgroundImage = `url('../../img/platforms/${platformName}.png')`;
-
-}

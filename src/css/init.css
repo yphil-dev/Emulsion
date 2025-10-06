@@ -1,6 +1,6 @@
 @font-face {
   font-family: 'Orbitron';
-  src: url('../../font/Orbitron-VariableFont_wght.ttf') format('truetype');
+  src: url('../font/Orbitron-VariableFont_wght.ttf') format('truetype');
   font-weight: 100 900; /* For variable fonts */
   font-stretch: 50% 200%; /* Optional for variable fonts */
   font-style: normal;
@@ -8,7 +8,7 @@
 
 @font-face {
   font-family: 'Exo2';
-  src: url('../../font/Exo2-Regular.otf') format('opentype');
+  src: url('../ font/Exo2-Regular.otf') format('opentype');
   font-weight: normal; /* For variable fonts */
   font-style: normal;
 }

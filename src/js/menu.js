@@ -1,8 +1,9 @@
 import { getPlatformInfo } from './platforms.js';
-import { updateHeader, initSlideShow } from './slideshow.js';
+import { initSlideShow } from './slideshow.js';
 import { updatePreference, getPreference } from './preferences.js';
 import { getSelectedGameContainer,
          updateFooterControls,
+         updateHeader,
          notify,
          applyTheme,
          simulateKeyDown,

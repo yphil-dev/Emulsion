@@ -1,3 +1,4 @@
+import { PLATFORMS } from './platforms.js';
 // DOM and UI utility functions
 
 export function updateFooterControls(section, newIcon, newText, display) {
@@ -274,18 +275,48 @@ export function setKeydown(newHandler) {
     }
 }
 
-
 export function notify(text) {
-
     const notifications = document.getElementById('notifications');
     const notification = document.getElementById('notification');
 
     notification.textContent = text;
-
     notifications.style.opacity = 1;
 
     setTimeout(() => {
         notifications.style.opacity = 0;
     }, 3000);
+}
+
+function getPlatformByName(platformName) {
+    return PLATFORMS.find(p => p.name === platformName);
+}
+
+export function updateHeader(platformName, gameName) {
+
+    const header = document.getElementById("header");
+    const settingsPlatform = { nbGames: PLATFORMS.length };
+    const platform = platformName === 'settings' ? settingsPlatform : getPlatformByName(platformName);
+
+    let itemType = 'game';
+    let count = platform?.nbGames;
+
+    if (platformName === 'settings') {
+        itemType = 'platform';
+    }
+
+    if (gameName) {
+        itemType = 'image';
+        count = 0;
+    }
+
+
+    const pluralize = (count, singular, plural = `${singular}s`) =>
+          count === 1 ? singular : plural;
+
+    header.querySelector('.platform-name').textContent = gameName ? gameName : platformName;
+    header.querySelector('.item-number').textContent = count;
+    header.querySelector('.item-type').textContent = pluralize(count, itemType);
+
+    header.querySelector('.platform-image').style.backgroundImage = `url('../../img/platforms/${platformName}.png')`;
 
 }

@@ -3,6 +3,7 @@ import { updateHeader, initSlideShow } from './slideshow.js';
 import { updatePreference, getPreference } from './preferences.js';
 import { getSelectedGameContainer,
          updateFooterControls,
+         notify,
          applyTheme,
          simulateKeyDown,
          setKeydown,
@@ -147,9 +148,11 @@ async function downloadImage(imgSrc, platform, gameName) {
         const result = await ipcRenderer.invoke('download-image', imgSrc, platform, gameName, gamesDir);
         if (result.success) {
             console.log(`Image saved at ${result.path}`);
+            notify(`Image saved at ${result.path}`);
             return result.path;
         } else {
             console.error(`Error saving image: ${result.error}`);
+            notify(`Error saving image: ${result.error}`);
             return null;
         }
     } catch (error) {

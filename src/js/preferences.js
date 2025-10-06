@@ -1,3 +1,4 @@
+import { notify } from './utils.js';
 // Preferences management
 
 // All the libs used are required here
@@ -73,18 +74,20 @@ export async function updatePreference(platformName, key, value) {
         preferences[platformName][key] = value;
         await ipcRenderer.invoke('save-preferences', preferences);
 
-        const notifications = document.getElementById('notifications');
-        const notification = document.getElementById('notification');
+        // const notifications = document.getElementById('notifications');
+        // const notification = document.getElementById('notification');
 
-        notification.textContent = 'Preferences saved successfuly';
+        // notification.textContent = 'Preferences saved successfuly';
 
-        notifications.style.opacity = 1;
+        // notifications.style.opacity = 1;
 
-        setTimeout(() => {
-            notifications.style.opacity = 0;
-        }, 3000);
+        // setTimeout(() => {
+        //     notifications.style.opacity = 0;
+        // }, 3000);
 
-        console.log(`${platformName} Preferences saved successfully!`);
+        // console.log(`${platformName} Preferences saved successfully!`);
+
+        notify(`${platformName} Preferences saved successfully!`);
 
         return 'OK';
     } catch (error) {

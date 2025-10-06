@@ -2,8 +2,7 @@ import { getPlatformInfo, PLATFORMS } from './platforms.js';
 import { safeFileName, cleanFileName, stripExtensions } from './utils.js';
 
 // LB.gallery.buildGalleries now also builds the "recent" gallery
-LB.gallery = {
-    buildGalleries: async function (preferences, userDataPath) {
+export async function buildGalleries (preferences, userDataPath) {
         return new Promise(async (resolve, reject) => {
             try {
                 const galleriesContainer = document.getElementById('galleries');
@@ -86,7 +85,6 @@ LB.gallery = {
             }
         });
     }
-};
 
 async function _buildRecentGallery({ userDataPath, index }) {
     let recents = LB.recents;
@@ -270,7 +268,6 @@ async function buildGallery(params) {
     const gamesDir = params.gamesDir;
     const emulator = params.emulator;
     const emulatorArgs = params.emulatorArgs;
-    const userDataPath = params.userDataPath;
     const index = params.index;
     const platforms = params.platforms;
     const extensions = params.extensions;
@@ -285,7 +282,6 @@ async function buildGallery(params) {
 
     const page = document.createElement('div');
     page.classList.add('page');
-    page.id = `page${index}`;
     page.setAttribute('data-index', index);
 
     page.setAttribute('data-platform', platform);

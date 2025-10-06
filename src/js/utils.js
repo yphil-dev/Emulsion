@@ -275,3 +275,17 @@ export function setKeydown(newHandler) {
 }
 
 
+export function notify(text) {
+
+    const notifications = document.getElementById('notifications');
+    const notification = document.getElementById('notification');
+
+    notification.textContent = text;
+
+    notifications.style.opacity = 1;
+
+    setTimeout(() => {
+        notifications.style.opacity = 0;
+    }, 3000);
+
+}

@@ -1,19 +1,13 @@
-// Main application entry point - ES6 Module
-// This replaces init.js and provides backward compatibility during migration
-
 const { ipcRenderer } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const fsp = require('fs').promises;
 const axios = require('axios');
-import { PLATFORMS, getPlatformInfo } from './platforms.js';
 
-// Import all modules
-import * as utils from './utils.js';
 import * as preferences from './preferences.js';
 import * as theme from './theme.js';
 
-// Make Node.js modules globally available (required by existing code)
+// Make Node.js modules globally available
 window.ipcRenderer = ipcRenderer;
 window.path = path;
 window.fs = fs;

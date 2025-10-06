@@ -179,28 +179,28 @@ p.name {
   margin-top: 20px;
 }
 
-#quit-ok-button {
-  background: #e74c3c;
-  color: white;
-  border: 2px solid #c0392b;
-  border-radius: 8px;
-  padding: 12px 24px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.2s;
-  min-width: 80px;
-}
+/* #quit-ok-button { */
+/*   background: #e74c3c; */
+/*   color: white; */
+/*   border: 2px solid #c0392b; */
+/*   border-radius: 8px; */
+/*   padding: 12px 24px; */
+/*   font-size: 16px; */
+/*   font-weight: bold; */
+/*   cursor: pointer; */
+/*   transition: all 0.2s; */
+/*   min-width: 80px; */
+/* } */
 
-#quit-cancel-button {
-  background: #95a5a6;
-  color: white;
-  border: 2px solid #7f8c8d;
-  border-radius: 8px;
-  padding: 12px 24px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.2s;
-  min-width: 80px;
-}
+/* #quit-cancel-button { */
+/*   background: #95a5a6; */
+/*   color: white; */
+/*   border: 2px solid #7f8c8d; */
+/*   border-radius: 8px; */
+/*   padding: 12px 24px; */
+/*   font-size: 16px; */
+/*   font-weight: bold; */
+/*   cursor: pointer; */
+/*   transition: all 0.2s; */
+/*   min-width: 80px; */
+/* } */

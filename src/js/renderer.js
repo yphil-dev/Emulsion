@@ -2,6 +2,7 @@ import { PLATFORMS } from './platforms.js';
 import { applyTheme, setFooterSize } from './utils.js';
 import { buildHomeSlide, initSlideShow, initGallery, initGamepad } from './slideshow.js';
 import { loadPreferences } from './preferences.js';
+import { buildGalleries } from './gallery.js';
 
 const slideshow = document.getElementById("slideshow");
 
@@ -27,7 +28,7 @@ loadPreferences()
     })
     .then(async ({ preferences }) => {
 
-        return LB.gallery.buildGalleries(preferences, LB.userDataPath)
+        return buildGalleries(preferences, LB.userDataPath)
             .then((platforms) => {
                 return { platforms, preferences };
             });

@@ -194,7 +194,7 @@ export function buildHomeSlide(platformName, preferences) {
     return slide;
 }
 
-function setGalleryControls(currentIndex) {
+function setGalleryFooterControls(currentIndex) {
     if (currentIndex === 0) {
         updateFooterControls('dpad', 'button-dpad-nesw', 'Browse<br>Platforms', 'on');
         updateFooterControls('shoulders', 'same', 'Browse<br>Platforms', 'off');
@@ -309,9 +309,8 @@ export function initGallery(platformNameOrIndex, disabledPlatform) {
             block: "start",
         });
 
-        // Set controls based on platform type
-        const isSettingsPage = page.dataset.platform === 'settings';
-        setGalleryControls(isSettingsPage ? 0 : 1);
+        setGalleryFooterControls(page.dataset.platform === 'settings' ? 0 : 1);
+
         gameContainers = Array.from(page.querySelectorAll('.game-container') || []);
 
         // Only attach listeners once per page to prevent duplicates
@@ -322,12 +321,8 @@ export function initGallery(platformNameOrIndex, disabledPlatform) {
                         return;
                     }
                     if (event.currentTarget.classList.contains('settings')) {
-                        // Get platform name directly from the clicked element's dataset
                         const platformName = event.currentTarget.dataset.platform;
-                        console.log('Opening settings menu for platform:', platformName);
-
                         openPlatformMenu(platformName);
-                        // return;
                     } else {
                         launchGame(event.currentTarget);
                     }
@@ -336,7 +331,6 @@ export function initGallery(platformNameOrIndex, disabledPlatform) {
                 // right-click (contextmenu) handler
                 container.addEventListener('contextmenu', (event) => {
                     event.preventDefault(); // Prevent the default context menu
-
                     if (event.currentTarget.classList.contains('empty-platform-game-container')) {
                         return;
                     }
@@ -346,8 +340,7 @@ export function initGallery(platformNameOrIndex, disabledPlatform) {
                 container.classList.remove('selected');
             });
 
-            // Mark that listeners have been attached
-            page.dataset.listenersAttached = 'true';
+            page.setAttribute('data-listeners-attached', true);
         }
 
         const firstGameContainer = page.querySelector('.game-container');
@@ -711,61 +704,35 @@ export function initGamepad () {
 }
 
 function showQuitConfirmationDialog() {
-    console.log("showQuitConfirmationDialog: ");
-    // Store reference to current slideshow handler
-    const currentHomeKeyDown = window.homeKeyDownHandler || null;
 
     const overlay = document.getElementById('quit-confirmation-overlay');
     const dialog = document.getElementById('quit-confirmation-dialog');
     const title = document.getElementById('quit-confirmation-title');
     title.textContent = 'Really, quit?';
-    const buttonContainer = document.getElementById('quit-confirmation-buttons');
+
     const okButton = document.getElementById('quit-ok-button');
     okButton.textContent = 'OK';
+
     const cancelButton = document.getElementById('quit-cancel-button');
     cancelButton.textContent = 'Cancel';
 
-    const addHoverEffect = (button, hoverColor, normalColor) => {
-        button.addEventListener('mouseenter', () => {
-            button.style.background = hoverColor;
-            button.style.transform = 'scale(1.05)';
-        });
-        button.addEventListener('mouseleave', () => {
-            button.style.background = normalColor;
-            button.style.transform = 'scale(1)';
-        });
-    };
-
-    addHoverEffect(okButton, '#c0392b', '#e74c3c');
-    addHoverEffect(cancelButton, '#7f8c8d', '#95a5a6');
-
-    // Dialog state
-    let selectedButton = 'cancel'; // Default to cancel for safety
+    let selectedButton = 'cancel';
 
     function updateButtonSelection() {
-        // Reset both buttons
-        okButton.style.background = '#e74c3c';
-        okButton.style.transform = 'scale(1)';
-        cancelButton.style.background = '#95a5a6';
-        cancelButton.style.transform = 'scale(1)';
-
-        // Highlight selected button
         if (selectedButton === 'ok') {
-            okButton.style.background = '#c0392b';
-            okButton.style.transform = 'scale(1.1)';
-            okButton.style.boxShadow = '0 0 15px rgba(231, 76, 60, 0.6)';
-            cancelButton.style.boxShadow = 'none';
+            console.log("OK: ");
+            okButton.focus();
+            cancelButton.blur();
         } else {
-            cancelButton.style.background = '#7f8c8d';
-            cancelButton.style.transform = 'scale(1.1)';
-            cancelButton.style.boxShadow = '0 0 15px rgba(149, 165, 166, 0.6)';
-            okButton.style.boxShadow = 'none';
+            console.log("yo!: ");
+            cancelButton.focus();
+            okButton.blur();
         }
     }
 
     function closeDialog() {
         overlay.style.display = 'none';
-        window.removeEventListener('keydown', quitDialogKeyDown, true);
+        setKeydown('previous');
     }
 
     function confirmQuit() {
@@ -775,19 +742,9 @@ function showQuitConfirmationDialog() {
 
     function cancelQuit() {
         closeDialog();
-        // Restore slideshow keyboard listener using global reference
-        // if (LB.currentHomeKeyDown) {
-        //     window.addEventListener('keydown', LB.currentHomeKeyDown);
-        // }
-
-        // setKeydown(homeKeyDown);
-
-
     }
 
-    // Keyboard and gamepad handler - CAPTURE ALL EVENTS
     function quitDialogKeyDown(event) {
-        // STOP ALL KEYBOARD EVENTS from propagating
         event.preventDefault();
         event.stopPropagation();
         event.stopImmediatePropagation();
@@ -825,28 +782,18 @@ function showQuitConfirmationDialog() {
         }
     });
 
-    // COMPLETELY BLOCK ALL KEYBOARD EVENTS
-    // Remove ALL existing listeners
-    const allListeners = window.getEventListeners ? window.getEventListeners(window) : null;
-
-    // Brute force: remove all keydown listeners using the global reference
-    if (LB.currentHomeKeyDown) {
-        window.removeEventListener('keydown', LB.currentHomeKeyDown);
-    }
-
-    // Add dialog listener with capture=true for ABSOLUTE highest priority
-    // window.addEventListener('keydown', quitDialogKeyDown, true);
-
     setKeydown(quitDialogKeyDown);
-
-    // Initialize button selection
-    updateButtonSelection();
 
     overlay.style.display = 'flex';
     dialog.style.display = 'flex';
 
     // Focus the dialog for accessibility
     dialog.focus();
+
+    // Initialize button selection
+    okButton.blur();
+    cancelButton.focus();
+
 }
 
 function getPlatformByName(platformName) {

@@ -27,69 +27,69 @@ function gameMenuKeyDown(event) {
     const galleryNumOfCols = window.LB.galleryNumOfCols;
 
     switch (event.key) {
-        case 'ArrowRight':
-            if (!event.shiftKey) {
-                menuState.selectedIndex = (menuState.selectedIndex + 1) % menuGameContainers.length;
-            }
-            break;
+    case 'ArrowRight':
+        if (!event.shiftKey) {
+            menuState.selectedIndex = (menuState.selectedIndex + 1) % menuGameContainers.length;
+        }
+        break;
 
-        case 'ArrowLeft':
-            if (!event.shiftKey && menuState.selectedIndex !== 1) {
-                menuState.selectedIndex = (menuState.selectedIndex - 1 + menuGameContainers.length) % menuGameContainers.length;
-            }
-            break;
+    case 'ArrowLeft':
+        if (!event.shiftKey && menuState.selectedIndex !== 1) {
+            menuState.selectedIndex = (menuState.selectedIndex - 1 + menuGameContainers.length) % menuGameContainers.length;
+        }
+        break;
 
-        case 'ArrowUp':
-            if (menuState.selectedIndex > galleryNumOfCols) {
-                menuState.selectedIndex = Math.max(menuState.selectedIndex - galleryNumOfCols, 0);
-            }
-            break;
+    case 'ArrowUp':
+        if (menuState.selectedIndex > galleryNumOfCols) {
+            menuState.selectedIndex = Math.max(menuState.selectedIndex - galleryNumOfCols, 0);
+        }
+        break;
 
-        case 'ArrowDown':
-            menuState.selectedIndex = Math.min(menuState.selectedIndex + galleryNumOfCols, menuGameContainers.length - 1);
-            break;
+    case 'ArrowDown':
+        menuState.selectedIndex = Math.min(menuState.selectedIndex + galleryNumOfCols, menuGameContainers.length - 1);
+        break;
 
-        case 'PageUp':
-            menuState.selectedIndex = Math.max(menuState.selectedIndex - galleryNumOfCols * 10, 0);
-            break;
+    case 'PageUp':
+        menuState.selectedIndex = Math.max(menuState.selectedIndex - galleryNumOfCols * 10, 0);
+        break;
 
-        case 'PageDown':
-            menuState.selectedIndex = Math.min(menuState.selectedIndex + galleryNumOfCols * 10, menuGameContainers.length - 1);
-            break;
+    case 'PageDown':
+        menuState.selectedIndex = Math.min(menuState.selectedIndex + galleryNumOfCols * 10, menuGameContainers.length - 1);
+        break;
 
-        case 'Home':
-            menuState.selectedIndex = 0;
-            break;
+    case 'Home':
+        menuState.selectedIndex = 0;
+        break;
 
-        case 'End':
-            menuState.selectedIndex = menuGameContainers.length - 1;
-            break;
+    case 'End':
+        menuState.selectedIndex = menuGameContainers.length - 1;
+        break;
 
-        case 'Enter':
-            const selectedGameContainer = getSelectedGameContainer(menuGameContainers, menuState.selectedIndex);
-            const selectedImg = selectedGameContainer.querySelector('.game-image');
-            if (menuState.menuType === 'platform') {
-                LB.menu.closePlatformMenu();
-            } else {
-                LB.menu.closeGameMenu(selectedImg.src);
-            }
-            break;
+    case 'Enter':
+        const selectedGameContainer = getSelectedGameContainer(menuGameContainers, menuState.selectedIndex);
+        const selectedImg = selectedGameContainer.querySelector('.game-image');
+        if (menuState.menuType === 'platform') {
+            LB.menu.closePlatformMenu();
+        } else {
+            LB.menu.closeGameMenu(selectedImg.src);
+        }
+        break;
 
-        case 'F5':
-            if (event.shiftKey) {
-                ipcRenderer.invoke('restart');
-            } else {
-                window.location.reload();
-            }
-            break;
+    case 'F5':
+        if (event.shiftKey) {
+            ipcRenderer.invoke('restart');
+        } else {
+            window.location.reload();
+        }
+        break;
 
-        case 'Escape':
-            if (menuState.menuType === 'platform') {
-                LB.menu.closePlatformMenu();
-            } else {
-                LB.menu.closeGameMenu();
-            }
-            break;
+    case 'Escape':
+        if (menuState.menuType === 'platform') {
+            LB.menu.closePlatformMenu();
+        } else {
+            LB.menu.closeGameMenu();
+        }
+        break;
     }
 
     // Update visual selection
@@ -373,11 +373,11 @@ function buildSettingsMenu() {
 
             // Detect changes that require reload
             const somethingImportantChanged =
-                newPrefs.numberOfColumns !== LB.galleryNumOfCols ||
-                newPrefs.disabledPlatformsPolicy !== LB.disabledPlatformsPolicy ||
-                newPrefs.recentlyPlayedPolicy !== LB.recentlyPlayedPolicy ||
-                newPrefs.steamGridAPIKey !== (LB.steamGridAPIKey || '') ||
-                newPrefs.giantBombAPIKey !== (LB.giantBombAPIKey || '');
+                  newPrefs.numberOfColumns !== LB.galleryNumOfCols ||
+                  newPrefs.disabledPlatformsPolicy !== LB.disabledPlatformsPolicy ||
+                  newPrefs.recentlyPlayedPolicy !== LB.recentlyPlayedPolicy ||
+                  newPrefs.steamGridAPIKey !== (LB.steamGridAPIKey || '') ||
+                  newPrefs.giantBombAPIKey !== (LB.giantBombAPIKey || '');
 
             // Update LB to reflect changes
             Object.assign(LB, {
@@ -1045,10 +1045,11 @@ async function openGameMenu(gameContainer) {
 
     const menu = document.getElementById('menu');
     const menuContainer = document.getElementById('menu');
-
     const gameName = gameContainer.dataset.gameName;
     const platformName = gameContainer.dataset.platform;
     const gameImage = gameContainer.querySelector('img');
+
+    updateHeader(platformName, gameName);
 
     // Store state
     menuState.isOpen = true;
@@ -1072,13 +1073,6 @@ async function openGameMenu(gameContainer) {
     menuContainer.appendChild(currentGameImgContainer);
     await populateGameMenu(currentGameImgContainer, gameName, platformName);
 
-    // Update header
-    document.querySelector('header .platform-name').textContent = cleanFileName(gameName);
-    document.querySelector('header .item-type').textContent = '';
-    document.querySelector('header .item-number').textContent = '';
-
-    updateHeader(platformName, gameName);
-
     // Attach event listeners
     window.addEventListener('keydown', gameMenuKeyDown);
     menuContainer.addEventListener('wheel', onMenuWheel);
@@ -1088,77 +1082,82 @@ async function openGameMenu(gameContainer) {
 }
 
 async function populateGameMenu(gameMenuContainer, gameName, platformName) {
-  const dummyContainer = gameMenuContainer.querySelector('.dummy-game-container');
-  const currentImageElem = gameMenuContainer.querySelector('img.current-image');
+    const dummyContainer = gameMenuContainer.querySelector('.dummy-game-container');
+    const currentImageElem = gameMenuContainer.querySelector('img.current-image');
 
-  ipcRenderer.send('fetch-images', gameName, platformName, LB.steamGridAPIKey, LB.giantBombAPIKey);
+    ipcRenderer.send('fetch-images', gameName, platformName, LB.steamGridAPIKey, LB.giantBombAPIKey);
 
-  ipcRenderer.once('image-urls', (event, urls) => {
-    if (urls.length === 0) {
-      // Clear placeholder
-      dummyContainer.textContent = '';
+    ipcRenderer.once('image-urls', (event, urls) => {
+        if (urls.length === 0) {
+            // Clear placeholder
+            dummyContainer.textContent = '';
 
-      // Icon + message
-      const iconP = document.createElement('p');
-      iconP.innerHTML = `<i class="fa fa-binoculars fa-5x" aria-hidden="true"></i>`;
-      const msgP  = document.createElement('p');
-      msgP.textContent = `No cover art found`;
+            // Icon + message
+            const iconP = document.createElement('p');
+            iconP.innerHTML = `<i class="fa fa-binoculars fa-5x" aria-hidden="true"></i>`;
+            const msgP  = document.createElement('p');
+            msgP.textContent = `No cover art found`;
 
-      // Layout
-      dummyContainer.append(iconP, msgP);
-      dummyContainer.style.gridColumn = `2 / calc(${LB.galleryNumOfCols} + 1)`;
-      dummyContainer.style.animation = 'unset';
-    } else {
-      // Replace placeholder with real results
-      dummyContainer.remove();
+            // Layout
+            dummyContainer.append(iconP, msgP);
+            dummyContainer.style.gridColumn = `2 / calc(${LB.galleryNumOfCols} + 1)`;
+            dummyContainer.style.animation = 'unset';
+        } else {
+            // Replace placeholder with real results
+            dummyContainer.remove();
 
-      urls.forEach(({ url, source }) => {
-        const img = new Image();
-        img.src = url;
-        img.title = `${gameName}\n\n- Found on ${source}\n- Click to download and save`;
-        img.classList.add('game-image');
-        img.style.opacity = '0';
-        img.style.transition = 'opacity 0.3s ease-in';
+            let i = 0;
 
-        const menuGameContainer = document.createElement('div');
-          menuGameContainer.classList.add('menu-game-container');
-          menuGameContainer.setAttribute('data-platform', platformName);
-          menuGameContainer.setAttribute('data-game-name', gameName);
+            urls.forEach(({ url, source }) => {
 
-        menuGameContainer.style.height = 'calc(120vw / ' + LB.galleryNumOfCols + ')';
-        menuGameContainer.appendChild(img);
+                document.querySelector('header .item-number').textContent = i++;
 
-        // Add source icon overlay
-        const sourceIcon = document.createElement('div');
-        sourceIcon.classList.add('source-icon');
+                const img = new Image();
+                img.src = url;
+                img.title = `${gameName}\n\n- Found on ${source}\n- Click to download and save`;
+                img.classList.add('game-image');
+                img.style.opacity = '0';
+                img.style.transition = 'opacity 0.3s ease-in';
 
-        // Map source names to FontAwesome icons
-        let iconClass = 'fa-question'; // default fallback
-        switch (source.toLowerCase()) {
-          case 'wikipedia':
-            iconClass = 'fa-wikipedia-w';
-            break;
-          case 'giantbomb':
-            iconClass = 'fa-bomb';
-            break;
-          case 'steamgriddb':
-          case 'steamgrid':
-            iconClass = 'fa-steam';
-            break;
+                const menuGameContainer = document.createElement('div');
+                menuGameContainer.classList.add('menu-game-container');
+                menuGameContainer.setAttribute('data-platform', platformName);
+                menuGameContainer.setAttribute('data-game-name', gameName);
+
+                menuGameContainer.style.height = 'calc(120vw / ' + LB.galleryNumOfCols + ')';
+                menuGameContainer.appendChild(img);
+
+                // Add source icon overlay
+                const sourceIcon = document.createElement('div');
+                sourceIcon.classList.add('source-icon');
+
+                // Map source names to FontAwesome icons
+                let iconClass = 'fa-question'; // default fallback
+                switch (source.toLowerCase()) {
+                case 'wikipedia':
+                    iconClass = 'fa-wikipedia-w';
+                    break;
+                case 'giantbomb':
+                    iconClass = 'fa-bomb';
+                    break;
+                case 'steamgriddb':
+                case 'steamgrid':
+                    iconClass = 'fa-steam';
+                    break;
+                }
+
+                sourceIcon.innerHTML = `<i class="fa ${iconClass}" aria-hidden="true"></i>`;
+                sourceIcon.title = `Source: ${source}`;
+                menuGameContainer.appendChild(sourceIcon);
+
+                gameMenuContainer.appendChild(menuGameContainer);
+
+                img.onload = () => requestAnimationFrame(() => { img.style.opacity = '1'; });
+                img.onerror = () => console.warn('Failed to load image:', url);
+
+            });
         }
-
-        sourceIcon.innerHTML = `<i class="fa ${iconClass}" aria-hidden="true"></i>`;
-        sourceIcon.title = `Source: ${source}`;
-        menuGameContainer.appendChild(sourceIcon);
-
-        gameMenuContainer.appendChild(menuGameContainer);
-
-        img.onload = () => requestAnimationFrame(() => { img.style.opacity = '1'; });
-        img.onerror = () => console.warn('Failed to load image:', url);
-
-      });
-    }
-  });
+    });
 }
 
 function createManualSelectButton(gameName, platformName, imgElem) {

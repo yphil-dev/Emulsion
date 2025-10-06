@@ -856,6 +856,7 @@ export function updateHeader(platformName, gameName) {
     const platform = platformName === 'settings' ? settingsPlatform : getPlatformByName(platformName);
 
     let itemType = 'game';
+    let count = platform?.nbGames;
 
     if (platformName === 'settings') {
         itemType = 'platform';
@@ -863,17 +864,16 @@ export function updateHeader(platformName, gameName) {
 
     if (gameName) {
         itemType = 'image';
+        count = 0;
     }
 
-    const count = platform?.nbGames;
 
     const pluralize = (count, singular, plural = `${singular}s`) =>
           count === 1 ? singular : plural;
 
     header.querySelector('.platform-name').textContent = gameName ? gameName : platformName;
     header.querySelector('.item-number').textContent = count;
-    header.querySelector('.item-type').textContent =
-        ` ${pluralize(count, itemType)}`;
+    header.querySelector('.item-type').textContent = pluralize(count, itemType);
 
     header.querySelector('.platform-image').style.backgroundImage = `url('../../img/platforms/${platformName}.png')`;
 

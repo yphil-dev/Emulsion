@@ -1,10 +1,9 @@
-const slideshow = document.getElementById("slideshow");
-window.topMenu = document.getElementById("top-menu");
-window.topMenuSlider = document.getElementById("top-menu-slider");
 import { PLATFORMS } from './platforms.js';
 import { applyTheme, setFooterSize } from './utils.js';
 import { buildHomeSlide, initSlideShow } from './slideshow.js';
 import { loadPreferences } from './preferences.js';
+
+const slideshow = document.getElementById("slideshow");
 
 LB.control.initGamepad();
 

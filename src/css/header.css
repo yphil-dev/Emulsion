@@ -42,6 +42,10 @@ header .platform-name {
   opacity: 1;
   z-index: 2;
 
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
   text-shadow:
     -1px -1px 0 var(--color-platform-outline-header),
      1px -1px 0 var(--color-platform-outline-header),

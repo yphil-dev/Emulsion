@@ -531,14 +531,14 @@ export function initGallery(platformNameOrIndex, disabledPlatform) {
             document.getElementById('slideshow').style.display = 'flex';
             document.getElementById('galleries').style.display = 'none';
 
-            // Smart navigation - return to current platform using name-based navigation
+            const selectedPlatformContainer = document.querySelector('.platform-container.selected');
             const activePage = document.querySelector('.page.active');
             const currentPlatformName = activePage ? activePage.dataset.platform : null;
 
             if (currentPlatformName) {
-                initSlideShow(currentPlatformName);
+                initSlideShow(currentPlatformName === 'settings' ? selectedPlatformContainer.dataset.platform : currentPlatformName);
             } else {
-                // Fallback to first platform
+                // Platform is disabled AND policy is "hide", display settings slide
                 initSlideShow(0);
             }
 

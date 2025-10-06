@@ -24,10 +24,7 @@ function platformMenuKeyDown(event) {
     switch (event.key) {
 
     case 'Escape':
-        console.log("Escape: ");
         closePlatformMenu();
-        // initSlideShow('settings');
-
         break;
     }
 

@@ -264,7 +264,9 @@ label.checkbox {
 .input:hover,
 .input:focus,
 .input:active,
-.button:hover {
+.button:hover,
+.button:focus,
+.button:active {
   background-color: var(--color-button-on);
   background-position: 0 0;
   color: #ffffff;

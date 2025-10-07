@@ -93,6 +93,8 @@ function gameMenuKeyDown(event) {
     case 'Enter':
         const selectedGameContainer = getSelectedGameContainer(menuGameContainers, menuState.selectedIndex);
         const selectedImg = selectedGameContainer.querySelector('.game-image');
+        console.log("selectedImg.src: ", selectedImg.src);
+        console.log("LB.currentPlatform: ", LB.currentPlatform);
         if (menuState.menuType === 'platform') {
             closePlatformMenu();
         } else {
@@ -117,14 +119,22 @@ function gameMenuKeyDown(event) {
         break;
     }
 
-    // Update visual selection
     menuGameContainers.forEach((container, index) => {
         container.classList.toggle('selected', index === menuState.selectedIndex);
     });
+
+    getSelectedGameContainer(menuGameContainers, menuState.selectedIndex).scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
+
 }
 
 // Menu click handler
 function onMenuClick(event) {
+    console.log("event.target: ", event.target);
+    console.log("event.currentTarget: ", event.currentTarget);
+
     if (event.target.src) {
         if (menuState.menuType === 'platform') {
             closePlatformMenu();
@@ -132,6 +142,7 @@ function onMenuClick(event) {
             closeGameMenu(event.target.src);
         }
     }
+
 }
 
 // Menu scroll handler
@@ -1117,7 +1128,7 @@ export async function openGameMenu(gameContainer) {
 
     // Update UI
     updateFooterControls('west', 'same', '', 'off');
-    updateFooterControls('dpad', 'same', '', 'off');
+    updateFooterControls('dpad', 'button-dpad-nesw', 'Images', 'on');
     updateFooterControls('shoulders', 'same', '', 'off');
 
     menu.style.height = '85vh';
@@ -1335,10 +1346,6 @@ async function closeGameMenu(imgSrc) {
     const menu = document.getElementById('menu');
     const menuContainer = document.getElementById('menu');
 
-    // Remove event listeners
-    // window.removeEventListener('keydown', gameMenuKeyDown);
-    menuContainer.removeEventListener('wheel', onMenuWheel);
-    menuContainer.removeEventListener('click', onMenuClick);
 
     // Normal menu close and restore gallery handler
     updateFooterControls('dpad', 'same', 'Browse', 'on');
@@ -1385,5 +1392,7 @@ async function closeGameMenu(imgSrc) {
     menuState.isOpen = false;
     menuState.menuType = null;
 
+    menuContainer.removeEventListener('wheel', onMenuWheel);
+    menuContainer.removeEventListener('click', onMenuClick);
     setKeydown('previous');
 }

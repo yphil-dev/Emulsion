@@ -246,22 +246,10 @@ function _titleCase(s) {
         .join(' ');
 }
 
-export function toggleHeaderNavLinks(display) {
-    const links = document.querySelectorAll('header .pages-nav-links');
-
-    links.forEach((link, i) => {
-        link.style.opacity = display === 'show' ? 1 : 0;
-    })
-}
-
 export function handleKeyDownListeners(context) {
     const slideshow = document.getElementById('slideshow');
     const galleries = document.getElementById('galleries');
     const menu = document.getElementById('menu');
-}
-
-export function toggleHeader(display) {
-    document.getElementById('header').style.display = display === 'show' ? 'flex' : 'none';
 }
 
 export function setKeydown(newHandler) {
@@ -321,9 +309,25 @@ function getPlatformByName(platformName) {
     return PLATFORMS.find(p => p.name === platformName);
 }
 
+export function toggleHeaderNavLinks(display) {
+    const links = document.querySelectorAll('header .pages-nav-links');
+
+    links.forEach((link, i) => {
+        link.style.opacity = display === 'show' ? 1 : 0;
+    });
+}
+
 export function updateHeader(platformName, gameName) {
 
     const header = document.getElementById("header");
+
+    if (platformName === 'hide') {
+        header.style.display = 'none';
+        return;
+    }
+
+    header.style.display = 'flex';
+
     const settingsPlatform = { nbGames: PLATFORMS.length };
     const platform = platformName === 'settings' ? settingsPlatform : getPlatformByName(platformName);
 
@@ -339,14 +343,11 @@ export function updateHeader(platformName, gameName) {
         count = 0;
     }
 
-
     const pluralize = (count, singular, plural = `${singular}s`) =>
           count === 1 ? singular : plural;
 
     header.querySelector('.platform-name').textContent = gameName ? gameName : platformName;
     header.querySelector('.item-number').textContent = count;
     header.querySelector('.item-type').textContent = pluralize(count, itemType);
-
     header.querySelector('.platform-image').style.backgroundImage = `url('../../img/platforms/${platformName}.png')`;
-
 }

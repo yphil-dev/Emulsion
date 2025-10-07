@@ -5,8 +5,7 @@ import { getSelectedGameContainer,
          updateHeader,
          setKeydown,
          simulateKeyDown,
-         toggleHeaderNavLinks,
-         toggleHeader } from './utils.js';
+         toggleHeaderNavLinks } from './utils.js';
 
 export function initSlideShow(platformToDisplay) {
 
@@ -16,7 +15,7 @@ export function initSlideShow(platformToDisplay) {
     galleries.style.display = 'none';
     slideshow.style.display = 'flex';
 
-    toggleHeader('hide');
+    updateHeader('hide');
 
     const slides = Array.from(document.querySelectorAll('#slideshow .slide'));
 
@@ -274,7 +273,6 @@ function launchGame(gameContainer) {
 
 export function initGallery(platformNameOrIndex, disabledPlatform) {
 
-    toggleHeader('show');
     toggleHeaderNavLinks('show');
 
     const galleries = document.getElementById('galleries');
@@ -315,42 +313,38 @@ export function initGallery(platformNameOrIndex, disabledPlatform) {
 
         gameContainers = Array.from(page.querySelectorAll('.game-container') || []);
 
+        function onGamecontainerClick(event) {
+            if (event.currentTarget.classList.contains('empty-platform-game-container')) {
+                return;
+            }
+            if (event.currentTarget.classList.contains('settings')) {
+                const platformName = event.currentTarget.dataset.platform;
+                openPlatformMenu(platformName);
+            } else {
+                launchGame(event.currentTarget);
+            }
+        }
+
+        function onGamecontainerRightClick(event) {
+            event.preventDefault(); // Prevent the default context menu
+            if (event.currentTarget.classList.contains('empty-platform-game-container')) {
+                return;
+            }
+            const parentDiv = event.target.closest('div.game-container');
+            gameContainers.forEach((container) => {
+                container.classList.toggle('selected', false);
+            });
+            parentDiv.classList.toggle('selected', true);
+            openGameMenu(event.currentTarget);
+        }
+
         // Only attach listeners once per page to prevent duplicates
         if (!page.dataset.listenersAttached) {
             gameContainers.forEach((container) => {
-                container.addEventListener('click', (event) => {
-                    if (event.currentTarget.classList.contains('empty-platform-game-container')) {
-                        return;
-                    }
-                    if (event.currentTarget.classList.contains('settings')) {
-                        const platformName = event.currentTarget.dataset.platform;
-                        openPlatformMenu(platformName);
-                    } else {
-                        launchGame(event.currentTarget);
-                    }
-                });
-
-                // right-click (contextmenu) handler
-                container.addEventListener('contextmenu', (event) => {
-                    event.preventDefault(); // Prevent the default context menu
-                    if (event.currentTarget.classList.contains('empty-platform-game-container')) {
-                        return;
-                    }
-
-                    const parentDiv = event.target.closest('div.game-container');
-
-                    gameContainers.forEach((container) => {
-                        container.classList.toggle('selected', false);
-                    });
-
-                    parentDiv.classList.toggle('selected', true);
-
-                    openGameMenu(event.currentTarget);
-                });
-
+                container.addEventListener('click', onGamecontainerClick);
+                container.addEventListener('contextmenu', onGamecontainerRightClick);
                 container.classList.remove('selected');
             });
-
             page.setAttribute('data-listeners-attached', true);
         }
 
@@ -361,22 +355,6 @@ export function initGallery(platformNameOrIndex, disabledPlatform) {
             behavior: "instant",
             block: "center"
         });
-
-        // const platformInfo = getPlatformInfo(page.dataset.platform);
-
-        // document.querySelector('header .platform-name').textContent = platformInfo.name;
-
-        // const pluralize = (count, singular, plural = `${singular}s`) =>
-        //       count === 1 ? singular : plural;
-
-        // const count = currentPageIndex === 0 ? gameContainers.length - 1 : gameContainers.length;
-        // const itemType = currentPageIndex === 0 ? 'platform' : 'game';
-
-        // document.querySelector('header .item-number').textContent = count;
-        // document.querySelector('header .item-type').textContent =
-        //     ` ${pluralize(count, itemType)}`;
-
-        // document.querySelector('header .platform-image').style.backgroundImage = `url('../../img/platforms/${page.dataset.platform}.png')`;
 
         updateHeader(page.dataset.platform);
 

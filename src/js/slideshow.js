@@ -336,6 +336,15 @@ export function initGallery(platformNameOrIndex, disabledPlatform) {
                     if (event.currentTarget.classList.contains('empty-platform-game-container')) {
                         return;
                     }
+
+                    const parentDiv = event.target.closest('div.game-container');
+
+                    gameContainers.forEach((container) => {
+                        container.classList.toggle('selected', false);
+                    });
+
+                    parentDiv.classList.toggle('selected', true);
+
                     openGameMenu(event.currentTarget);
                 });
 

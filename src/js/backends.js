@@ -7,15 +7,15 @@ export const getAllCoverImageUrls = async (gameName, platform, options = {}) => 
 
     const backends = [];
 
-    // // SteamGrid API (requires API key)
-    // if (steamGridAPIKey) {
-    //     backends.push(() => steamgridFetch(gameName, steamGridAPIKey));
-    // }
+    // SteamGrid API (requires API key)
+    if (steamGridAPIKey) {
+        backends.push(() => steamgridFetch(gameName, steamGridAPIKey));
+    }
 
-    // // GiantBomb API (requires API key)
-    // if (giantBombAPIKey) {
-    //     backends.push(() => giantbombFetch(gameName, giantBombAPIKey, platform));
-    // }
+    // GiantBomb API (requires API key)
+    if (giantBombAPIKey) {
+        backends.push(() => giantbombFetch(gameName, giantBombAPIKey, platform));
+    }
 
     // Wikipedia API (no key required, works for all platforms)
     backends.push(() => wikipediaFetch(gameName));

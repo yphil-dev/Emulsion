@@ -263,13 +263,31 @@ label.checkbox {
 
 .input:hover,
 .input:focus,
-.input:active,
-.button:hover,
-.button:focus,
-.button:active {
+.input:active {
   background-color: var(--color-button-on);
   background-position: 0 0;
   color: #ffffff;
+}
+
+.button:hover,
+.button:focus {
+  border-color: #00ffae;
+  box-shadow:
+    0 0 4px #00ffae,
+    0 0 10px rgba(0, 255, 174, 0.4);
+  color: #00ffae;
+  transform: scale(1.02);
+}
+
+.button:hover::after,
+.button:focus::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid #00ffae;
+  filter: blur(3px);
+  opacity: 0.25;
+  pointer-events: none;
 }
 
 input[type="checkbox"] {

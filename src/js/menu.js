@@ -7,6 +7,7 @@ import { getSelectedGameContainer,
          notify,
          applyTheme,
          simulateKeyDown,
+         simulateTabNavigation,
          setKeydown,
          setFooterSize,
          toggleHeaderNavLinks } from './utils.js';
@@ -24,6 +25,14 @@ function platformMenuKeyDown(event) {
     event.stopImmediatePropagation();
 
     switch (event.key) {
+    case 'ArrowRight':
+        console.log("ArrowRight: ");
+        simulateTabNavigation();
+        break;
+
+    case 'ArrowLeft':
+        simulateTabNavigation(true);
+        break;
 
     case 'Escape':
         closePlatformMenu();
@@ -899,43 +908,39 @@ function buildPlatformForm(platformName) {
         return row;
     }
 
-    // Helper functions for batch download
     function createProgressBar() {
-        let container = document.getElementById("progress-container");
-        if (!container) {
-            // Outer container
-            container = document.createElement("div");
-            container.id = "progress-container";
 
-            // Inner fill
-            const fill = document.createElement("div");
-            fill.id = "progress-fill";
+        const container = document.createElement("div");
+        container.classList.add("progress-container", "input");
+        const fill = document.createElement("div");
+        fill.classList.add("progress-fill");
+        const text = document.createElement("div");
+        text.classList.add("progress-text", "success");
 
-            // Inner text
-            const text = document.createElement("div");
-            text.id = "progress-text";
-            text.classList.add('success');
-
-            container.appendChild(fill);
-            container.appendChild(text);
-
-            // Prepend it somewhere sensible
-            document.body.prepend(container);
-        }
+        container.appendChild(fill);
+        container.appendChild(text);
 
         return container;
     }
 
     // Helper to update progress
     function setProgress(current, total) {
-        const fill = document.getElementById("progress-fill");
-        if (fill && total > 0) {
-            fill.style.width = `${(current / total) * 100}%`;
+        const fills = document.querySelectorAll(".progress-fill");
+
+        if (total > 0) {
+            const percent = Math.round((current / total) * 100);
+
+            fills.forEach(fill => {
+                fill.style.width = `${percent}%`;
+            });
+
         }
     }
 
     async function batchButtonClick(event) {
         console.log("Batch download started");
+
+        // document.getElementById('notifications').append(createProgressBar());
 
         // Find games with missing images in the current platform
         const pages = document.querySelectorAll('#galleries .page');
@@ -964,32 +969,46 @@ function buildPlatformForm(platformName) {
 
         console.log(`Found ${games.length} games with missing images`);
 
+        const progressTexts = document.querySelectorAll(".progress-text");
+
         for (let i = 0; i < games.length; i++) {
             setProgress(i + 1, games.length);
 
             const gameContainer = games[i];
             const gameName = gameContainer.dataset.gameName;
 
+            function setProgressTexts(newText, success) {
+                progressTexts.forEach(text => {
+                    if (success) {
+                        text.classList.add('success');
+                    } else {
+                        text.classList.remove('success');
+                    }
+                    text.textContent = newText;
+                });
+            }
+
+
             try {
-                // Use the existing fetch-images system
 
                 const urls = await new Promise((resolve) => {
                     ipcRenderer.send('fetch-images', gameName, platformName, LB.steamGridAPIKey, LB.giantBombAPIKey);
                     ipcRenderer.once('image-urls', (event, urls) => resolve(urls));
                 });
 
+                console.log("urls.length, gameName: ", urls.length, gameName);
+
                 if (!urls.length) {
-                    const progressText = document.getElementById("progress-text");
-                    if (progressText) progressText.textContent = `Not Found: ${gameName}`;
+                    setProgressTexts(`Not Found: ${gameName}`, false);
                     console.warn(`No image found for ${gameName}`);
                     continue;
                 }
 
+                setProgressTexts(`${gameName}`, true);
+
+
                 const url = typeof urls[0] === 'string' ? urls[0] : urls[0]?.url;
                 if (!url) continue;
-
-                // Use the existing download-image system
-                // const result = await ipcRenderer.invoke('download-image', url, platformName, gameName);
 
                 const result = await downloadImage(
                     url,
@@ -997,28 +1016,26 @@ function buildPlatformForm(platformName) {
                     gameName
                 );
 
-                const progressText = document.getElementById("progress-text");
-
                 if (result) {
                     const imgEl = gameContainer.querySelector("img");
                     if (imgEl) {
                         imgEl.src = result + '?t=' + Date.now();
                         gameContainer.removeAttribute('data-missing-image');
                     }
-                    progressText.textContent = gameName;
-                } else {
-                    progressText.classList.remove('success');
-                    progressText.textContent = gameName;
                 }
 
             } catch (err) {
-                console.error(`❌ Failed batch for ${gameName}:`, err);
+                console.error(`Failed batch Dload for ${gameName}:`, err);
             }
         }
 
+        progressTexts.forEach(text => {
+            text.classList.add('success');
+            text.textContent = `Batch download complete!`;
+        });
+
         console.log("✅ Batch download finished");
-        const progressText = document.getElementById("progress-text");
-        if (progressText) progressText.textContent = 'Batch download complete!';
+
     }
 
     formContainer.appendChild(formContainerButtons);
@@ -1031,6 +1048,7 @@ function buildPlatformForm(platformName) {
 }
 
 export function openPlatformMenu(platformName) {
+
     if (menuState.isOpen) {
         console.warn('Menu already open');
         return;

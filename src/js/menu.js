@@ -4,6 +4,7 @@ import { updatePreference, getPreference } from './preferences.js';
 import { getSelectedGameContainer,
          updateFooterControls,
          updateHeader,
+         toggleHeader,
          notify,
          applyTheme,
          simulateKeyDown,
@@ -1054,6 +1055,9 @@ export function openPlatformMenu(platformName) {
         return;
     }
 
+    updateHeader('settings');
+    toggleHeader('show');
+
     const menu = document.getElementById('menu');
     const menuContainer = document.getElementById('menu');
 
@@ -1063,8 +1067,8 @@ export function openPlatformMenu(platformName) {
     menuState.selectedIndex = 1;
 
     // Update UI
+    updateFooterControls('dpad', 'button-dpad-ew', 'Fields', 'on');
     updateFooterControls('west', 'same', '', 'off');
-    updateFooterControls('dpad', 'same', '', 'off');
     updateFooterControls('shoulders', 'same', '', 'off');
 
     menu.style.height = '85vh';
@@ -1080,8 +1084,14 @@ export function openPlatformMenu(platformName) {
 
     setKeydown(platformMenuKeyDown);
 
-    menuContainer.addEventListener('wheel', onMenuWheel);
+    // menuContainer.addEventListener('wheel', onMenuWheel);
     menuContainer.addEventListener('click', onMenuClick);
+
+    const header = document.getElementById('header');
+
+    if (LB.onHeaderWheel) {
+        header.removeEventListener('wheel', LB.onHeaderWheel);
+    }
 
     console.log('Platform menu opened for:', platformName);
 }

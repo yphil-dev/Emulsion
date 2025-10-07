@@ -197,7 +197,7 @@ label.checkbox {
 }
 
 .spacer-div {
-  min-height: 100px;;
+  min-height: 150px;;
 }
 
 .cancel-save-buttons .button {
@@ -271,13 +271,23 @@ label.checkbox {
 
 .button:hover,
 .button:focus {
-  border-color: #00ffae;
+  border-color: var(--color-outline-selected);
+  color: var(--color-outline-selected);
   box-shadow:
-    0 0 4px #00ffae,
-    0 0 10px rgba(0, 255, 174, 0.4);
-  color: #00ffae;
+    0 0 4px var(--color-outline-selected),
+    0 0 10px color-mix(in srgb, var(--color-outline-selected) 40%, transparent);
   transform: scale(1.02);
 }
+
+/* .button:hover, */
+/* .button:focus { */
+/*   border-color: #00ffae; */
+/*   box-shadow: */
+/*     0 0 4px #00ffae, */
+/*     0 0 10px rgba(0, 255, 174, 0.4); */
+/*   color: #00ffae; */
+/*   transform: scale(1.02); */
+/* } */
 
 .button:hover::after,
 .button:focus::after {

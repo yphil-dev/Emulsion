@@ -770,33 +770,26 @@ function buildPlatformForm(platformName) {
 
     saveButton.addEventListener('click', _saveButtonClick);
 
-    function _cancelButtonClick(event) {
-        // Simulate escape key to close menu properly
-        const escapeEvent = new KeyboardEvent('keydown', {
-            key: 'Escape',
-            keyCode: 27,
-            which: 27,
-            bubbles: true
-        });
-        document.dispatchEvent(escapeEvent);
+    function _cancelButtonClick() {
+        closePlatformMenu();
+        initSlideShow(platformName);
     }
 
     async function _saveButtonClick() {
-
-        console.log("emulatorInput.value: ", emulatorInput.value);
-        console.log("gamesDirInput.value: ", gamesDirInput.value);
+        console.log("emulatorInput.value:", emulatorInput.value);
+        console.log("gamesDirInput.value:", gamesDirInput.value);
 
         function validateForm() {
             let valid = true;
 
-            if (!gamesDirInput.value) {
+            if (!gamesDirInput.value.trim()) {
                 gamesDirSubLabel.textContent = 'This field cannot be empty';
                 valid = false;
             } else {
                 gamesDirSubLabel.textContent = '';
             }
 
-            if (!emulatorInput.value) {
+            if (!emulatorInput.value.trim()) {
                 emulatorSubLabel.textContent = 'This field cannot be empty';
                 valid = false;
             } else {
@@ -808,48 +801,73 @@ function buildPlatformForm(platformName) {
 
         if (!validateForm()) return;
 
-        // Process extensions
-        const extensions = Array.from(extensionsInputsContainer.querySelectorAll('input'))
+        // Normalize extensions
+        const extensions = Array.from(
+            extensionsInputsContainer.querySelectorAll('input')
+        )
               .map(input => {
                   let val = input.value.trim().toLowerCase();
                   if (!val.startsWith('.')) val = '.' + val;
                   return val.replace(/[^a-z0-9.]/gi, '');
               })
-              .filter(ext => ext.length > 1);  // Filter out empty/. only
+              .filter(ext => ext.length > 1);
 
         try {
-            // Get current platform status before saving
-            const wasEnabled = await getPreference(platformName, 'isEnabled').catch(() => false);
-            const willBeEnabled = statusCheckBox.checked;
-            const statusChanged = wasEnabled !== willBeEnabled;
+            // Fetch current preferences in parallel
+            const [
+                prevEnabled,
+                prevGamesDir,
+                prevEmulator,
+                prevExtensions,
+                prevArgs
+            ] = await Promise.all([
+                getPreference(platformName, 'isEnabled').catch(() => false),
+                getPreference(platformName, 'gamesDir').catch(() => ''),
+                getPreference(platformName, 'emulator').catch(() => ''),
+                getPreference(platformName, 'extensions').catch(() => []),
+                getPreference(platformName, 'emulatorArgs').catch(() => '')
+            ]);
+
+            const nextEnabled = statusCheckBox.checked;
+            const nextGamesDir = gamesDirInput.value.trim();
+            const nextEmulator = emulatorInput.value.trim();
+            const nextExtensions = extensions;
+            const nextArgs = emulatorArgsInput.value.trim();
+
+            // Compare deep equality for arrays
+            const arraysEqual = (a, b) =>
+                  Array.isArray(a) &&
+                  Array.isArray(b) &&
+                  a.length === b.length &&
+                  a.every((v, i) => v === b[i]);
+
+            const changed =
+                  prevEnabled !== nextEnabled ||
+                  prevGamesDir !== nextGamesDir ||
+                  prevEmulator !== nextEmulator ||
+                  !arraysEqual(prevExtensions, nextExtensions) ||
+                prevArgs !== nextArgs;
+
+            if (!changed) {
+                console.log('No changes detected. Skipping reload.');
+                return;
+            }
 
             // Save all preferences
-            await updatePreference(platformName, 'isEnabled', statusCheckBox.checked);
-            await updatePreference(platformName, 'gamesDir', gamesDirInput.value);
-            await updatePreference(platformName, 'emulator', emulatorInput.value);
-            await updatePreference(platformName, 'extensions', extensions);
-            await updatePreference(platformName, 'emulatorArgs', emulatorArgsInput.value);
+            await Promise.all([
+                updatePreference(platformName, 'isEnabled', nextEnabled),
+                updatePreference(platformName, 'gamesDir', nextGamesDir),
+                updatePreference(platformName, 'emulator', nextEmulator),
+                updatePreference(platformName, 'extensions', nextExtensions),
+                updatePreference(platformName, 'emulatorArgs', nextArgs)
+            ]);
 
-            if (statusChanged) {
-                // Platform status changed - reload required
-                window.location.reload();
-            } else {
-                // Smart navigation - return to current platform without reload
-                if (willBeEnabled) {
-                    // Platform is enabled, return to its gallery
-                    initSlideShow(platformName);
-                } else if (LB.disabledPlatformsPolicy === 'hide') {
-                    // Platform is disabled and policy is hide, return to slideshow
-                    initSlideShow(0);
-                } else {
-                    // Platform is disabled but policy is show, return to platform
-                    initSlideShow(platformName);
-                }
-            }
+            window.location.reload();
         } catch (error) {
             console.error('Failed to save preferences:', error);
         }
     }
+
 
     // EXTENSION INPUT ROW CREATOR
     function _createExtensionInputRow(value, isFirst) {

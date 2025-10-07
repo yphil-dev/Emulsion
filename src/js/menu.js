@@ -4,7 +4,6 @@ import { updatePreference, getPreference } from './preferences.js';
 import { getSelectedGameContainer,
          updateFooterControls,
          updateHeader,
-         toggleHeader,
          notify,
          applyTheme,
          simulateKeyDown,
@@ -1067,7 +1066,6 @@ export function openPlatformMenu(platformName) {
     }
 
     updateHeader('settings');
-    toggleHeader('show');
 
     const menu = document.getElementById('menu');
     const menuContainer = document.getElementById('menu');

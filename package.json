@@ -15,7 +15,7 @@
     "type": "module",
     "main": "main.js",
     "scripts": {
-        "start": "electron .",
+        "start": "electron . --no-sandbox",
         "prebuild": "rm -rf ./dist ./out ./node_modules ./repack ./tmp && npm install",
         "build": "electron-builder --config builder.yml --linux"
     },

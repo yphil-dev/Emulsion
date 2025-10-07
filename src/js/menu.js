@@ -168,12 +168,12 @@ async function downloadImage(imgSrc, platform, gameName) {
     try {
         const result = await ipcRenderer.invoke('download-image', imgSrc, platform, gameName, gamesDir);
         if (result.success) {
-            console.log(`Image saved at ${result.path}`);
-            notify(`Image saved at ${result.path}`);
+            console.info(`Image saved at ${result.path}`);
+            // notify(`Image saved at ${result.path}`);
             return result.path;
         } else {
             console.error(`Error saving image: ${result.error}`);
-            notify(`Error saving image: ${result.error}`);
+            // notify(`Error saving image: ${result.error}`);
             return null;
         }
     } catch (error) {
@@ -937,9 +937,12 @@ function buildPlatformForm(platformName) {
     // Helper to update progress
     function setProgress(current, total) {
         const fills = document.querySelectorAll(".progress-fill");
+        const footerProgress = document.getElementById('footerProgress');
 
         if (total > 0) {
             const percent = Math.round((current / total) * 100);
+
+            footerProgress.value = percent;
 
             fills.forEach(fill => {
                 fill.style.width = `${percent}%`;
@@ -989,6 +992,15 @@ function buildPlatformForm(platformName) {
             const gameName = gameContainer.dataset.gameName;
 
             function setProgressTexts(newText, success) {
+                const footerProgressText = document.querySelector('.footer-progress-text');
+
+                footerProgressText.textContent = newText;
+                if (success) {
+                    footerProgressText.classList.add('success');
+                } else {
+                    footerProgressText.classList.remove('success');
+                }
+
                 progressTexts.forEach(text => {
                     if (success) {
                         text.classList.add('success');
@@ -1010,13 +1022,14 @@ function buildPlatformForm(platformName) {
                 console.log("urls.length, gameName: ", urls.length, gameName);
 
                 if (!urls.length) {
-                    setProgressTexts(`Not Found: ${gameName}`, false);
+                    setProgressTexts(`x: ${gameName}`, false);
                     console.warn(`No image found for ${gameName}`);
                     continue;
                 }
 
                 setProgressTexts(`${gameName}`, true);
 
+                // footerProgressText.textContent = newText;
 
                 const url = typeof urls[0] === 'string' ? urls[0] : urls[0]?.url;
                 if (!url) continue;

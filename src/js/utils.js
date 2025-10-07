@@ -89,8 +89,13 @@ export function simulateTabNavigation(shiftKey = false) {
         nextIndex = currentIndex >= focusableElements.length - 1 ? 0 : currentIndex + 1;
     }
 
-    if (focusableElements[nextIndex]) {
-        focusableElements[nextIndex].focus();
+    const nextElement = focusableElements[nextIndex];
+    if (nextElement) {
+        nextElement.focus();
+        nextElement.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+        });
     }
 }
 

@@ -591,6 +591,8 @@ export function initGallery(platformNameOrIndex, disabledPlatform) {
     galleries.addEventListener('wheel', onGalleryWheel);
     header.addEventListener('wheel', onHeaderWheel);
 
+    LB.onHeaderWheel = onHeaderWheel;
+
     setKeydown(galleryKeyDown);
 
     updateGallery(true); // Initialize the pages carousel

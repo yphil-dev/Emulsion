@@ -73,6 +73,27 @@ export function getSelectedGameContainer(gameContainers, selectedIndex) {
     return null;
 }
 
+export function simulateTabNavigation(shiftKey = false) {
+    const focusableElements = document.querySelectorAll(
+        'button, input, select, textarea'
+    );
+
+    const currentIndex = Array.from(focusableElements).indexOf(document.activeElement);
+    let nextIndex;
+
+    if (shiftKey) {
+        // Shift+Tab - move backward
+        nextIndex = currentIndex <= 0 ? focusableElements.length - 1 : currentIndex - 1;
+    } else {
+        // Tab - move forward
+        nextIndex = currentIndex >= focusableElements.length - 1 ? 0 : currentIndex + 1;
+    }
+
+    if (focusableElements[nextIndex]) {
+        focusableElements[nextIndex].focus();
+    }
+}
+
 export function simulateKeyDown(key, modifiers = {}) {
     const keyCodes = {
         ArrowLeft: 37,
@@ -81,7 +102,8 @@ export function simulateKeyDown(key, modifiers = {}) {
         ArrowDown: 40,
         Shift: 16,
         Enter: 13,
-        Escape: 27
+        Escape: 27,
+        Tab: 9
     };
 
     const keyboardEvent = new KeyboardEvent('keydown', {
@@ -98,6 +120,7 @@ export function simulateKeyDown(key, modifiers = {}) {
 
     document.dispatchEvent(keyboardEvent);
 }
+
 
 export function safeFileName(fileName) {
     const illegalRe = /[\/\?<>\\:\*\|"]/g;
@@ -284,6 +307,8 @@ export function notify(text) {
 
     setTimeout(() => {
         notifications.style.opacity = 0;
+        notification.textContent = '';
+        notification.innerHTML = '';
     }, 3000);
 }
 

@@ -626,6 +626,8 @@ export function initGamepad () {
         cancelAnimationFrame(pollGamepad);
     });
 
+    console.log("navigator.getGamepads(): ", navigator.getGamepads());
+
     function pollGamepad() {
         let animationFrameId = null;
         // If the document doesn't have focus, simply skip processing

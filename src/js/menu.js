@@ -4,7 +4,7 @@ import { updatePreference, getPreference } from './preferences.js';
 import { getSelectedGameContainer,
          updateFooterControls,
          updateHeader,
-         notify,
+         cleanFileName,
          applyTheme,
          simulateKeyDown,
          simulateTabNavigation,
@@ -129,23 +129,14 @@ function gameMenuKeyDown(event) {
 
 }
 
-// Menu click handler
-function onMenuClick(event) {
-    console.log("event.target: ", event.target);
-    console.log("event.currentTarget: ", event.currentTarget);
-
-    if (event.target.src) {
-        if (menuState.menuType === 'platform') {
-            closePlatformMenu();
-        } else {
-            closeGameMenu(event.target.src);
-        }
+function onGameMenuClick(event) {
+    const img = event.target.closest('img');
+    if (img) {
+        closeGameMenu(img.src);
     }
-
 }
 
-// Menu scroll handler
-function onMenuWheel(event) {
+function onGameMenuWheel(event) {
     if (event.shiftKey) {
         return;
     }
@@ -157,7 +148,6 @@ function onMenuWheel(event) {
     }
 }
 
-// Download image helper
 async function downloadImage(imgSrc, platform, gameName) {
     const gamesDir = window.LB.preferences[platform]?.gamesDir;
     if (!gamesDir) {
@@ -949,7 +939,7 @@ function buildPlatformForm(platformName) {
 
         if (total > 0) {
             const percent = Math.round((current / total) * 100);
-            fill.style.width = `${percent}%`;
+            if (fill) fill.style.width = `${percent}%`;
             pie.style.setProperty('--p', percent);
             pie.textContent = `${percent}%`;
         }
@@ -994,9 +984,11 @@ function buildPlatformForm(platformName) {
 
         function setProgressText(newText, colorCode) {
             const text = document.getElementById('menu-progress-text');
-            text.classList.remove('success', 'error');
-            text.classList.add(colorCode);
-            text.textContent = newText;
+            if (text) {
+                text.classList.remove('success', 'error');
+                text.classList.add(colorCode);
+                text.textContent = newText;
+            }
         }
 
         for (let i = 0; i < games.length; i++) {
@@ -1093,9 +1085,6 @@ export function openPlatformMenu(platformName) {
 
     setKeydown(platformMenuKeyDown);
 
-    // menuContainer.addEventListener('wheel', onMenuWheel);
-    menuContainer.addEventListener('click', onMenuClick);
-
     const header = document.getElementById('header');
 
     if (LB.onHeaderWheel) {
@@ -1117,7 +1106,7 @@ export async function openGameMenu(gameContainer) {
     const platformName = gameContainer.dataset.platform;
     const gameImage = gameContainer.querySelector('img');
 
-    updateHeader(platformName, gameName);
+    updateHeader(platformName, cleanFileName(gameName));
 
     // Store state
     menuState.isOpen = true;
@@ -1143,8 +1132,8 @@ export async function openGameMenu(gameContainer) {
 
     setKeydown(gameMenuKeyDown);
 
-    menuContainer.addEventListener('wheel', onMenuWheel);
-    menuContainer.addEventListener('click', onMenuClick);
+    menuContainer.addEventListener('wheel', onGameMenuWheel);
+    menuContainer.addEventListener('click', onGameMenuClick);
 
 }
 
@@ -1313,8 +1302,7 @@ async function closePlatformMenu() {
 
     // Remove event listeners
     // window.removeEventListener('keydown', gameMenuKeyDown);
-    menuContainer.removeEventListener('wheel', onMenuWheel);
-    menuContainer.removeEventListener('click', onMenuClick);
+    menuContainer.removeEventListener('wheel', onGameMenuWheel);
 
     // Normal close - stay on current page and restore gallery handler
     updateFooterControls('dpad', 'same', 'Browse', 'on');
@@ -1390,7 +1378,7 @@ async function closeGameMenu(imgSrc) {
     menuState.isOpen = false;
     menuState.menuType = null;
 
-    menuContainer.removeEventListener('wheel', onMenuWheel);
-    menuContainer.removeEventListener('click', onMenuClick);
+    menuContainer.removeEventListener('wheel', onGameMenuWheel);
+    menuContainer.removeEventListener('click', onGameMenuClick);
     setKeydown('previous');
 }

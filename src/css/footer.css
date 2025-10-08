@@ -67,11 +67,6 @@ footer #footer-menu {
   transition: opacity 0.5s ease-in-out;
 }
 
-#notification {
-  overflow: hidden;
-  margin-right: 0.5em;
-}
-
 /* RESIZING */
 
 footer.footer-medium {
@@ -112,4 +107,21 @@ footer {
 
 .control-item.hover:hover {
   color: var(--color-outline-selected);
+}
+
+.pie-progress {
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  --p: 0;
+  --c: #00ffae; /* pie color */
+  --text: #fff; /* text color */
+  width: 54px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: conic-gradient(var(--c) calc(var(--p) * 1%), #222 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text); /* 👈 text now independent */
+  font-size: smaller;
 }

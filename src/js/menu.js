@@ -204,6 +204,8 @@ function buildPrefsFormItem(name, iconName, type, description, shortDescription,
 
             const label = document.createElement('label');
 
+            label.classList.add('form-label');
+
             const radio = document.createElement('input');
             radio.type = 'radio';
             radio.name = name;
@@ -260,6 +262,7 @@ function buildPrefsFormItem(name, iconName, type, description, shortDescription,
 
     const label = document.createElement('label');
     label.textContent = shortDescription;
+    label.classList.add('form-label');
 
     const SubLabel = document.createElement('label');
     SubLabel.id = 'num-cols-sub-label';
@@ -491,6 +494,7 @@ function buildPlatformForm(platformName) {
 
     const gamesDirLabel = document.createElement('label');
     gamesDirLabel.textContent = 'Games directory';
+    gamesDirLabel.classList.add('form-label');
 
     const gamesDirSubLabel = document.createElement('span');
     gamesDirSubLabel.id = 'games-dir-sub-label';
@@ -524,6 +528,7 @@ function buildPlatformForm(platformName) {
 
     const emulatorInputLabel = document.createElement('label');
     emulatorInputLabel.textContent = "Emulator";
+    emulatorInputLabel.classList.add('form-label');
 
     const emulatorSubLabel = document.createElement('span');
     emulatorSubLabel.id = 'emulator-sub-label';
@@ -559,6 +564,7 @@ function buildPlatformForm(platformName) {
 
     const batchInputLabel = document.createElement('label');
     batchInputLabel.textContent = "Get all cover images";
+    batchInputLabel.classList.add('form-label');
 
     const batchSubLabel = document.createElement('span');
     batchSubLabel.id = 'batch-sub-label';
@@ -590,6 +596,7 @@ function buildPlatformForm(platformName) {
     // Label
     const extensionsLabel = document.createElement('label');
     extensionsLabel.textContent = 'File Extensions';
+    extensionsLabel.classList.add('form-label');
 
     // Container for icon + inputs
     const extensionsCtn = document.createElement('div');
@@ -658,6 +665,7 @@ function buildPlatformForm(platformName) {
 
     const emulatorArgsLabel = document.createElement('label');
     emulatorArgsLabel.textContent = 'Emulator Arguments';
+    emulatorArgsLabel.classList.add('form-label');
 
     const emulatorArgsInput = document.createElement('input');
     emulatorArgsInput.classList.add('input');
@@ -922,11 +930,11 @@ function buildPlatformForm(platformName) {
     function createProgressBar() {
 
         const container = document.createElement("div");
-        container.classList.add("progress-container", "input");
+        container.id = "menu-progress-container";
         const fill = document.createElement("div");
-        fill.classList.add("progress-fill");
+        fill.id = "menu-progress-fill";
         const text = document.createElement("div");
-        text.classList.add("progress-text", "success");
+        text.id = "menu-progress-text";
 
         container.appendChild(fill);
         container.appendChild(text);
@@ -934,21 +942,17 @@ function buildPlatformForm(platformName) {
         return container;
     }
 
-    // Helper to update progress
     function setProgress(current, total) {
-        const fills = document.querySelectorAll(".progress-fill");
-        const footerProgress = document.getElementById('footerProgress');
+        const fill = document.getElementById('menu-progress-fill');
+        const pie = document.getElementById('footer-progress');
 
         if (total > 0) {
             const percent = Math.round((current / total) * 100);
-
-            footerProgress.value = percent;
-
-            fills.forEach(fill => {
-                fill.style.width = `${percent}%`;
-            });
-
+            fill.style.width = `${percent}%`;
+            pie.style.setProperty('--p', percent);
+            pie.textContent = `${percent}%`;
         }
+
     }
 
     async function batchButtonClick(event) {
@@ -985,6 +989,10 @@ function buildPlatformForm(platformName) {
 
         const progressTexts = document.querySelectorAll(".progress-text");
 
+        const pie = document.getElementById("footer-progress");
+
+        pie.style.opacity = 1;
+
         for (let i = 0; i < games.length; i++) {
             setProgress(i + 1, games.length);
 
@@ -992,23 +1000,15 @@ function buildPlatformForm(platformName) {
             const gameName = gameContainer.dataset.gameName;
 
             function setProgressTexts(newText, success) {
-                const footerProgressText = document.querySelector('.footer-progress-text');
 
-                footerProgressText.textContent = newText;
+                const text = document.getElementById('menu-progress-text');
+
                 if (success) {
-                    footerProgressText.classList.add('success');
+                    text.classList.add('success');
                 } else {
-                    footerProgressText.classList.remove('success');
+                    text.classList.remove('success');
                 }
-
-                progressTexts.forEach(text => {
-                    if (success) {
-                        text.classList.add('success');
-                    } else {
-                        text.classList.remove('success');
-                    }
-                    text.textContent = newText;
-                });
+                text.textContent = newText;
             }
 
 
@@ -1059,6 +1059,7 @@ function buildPlatformForm(platformName) {
         });
 
         console.log("✅ Batch download finished");
+        pie.style.opacity = 0;
 
     }
 

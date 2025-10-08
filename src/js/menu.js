@@ -26,7 +26,6 @@ function platformMenuKeyDown(event) {
 
     switch (event.key) {
     case 'ArrowRight':
-        console.log("ArrowRight: ");
         simulateTabNavigation();
         break;
 
@@ -92,8 +91,6 @@ function gameMenuKeyDown(event) {
     case 'Enter':
         const selectedGameContainer = getSelectedGameContainer(menuGameContainers, menuState.selectedIndex);
         const selectedImg = selectedGameContainer.querySelector('.game-image');
-        console.log("selectedImg.src: ", selectedImg.src);
-        console.log("LB.currentPlatform: ", LB.currentPlatform);
         if (menuState.menuType === 'platform') {
             closePlatformMenu();
         } else {
@@ -215,7 +212,6 @@ function buildPrefsFormItem(name, iconName, type, description, shortDescription,
             const text = document.createTextNode(type.charAt(0).toUpperCase() + type.slice(1));
 
             radio.addEventListener('change', () => {
-                console.log("change!: ");
                 if (radio.checked && onChangeFct) onChangeFct(type);
             });
 
@@ -752,7 +748,6 @@ function buildPlatformForm(platformName) {
         });
 
     statusCheckBox.addEventListener('change', (event) => {
-        console.log("event: ", event);
         const isNotEnablable = !gamesDirInput.value || !emulatorInput.value;
         const isEnabling = statusCheckBox.checked;
 
@@ -795,8 +790,6 @@ function buildPlatformForm(platformName) {
     }
 
     async function _saveButtonClick() {
-        console.log("emulatorInput.value:", emulatorInput.value);
-        console.log("gamesDirInput.value:", gamesDirInput.value);
 
         function validateForm() {
             let valid = true;
@@ -947,7 +940,7 @@ function buildPlatformForm(platformName) {
     }
 
     async function batchButtonClick(event) {
-        console.log("Batch download started");
+        console.info("Batch download started");
 
         // document.getElementById('notifications').append(createProgressBar());
 
@@ -962,8 +955,6 @@ function buildPlatformForm(platformName) {
             return;
         }
 
-        console.log("currentPlatformPage: ", currentPlatformPage.dataset.platform);
-
         if (!currentPlatformPage) {
             console.error("Platform page not found");
             return;
@@ -976,7 +967,7 @@ function buildPlatformForm(platformName) {
             return;
         }
 
-        console.log(`Found ${games.length} games with missing images`);
+        console.info(`Found ${games.length} games with missing images`);
 
         const pie = document.getElementById("footer-progress");
 
@@ -1091,7 +1082,6 @@ export function openPlatformMenu(platformName) {
         header.removeEventListener('wheel', LB.onHeaderWheel);
     }
 
-    console.log('Platform menu opened for:', platformName);
 }
 
 export async function openGameMenu(gameContainer) {

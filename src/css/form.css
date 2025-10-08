@@ -23,6 +23,8 @@
 
 .platform-menu-image-ctn {
   text-align: center;
+  height: 300px;
+  min-height: 300px;
 }
 
 /* Buttons */
@@ -121,6 +123,10 @@ label.checkbox {
     font-weight: bold;
 }
 
+.input-group {
+  margin: 0;
+}
+
 .input::-webkit-inner-spin-button {
     background: red; /* Change background */
     width: 20px; /* Adjust size */
@@ -198,7 +204,7 @@ label.checkbox {
 }
 
 .spacer-div {
-  min-height: 150px;;
+  min-height: 100px;;
 }
 
 .cancel-save-buttons .button {

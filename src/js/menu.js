@@ -456,11 +456,12 @@ function buildPlatformForm(platformName) {
 
     const platformMenuImageCtn = document.createElement('div');
     platformMenuImageCtn.classList.add('platform-menu-image-ctn');
-    const platformMenuImage = document.createElement('img');
-    platformMenuImage.src = path.join(LB.baseDir, 'img', 'platforms', `${platformName}.png`);
-    platformMenuImage.width = '250';
+    platformMenuImageCtn.style.backgroundImage = `url("file://${path.join(LB.baseDir, 'img', 'platforms', `${platformName}.png`)}")`;
+    platformMenuImageCtn.style.backgroundSize = 'cover';
+    platformMenuImageCtn.style.backgroundRepeat = 'no-repeat';
+    platformMenuImageCtn.style.backgroundPosition = 'center';
 
-    platformMenuImageCtn.appendChild(platformMenuImage);
+    // platformMenuImageCtn.appendChild(platformMenuImage);
 
     const statusCheckBox = document.createElement('input');
     statusCheckBox.type = 'checkbox';

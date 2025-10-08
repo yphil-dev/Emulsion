@@ -257,7 +257,6 @@ function explodeGameContainer(gameContainer) {
     container.appendChild(fragment);
 }
 
-// Updated launchGame
 function launchGame(gameContainer) {
     explodeGameContainer(gameContainer);
 

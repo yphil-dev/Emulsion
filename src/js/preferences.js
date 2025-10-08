@@ -1,11 +1,8 @@
-import { notify } from './utils.js';
-// Preferences management
-
-// All the libs used are required here
+import { PLATFORMS } from './platforms.js';
 const { ipcRenderer } = require('electron');
 const path = require('path');
 
-async function _loadUserData() {
+async function loadUserData() {
     try {
         const preferences = await ipcRenderer.invoke('load-preferences');
 
@@ -41,7 +38,7 @@ async function _loadUserData() {
 
 export async function loadPreferences() {
     try {
-        const data = await _loadUserData();
+        const data = await loadUserData();
         return data.preferences;
     } catch (error) {
         console.error("Error loading preferences:", error);
@@ -51,7 +48,7 @@ export async function loadPreferences() {
 
 export async function loadAppData() {
     try {
-        return await _loadUserData();
+        return await loadUserData();
     } catch (error) {
         console.error("Error loading app data:", error);
         throw error;
@@ -94,5 +91,14 @@ export async function getPreference(platformName, key) {
     } catch (error) {
         console.error('Error getting platform preference:', error);
         throw error;
+    }
+}
+
+export function incrementNbGames(platformName) {
+    const platform = PLATFORMS.find(p => p.name === platformName);
+    if (platform) {
+        platform.nbGames++;
+    } else {
+        console.warn(`Platform not found: ${platformName}`);
     }
 }

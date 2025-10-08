@@ -1,6 +1,6 @@
 import { getPlatformInfo, PLATFORMS } from './platforms.js';
-import { safeFileName, cleanFileName, stripExtensions } from './utils.js';
-import { getPreference } from './preferences.js';
+import { safeFileName, cleanFileName, stripExtensions, scanDirectory, findImageFile } from './utils.js';
+import { getPreference, incrementNbGames } from './preferences.js';
 
 export async function buildGalleries (preferences, userDataPath) {
     return new Promise(async (resolve, reject) => {
@@ -86,260 +86,206 @@ export async function buildGalleries (preferences, userDataPath) {
     });
 }
 
-
-// === buildGallery refactor using top-level createGameContainer ===
 export async function buildGallery(params) {
-  const {
-    platform,
-    gamesDir,
-    emulator,
-    emulatorArgs,
-    index,
-    platforms,
-    extensions,
-    isEnabled
-  } = params;
+    const {
+        platform,
+        gamesDir,
+        emulator,
+        emulatorArgs,
+        index,
+        platforms,
+        extensions,
+        isEnabled
+    } = params;
 
-  document.getElementById('loading-platform-name').textContent = platform;
+    document.getElementById('loading-platform-name').textContent = platform;
 
-  const page = document.createElement('div');
-  page.classList.add('page');
-  page.dataset.index = index;
-  page.dataset.platform = platform;
+    const page = document.createElement('div');
+    page.classList.add('page');
+    page.dataset.index = index;
+    page.dataset.platform = platform;
 
-  // SETTINGS page
-  if (platform === 'settings') {
-    if (LB.kioskMode) {
-      page.dataset.status = 'disabled';
-      page.appendChild(document.createElement('div')); // empty placeholder
-      return page;
+    // SETTINGS page
+    if (platform === 'settings') {
+        if (LB.kioskMode) {
+            page.dataset.status = 'disabled';
+            page.appendChild(document.createElement('div')); // empty placeholder
+            return page;
+        }
+        const settingsContent = buildSettingsPageContent(platforms);
+        page.appendChild(settingsContent);
+        return page;
     }
-    const settingsContent = buildSettingsPageContent(platforms);
-    page.appendChild(settingsContent);
-    return page;
-  }
 
-  // Non-settings page
-  const pageContent = document.createElement('div');
-  pageContent.classList.add('page-content');
-  pageContent.style.gridTemplateColumns = `repeat(${LB.galleryNumOfCols}, 1fr)`;
+    // Non-settings page
+    const pageContent = document.createElement('div');
+    pageContent.classList.add('page-content');
+    pageContent.style.gridTemplateColumns = `repeat(${LB.galleryNumOfCols}, 1fr)`;
 
-  if (!isEnabled) {
-    const emptyContainer = document.createElement('div');
-    emptyContainer.classList.add('game-container');
-    emptyContainer.dataset.platform = platform;
-    pageContent.appendChild(emptyContainer);
-    page.dataset.status = 'disabled';
-    page.appendChild(pageContent);
-    return page;
-  }
-
-  const imagesDir = path.join(gamesDir, 'images');
-  const missingImagePath = path.join(LB.baseDir, 'img', 'missing.png');
-
-  const getEbootPath = (gameFile) => path.join(path.dirname(gameFile), 'USRDIR', 'EBOOT.BIN');
-
-  async function getPs3GameTitleSafe(filePath) {
-    try {
-      return await ipcRenderer.invoke('parse-sfo', filePath);
-    } catch (err) {
-      console.error('Failed to parse SFO:', err);
-      return null;
+    if (!isEnabled) {
+        const emptyContainer = document.createElement('div');
+        emptyContainer.classList.add('game-container');
+        emptyContainer.dataset.platform = platform;
+        pageContent.appendChild(emptyContainer);
+        page.dataset.status = 'disabled';
+        page.appendChild(pageContent);
+        return page;
     }
-  }
 
-  const gameFiles = await scanDirectory(gamesDir, extensions, true);
+    const imagesDir = path.join(gamesDir, 'images');
+    const getEbootPath = (gameFile) => path.join(path.dirname(gameFile), 'USRDIR', 'EBOOT.BIN');
 
-  if (gameFiles.length === 0) {
-    const emptyGameContainer = document.createElement('div');
-    emptyGameContainer.classList.add('game-container', 'empty-platform-game-container');
-    emptyGameContainer.style.gridColumn = `1 / span 2`;
-    emptyGameContainer.innerHTML = `<p><i class="fa fa-heartbeat fa-5x" aria-hidden="true"></i></p>
+    async function getPs3GameTitleSafe(filePath) {
+        try {
+            return await ipcRenderer.invoke('parse-sfo', filePath);
+        } catch (err) {
+            console.error('Failed to parse SFO:', err);
+            return null;
+        }
+    }
+
+    const gameFiles = await scanDirectory(gamesDir, extensions, true);
+
+    if (gameFiles.length === 0) {
+        const emptyGameContainer = document.createElement('div');
+        emptyGameContainer.classList.add('game-container', 'empty-platform-game-container');
+        emptyGameContainer.style.gridColumn = `1 / span 2`;
+        emptyGameContainer.innerHTML = `<p><i class="fa fa-heartbeat fa-5x" aria-hidden="true"></i></p>
       <p>No game files found in</p><p><code>${gamesDir}</code></p>`;
-    pageContent.appendChild(emptyGameContainer);
-    page.appendChild(pageContent);
-    return page;
-  }
-
-  for (const [i, originalGameFilePath] of gameFiles.entries()) {
-    let gameFilePath = originalGameFilePath;
-    let fileName = path.basename(gameFilePath);
-    let fileNameWithoutExt = stripExtensions(fileName);
-    let displayName = cleanFileName(fileNameWithoutExt);
-
-    // PS3 special handling
-    if (platform === 'ps3') {
-      const ps3Title = await getPs3GameTitleSafe(gameFilePath);
-      if (ps3Title) {
-        fileNameWithoutExt = safeFileName(ps3Title);
-        displayName = ps3Title;
-      } else {
-        fileNameWithoutExt = stripExtensions(fileName);
-        displayName = cleanFileName(fileNameWithoutExt);
-      }
-      gameFilePath = getEbootPath(originalGameFilePath);
+        pageContent.appendChild(emptyGameContainer);
+        page.appendChild(pageContent);
+        return page;
     }
 
-    const coverPath = findImageFile(imagesDir, fileNameWithoutExt);
-    const imageExists = fs.existsSync(coverPath);
+    for (const [i, originalGameFilePath] of gameFiles.entries()) {
+        let gameFilePath = originalGameFilePath;
+        let fileName = path.basename(gameFilePath);
+        let fileNameWithoutExt = stripExtensions(fileName);
+        let displayName = cleanFileName(fileNameWithoutExt);
 
-    const gameEl = createGameContainer({
-      platform,
-      emulator,
-      emulatorArgs,
-      filePath: gameFilePath,
-      displayName,
-      dataName: fileNameWithoutExt,
-      imagePath: coverPath,
-      imageExists,
-      index: i
-    });
+        // PS3 special handling
+        if (platform === 'ps3') {
+            const ps3Title = await getPs3GameTitleSafe(gameFilePath);
+            if (ps3Title) {
+                fileNameWithoutExt = safeFileName(ps3Title);
+                displayName = ps3Title;
+            } else {
+                fileNameWithoutExt = stripExtensions(fileName);
+                displayName = cleanFileName(fileNameWithoutExt);
+            }
+            gameFilePath = getEbootPath(originalGameFilePath);
+        }
 
-    incrementNbGames(platform);
-    pageContent.appendChild(gameEl);
-  }
+        const coverPath = findImageFile(imagesDir, fileNameWithoutExt);
+        const imageExists = fs.existsSync(coverPath);
 
-  page.appendChild(pageContent);
-  return page;
+        const gameEl = buildGameContainer({
+            platform,
+            emulator,
+            emulatorArgs,
+            filePath: gameFilePath,
+            displayName,
+            dataName: fileNameWithoutExt,
+            imagePath: coverPath,
+            imageExists,
+            index: i
+        });
+
+        incrementNbGames(platform);
+        pageContent.appendChild(gameEl);
+    }
+
+    page.appendChild(pageContent);
+    return page;
 }
 
-export function createGameContainer({
-  platform,
-  emulator,
-  emulatorArgs,
-  filePath,
-  displayName,
-  dataName,
-  imagePath,
-  imageExists,
-  index
+export function buildGameContainer({
+    platform,
+    emulator,
+    emulatorArgs,
+    filePath,
+    displayName,
+    dataName,
+    imagePath,
+    imageExists,
+    index
 }) {
-  const container = document.createElement('div');
-  container.classList.add('game-container');
-  container.title = `${displayName} (${dataName}) real name: ${path.basename(filePath)}
+    const container = document.createElement('div');
+    container.classList.add('game-container');
+    container.title = `${displayName} (${dataName}) real name: ${path.basename(filePath)}
 
 - Click to launch with ${emulator}
 - Right-click to configure`;
 
-  container.dataset.gameName = dataName;
-  container.dataset.platform = platform;
-  container.dataset.command = `${emulator} ${emulatorArgs} ${filePath}`;
-  container.dataset.emulator = emulator;
-  container.dataset.emulatorArgs = emulatorArgs;
-  container.dataset.gamePath = filePath;
-  container.dataset.index = index;
+    container.dataset.gameName = dataName;
+    container.dataset.platform = platform;
+    container.dataset.command = `${emulator} ${emulatorArgs} ${filePath}`;
+    container.dataset.emulator = emulator;
+    container.dataset.emulatorArgs = emulatorArgs;
+    container.dataset.gamePath = filePath;
+    container.dataset.index = index;
 
-  const imgEl = document.createElement('img');
-  imgEl.classList.add('game-image');
-  imgEl.src = imageExists ? imagePath : path.join(LB.baseDir, 'img', 'missing.png');
-  if (!imageExists) container.dataset.missingImage = true;
-  if (!imageExists) imgEl.classList.add('missing-image');
+    const imgEl = document.createElement('img');
+    imgEl.classList.add('game-image');
+    imgEl.src = imageExists ? imagePath : path.join(LB.baseDir, 'img', 'missing.png');
+    if (!imageExists) container.dataset.missingImage = true;
+    if (!imageExists) imgEl.classList.add('missing-image');
 
-  const label = document.createElement('div');
-  label.classList.add('game-label');
-  label.textContent = displayName;
+    const label = document.createElement('div');
+    label.classList.add('game-label');
+    label.textContent = displayName;
 
-  container.appendChild(imgEl);
-  container.appendChild(label);
+    container.appendChild(imgEl);
+    container.appendChild(label);
 
-  return container;
+    return container;
 }
 
-async function buildRecentGallery({ userDataPath, index }) {
-  const recents = LB.recents;
-  if (!recents || recents.length === 0 || recents.error) {
-    console.log("No recent entries found.");
-    return null;
-  }
-
-  const sortedRecents = [...recents].sort((a, b) => new Date(b.date) - new Date(a.date));
-
-  const page = document.createElement('div');
-  page.classList.add('page');
-  page.id = `page${index}`;
-  page.dataset.index = index;
-  page.dataset.platform = 'recents';
-
-  const pageContent = document.createElement('div');
-  pageContent.classList.add('page-content');
-  pageContent.style.gridTemplateColumns = `repeat(${LB.galleryNumOfCols}, 1fr)`;
-
-  for (const [i, recent] of sortedRecents.entries()) {
-    try {
-      const gamesDir = await getPreference(recent.platform, 'gamesDir');
-      const coverPath = findImageFile(path.join(gamesDir, 'images'), recent.fileName);
-      const imageExists = coverPath && fs.existsSync(coverPath);
-
-      const gameContainer = createGameContainer({
-        platform: recent.platform,
-        emulator: recent.emulator,
-        emulatorArgs: recent.emulatorArgs,
-        filePath: recent.filePath,
-        displayName: recent.gameName,
-        dataName: recent.fileName,
-        imagePath: coverPath,
-        imageExists,
-        index: i
-      });
-
-      pageContent.appendChild(gameContainer);
-
-    } catch (err) {
-      console.error('Failed to get platform preference:', err);
-    }
-  }
-
-  page.appendChild(pageContent);
-  return page;
-}
-
-
-// Recursively scan a directory for files with specific extensions.
-// If recursive is false, only the top-level directory is scanned.
-// If gamesDir is invalid, it returns an empty array.
-async function scanDirectory(gamesDir, extensions, recursive = true, ignoredDirs = ['PS3_EXTRA', 'PKGDIR', 'freezer', 'tmp']) {
-    let files = [];
-
-    // Sort extensions by longest first to prioritize multi-part matches
-    const sortedExts = [...new Set(extensions)].sort((a, b) => b.length - a.length); // Dedupe and sort
-
-    if (!gamesDir || typeof gamesDir !== 'string') {
-        console.warn("scanDirectory: Invalid directory path provided:", gamesDir);
-        return files;
+async function buildRecentGallery({ index }) {
+    const recents = LB.recents;
+    if (!recents || recents.length === 0 || recents.error) {
+        console.log("No recent entries found.");
+        return null;
     }
 
-    try {
-        const items = await fsp.readdir(gamesDir, { withFileTypes: true });
-        for (const item of items) {
-            const fullPath = path.join(gamesDir, item.name);
+    const sortedRecents = [...recents].sort((a, b) => new Date(b.date) - new Date(a.date));
 
-            if (item.isDirectory()) {
-                if (ignoredDirs.includes(item.name)) continue;
-                if (recursive) files.push(...await scanDirectory(fullPath, extensions, recursive, ignoredDirs));
-            } else {
-                // Check if filename ENDS WITH any allowed extension (case-insensitive)
-                const lowerName = item.name.toLowerCase();
-                const match = sortedExts.find(ext => lowerName.endsWith(ext.toLowerCase()));
-                if (match) files.push(fullPath);
-            }
-        }
-    } catch (err) {
-        console.error("Error reading directory:", gamesDir, err);
-    }
+    const page = document.createElement('div');
+    page.classList.add('page');
+    page.dataset.index = index;
+    page.dataset.platform = 'recents';
 
-    return files;
-}
+    const pageContent = document.createElement('div');
+    pageContent.classList.add('page-content');
+    pageContent.style.gridTemplateColumns = `repeat(${LB.galleryNumOfCols}, 1fr)`;
 
-const imageFormats = ['jpg', 'png', 'webp'];
+    for (const [i, recent] of sortedRecents.entries()) {
+        try {
+            const gamesDir = await getPreference(recent.platform, 'gamesDir');
+            const coverPath = findImageFile(path.join(gamesDir, 'images'), recent.fileName);
+            const imageExists = coverPath && fs.existsSync(coverPath);
 
-function findImageFile(basePath, fileNameWithoutExt) {
-    for (const format of imageFormats) {
-        const imagePath = path.join(basePath, `${fileNameWithoutExt}.${format}`);
-        if (fs.existsSync(imagePath)) {
-            return imagePath;
+            const gameContainer = buildGameContainer({
+                platform: recent.platform,
+                emulator: recent.emulator,
+                emulatorArgs: recent.emulatorArgs,
+                filePath: recent.filePath,
+                displayName: recent.gameName,
+                dataName: recent.fileName,
+                imagePath: coverPath,
+                imageExists,
+                index: i
+            });
+
+            pageContent.appendChild(gameContainer);
+
+        } catch (err) {
+            console.error('Failed to get platform preference:', err);
         }
     }
-    return null;
+
+    page.appendChild(pageContent);
+    return page;
 }
 
 function buildSettingsPageContent(platforms) {
@@ -395,15 +341,6 @@ function buildSettingsPageContent(platforms) {
     });
 
     return pageContent;
-}
-
-function incrementNbGames(platformName) {
-    const platform = PLATFORMS.find(p => p.name === platformName);
-    if (platform) {
-        platform.nbGames++;
-    } else {
-        console.warn(`Platform not found: ${platformName}`);
-    }
 }
 
 

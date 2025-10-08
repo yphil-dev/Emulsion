@@ -353,7 +353,6 @@ export function updateHeader(platformName, gameName) {
     header.querySelector('.platform-image').style.backgroundImage = `url('../../img/platforms/${platformName}.png')`;
 }
 
-
 export function toggleFullScreen(elem = document.documentElement) {
     if (!document.fullscreenElement) {
         elem.requestFullscreen().catch(err => {
@@ -362,4 +361,51 @@ export function toggleFullScreen(elem = document.documentElement) {
     } else {
         document.exitFullscreen();
     }
+}
+
+// Recursively scan a directory for files with specific extensions.
+// If recursive is false, only the top-level directory is scanned.
+// If gamesDir is invalid, it returns an empty array.
+export async function scanDirectory(gamesDir, extensions, recursive = true, ignoredDirs = ['PS3_EXTRA', 'PKGDIR', 'freezer', 'tmp']) {
+    let files = [];
+
+    // Sort extensions by longest first to prioritize multi-part matches
+    const sortedExts = [...new Set(extensions)].sort((a, b) => b.length - a.length); // Dedupe and sort
+
+    if (!gamesDir || typeof gamesDir !== 'string') {
+        console.warn("scanDirectory: Invalid directory path provided:", gamesDir);
+        return files;
+    }
+
+    try {
+        const items = await fsp.readdir(gamesDir, { withFileTypes: true });
+        for (const item of items) {
+            const fullPath = path.join(gamesDir, item.name);
+
+            if (item.isDirectory()) {
+                if (ignoredDirs.includes(item.name)) continue;
+                if (recursive) files.push(...await scanDirectory(fullPath, extensions, recursive, ignoredDirs));
+            } else {
+                // Check if filename ENDS WITH any allowed extension (case-insensitive)
+                const lowerName = item.name.toLowerCase();
+                const match = sortedExts.find(ext => lowerName.endsWith(ext.toLowerCase()));
+                if (match) files.push(fullPath);
+            }
+        }
+    } catch (err) {
+        console.error("Error reading directory:", gamesDir, err);
+    }
+
+    return files;
+}
+
+export function findImageFile(basePath, fileNameWithoutExt) {
+    const imageFormats = ['jpg', 'png', 'webp'];
+    for (const format of imageFormats) {
+        const imagePath = path.join(basePath, `${fileNameWithoutExt}.${format}`);
+        if (fs.existsSync(imagePath)) {
+            return imagePath;
+        }
+    }
+    return null;
 }

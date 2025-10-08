@@ -111,7 +111,7 @@ div.menu-game-container {
 
 div.game-container:hover,
 div.menu-game-container:hover {
-  border-color: var(--color-border-on);
+  border-color: var(--color-outline-selected);
 }
 
 div.platform-info .vendor {

@@ -430,7 +430,7 @@ function buildSettingsMenu() {
     return formContainer;
 }
 
-function buildPlatformForm(platformName) {
+function buildPlatformMenuForm(platformName) {
 
     if (platformName === 'settings') {
         return buildSettingsMenu();
@@ -1042,38 +1042,32 @@ function buildPlatformForm(platformName) {
 
 export function openPlatformMenu(platformName, context) {
 
-    updateHeader('settings');
 
     const menu = document.getElementById('menu');
     const menuContainer = document.getElementById('menu');
 
-    // Store state
-    menuState.selectedIndex = 1;
+    menuContainer.innerHTML = '';
 
-    // Update UI
     updateFooterControls('dpad', 'button-dpad-nesw', 'Inputs', 'on');
     updateFooterControls('west', 'same', '', 'off');
     updateFooterControls('shoulders', 'same', '', 'off');
 
-    menu.style.height = '85vh';
-
-    toggleHeaderNavLinks('hide');
-
-    // Clear and populate menu
-    menuContainer.innerHTML = '';
     menuContainer.dataset.menuPlatform = platformName;
     menuContainer.dataset.menuContext = context || null;
 
-    const platformForm = buildPlatformForm(platformName);
-    menuContainer.appendChild(platformForm);
-
-    setKeydown(onPlatformMenuKeyDown);
+    const platformMenuForm = buildPlatformMenuForm(platformName);
+    menuContainer.appendChild(platformMenuForm);
 
     const header = document.getElementById('header');
 
     if (LB.onHeaderWheel) {
         header.removeEventListener('wheel', LB.onHeaderWheel);
     }
+
+    setKeydown(onPlatformMenuKeyDown);
+    menu.style.height = '85vh';
+    updateHeader(platformName);
+    toggleHeaderNavLinks('hide');
 
 }
 

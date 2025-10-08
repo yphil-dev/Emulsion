@@ -95,6 +95,16 @@ export function initSlideShow(platformToDisplay) {
         });
     });
 
+    function toggleFullScreen(elem = document.documentElement) {
+        if (!document.fullscreenElement) {
+            elem.requestFullscreen().catch(err => {
+                console.error(`Error attempting to enable fullscreen: ${err.message}`);
+            });
+        } else {
+            document.exitFullscreen();
+        }
+    }
+
     function onSlideShowKeyDown(event) {
         event.stopPropagation();
         event.stopImmediatePropagation();
@@ -137,6 +147,10 @@ export function initSlideShow(platformToDisplay) {
             break;
         case 'F5':
             event.shiftKey ? ipcRenderer.invoke('restart') : window.location.reload();
+            break;
+        case 'F11':
+            // event.preventDefault();
+            toggleFullScreen();
             break;
         case 'Escape':
             showQuitConfirmationDialog();

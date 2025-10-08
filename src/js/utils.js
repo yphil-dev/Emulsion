@@ -338,6 +338,10 @@ export function updateHeader(platformName, gameName) {
         itemType = 'platform';
     }
 
+    if (platformName === 'recents') {
+        count = LB.recents.length;
+    }
+
     if (gameName) {
         itemType = 'image';
         count = 0;

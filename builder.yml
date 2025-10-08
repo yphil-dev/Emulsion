@@ -1,8 +1,8 @@
 # electron-builder.yml
 
 appId: com.yphil.emulsion
-productName: emulsion
-artifactName: "${productName}_${arch}.${ext}"
+productName: Emulsion
+artifactName: "emulsion_${arch}.${ext}"
 asar: true
 compression: store
 

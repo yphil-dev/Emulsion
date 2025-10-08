@@ -1,5 +1,5 @@
 import { getPlatformInfo } from './platforms.js';
-import { initSlideShow } from './slideshow.js';
+import { initSlideShow, initGallery } from './slideshow.js';
 import { updatePreference, getPreference } from './preferences.js';
 import { getSelectedGameContainer,
          updateFooterControls,
@@ -10,31 +10,35 @@ import { getSelectedGameContainer,
          simulateTabNavigation,
          setKeydown,
          setFooterSize,
+         toggleFullScreen,
          toggleHeaderNavLinks } from './utils.js';
 
 let menuState = {
-    isOpen: false,
     selectedIndex: 1,
-    menuType: null, // 'platform' or 'game'
-    previousKeyDownListener: null // Store the previous listener to restore
 };
 
-function platformMenuKeyDown(event) {
+function onPlatformMenuKeyDown(event) {
 
     event.stopPropagation();
     event.stopImmediatePropagation();
 
     switch (event.key) {
     case 'ArrowRight':
+    case 'ArrowDown':
         simulateTabNavigation();
         break;
 
     case 'ArrowLeft':
+    case 'ArrowUp':
         simulateTabNavigation(true);
         break;
 
     case 'Escape':
         closePlatformMenu();
+        break;
+
+    case 'F11':
+        toggleFullScreen();
         break;
     }
 
@@ -91,11 +95,7 @@ function gameMenuKeyDown(event) {
     case 'Enter':
         const selectedGameContainer = getSelectedGameContainer(menuGameContainers, menuState.selectedIndex);
         const selectedImg = selectedGameContainer.querySelector('.game-image');
-        if (menuState.menuType === 'platform') {
-            closePlatformMenu();
-        } else {
-            closeGameMenu(selectedImg.src);
-        }
+        closeGameMenu(selectedImg.src);
         break;
 
     case 'F5':
@@ -105,13 +105,12 @@ function gameMenuKeyDown(event) {
             window.location.reload();
         }
         break;
-
+    case 'F11':
+        // event.preventDefault();
+        toggleFullScreen();
+        break;
     case 'Escape':
-        if (menuState.menuType === 'platform') {
-            closePlatformMenu();
-        } else {
-            closeGameMenu();
-        }
+        closeGameMenu();
         break;
     }
 
@@ -1041,12 +1040,7 @@ function buildPlatformForm(platformName) {
     return formContainer;
 }
 
-export function openPlatformMenu(platformName) {
-
-    if (menuState.isOpen) {
-        console.warn('Menu already open');
-        return;
-    }
+export function openPlatformMenu(platformName, context) {
 
     updateHeader('settings');
 
@@ -1054,12 +1048,10 @@ export function openPlatformMenu(platformName) {
     const menuContainer = document.getElementById('menu');
 
     // Store state
-    menuState.isOpen = true;
-    menuState.menuType = 'platform';
     menuState.selectedIndex = 1;
 
     // Update UI
-    updateFooterControls('dpad', 'button-dpad-ew', 'Fields', 'on');
+    updateFooterControls('dpad', 'button-dpad-nesw', 'Inputs', 'on');
     updateFooterControls('west', 'same', '', 'off');
     updateFooterControls('shoulders', 'same', '', 'off');
 
@@ -1070,11 +1062,12 @@ export function openPlatformMenu(platformName) {
     // Clear and populate menu
     menuContainer.innerHTML = '';
     menuContainer.dataset.menuPlatform = platformName;
+    menuContainer.dataset.menuContext = context || null;
 
     const platformForm = buildPlatformForm(platformName);
     menuContainer.appendChild(platformForm);
 
-    setKeydown(platformMenuKeyDown);
+    setKeydown(onPlatformMenuKeyDown);
 
     const header = document.getElementById('header');
 
@@ -1085,10 +1078,6 @@ export function openPlatformMenu(platformName) {
 }
 
 export async function openGameMenu(gameContainer) {
-    if (menuState.isOpen) {
-        console.warn('Menu already open');
-        return;
-    }
 
     const menu = document.getElementById('menu');
     const menuContainer = document.getElementById('menu');
@@ -1099,8 +1088,6 @@ export async function openGameMenu(gameContainer) {
     updateHeader(platformName, cleanFileName(gameName));
 
     // Store state
-    menuState.isOpen = true;
-    menuState.menuType = 'game';
     menuState.selectedIndex = 1;
 
     // Update UI
@@ -1279,54 +1266,31 @@ function buildCurrentGameImgContainer(gameName, image, platformName) {
 
 // Close platform settings menu
 async function closePlatformMenu() {
-    if (!menuState.isOpen || menuState.menuType !== 'platform') {
-        console.warn('No platform menu to close');
-        return;
-    }
 
     const menu = document.getElementById('menu');
     const menuContainer = document.getElementById('menu');
-
-    // Get the platform name from the menu
-    const platformName = menuContainer.dataset.menuPlatform;
-
-    // Remove event listeners
-    // window.removeEventListener('keydown', gameMenuKeyDown);
-    menuContainer.removeEventListener('wheel', onGameMenuWheel);
 
     // Normal close - stay on current page and restore gallery handler
     updateFooterControls('dpad', 'same', 'Browse', 'on');
 
-    document.querySelector('header .prev-link').style.opacity = 1;
-    document.querySelector('header .next-link').style.opacity = 1;
-
-    initSlideShow(platformName);
+    if (menuContainer.dataset.menuContext === 'slideshow') {
+        initSlideShow(menuContainer.dataset.menuPlatform);
+    } else {
+        initGallery('settings');
+    }
 
     menuContainer.innerHTML = '';
     menu.style.height = '0';
-    menuState.isOpen = false;
-    menuState.menuType = null;
 
 }
 
-/**
- * Close game cover art menu
- * @param {string} imgSrc - Optional image source to save
- */
 async function closeGameMenu(imgSrc) {
-    if (!menuState.isOpen || menuState.menuType !== 'game') {
-        console.warn('No game menu to close');
-        return;
-    }
 
     const menu = document.getElementById('menu');
     const menuContainer = document.getElementById('menu');
 
-
-    // Normal menu close and restore gallery handler
     updateFooterControls('dpad', 'same', 'Browse', 'on');
-    document.querySelector('header .prev-link').style.opacity = 1;
-    document.querySelector('header .next-link').style.opacity = 1;
+    toggleHeaderNavLinks('show');
 
     window.LB.imageSrc = imgSrc;
     menuContainer.innerHTML = '';
@@ -1364,9 +1328,6 @@ async function closeGameMenu(imgSrc) {
             });
         }
     }
-
-    menuState.isOpen = false;
-    menuState.menuType = null;
 
     menuContainer.removeEventListener('wheel', onGameMenuWheel);
     menuContainer.removeEventListener('click', onGameMenuClick);

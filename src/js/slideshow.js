@@ -5,6 +5,7 @@ import { getSelectedGameContainer,
          updateHeader,
          setKeydown,
          simulateKeyDown,
+         toggleFullScreen,
          toggleHeaderNavLinks } from './utils.js';
 
 export function initSlideShow(platformToDisplay) {
@@ -56,8 +57,6 @@ export function initSlideShow(platformToDisplay) {
             const is3D = (LB.homeMenuTheme === '3D');
 
             if (i === currentIndex) {
-                window.currentPlatformName = slide.dataset.platform;
-                // Set currentPlatform when slide is active
                 LB.currentPlatform = slide.dataset.platform;
                 slide.classList.add('active');
             } else if (i === (currentIndex - 1 + totalSlides) % totalSlides) {
@@ -95,16 +94,6 @@ export function initSlideShow(platformToDisplay) {
         });
     });
 
-    function toggleFullScreen(elem = document.documentElement) {
-        if (!document.fullscreenElement) {
-            elem.requestFullscreen().catch(err => {
-                console.error(`Error attempting to enable fullscreen: ${err.message}`);
-            });
-        } else {
-            document.exitFullscreen();
-        }
-    }
-
     function onSlideShowKeyDown(event) {
         event.stopPropagation();
         event.stopImmediatePropagation();
@@ -134,7 +123,7 @@ export function initSlideShow(platformToDisplay) {
                 initGallery(activePlatformName);
             } else {
                 // Disabled platform - open menu (if policy allows showing disabled platforms)
-                openPlatformMenu(activePlatformName);
+                openPlatformMenu(activePlatformName, 'slideshow');
             }
 
             document.getElementById('slideshow').style.display = 'none';
@@ -295,7 +284,6 @@ export function initGallery(platformNameOrIndex, disabledPlatform) {
     const pages = Array.from(galleries.querySelectorAll('.page'));
     const header = document.getElementById('header');
 
-    let currentPlatformName = null;
     let currentPageIndex = 0;
     let gameContainers = [];
 
@@ -304,11 +292,9 @@ export function initGallery(platformNameOrIndex, disabledPlatform) {
     if (typeof platformNameOrIndex === 'string') {
         // Name-based lookup (preferred)
         targetPage = pages.find(page => page.dataset.platform === platformNameOrIndex);
-        currentPlatformName = platformNameOrIndex;
     } else if (typeof platformNameOrIndex === 'number') {
         // Index-based lookup (fallback for prev/next navigation only)
         targetPage = pages.find(page => Number(page.dataset.index) === platformNameOrIndex);
-        currentPlatformName = targetPage?.dataset.platform;
     }
 
     if (!targetPage) {
@@ -329,6 +315,10 @@ export function initGallery(platformNameOrIndex, disabledPlatform) {
 
         gameContainers = Array.from(page.querySelectorAll('.game-container') || []);
 
+        gameContainers.forEach((container) => {
+            container.classList.remove('selected');
+        });
+
         function onGamecontainerClick(event) {
             if (event.currentTarget.classList.contains('empty-platform-game-container')) {
                 return;
@@ -339,6 +329,9 @@ export function initGallery(platformNameOrIndex, disabledPlatform) {
             } else {
                 launchGame(event.currentTarget);
             }
+            gameContainers.forEach((container) => {
+                container.classList.remove('selected');
+            });
         }
 
         function onGamecontainerRightClick(event) {
@@ -348,9 +341,9 @@ export function initGallery(platformNameOrIndex, disabledPlatform) {
             }
             const parentDiv = event.target.closest('div.game-container');
             gameContainers.forEach((container) => {
-                container.classList.toggle('selected', false);
+                container.classList.remove('selected');
             });
-            parentDiv.classList.toggle('selected', true);
+            parentDiv.classList.add('selected');
             openGameMenu(event.currentTarget);
         }
 
@@ -409,6 +402,7 @@ export function initGallery(platformNameOrIndex, disabledPlatform) {
 
             if (pageIndexNumber === currentPageIndex) {
                 initCurrentGallery(page);
+                LB.currentPlatform = page.dataset.platform;
                 page.classList.add('active');
             } else if (prevPage && Number(prevPage.dataset.index) === pageIndexNumber) {
                 page.classList.add('prev');
@@ -420,40 +414,21 @@ export function initGallery(platformNameOrIndex, disabledPlatform) {
         });
     }
 
-
-    function goToNextPage() {
-        // Find the index of the current page in the enabledPages array
-        const currentEnabledIndex = enabledPages.findIndex(page => Number(page.dataset.index) === currentPageIndex);
-        const nextEnabledIndex = (currentEnabledIndex + 1) % enabledPages.length;
-
-        // Update currentPageIndex to the next enabled page's dataset.index
-        currentPageIndex = Number(enabledPages[nextEnabledIndex].dataset.index);
-        currentPlatformName = enabledPages[nextEnabledIndex].dataset.platform;
-
-        // Set currentPlatform when browsing platforms
-        LB.currentPlatform = currentPlatformName;
-
+    function goToPage(direction = 1) {
+        const current = enabledPages.findIndex(p => +p.dataset.index === currentPageIndex);
+        const next = (current + direction + enabledPages.length) % enabledPages.length;
+        currentPageIndex = +enabledPages[next].dataset.index;
         updateGallery();
     }
 
-    function goToPrevPage() {
-        const currentEnabledIndex = enabledPages.findIndex(page => Number(page.dataset.index) === currentPageIndex);
-        const prevEnabledIndex = (currentEnabledIndex - 1 + enabledPages.length) % enabledPages.length;
-        currentPageIndex = Number(enabledPages[prevEnabledIndex].dataset.index);
-        currentPlatformName = enabledPages[prevEnabledIndex].dataset.platform;
-
-        // Set currentPlatform when browsing platforms
-        LB.currentPlatform = currentPlatformName;
-
-        updateGallery();
-    }
+    const goToNextPage = () => goToPage(1);
+    const goToPrevPage = () => goToPage(-1);
 
     let selectedIndex = 0;
 
     if (disabledPlatform) {
         openPlatformMenu(disabledPlatform);
     }
-
 
     const _moveRows = (selectedIndex, rowsToMove) => {
         const col = selectedIndex % LB.galleryNumOfCols;
@@ -462,7 +437,7 @@ export function initGallery(platformNameOrIndex, disabledPlatform) {
         return Math.min(Math.max(newIndex, 0), gameContainers.length - 1);
     };
 
-    function galleryKeyDown(event) {
+    function onGalleryKeyDown(event) {
         switch (event.key) {
         case 'ArrowRight':
             if (event.shiftKey) {
@@ -508,6 +483,10 @@ export function initGallery(platformNameOrIndex, disabledPlatform) {
                 window.location.reload();
             }
             break;
+        case 'F11':
+            // event.preventDefault();
+            toggleFullScreen();
+            break;
         case 'Enter':
             if (currentPageIndex === 0) {
                 // Settings page - find the selected platform container
@@ -526,21 +505,7 @@ export function initGallery(platformNameOrIndex, disabledPlatform) {
             }
             break;
         case 'Escape':
-            document.getElementById('slideshow').style.display = 'flex';
-            document.getElementById('galleries').style.display = 'none';
-
-            const selectedPlatformContainer = document.querySelector('.platform-container.selected');
-            const activePage = document.querySelector('.page.active');
-            const currentPlatformName = activePage ? activePage.dataset.platform : null;
-
-            if (currentPlatformName) {
-                initSlideShow(currentPlatformName === 'settings' ? selectedPlatformContainer.dataset.platform : currentPlatformName);
-            } else {
-                // Platform is disabled AND policy is "hide", display settings slide
-                initSlideShow(0);
-            }
-
-            document.querySelector('header .item-number').textContent = '';
+            initSlideShow(document.querySelector('.page.active').dataset.platform);
             break;
         case 'q':
             if (event.ctrlKey) {
@@ -596,7 +561,7 @@ export function initGallery(platformNameOrIndex, disabledPlatform) {
 
     LB.onHeaderWheel = onHeaderWheel;
 
-    setKeydown(galleryKeyDown);
+    setKeydown(onGalleryKeyDown);
 
     updateGallery(true); // Initialize the pages carousel
 }

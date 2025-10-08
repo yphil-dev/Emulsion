@@ -355,3 +355,14 @@ export function updateHeader(platformName, gameName) {
     header.querySelector('.item-type').textContent = pluralize(count, itemType);
     header.querySelector('.platform-image').style.backgroundImage = `url('../../img/platforms/${platformName}.png')`;
 }
+
+
+export function toggleFullScreen(elem = document.documentElement) {
+    if (!document.fullscreenElement) {
+        elem.requestFullscreen().catch(err => {
+            console.error(`Error attempting to enable fullscreen: ${err.message}`);
+        });
+    } else {
+        document.exitFullscreen();
+    }
+}

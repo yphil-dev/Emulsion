@@ -8,7 +8,7 @@
 
 @font-face {
   font-family: 'Exo2';
-  src: url('../ font/Exo2-Regular.otf') format('opentype');
+  src: url('../font/Exo2-Regular.otf') format('opentype');
   font-weight: normal; /* For variable fonts */
   font-style: normal;
 }

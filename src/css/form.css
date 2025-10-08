@@ -53,7 +53,8 @@ button {
 }
 
 #form-status-label {
-  align-items: center;
+  display: flex;
+  align-items: anchor-center;
 }
 
 
@@ -228,6 +229,30 @@ label.checkbox {
   vertical-align: middle;
 }
 
+.button:hover {
+  outline: 1px solid var(--color-outline-selected);
+}
+
+.button:focus {
+  border-color: var(--color-outline-selected);
+  color: var(--color-outline-selected);
+  box-shadow:
+    0 0 4px var(--color-outline-selected),
+    0 0 10px color-mix(in srgb, var(--color-outline-selected) 40%, transparent);
+  transform: scale(1.02);
+}
+
+.button:hover::after,
+.button:focus::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid #00ffae;
+  filter: blur(3px);
+  opacity: 0.25;
+  pointer-events: none;
+}
+
 .button-browse {
   margin-left: 1em;
 }
@@ -269,37 +294,6 @@ label.checkbox {
   color: #ffffff;
 }
 
-.button:hover,
-.button:focus {
-  border-color: var(--color-outline-selected);
-  color: var(--color-outline-selected);
-  box-shadow:
-    0 0 4px var(--color-outline-selected),
-    0 0 10px color-mix(in srgb, var(--color-outline-selected) 40%, transparent);
-  transform: scale(1.02);
-}
-
-/* .button:hover, */
-/* .button:focus { */
-/*   border-color: #00ffae; */
-/*   box-shadow: */
-/*     0 0 4px #00ffae, */
-/*     0 0 10px rgba(0, 255, 174, 0.4); */
-/*   color: #00ffae; */
-/*   transform: scale(1.02); */
-/* } */
-
-.button:hover::after,
-.button:focus::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border: 1px solid #00ffae;
-  filter: blur(3px);
-  opacity: 0.25;
-  pointer-events: none;
-}
-
 input[type="checkbox"] {
   height: 30px;
   width: 30px;
@@ -319,10 +313,6 @@ input[type="radio"] {
 
 input[type="checkbox"]:focus {
   outline: 2px solid var(--color-border-on);
-}
-
-.button:active {
-  opacity: .5;
 }
 
 .dual-ctn {
@@ -395,6 +385,7 @@ div.form-icon {
 }
 
 #menu-progress-text {
+  transition: color 0.4s ease, opacity 0.3s ease;
   position: absolute;
   min-width: max-content;
   top: 50%;
@@ -407,9 +398,12 @@ div.form-icon {
   z-index: 2;
   margin: 0; /* Remove any default margins */
   padding: 0; /* Remove any default padding */
-  color: red;
 }
 
 #menu-progress-text.success {
   color: green;
+}
+
+#menu-progress-text.error {
+  color: red;
 }

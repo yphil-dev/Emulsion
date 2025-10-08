@@ -987,11 +987,16 @@ function buildPlatformForm(platformName) {
 
         console.log(`Found ${games.length} games with missing images`);
 
-        const progressTexts = document.querySelectorAll(".progress-text");
-
         const pie = document.getElementById("footer-progress");
 
         pie.style.opacity = 1;
+
+        function setProgressText(newText, colorCode) {
+            const text = document.getElementById('menu-progress-text');
+            text.classList.remove('success', 'error');
+            text.classList.add(colorCode);
+            text.textContent = newText;
+        }
 
         for (let i = 0; i < games.length; i++) {
             setProgress(i + 1, games.length);
@@ -999,18 +1004,7 @@ function buildPlatformForm(platformName) {
             const gameContainer = games[i];
             const gameName = gameContainer.dataset.gameName;
 
-            function setProgressTexts(newText, success) {
-
-                const text = document.getElementById('menu-progress-text');
-
-                if (success) {
-                    text.classList.add('success');
-                } else {
-                    text.classList.remove('success');
-                }
-                text.textContent = newText;
-            }
-
+            setProgressText(`${gameName}`, 'none');
 
             try {
 
@@ -1019,17 +1013,13 @@ function buildPlatformForm(platformName) {
                     ipcRenderer.once('image-urls', (event, urls) => resolve(urls));
                 });
 
-                console.log("urls.length, gameName: ", urls.length, gameName);
-
                 if (!urls.length) {
-                    setProgressTexts(`x: ${gameName}`, false);
-                    console.warn(`No image found for ${gameName}`);
+                    setProgressText(`${gameName}`, 'error');
+                    await new Promise(r => setTimeout(r, 100)); // allow UI to render red
                     continue;
                 }
 
-                setProgressTexts(`${gameName}`, true);
-
-                // footerProgressText.textContent = newText;
+                setProgressText(`${gameName}`, 'success');
 
                 const url = typeof urls[0] === 'string' ? urls[0] : urls[0]?.url;
                 if (!url) continue;
@@ -1053,12 +1043,7 @@ function buildPlatformForm(platformName) {
             }
         }
 
-        progressTexts.forEach(text => {
-            text.classList.add('success');
-            text.textContent = `Batch download complete!`;
-        });
-
-        console.log("✅ Batch download finished");
+        setProgressText(`Batch download complete!`, 'success');
         pie.style.opacity = 0;
 
     }

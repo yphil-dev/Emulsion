@@ -145,13 +145,10 @@ export function safeFileName(fileName) {
 export function stripExtensions(fileName) {
     if (!fileName || typeof fileName !== 'string') return fileName;
 
-    let base = fileName;
-    for (let i = 0; i < 2; i++) {
-        const lastDot = base.lastIndexOf('.');
-        if (lastDot <= 0) break; // stop if no more extension
-        base = base.substring(0, lastDot);
-    }
-    return base;
+    const lastDot = fileName.lastIndexOf('.');
+    if (lastDot <= 0) return fileName; // no dot or starts with a dot
+
+    return fileName.substring(0, lastDot);
 }
 
 // Uppercase ALPHANUMER1C

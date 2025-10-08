@@ -2,159 +2,297 @@ import { getPlatformInfo, PLATFORMS } from './platforms.js';
 import { safeFileName, cleanFileName, stripExtensions } from './utils.js';
 import { getPreference } from './preferences.js';
 
-// LB.gallery.buildGalleries now also builds the "recent" gallery
 export async function buildGalleries (preferences, userDataPath) {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const galleriesContainer = document.getElementById('galleries');
-                let i = 0;
-                const platforms = Object.keys(preferences);
+    return new Promise(async (resolve, reject) => {
+        try {
+            const galleriesContainer = document.getElementById('galleries');
+            let i = 0;
+            const platforms = Object.keys(preferences);
 
-                for (const platformName of platforms) {
-                    let prefs = preferences[platformName];
+            for (const platformName of platforms) {
+                let prefs = preferences[platformName];
 
-                    if (prefs) {
-                        let gamesDir, emulator, emulatorArgs, extensions, isEnabled, index;
-                        if (platformName === 'settings') {
-                            gamesDir = 'none';
-                            emulator = 'none';
-                            emulatorArgs = 'none';
-                            extensions = 'none';
-                            index = i;
-                        } else {
-                            gamesDir = prefs.gamesDir;
-                            emulator = prefs.emulator;
-                            emulatorArgs = prefs.emulatorArgs;
-                            extensions = prefs.extensions;
-                            isEnabled = prefs.isEnabled;
-                            index = PLATFORMS.findIndex(p => p.name === platformName);
-                        }
-                        const params = {
-                            platform: platformName,
-                            gamesDir,
-                            emulator,
-                            emulatorArgs,
-                            userDataPath,
-                            index: index,
-                            platforms,
-                            extensions,
-                            isEnabled
-                        };
-
-                        const container = await buildGallery(params);
-                        if (container) {
-                            galleriesContainer.appendChild(container);
-                        }
-
-                        if (platformName !== 'settings' && prefs.isEnabled) {
-                            LB.enabledPlatforms.push(platformName);
-                            i++;
-                        }
-                    } else if (platformName === 'settings') {
-                        const params = {
-                            platform: platformName,
-                            gamesDir: 'none',
-                            emulator: 'none',
-                            emulatorArgs: 'none',
-                            userDataPath,
-                            index: 0,
-                            platforms,
-                            extensions: 'none'
-                        };
-                        const container = await buildGallery(params);
-                        if (container) {
-                            galleriesContainer.appendChild(container);
-                        }
-                        i++;
+                if (prefs) {
+                    let gamesDir, emulator, emulatorArgs, extensions, isEnabled, index;
+                    if (platformName === 'settings') {
+                        gamesDir = 'none';
+                        emulator = 'none';
+                        emulatorArgs = 'none';
+                        extensions = 'none';
+                        index = i;
                     } else {
-                        reject('No prefs for ' + platformName);
+                        gamesDir = prefs.gamesDir;
+                        emulator = prefs.emulator;
+                        emulatorArgs = prefs.emulatorArgs;
+                        extensions = prefs.extensions;
+                        isEnabled = prefs.isEnabled;
+                        index = PLATFORMS.findIndex(p => p.name === platformName);
                     }
-                }
+                    const params = {
+                        platform: platformName,
+                        gamesDir,
+                        emulator,
+                        emulatorArgs,
+                        userDataPath,
+                        index: index,
+                        platforms,
+                        extensions,
+                        isEnabled
+                    };
 
-                if (LB.recentlyPlayedPolicy === 'show') {
-                    const recentGallery = await _buildRecentGallery({ userDataPath, index: platforms.length });
-                    if (recentGallery) {
-                        galleriesContainer.appendChild(recentGallery);
+                    const container = await buildGallery(params);
+                    if (container) {
+                        galleriesContainer.appendChild(container);
+                    }
+
+                    if (platformName !== 'settings' && prefs.isEnabled) {
+                        LB.enabledPlatforms.push(platformName);
                         i++;
                     }
-                    platforms.push("recents");
+                } else if (platformName === 'settings') {
+                    const params = {
+                        platform: platformName,
+                        gamesDir: 'none',
+                        emulator: 'none',
+                        emulatorArgs: 'none',
+                        userDataPath,
+                        index: 0,
+                        platforms,
+                        extensions: 'none'
+                    };
+                    const container = await buildGallery(params);
+                    if (container) {
+                        galleriesContainer.appendChild(container);
+                    }
+                    i++;
+                } else {
+                    reject('No prefs for ' + platformName);
                 }
-
-                resolve(platforms);
-            } catch (error) {
-                reject(error);
             }
-        });
-    }
 
-async function _buildRecentGallery({ userDataPath, index }) {
-    let recents = LB.recents;
-
-    if (!recents || recents.length === 0 || recents.error) {
-        console.log("No recent entries found.");
-        return null;
-    }
-
-    // Sort by date (newest first)
-    const sortedRecents = [...recents].sort((a, b) => {
-        return new Date(b.date) - new Date(a.date); // Descending order
-    });
-
-    const page = document.createElement('div');
-    page.classList.add('page');
-    page.id = `page${index}`;
-    page.setAttribute('data-index', index);
-    page.setAttribute('data-platform', 'recents');
-
-    const pageContent = document.createElement('div');
-    pageContent.classList.add('page-content');
-    pageContent.style.gridTemplateColumns = `repeat(${LB.galleryNumOfCols}, 1fr)`;
-
-    sortedRecents.forEach((recent, i) => {
-        getPreference(recent.platform, 'gamesDir')
-            .then((gamesDir) => {
-
-                const gameContainer = document.createElement('div');
-                gameContainer.classList.add('game-container');
-
-                const date = new Date(recent.date);
-                gameContainer.title = `${recent.gameName} (${recent.platform}) - Last played on ${date.toLocaleString()} \n\n- Click to launch with ${recent.emulator}\n- Righ-click to configure`;
-
-                gameContainer.setAttribute('data-game-name', recent.fileName);
-                gameContainer.setAttribute('data-platform', recent.platform);
-                gameContainer.setAttribute('data-emulator', recent.emulator);
-                gameContainer.setAttribute('data-emulator-args', recent.emulatorArgs);
-                gameContainer.setAttribute('data-game-path', recent.filePath);
-                gameContainer.setAttribute('data-index', i);
-
-                let coverImagePath = findImageFile(path.join(gamesDir, 'images'), recent.fileName);
-
-                const missingImagePath = path.join(LB.baseDir, 'img', 'missing.png');
-                const isImgExists = (coverImagePath && fs.existsSync(coverImagePath));
-                const gameImage = document.createElement('img');
-                gameImage.src = isImgExists ? coverImagePath : missingImagePath;
-                gameImage.classList.add('game-image');
-                if (!isImgExists) {
-                    gameImage.classList.add('missing-image');
+            if (LB.recentlyPlayedPolicy === 'show') {
+                const recentGallery = await buildRecentGallery({ userDataPath, index: platforms.length });
+                if (recentGallery) {
+                    galleriesContainer.appendChild(recentGallery);
+                    i++;
                 }
+                platforms.push("recents");
+            }
 
-                const gameLabel = document.createElement('div');
-                gameLabel.classList.add('game-label');
-                gameLabel.textContent = recent.gameName;
-
-                gameContainer.appendChild(gameLabel);
-                gameContainer.appendChild(gameImage);
-                pageContent.appendChild(gameContainer);
-
-            })
-            .catch((error) => {
-                console.error('Failed to get platform preference:', error);
-            });
+            resolve(platforms);
+        } catch (error) {
+            reject(error);
+        }
     });
+}
 
+
+// === buildGallery refactor using top-level createGameContainer ===
+export async function buildGallery(params) {
+  const {
+    platform,
+    gamesDir,
+    emulator,
+    emulatorArgs,
+    index,
+    platforms,
+    extensions,
+    isEnabled
+  } = params;
+
+  document.getElementById('loading-platform-name').textContent = platform;
+
+  const page = document.createElement('div');
+  page.classList.add('page');
+  page.dataset.index = index;
+  page.dataset.platform = platform;
+
+  // SETTINGS page
+  if (platform === 'settings') {
+    if (LB.kioskMode) {
+      page.dataset.status = 'disabled';
+      page.appendChild(document.createElement('div')); // empty placeholder
+      return page;
+    }
+    const settingsContent = buildSettingsPageContent(platforms);
+    page.appendChild(settingsContent);
+    return page;
+  }
+
+  // Non-settings page
+  const pageContent = document.createElement('div');
+  pageContent.classList.add('page-content');
+  pageContent.style.gridTemplateColumns = `repeat(${LB.galleryNumOfCols}, 1fr)`;
+
+  if (!isEnabled) {
+    const emptyContainer = document.createElement('div');
+    emptyContainer.classList.add('game-container');
+    emptyContainer.dataset.platform = platform;
+    pageContent.appendChild(emptyContainer);
+    page.dataset.status = 'disabled';
     page.appendChild(pageContent);
     return page;
+  }
+
+  const imagesDir = path.join(gamesDir, 'images');
+  const missingImagePath = path.join(LB.baseDir, 'img', 'missing.png');
+
+  const getEbootPath = (gameFile) => path.join(path.dirname(gameFile), 'USRDIR', 'EBOOT.BIN');
+
+  async function getPs3GameTitleSafe(filePath) {
+    try {
+      return await ipcRenderer.invoke('parse-sfo', filePath);
+    } catch (err) {
+      console.error('Failed to parse SFO:', err);
+      return null;
+    }
+  }
+
+  const gameFiles = await scanDirectory(gamesDir, extensions, true);
+
+  if (gameFiles.length === 0) {
+    const emptyGameContainer = document.createElement('div');
+    emptyGameContainer.classList.add('game-container', 'empty-platform-game-container');
+    emptyGameContainer.style.gridColumn = `1 / span 2`;
+    emptyGameContainer.innerHTML = `<p><i class="fa fa-heartbeat fa-5x" aria-hidden="true"></i></p>
+      <p>No game files found in</p><p><code>${gamesDir}</code></p>`;
+    pageContent.appendChild(emptyGameContainer);
+    page.appendChild(pageContent);
+    return page;
+  }
+
+  for (const [i, originalGameFilePath] of gameFiles.entries()) {
+    let gameFilePath = originalGameFilePath;
+    let fileName = path.basename(gameFilePath);
+    let fileNameWithoutExt = stripExtensions(fileName);
+    let displayName = cleanFileName(fileNameWithoutExt);
+
+    // PS3 special handling
+    if (platform === 'ps3') {
+      const ps3Title = await getPs3GameTitleSafe(gameFilePath);
+      if (ps3Title) {
+        fileNameWithoutExt = safeFileName(ps3Title);
+        displayName = ps3Title;
+      } else {
+        fileNameWithoutExt = stripExtensions(fileName);
+        displayName = cleanFileName(fileNameWithoutExt);
+      }
+      gameFilePath = getEbootPath(originalGameFilePath);
+    }
+
+    const coverPath = findImageFile(imagesDir, fileNameWithoutExt);
+    const imageExists = fs.existsSync(coverPath);
+
+    const gameEl = createGameContainer({
+      platform,
+      emulator,
+      emulatorArgs,
+      filePath: gameFilePath,
+      displayName,
+      dataName: fileNameWithoutExt,
+      imagePath: coverPath,
+      imageExists,
+      index: i
+    });
+
+    incrementNbGames(platform);
+    pageContent.appendChild(gameEl);
+  }
+
+  page.appendChild(pageContent);
+  return page;
 }
+
+export function createGameContainer({
+  platform,
+  emulator,
+  emulatorArgs,
+  filePath,
+  displayName,
+  dataName,
+  imagePath,
+  imageExists,
+  index
+}) {
+  const container = document.createElement('div');
+  container.classList.add('game-container');
+  container.title = `${displayName} (${dataName}) real name: ${path.basename(filePath)}
+
+- Click to launch with ${emulator}
+- Right-click to configure`;
+
+  container.dataset.gameName = dataName;
+  container.dataset.platform = platform;
+  container.dataset.command = `${emulator} ${emulatorArgs} ${filePath}`;
+  container.dataset.emulator = emulator;
+  container.dataset.emulatorArgs = emulatorArgs;
+  container.dataset.gamePath = filePath;
+  container.dataset.index = index;
+
+  const imgEl = document.createElement('img');
+  imgEl.classList.add('game-image');
+  imgEl.src = imageExists ? imagePath : path.join(LB.baseDir, 'img', 'missing.png');
+  if (!imageExists) container.dataset.missingImage = true;
+  if (!imageExists) imgEl.classList.add('missing-image');
+
+  const label = document.createElement('div');
+  label.classList.add('game-label');
+  label.textContent = displayName;
+
+  container.appendChild(imgEl);
+  container.appendChild(label);
+
+  return container;
+}
+
+async function buildRecentGallery({ userDataPath, index }) {
+  const recents = LB.recents;
+  if (!recents || recents.length === 0 || recents.error) {
+    console.log("No recent entries found.");
+    return null;
+  }
+
+  const sortedRecents = [...recents].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  const page = document.createElement('div');
+  page.classList.add('page');
+  page.id = `page${index}`;
+  page.dataset.index = index;
+  page.dataset.platform = 'recents';
+
+  const pageContent = document.createElement('div');
+  pageContent.classList.add('page-content');
+  pageContent.style.gridTemplateColumns = `repeat(${LB.galleryNumOfCols}, 1fr)`;
+
+  for (const [i, recent] of sortedRecents.entries()) {
+    try {
+      const gamesDir = await getPreference(recent.platform, 'gamesDir');
+      const coverPath = findImageFile(path.join(gamesDir, 'images'), recent.fileName);
+      const imageExists = coverPath && fs.existsSync(coverPath);
+
+      const gameContainer = createGameContainer({
+        platform: recent.platform,
+        emulator: recent.emulator,
+        emulatorArgs: recent.emulatorArgs,
+        filePath: recent.filePath,
+        displayName: recent.gameName,
+        dataName: recent.fileName,
+        imagePath: coverPath,
+        imageExists,
+        index: i
+      });
+
+      pageContent.appendChild(gameContainer);
+
+    } catch (err) {
+      console.error('Failed to get platform preference:', err);
+    }
+  }
+
+  page.appendChild(pageContent);
+  return page;
+}
+
 
 // Recursively scan a directory for files with specific extensions.
 // If recursive is false, only the top-level directory is scanned.
@@ -268,151 +406,4 @@ function incrementNbGames(platformName) {
     }
 }
 
-async function buildGallery(params) {
 
-    const platform = params.platform;
-    const gamesDir = params.gamesDir;
-    const emulator = params.emulator;
-    const emulatorArgs = params.emulatorArgs;
-    const index = params.index;
-    const platforms = params.platforms;
-    const extensions = params.extensions;
-    const isEnabled = params.isEnabled;
-
-    document.getElementById('loading-platform-name').textContent = platform;
-
-    const galleryContainer = document.createElement('div');
-    galleryContainer.id = `page-${platform}`;
-    galleryContainer.classList.add('gallery');
-    galleryContainer.tabindex = -1;
-
-    const page = document.createElement('div');
-    page.classList.add('page');
-    page.setAttribute('data-index', index);
-
-    page.setAttribute('data-platform', platform);
-
-    let pageContent;
-
-    if (platform === "settings") {
-        if (LB.kioskMode) {
-            pageContent = document.createElement('div');
-            page.setAttribute('data-status', 'disabled');
-        } else {
-            pageContent = buildSettingsPageContent(platforms);
-        }
-    } else {
-        pageContent = document.createElement('div');
-        pageContent.classList.add('page-content');
-
-        pageContent.style.gridTemplateColumns = `repeat(${LB.galleryNumOfCols}, 1fr)`;
-
-        if (!isEnabled) {
-            pageContent.textContent = '';
-
-            const gameContainer = document.createElement('div');
-            gameContainer.classList.add('game-container');
-            // gameContainer.style.height = 'calc(120vw / ' + LB.galleryNumOfCols + ')';
-            gameContainer.setAttribute('data-platform', platform);
-
-            pageContent.appendChild(gameContainer);
-            page.setAttribute('data-status', 'disabled');
-            page.appendChild(pageContent);
-            return page;
-        }
-
-        const gameFiles = await scanDirectory(gamesDir, extensions, true);
-
-        function getEbootPath(gameFile) {
-            const gameDir = path.dirname(gameFile);
-            return path.join(gameDir, 'USRDIR', 'EBOOT.BIN');
-        }
-
-        async function getPs3GameTitle(filePath) {
-            try {
-                return await ipcRenderer.invoke('parse-sfo', filePath);
-            } catch (error) {
-                console.error('Failed to parse SFO:', error);
-                return null;
-            }
-        }
-
-        if (gameFiles.length > 0) {
-            for (let i = 0; i < gameFiles.length; i++) {
-                let gameFilePath = gameFiles[i];
-                const missingImagePath = path.join(LB.baseDir, 'img', 'missing.png');
-
-                let fileName = path.basename(gameFilePath);
-                let fileNameWithoutExt = stripExtensions(fileName);
-                let fileNameClean = cleanFileName(fileNameWithoutExt);
-
-                let dataCommand = `${emulator} ${emulatorArgs} ${gameFilePath}`;
-
-                if (platform === 'ps3') {
-                    const ps3GameTitle = await getPs3GameTitle(gameFilePath);
-                    fileNameWithoutExt = safeFileName(ps3GameTitle);
-                    fileNameClean = ps3GameTitle;
-                    gameFilePath = getEbootPath(gameFilePath);
-                }
-
-                let coverImagePath = findImageFile(path.join(gamesDir, 'images'), fileNameWithoutExt);
-
-                const isImgExists = fs.existsSync(coverImagePath);
-
-                const gameContainer = document.createElement('div');
-                gameContainer.classList.add('game-container');
-                // gameContainer.style.height = 'calc(120vw / ' + LB.galleryNumOfCols + ')';
-                gameContainer.title = `${fileNameClean} (${fileNameWithoutExt}) real name: ${fileName} \n\n- Click to launch with ${emulator}\n- Righ-click to configure`;
-                gameContainer.setAttribute('data-game-name', fileNameWithoutExt);
-                gameContainer.setAttribute('data-platform', platform);
-                gameContainer.setAttribute('data-command', dataCommand);
-                gameContainer.setAttribute('data-emulator', emulator);
-                gameContainer.setAttribute('data-emulator-args', emulatorArgs);
-                gameContainer.setAttribute('data-game-path', gameFilePath);
-                gameContainer.setAttribute('data-index', i);
-
-                const gameImage = document.createElement('img');
-                gameImage.src = isImgExists ? coverImagePath : missingImagePath;
-                gameImage.classList.add('game-image');
-
-                if (!isImgExists) {
-                    gameImage.classList.add('missing-image');
-                    gameContainer.setAttribute('data-missing-image', true);
-                }
-
-                incrementNbGames(platform);
-
-                // Set explicit width and height attributes
-                // gameImage.width = columnWidth; // Set width attribute
-                // gameImage.height = columnWidth; // Set height attribute (placeholder)
-
-                const gameLabel = document.createElement('div');
-                gameLabel.classList.add('game-label');
-                gameLabel.textContent = fileNameClean;
-
-                gameContainer.appendChild(gameImage);
-                gameContainer.appendChild(gameLabel);
-                pageContent.appendChild(gameContainer);
-            }
-        } else {
-
-            const gameContainer = document.createElement('div');
-            gameContainer.classList.add('game-container', 'empty-platform-game-container');
-            // gameContainer.style.height = 'calc(120vw / ' + LB.galleryNumOfCols + ')';
-            // gameContainer.style.gridColumn = `1 / span ${LB.galleryNumOfCols}`;
-            // gameContainer.style.gridColumn = `2 / calc(${LB.galleryNumOfCols} - 1)`;
-            // gameContainer.style.gridColumn = `calc(${LB.galleryNumOfCols} / 2) / span 2`;
-
-            gameContainer.style.gridColumn = `1 / span 2`;
-
-            gameContainer.innerHTML = `<p><i class="fa fa-heartbeat fa-5x" aria-hidden="true"></i></p><p>No game files found in</p><p><code>${gamesDir}</code></p>`;
-            pageContent.appendChild(gameContainer);
-
-        }
-
-    }
-
-    page.appendChild(pageContent);
-
-    return page;
-}

@@ -95,7 +95,7 @@ export function initSlideShow(platformToDisplay) {
         });
     });
 
-    function homeKeyDown(event) {
+    function onSlideShowKeyDown(event) {
         event.stopPropagation();
         event.stopImmediatePropagation();
 
@@ -131,11 +131,14 @@ export function initSlideShow(platformToDisplay) {
             document.getElementById('galleries').style.display = "flex";
             break;
         }
+        case 'Home':
+        case 'End':
+            initSlideShow('settings');
+            break;
         case 'F5':
             event.shiftKey ? ipcRenderer.invoke('restart') : window.location.reload();
             break;
         case 'Escape':
-            console.log("HOME Escape: ");
             showQuitConfirmationDialog();
             break;
         case 'q':
@@ -155,7 +158,7 @@ export function initSlideShow(platformToDisplay) {
         simulateKeyDown('Escape');
     };
 
-    setKeydown(homeKeyDown);
+    setKeydown(onSlideShowKeyDown);
     updateSlideShow();
 }
 

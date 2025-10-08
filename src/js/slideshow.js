@@ -737,12 +737,12 @@ function showQuitConfirmationDialog() {
         // event.preventDefault();
         event.stopPropagation();
         event.stopImmediatePropagation();
+        const buttons = [okButton, cancelButton];
+        const currentIndex = buttons.indexOf(document.activeElement);
 
         switch (event.key) {
         case 'ArrowLeft':
         case 'ArrowRight':
-            const buttons = [okButton, cancelButton];
-            const currentIndex = buttons.indexOf(document.activeElement);
             const direction = event.key === 'ArrowRight' ? 1 : -1;
             const nextIndex = (currentIndex + direction + buttons.length) % buttons.length;
             buttons[nextIndex].focus();

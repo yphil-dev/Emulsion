@@ -1,5 +1,6 @@
 import { getPlatformInfo, PLATFORMS } from './platforms.js';
 import { safeFileName, cleanFileName, stripExtensions } from './utils.js';
+import { getPreference } from './preferences.js';
 
 // LB.gallery.buildGalleries now also builds the "recent" gallery
 export async function buildGalleries (preferences, userDataPath) {
@@ -109,41 +110,46 @@ async function _buildRecentGallery({ userDataPath, index }) {
     pageContent.classList.add('page-content');
     pageContent.style.gridTemplateColumns = `repeat(${LB.galleryNumOfCols}, 1fr)`;
 
-    // Use the sorted array
     sortedRecents.forEach((recent, i) => {
-        const gameContainer = document.createElement('div');
-        gameContainer.classList.add('game-container');
+        getPreference(recent.platform, 'gamesDir')
+            .then((gamesDir) => {
 
-        const date = new Date(recent.date);
-        gameContainer.title = `${recent.gameName} (${recent.platform}) - Last played on ${date.toLocaleString()} \n\n- Click to launch with ${recent.emulator}\n- Righ-click to configure`;
+                const gameContainer = document.createElement('div');
+                gameContainer.classList.add('game-container');
 
-        gameContainer.setAttribute('data-game-name', recent.fileName);
-        gameContainer.setAttribute('data-platform', recent.platform);
-        gameContainer.setAttribute('data-emulator', recent.emulator);
-        gameContainer.setAttribute('data-emulator-args', recent.emulatorArgs);
-        gameContainer.setAttribute('data-game-path', recent.filePath);
-        gameContainer.setAttribute('data-index', i);
+                const date = new Date(recent.date);
+                gameContainer.title = `${recent.gameName} (${recent.platform}) - Last played on ${date.toLocaleString()} \n\n- Click to launch with ${recent.emulator}\n- Righ-click to configure`;
 
-        let coverImagePath = findImageFile(
-            path.join(userDataPath, "covers", recent.platform),
-            recent.fileName
-        );
-        const missingImagePath = path.join(LB.baseDir, 'img', 'missing.png');
-        const isImgExists = (coverImagePath && fs.existsSync(coverImagePath));
-        const gameImage = document.createElement('img');
-        gameImage.src = isImgExists ? coverImagePath : missingImagePath;
-        gameImage.classList.add('game-image');
-        if (!isImgExists) {
-            gameImage.classList.add('missing-image');
-        }
+                gameContainer.setAttribute('data-game-name', recent.fileName);
+                gameContainer.setAttribute('data-platform', recent.platform);
+                gameContainer.setAttribute('data-emulator', recent.emulator);
+                gameContainer.setAttribute('data-emulator-args', recent.emulatorArgs);
+                gameContainer.setAttribute('data-game-path', recent.filePath);
+                gameContainer.setAttribute('data-index', i);
 
-        const gameLabel = document.createElement('div');
-        gameLabel.classList.add('game-label');
-        gameLabel.textContent = recent.gameName;
+                let coverImagePath = findImageFile(path.join(gamesDir, 'images'), recent.fileName);
 
-        gameContainer.appendChild(gameLabel);
-        gameContainer.appendChild(gameImage);
-        pageContent.appendChild(gameContainer);
+                const missingImagePath = path.join(LB.baseDir, 'img', 'missing.png');
+                const isImgExists = (coverImagePath && fs.existsSync(coverImagePath));
+                const gameImage = document.createElement('img');
+                gameImage.src = isImgExists ? coverImagePath : missingImagePath;
+                gameImage.classList.add('game-image');
+                if (!isImgExists) {
+                    gameImage.classList.add('missing-image');
+                }
+
+                const gameLabel = document.createElement('div');
+                gameLabel.classList.add('game-label');
+                gameLabel.textContent = recent.gameName;
+
+                gameContainer.appendChild(gameLabel);
+                gameContainer.appendChild(gameImage);
+                pageContent.appendChild(gameContainer);
+
+            })
+            .catch((error) => {
+                console.error('Failed to get platform preference:', error);
+            });
     });
 
     page.appendChild(pageContent);

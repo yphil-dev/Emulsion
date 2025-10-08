@@ -33,6 +33,6 @@
         "tree-kill": "^1.2.2"
     },
     "optionalDependencies": {
-        "sdl2-gamecontroller": "^1.0.11"
+        "sdl2-gamecontroller": "^1.1.3"
     }
 }

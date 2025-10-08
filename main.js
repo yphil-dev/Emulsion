@@ -249,7 +249,7 @@ function loadPreferences() {
 
 function savePreferences(preferences) {
     try {
-        const data = JSON.stringify(preferences, null, 4); // Pretty-print the JSON
+        const data = JSON.stringify(preferences, null, 4);
         fs.writeFileSync(preferencesFilePath, data, 'utf8');
         console.log('Preferences saved successfully to', preferencesFilePath);
         return 'Preferences saved successfully. to: ' + preferencesFilePath;
@@ -579,7 +579,10 @@ ipcMain.handle('load-preferences', () => {
 });
 
 ipcMain.handle('save-preferences', async (event, prefs) => {
-    // console.log("prefs: ", prefs);
+    console.log("prefs: ", prefs);
+    // console.log("typeof prefs.nes?.isEnabled:", typeof prefs.nes?.isEnabled);
+    // console.log("prefs.nes?.isEnabled:", prefs.nes?.isEnabled);
+    console.log('Main received prefs:', JSON.stringify(prefs, null, 2));
     savePreferences(prefs);
 });
 

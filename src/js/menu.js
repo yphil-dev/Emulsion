@@ -17,7 +17,7 @@ let menuState = {
     selectedIndex: 1,
 };
 
-function onPlatformMenuKeyDown(event) {
+function onSettingsAndPlatformMenuKeyDown(event) {
 
     event.stopPropagation();
     event.stopImmediatePropagation();
@@ -34,7 +34,11 @@ function onPlatformMenuKeyDown(event) {
         break;
 
     case 'Escape':
-        closePlatformMenu();
+        closeSettingsOrPlatformMenu();
+        break;
+
+    case 'Enter':
+        document.querySelector('.save-button').click();
         break;
 
     case 'F11':
@@ -325,7 +329,7 @@ function buildSettingsMenu() {
     // Buttons
     const saveButton = document.createElement('button');
     saveButton.type = 'button';
-    saveButton.classList.add('button');
+    saveButton.classList.add('button', 'save-button');
     saveButton.textContent = 'Save';
 
     const aboutButton = document.createElement('button');
@@ -357,14 +361,14 @@ function buildSettingsMenu() {
         ipcRenderer.invoke('open-about-window');
     });
 
-    saveButton.addEventListener('click', _saveButtonClick);
+    saveButton.addEventListener('click', onSettingsMenuSaveButtonClick);
 
     function _cancelButtonClick(event) {
         // Smart navigation - return to slideshow without reload
         initSlideShow('settings');
     }
 
-    async function _saveButtonClick() {
+    async function onSettingsMenuSaveButtonClick() {
         try {
             let numberOfColumns = parseInt(numberOfColumnsInput.value, 10);
 
@@ -419,8 +423,7 @@ function buildSettingsMenu() {
             if (somethingImportantChanged) {
                 window.location.reload();
             } else {
-                // Smart navigation - return to slideshow without reload
-                initSlideShow('settings');
+                closeSettingsMenu();
             }
         } catch (error) {
             console.error('Failed to save preferences:', error);
@@ -665,7 +668,7 @@ function buildPlatformMenuForm(platformName) {
 
     const saveButton = document.createElement('button');
     saveButton.type = 'button';
-    saveButton.classList.add('button');
+    saveButton.classList.add('button', 'save-button');
     saveButton.textContent = 'Save';
 
     const helpButton = document.createElement('button');
@@ -781,14 +784,14 @@ function buildPlatformMenuForm(platformName) {
         ipcRenderer.invoke('go-to-url', 'https://gitlab.com/yphil/emulsion/-/blob/master/README.md#usage');
     });
 
-    saveButton.addEventListener('click', _saveButtonClick);
+    saveButton.addEventListener('click', onPlatformMenuSaveButtonClick);
 
     function _cancelButtonClick() {
-        closePlatformMenu();
+        closeSettingsOrPlatformMenu();
         initSlideShow(platformName);
     }
 
-    async function _saveButtonClick() {
+    async function onPlatformMenuSaveButtonClick() {
 
         function validateForm() {
             let valid = true;
@@ -864,14 +867,12 @@ function buildPlatformMenuForm(platformName) {
                 return;
             }
 
-            // Save all preferences
-            await Promise.all([
-                updatePreference(platformName, 'isEnabled', nextEnabled),
-                updatePreference(platformName, 'gamesDir', nextGamesDir),
-                updatePreference(platformName, 'emulator', nextEmulator),
-                updatePreference(platformName, 'extensions', nextExtensions),
-                updatePreference(platformName, 'emulatorArgs', nextArgs)
-            ]);
+            // Serialize the updates, not promise all them
+            await updatePreference(platformName, 'isEnabled', nextEnabled);
+            await updatePreference(platformName, 'gamesDir', nextGamesDir);
+            await updatePreference(platformName, 'emulator', nextEmulator);
+            await updatePreference(platformName, 'extensions', nextExtensions);
+            await updatePreference(platformName, 'emulatorArgs', nextArgs);
 
             window.location.reload();
         } catch (error) {
@@ -1042,7 +1043,6 @@ function buildPlatformMenuForm(platformName) {
 
 export function openPlatformMenu(platformName, context) {
 
-
     const menu = document.getElementById('menu');
     const menuContainer = document.getElementById('menu');
 
@@ -1064,7 +1064,7 @@ export function openPlatformMenu(platformName, context) {
         header.removeEventListener('wheel', LB.onHeaderWheel);
     }
 
-    setKeydown(onPlatformMenuKeyDown);
+    setKeydown(onSettingsAndPlatformMenuKeyDown);
     menu.style.height = '85vh';
     updateHeader(platformName);
     toggleHeaderNavLinks('hide');
@@ -1258,14 +1258,26 @@ function buildCurrentGameImgContainer(gameName, image, platformName) {
     return gameMenuContainer;
 }
 
-// Close platform settings menu
-async function closePlatformMenu() {
+async function closeSettingsMenu() {
+
+    const menu = document.getElementById('menu');
+    const menuContainer = document.getElementById('menu');
+    initGallery('settings');
+
+    menuContainer.innerHTML = '';
+    menu.style.height = '0';
+
+}
+
+async function closeSettingsOrPlatformMenu() {
 
     const menu = document.getElementById('menu');
     const menuContainer = document.getElementById('menu');
 
     // Normal close - stay on current page and restore gallery handler
     updateFooterControls('dpad', 'same', 'Browse', 'on');
+
+    console.log("menuContainer.dataset.menuContext: ", menuContainer.dataset.menuContext);
 
     if (menuContainer.dataset.menuContext === 'slideshow') {
         initSlideShow(menuContainer.dataset.menuPlatform);

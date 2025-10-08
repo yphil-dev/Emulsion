@@ -59,12 +59,8 @@ export async function loadAppData() {
 }
 
 export async function updatePreference(platformName, key, value) {
-    console.log("platformName, key, value: ", platformName, key, value);
     try {
         const preferences = await loadPreferences();
-
-        console.log("preferences[key]: ", preferences[platformName][key]);
-        console.log("preferences[key] === value: ", preferences[platformName][key] === value);
 
         if (preferences[platformName][key] === value) {
             console.log("Nothing to save or do.");
@@ -72,22 +68,8 @@ export async function updatePreference(platformName, key, value) {
         }
 
         preferences[platformName][key] = value;
+
         await ipcRenderer.invoke('save-preferences', preferences);
-
-        // const notifications = document.getElementById('notifications');
-        // const notification = document.getElementById('notification');
-
-        // notification.textContent = 'Preferences saved successfuly';
-
-        // notifications.style.opacity = 1;
-
-        // setTimeout(() => {
-        //     notifications.style.opacity = 0;
-        // }, 3000);
-
-        // console.log(`${platformName} Preferences saved successfully!`);
-
-        notify(`${platformName} Preferences saved successfully!`);
 
         return 'OK';
     } catch (error) {

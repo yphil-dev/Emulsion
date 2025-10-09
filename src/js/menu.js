@@ -130,6 +130,7 @@ function gameMenuKeyDown(event) {
 }
 
 function onGameMenuClick(event) {
+    console.log("event.target: ", event.target);
     const img = event.target.closest('img');
     if (img) {
         closeGameMenu(img.src);

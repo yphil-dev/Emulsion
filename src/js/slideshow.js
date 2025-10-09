@@ -88,8 +88,13 @@ export function initSlideShow(platformToDisplay) {
         slide.addEventListener('click', (event) => {
             event.stopPropagation();
             event.stopImmediatePropagation();
-            if (slide.classList.contains('active')) {
+
+            const slideDiv = event.target.closest('div.slide');
+
+            if (slideDiv.classList.contains('active')) {
                 simulateKeyDown('Enter');
+            } else { // Adjacent slide
+                initSlideShow(slideDiv.dataset.platform);
             }
         });
     });
@@ -336,15 +341,16 @@ export function initGallery(platformNameOrIndex, disabledPlatform) {
 
         function onGamecontainerRightClick(event) {
             event.preventDefault(); // Prevent the default context menu
-            if (event.currentTarget.classList.contains('empty-platform-game-container')) {
+            if (event.currentTarget.classList.contains('empty-platform-game-container') || event.currentTarget.classList.contains('platform-container')) {
                 return;
             }
             const parentDiv = event.target.closest('div.game-container');
+            console.log("parentDiv: ", parentDiv);
             gameContainers.forEach((container) => {
                 container.classList.remove('selected');
             });
             parentDiv.classList.add('selected');
-            openGameMenu(event.currentTarget);
+            openGameMenu(parentDiv);
         }
 
         // Only attach listeners once per page to prevent duplicates

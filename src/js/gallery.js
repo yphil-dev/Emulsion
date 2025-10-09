@@ -1,6 +1,7 @@
 import { getPlatformInfo, PLATFORMS } from './platforms.js';
 import { safeFileName, cleanFileName, stripExtensions, scanDirectory, findImageFile } from './utils.js';
 import { getPreference, incrementNbGames } from './preferences.js';
+import { openPlatformMenu } from './menu.js';
 
 export async function buildGalleries (preferences, userDataPath) {
     return new Promise(async (resolve, reject) => {
@@ -150,17 +151,36 @@ export async function buildGallery(params) {
         emptyGameContainer.classList.add('game-container', 'empty-platform-game-container');
         // emptyGameContainer.style.gridColumn = `1 / span 2`;
 
-        // emptyGameContainer.style.height = 'calc(120vw / ' + LB.galleryNumOfCols + ')';
         emptyGameContainer.style.gridColumn = `1 / span ${LB.galleryNumOfCols}`;
-        // emptyGameContainer.style.gridColumn = `2 / calc(${LB.galleryNumOfCols} - 1)`;
-        // emptyGameContainer.style.gridColumn = `calc(${LB.galleryNumOfCols} / 2) / span 2`;
 
-        emptyGameContainer.innerHTML = `<p><i class="fa fa-heartbeat fa-5x" aria-hidden="true"></i></p>
-      <p>No game files found in</p><p><code>${gamesDir}</code></p>`;
+        const iconP = document.createElement('p');
+        const titleP = document.createElement('p');
+        const textCode = document.createElement('code');
+
+        titleP.textContent = `No game files found in `;
+        textCode.innerHTML = gamesDir;
+        titleP.appendChild(textCode);
+
+        const icon = document.createElement('i');
+        icon.className = 'fa fa-heartbeat fa-5x';
+        icon.setAttribute('aria-hidden', 'true');
+
+        const confButton = document.createElement('button');
+        confButton.classList.add('button');
+        confButton.textContent = `Configure ${platform}`;
+
+        confButton.addEventListener('click', () => openPlatformMenu(platform));
+
+        iconP.appendChild(icon);
+        emptyGameContainer.appendChild(iconP);
+        emptyGameContainer.appendChild(titleP);
+        emptyGameContainer.appendChild(confButton);
+
         pageContent.appendChild(emptyGameContainer);
         page.appendChild(pageContent);
         return page;
     }
+
 
     for (const [i, originalGameFilePath] of gameFiles.entries()) {
         let gameFilePath = originalGameFilePath;

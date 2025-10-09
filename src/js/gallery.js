@@ -19,14 +19,14 @@ export async function buildGalleries (preferences, userDataPath) {
                         emulator = 'none';
                         emulatorArgs = 'none';
                         extensions = 'none';
-                        index = i;
+                        index = 0; // Settings is always index 0
                     } else {
                         gamesDir = prefs.gamesDir;
                         emulator = prefs.emulator;
                         emulatorArgs = prefs.emulatorArgs;
                         extensions = prefs.extensions;
                         isEnabled = prefs.isEnabled;
-                        index = PLATFORMS.findIndex(p => p.name === platformName);
+                        index = i + 1; // Platforms start from index 1
                     }
                     const params = {
                         platform: platformName,
@@ -56,7 +56,7 @@ export async function buildGalleries (preferences, userDataPath) {
                         emulator: 'none',
                         emulatorArgs: 'none',
                         userDataPath,
-                        index: 0,
+                        index: 0, // Settings is always index 0
                         platforms,
                         extensions: 'none'
                     };
@@ -64,7 +64,7 @@ export async function buildGalleries (preferences, userDataPath) {
                     if (container) {
                         galleriesContainer.appendChild(container);
                     }
-                    i++;
+                    // Don't increment i for settings
                 } else {
                     reject('No prefs for ' + platformName);
                 }
@@ -74,7 +74,6 @@ export async function buildGalleries (preferences, userDataPath) {
                 const recentGallery = await buildRecentGallery({ userDataPath, index: platforms.length });
                 if (recentGallery) {
                     galleriesContainer.appendChild(recentGallery);
-                    i++;
                 }
                 platforms.push("recents");
             }
@@ -150,6 +149,12 @@ export async function buildGallery(params) {
         const emptyGameContainer = document.createElement('div');
         emptyGameContainer.classList.add('game-container', 'empty-platform-game-container');
         emptyGameContainer.style.gridColumn = `1 / span 2`;
+
+        // emptyGameContainer.style.height = 'calc(120vw / ' + LB.galleryNumOfCols + ')';
+        // emptyGameContainer.style.gridColumn = `1 / span ${LB.galleryNumOfCols}`;
+        // emptyGameContainer.style.gridColumn = `2 / calc(${LB.galleryNumOfCols} - 1)`;
+        // emptyGameContainer.style.gridColumn = `calc(${LB.galleryNumOfCols} / 2) / span 2`;
+
         emptyGameContainer.innerHTML = `<p><i class="fa fa-heartbeat fa-5x" aria-hidden="true"></i></p>
       <p>No game files found in</p><p><code>${gamesDir}</code></p>`;
         pageContent.appendChild(emptyGameContainer);

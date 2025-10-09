@@ -13,9 +13,16 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'TaylorSans';
+  src: url('../font/TaylorSans-Regular.ttf') format('truetype');
+  font-weight: normal; /* For variable fonts */
+  font-style: normal;
+}
+
 :root {
   --font-main: 'Orbitron', sans-serif;
-  --font-second: 'Exo2', sans-serif;
+  --font-second: 'TaylorSans', sans-serif;
   --color-succes: #00ff18;
   --color-icon: #007bff;
 

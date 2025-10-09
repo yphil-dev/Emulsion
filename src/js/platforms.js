@@ -4,7 +4,7 @@ export const PLATFORMS = [
     { name: "atari", vendor: "Atari", displayName: "2600 - 5800", extensions: [".zip"], nbGames: 0 },
     { name: "amstrad", vendor: "Amstrad", displayName: "GX4000 - CPC - PS204", extensions: [".zip"], nbGames: 0 },
     { name: "spectrum", vendor: "Sinclair", displayName: "ZX Spectrum", extensions: [".zip"], nbGames: 0 },
-    { name: "c64", vendor: "Commodore", displayName: "Commodore 64", extensions: [".zip"], nbGames: 0 },
+    { name: "c64", vendor: "Commodore", displayName: "C-64", extensions: [".zip"], nbGames: 0 },
     { name: "nes", vendor: "Nintendo", displayName: "NES", extensions: [".zip"], nbGames: 0 },
     { name: "sms", vendor: "Sega", displayName: "Master System", extensions: [".zip"], nbGames: 0 },
     { name: "pcengine", vendor: "NEC", displayName: "PC Engine", extensions: [".pce"], nbGames: 0 },

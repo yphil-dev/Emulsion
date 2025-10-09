@@ -351,7 +351,7 @@ export function initGallery(platformNameOrIndex) {
             }
             const parentDiv = event.target.closest('div.game-container');
             console.log("parentDiv: ", parentDiv);
-            gameContainers.forEach((container) => {
+            document.querySelectorAll('.game-container').forEach((container) => {
                 container.classList.remove('selected');
             });
             parentDiv.classList.add('selected');
@@ -367,18 +367,6 @@ export function initGallery(platformNameOrIndex) {
             });
             page.setAttribute('data-listeners-attached', true);
         }
-
-        // const firstGameContainer = page.querySelector('.game-container');
-        // if (firstGameContainer) {
-        //     firstGameContainer.classList.add('selected');
-        //     firstGameContainer.focus();
-        //     // Only scroll the container within the page, not the entire page
-        //     firstGameContainer.scrollIntoView({
-        //         behavior: "instant",
-        //         block: "center",
-        //         inline: "center"
-        //     });
-        // }
 
         updateHeader(page.dataset.platform);
 

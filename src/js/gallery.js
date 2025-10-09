@@ -148,7 +148,7 @@ export async function buildGallery(params) {
 
     if (gameFiles.length === 0) {
         const emptyGameContainer = document.createElement('div');
-        emptyGameContainer.classList.add('game-container', 'empty-platform-game-container');
+        emptyGameContainer.classList.add('empty-platform-game-container');
         // emptyGameContainer.style.gridColumn = `1 / span 2`;
 
         emptyGameContainer.style.gridColumn = `1 / span ${LB.galleryNumOfCols}`;
@@ -167,7 +167,7 @@ export async function buildGallery(params) {
 
         const confButton = document.createElement('button');
         confButton.classList.add('button');
-        confButton.textContent = `Configure ${platform}`;
+        confButton.textContent = `Configure ${getPlatformInfo(platform).vendor} ${getPlatformInfo(platform).name}`;
 
         confButton.addEventListener('click', () => openPlatformMenu(platform));
 
@@ -180,7 +180,6 @@ export async function buildGallery(params) {
         page.appendChild(pageContent);
         return page;
     }
-
 
     for (const [i, originalGameFilePath] of gameFiles.entries()) {
         let gameFilePath = originalGameFilePath;

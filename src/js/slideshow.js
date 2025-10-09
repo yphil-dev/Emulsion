@@ -311,10 +311,11 @@ export function initGallery(platformNameOrIndex) {
     const enabledPages = pages.filter(page => page.dataset.status !== 'disabled');
 
     function initCurrentGallery(page) {
-        page.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-        });
+
+        // page.scrollIntoView({
+        //     behavior: "smooth",
+        //     block: "start",
+        // });
 
         setGalleryFooterControls(page.dataset.platform);
 
@@ -367,13 +368,17 @@ export function initGallery(platformNameOrIndex) {
             page.setAttribute('data-listeners-attached', true);
         }
 
-        const firstGameContainer = page.querySelector('.game-container');
-        firstGameContainer.classList.add('selected');
-        firstGameContainer.focus();
-        firstGameContainer.scrollIntoView({
-            behavior: "instant",
-            block: "center"
-        });
+        // const firstGameContainer = page.querySelector('.game-container');
+        // if (firstGameContainer) {
+        //     firstGameContainer.classList.add('selected');
+        //     firstGameContainer.focus();
+        //     // Only scroll the container within the page, not the entire page
+        //     firstGameContainer.scrollIntoView({
+        //         behavior: "instant",
+        //         block: "center",
+        //         inline: "center"
+        //     });
+        // }
 
         updateHeader(page.dataset.platform);
 

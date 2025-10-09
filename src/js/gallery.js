@@ -148,10 +148,10 @@ export async function buildGallery(params) {
     if (gameFiles.length === 0) {
         const emptyGameContainer = document.createElement('div');
         emptyGameContainer.classList.add('game-container', 'empty-platform-game-container');
-        emptyGameContainer.style.gridColumn = `1 / span 2`;
+        // emptyGameContainer.style.gridColumn = `1 / span 2`;
 
         // emptyGameContainer.style.height = 'calc(120vw / ' + LB.galleryNumOfCols + ')';
-        // emptyGameContainer.style.gridColumn = `1 / span ${LB.galleryNumOfCols}`;
+        emptyGameContainer.style.gridColumn = `1 / span ${LB.galleryNumOfCols}`;
         // emptyGameContainer.style.gridColumn = `2 / calc(${LB.galleryNumOfCols} - 1)`;
         // emptyGameContainer.style.gridColumn = `calc(${LB.galleryNumOfCols} / 2) / span 2`;
 

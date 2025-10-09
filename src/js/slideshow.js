@@ -853,12 +853,22 @@ function ensureImagePane() {
     const page = document.querySelector('.page.active');
     if (!page) return null;
 
-    let imagePane = page.querySelector('.image-pane');
+    // ensure game-pane exists
+    let gamePane = page.querySelector('.game-pane');
+    if (!gamePane) {
+        gamePane = document.createElement('div');
+        gamePane.classList.add('game-pane');
+        page.appendChild(gamePane);
+    }
+
+    // ensure image-pane exists inside game-pane
+    let imagePane = gamePane.querySelector('.image-pane');
     if (!imagePane) {
         imagePane = document.createElement('div');
         imagePane.classList.add('image-pane');
-        page.appendChild(imagePane);
+        gamePane.appendChild(imagePane);
     }
+
     return imagePane;
 }
 
@@ -877,13 +887,9 @@ function updateImagePane(selectedContainer) {
         return;
     }
 
-    // Update or create the image element
     let imgEl = imagePane.querySelector('img');
     if (!imgEl) {
         imgEl = document.createElement('img');
-        imgEl.style.width = '100%';
-        imgEl.style.height = '100%';
-        imgEl.style.objectFit = 'contain';
         imagePane.appendChild(imgEl);
     }
     imgEl.src = imgSrc;

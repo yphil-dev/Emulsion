@@ -51,13 +51,6 @@
   /* transform: translateX(0); */
 }
 
-.page-content {
-  display: grid;
-  gap: 10px;
-  padding: 10px;
-  padding-bottom: 20vh;
-}
-
 .prefs-platform-img {
   max-width: 150px;
 }
@@ -76,43 +69,8 @@
     100% { box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.6); }
 }
 
-div.game-container.launching {
-  /* filter: blur(5px); */
-  box-shadow: 0px 0px 75px red;
-  /* background-color: red; */
-  /* animation: expandEffect 0.5s linear, fadeInShadow 0.4s ease-out; */
-  z-index: 500;
-}
-
-div.game-container,
-div.empty-platform-game-container,
-div.menu-game-container {
-  /* height: 22vw; */
-  border: 1px solid;
-
-  border-color:  var(--color-border-off);
-  display: flex;
-
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-
-  justify-content: space-between;
-
-  font-size: 20px;
-  font-weight: bold;
-  overflow: hidden;
-  /* white-space: nowrap; */
-  position: relative; /* Needed for absolute positioning of the label */
-}
-
 div.menu-game-container {
   height: 22vw;
-}
-
-div.game-container:hover,
-div.menu-game-container:hover {
-  border-color: var(--color-outline-selected);
 }
 
 div.platform-info .vendor {
@@ -193,6 +151,89 @@ div.platform-container {
     object-fit: cover; /* Ensure images fill the space without distortion */
 }
 
+.menu-game-container .game-label {
+  background-color: unset;
+}
+
+.menu-game-container .game-label button {
+  max-width: unset;
+  border-radius: 0;
+}
+
+.selected {
+  outline: 4px solid var(--color-outline-selected);
+  border-color: var(--color-outline-selected) !important;
+  /* box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.6); */
+}
+
+.selected .game-label {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: white;
+}
+
+.explosion-particle {
+  position: absolute;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(var(--x-start), var(--y-start)) scale(1) rotate(0deg);
+  will-change: transform, opacity;
+  animation-name: explode;
+  animation-fill-mode: forwards;
+  animation-timing-function: ease-out;
+}
+
+@keyframes explode {
+  0% {
+    transform: translate(var(--x-start), var(--y-start)) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--x), var(--y)) scale(var(--scale)) rotate(var(--rotation));
+    opacity: 0;
+  }
+}
+
+/* Page content */
+
+.page-content {
+  display: grid;
+  gap: 10px;
+  padding: 10px;
+  padding-bottom: 20vh;
+}
+
+.page-content div img {
+  width: 100%;
+  /* max-width: 150px; */
+}
+
+div.game-container,
+div.empty-platform-game-container,
+div.menu-game-container {
+  /* height: 22vw; */
+  border: 1px solid;
+
+  border-color:  var(--color-border-off);
+  display: flex;
+
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  justify-content: space-between;
+
+  font-size: 20px;
+  font-weight: bold;
+  overflow: hidden;
+  /* white-space: nowrap; */
+  position: relative; /* Needed for absolute positioning of the label */
+}
+
+div.game-container:hover,
+div.menu-game-container:hover {
+  border-color: var(--color-outline-selected);
+}
+
 .game-label {
   background-color: rgba(0, 0, 0, 0.7);
   color: var(--color-text-game-label);
@@ -218,51 +259,4 @@ div.platform-container {
      1px  1px 0 var(--color-outline-game-label);
 
   /* color: #333; */
-}
-
-.menu-game-container .game-label {
-  background-color: unset;
-}
-
-.menu-game-container .game-label button {
-  max-width: unset;
-  border-radius: 0;
-}
-
-.selected {
-  outline: 4px solid var(--color-outline-selected);
-  border-color: var(--color-outline-selected) !important;
-  /* box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.6); */
-}
-
-.selected .game-label {
-  background-color: rgba(0, 0, 0, 0.1);
-  color: white;
-}
-
-.page-content div img {
-  width: 100%;
-  /* max-width: 150px; */
-}
-
-.explosion-particle {
-  position: absolute;
-  pointer-events: none;
-  z-index: 9999;
-  transform: translate(var(--x-start), var(--y-start)) scale(1) rotate(0deg);
-  will-change: transform, opacity;
-  animation-name: explode;
-  animation-fill-mode: forwards;
-  animation-timing-function: ease-out;
-}
-
-@keyframes explode {
-  0% {
-    transform: translate(var(--x-start), var(--y-start)) scale(1) rotate(0deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(var(--x), var(--y)) scale(var(--scale)) rotate(var(--rotation));
-    opacity: 0;
-  }
 }

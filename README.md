@@ -20,7 +20,7 @@
 
 ## What is Emulsion?
 
-Emulsion is a frontend for your games ; It brings everything together in one beautiful, responsive frontend that just works.
+A portal to your **games** ; It brings everything together in one beautiful, responsive frontend that just-works.
 
 ### Key Features
 
@@ -28,7 +28,7 @@ Emulsion is a frontend for your games ; It brings everything together in one bea
 - **Fast** - Thousands of games realy to launch under the second
 - **Light** - Emulsion is not a gigantic cathedral that also does coffee like Launch Box or Retropie, or downright an operating system like Batocera 😉
 
-### *Unique* Features
+### *Unique* Features ; Why Emulsion?
 Only Emulsion does it this way ; Seriously, look it up!
 
 - **Universal Input** - Keyboard, mouse, or any game controller
@@ -42,7 +42,6 @@ Only Emulsion does it this way ; Seriously, look it up!
 ## Installation
 
 ### Pre-built Packages (Recommended)
-
 
 #### Linux
 
@@ -141,7 +140,8 @@ Images are saved to the platform games / roms directory.
 
 ## Controls
 
-### Home Screen
+### Home
+The platform carousel
 
 | Action                        | Keyboard                         | Controller                      |
 |-------------------------------|----------------------------------|---------------------------------|
@@ -150,7 +150,8 @@ Images are saved to the platform games / roms directory.
 | Go to 1st (settings) platform | <kbd>Home</kbd> / <kbd>End</kbd> |                                 |
 | Exit                          | <kbd>Ctrl+Q</kbd>                | <kbd>○</kbd> B/Circle           |
 
-### Game Gallery
+### Gallery
+The games gallery
 
 | Action           | Keyboard                                            | Controller                  |
 |------------------|-----------------------------------------------------|-----------------------------|
@@ -162,12 +163,13 @@ Images are saved to the platform games / roms directory.
 | Back to home     | <kbd>Esc</kbd>                                      | <kbd>○</kbd> B/Circle       |
 
 ### Global Shortcuts
+They work everywhere
 
-| Action                             | Keyboard                | Controller            |
-|------------------------------------|-------------------------|-----------------------|
-| Kill emulator (return to Emulsion) | <kbd>Ctrl+Shift+K</kbd> | Select + <kbd>▼</kbd> |
-| Reload Emulsion                    | <kbd>F5</kbd>           | -                     |
-| Restart Emulsion                   | <kbd>Shift+F5</kbd>     | Select + <kbd>▲</kbd> |
+| Action                             | Keyboard                | Controller                       |
+|------------------------------------|-------------------------|----------------------------------|
+| Kill emulator (return to Emulsion) | <kbd>Ctrl+Shift+K</kbd> | Select + <kbd>▼</kbd> D-Pad Down |
+| Reload Emulsion                    | <kbd>F5</kbd>           | -                                |
+| Restart Emulsion                   | <kbd>Shift+F5</kbd>     | Select + <kbd>▲</kbd> D-Pad Up   |
 
 ### Mouse Support
 

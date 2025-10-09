@@ -323,12 +323,12 @@ function buildSettingsPageContent(platforms) {
         // if (platformName === "settings") return;
 
         const platformContainer = document.createElement('div');
+        platformContainer.setAttribute('data-platform', platformName);
         platformContainer.classList.add('game-container', 'platform-container');
         platformContainer.style.height = 'calc(120vw / ' + LB.galleryNumOfCols + ')';
 
         platformContainer.title = platformName;
         platformContainer.classList.add('settings');
-        platformContainer.setAttribute('data-platform', platformName);
         platformContainer.setAttribute('data-name', platformName);
         platformContainer.setAttribute('data-index', i);
 

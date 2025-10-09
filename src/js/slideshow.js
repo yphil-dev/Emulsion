@@ -205,11 +205,11 @@ export function buildHomeSlide(platformName, preferences) {
     return slide;
 }
 
-function setGalleryFooterControls(currentIndex) {
-    if (currentIndex === 0) {
+function setGalleryFooterControls(platformName) {
+    if (platformName === 'settings') {
         updateFooterControls('dpad', 'button-dpad-nesw', 'Platforms', 'on');
-        updateFooterControls('shoulders', 'same', 'Browse<br>Platforms', 'off');
-        updateFooterControls('west', 'same', 'Fetch<br>cover', 'off');
+        updateFooterControls('shoulders', 'same', 'Platforms', 'on');
+        updateFooterControls('west', 'same', 'Cover', 'off');
     } else {
         updateFooterControls('dpad', 'button-dpad-nesw', 'Games', 'on');
         updateFooterControls('west', 'same', 'Cover', 'on');
@@ -281,7 +281,7 @@ function launchGame(gameContainer) {
     });
 }
 
-export function initGallery(platformNameOrIndex, disabledPlatform) {
+export function initGallery(platformNameOrIndex) {
 
     toggleHeaderNavLinks('show');
 
@@ -316,13 +316,17 @@ export function initGallery(platformNameOrIndex, disabledPlatform) {
             block: "start",
         });
 
-        setGalleryFooterControls(page.dataset.platform === 'settings' ? 0 : 1);
+        setGalleryFooterControls(page.dataset.platform);
 
         gameContainers = Array.from(page.querySelectorAll('.game-container') || []);
 
         gameContainers.forEach((container) => {
             container.classList.remove('selected');
         });
+
+        // gameContainers.forEach((container) => {
+        //     container.classList.toggle('selected', container.dataset.name === LB.currentPlatform);
+        // });
 
         function onGamecontainerClick(event) {
             if (event.currentTarget.classList.contains('empty-platform-game-container')) {
@@ -431,10 +435,6 @@ export function initGallery(platformNameOrIndex, disabledPlatform) {
     const goToPrevPage = () => goToPage(-1);
 
     let selectedIndex = 0;
-
-    if (disabledPlatform) {
-        openPlatformMenu(disabledPlatform);
-    }
 
     const _moveRows = (selectedIndex, rowsToMove) => {
         const col = selectedIndex % LB.galleryNumOfCols;

@@ -305,6 +305,7 @@ function buildSettingsPageContent(platforms) {
         platformContainer.title = platformName;
         platformContainer.classList.add('settings');
         platformContainer.setAttribute('data-platform', platformName);
+        platformContainer.setAttribute('data-name', platformName);
         platformContainer.setAttribute('data-index', i);
 
         const platformInfo = getPlatformInfo(platformName);

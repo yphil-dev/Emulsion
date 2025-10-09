@@ -356,20 +356,19 @@ function buildSettingsMenu() {
 
     formContainer.appendChild(formContainerVSpacerDiv);
 
-    cancelButton.addEventListener('click', _cancelButtonClick);
+    cancelButton.addEventListener('click', onSettingsMenuCancel);
 
     aboutButton.addEventListener('click', () => {
         ipcRenderer.invoke('open-about-window');
     });
 
-    saveButton.addEventListener('click', onSettingsMenuSaveButtonClick);
+    saveButton.addEventListener('click', onSettingsMenuSave);
 
-    function _cancelButtonClick(event) {
-        // Smart navigation - return to slideshow without reload
+    function onSettingsMenuCancel(event) {
         initSlideShow('settings');
     }
 
-    async function onSettingsMenuSaveButtonClick() {
+    async function onSettingsMenuSave() {
         try {
             let numberOfColumns = parseInt(numberOfColumnsInput.value, 10);
 
@@ -404,6 +403,7 @@ function buildSettingsMenu() {
             // Detect changes that require reload
             const somethingImportantChanged =
                   newPrefs.numberOfColumns !== LB.galleryNumOfCols ||
+                  newPrefs.homeMenuTheme !== LB.homeMenuTheme ||
                   newPrefs.disabledPlatformsPolicy !== LB.disabledPlatformsPolicy ||
                   newPrefs.recentlyPlayedPolicy !== LB.recentlyPlayedPolicy ||
                   newPrefs.steamGridAPIKey !== (LB.steamGridAPIKey || '') ||
@@ -779,18 +779,13 @@ function buildPlatformMenuForm(platformName) {
         }
     });
 
-    cancelButton.addEventListener('click', _cancelButtonClick);
+    cancelButton.addEventListener('click', closeSettingsOrPlatformMenu);
 
     helpButton.addEventListener('click', () => {
         ipcRenderer.invoke('go-to-url', 'https://gitlab.com/yphil/emulsion/-/blob/master/README.md#usage');
     });
 
     saveButton.addEventListener('click', onPlatformMenuSaveButtonClick);
-
-    function _cancelButtonClick() {
-        closeSettingsOrPlatformMenu();
-        initSlideShow(platformName);
-    }
 
     async function onPlatformMenuSaveButtonClick() {
 
@@ -1271,6 +1266,8 @@ async function closeSettingsMenu() {
 }
 
 async function closeSettingsOrPlatformMenu() {
+
+    console.log("LB.currentPlatform: ", LB.currentPlatform);
 
     const menu = document.getElementById('menu');
     const menuContainer = document.getElementById('menu');

@@ -20,14 +20,19 @@
 
 ---
 
-## Why Emulsion?
+## What is Emulsion?
 
-Emulsion brings everything together in one beautiful, responsive frontend that just works.
+Emulsion is a frontend for your games ; It brings everything together in one beautiful, responsive frontend that just works.
 
 ### Key Features
 
 - **True Unification** - All your emulators, one elegant interface
-- **Lightning fast** - Thousands of games realy to launch under the second
+- **Fast** - Thousands of games realy to launch under the second
+- **Light** - Emulsion is not a gigantic cathedral that also does coffee like Launch Box or Retropie, or downright an operating system like Batocera 😉
+
+### Unique Features
+Only emulsion does it this way, look it up!
+
 - **Universal Input** - Keyboard, mouse, or any game controller
 - **Responsive UX** - Adapts perfectly to any screen size / orientation
 - **Flexible Storage** - Games across multiple drives? No problem!
@@ -97,13 +102,13 @@ npm install && npm start
 
 ### Per-Platform Settings
 
-| Setting                  | Description                                                                         |
-|--------------------------|-------------------------------------------------------------------------------------|
-| **Games Directory**      | Where your ROMs are for this platform                                               |
-| **Emulator**             | The emulator executable (name of installed emulator, or or full path to executable) |
-| **Emulator Arguments**   | Optional flags (most emulators don't need any)                                      |
-| **Get all cover images** | Batch dowload of all tthis platform's game covers artwork                           |
-| **Extensions**           | File types to scan for (e.g., `.zip`, `.iso`)                                       |
+| Setting                  | Description                                                                                                                                                                                    |
+|--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Games Directory**      | Where your ROMs are for this platform                                                                                                                                                          |
+| **Emulator**             | The emulator executable (name of installed emulator, or or full path to executable)                                                                                                            |
+| **Emulator Arguments**   | Optional flags (most emulators don't need any)                                                                                                                                                 |
+| **Get all cover images** | Batch download of all this platform's game covers artwork (you can close the menu and do something else - like play a game - while it downloads and refreshes your games gallery in real time) |
+| **Extensions**           | File types to scan for (e.g., `.zip`, `.iso`)                                                                                                                                                  |
 
 ### Emulator Quick Reference
 

@@ -18,8 +18,6 @@
 
 </div>
 
----
-
 ## What is Emulsion?
 
 Emulsion is a frontend for your games ; It brings everything together in one beautiful, responsive frontend that just works.
@@ -40,8 +38,6 @@ Only Emulsion does it this way ; Seriously, look it up!
 - **Non-Invasive** - Doesn't mess with your emulator configs
 - **Reproducible** - One config file = instant gaming PC setup
 - **Arcade Ready** - Perfect for driving an arcade cabinet
-
----
 
 ## Installation
 
@@ -67,8 +63,6 @@ Only Emulsion does it this way ; Seriously, look it up!
 npm install && npm start
 ```
 
----
-
 ## Quick Start
 
 **Get gaming in 5 minutes:**
@@ -83,8 +77,6 @@ npm install && npm start
 4. **Done!** - 🚀 Start gaming
 
 > 💡 **Pro Tip**: Your config lives in `~/.config/emulsion/preferences.json` - back it up!
-
----
 
 ## Configuration
 
@@ -122,8 +114,6 @@ Here's what works great on our machines:
 
 **Bold names** = Available in Ubuntu repos! Install with: `apt install nestopia mednafen amiberry mupen64plus pcsx2`
 
----
-
 ## Cover Art
 
 Press <kbd>□</kbd> or <kbd>I</kbd> to select the cover art for the selected game.
@@ -148,8 +138,6 @@ Get **way more images** by adding these free API keys:
 - [Wikipedia](https://en.wikipedia.org/) (API - Surprising)
 
 Images are saved to the platform games / roms directory.
-
----
 
 ## Controls
 
@@ -189,8 +177,6 @@ Images are saved to the platform games / roms directory.
 
 *💡 Contextual hints appear in the footer based on current screen*
 
----
-
 ## Command Line
 
 ```bash
@@ -213,8 +199,6 @@ Available platforms:
 ```bash
 emulsion --kiosk --full-screen --auto-select=snes
 ```
-
----
 
 ## Contributing
 
@@ -241,13 +225,9 @@ Use Emulsion? Consider supporting development:
 
 [Check out our issues](https://gitlab.com/yphil/emulsion/-/issues) - contributions welcome!
 
----
-
 ## License
 
 Emulsion is open source under the [GPL V3](LICENSE) and brought to you for free by [yPhil](https://yphil.gitlab.io). You are welcome.
-
----
 
 ## Links
 

@@ -186,3 +186,6 @@ header, footer  {
   cursor: pointer;
 }
 
+.hover:hover {
+  color: var(--color-outline-selected);
+}

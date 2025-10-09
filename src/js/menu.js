@@ -1185,7 +1185,7 @@ async function populateGameMenu(gameMenuContainer, gameName, platformName) {
 
 function createManualSelectButton(gameName, platformName, imgElem) {
     const btn = document.createElement('button');
-    btn.classList.add('button');
+    btn.classList.add('button-wide');
     btn.title = 'Select image';
     btn.innerHTML = '<i class="fa fa-plus" aria-hidden="true"></i>';
 

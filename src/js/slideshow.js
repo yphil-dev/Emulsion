@@ -283,6 +283,15 @@ function launchGame(gameContainer) {
 
 export function initGallery(platformNameOrIndex) {
 
+    const viewToggleBtn = document.getElementById('view-toggle-btn');
+
+    viewToggleBtn.addEventListener('click', () => {
+        const pageContent = document.querySelector('.page.active .page-content');
+        setGalleryView(pageContent.classList.contains('list') ? 'grid' : 'list');
+        viewToggleBtn.classList.toggle('fa-list');
+        viewToggleBtn.classList.toggle('fa-th');
+    });
+
     toggleHeaderNavLinks('show');
 
     const galleries = document.getElementById('galleries');
@@ -437,44 +446,91 @@ export function initGallery(platformNameOrIndex) {
     };
 
     function onGalleryKeyDown(event) {
+        // detect if the active page is in list mode
+        const activePageContent = document.querySelector('.page.active .page-content');
+        const listMode = !!(activePageContent && activePageContent.classList.contains('list'));
+
         switch (event.key) {
         case 'ArrowRight':
             if (event.shiftKey) {
                 goToNextPage();
             } else {
-                selectedIndex = (selectedIndex + 1) % gameContainers.length;
+                if (listMode) {
+                    // list -> move one down the list (no wrap)
+                    selectedIndex = Math.min(selectedIndex + 1, gameContainers.length - 1);
+                } else {
+                    // grid -> original behavior (wrap)
+                    selectedIndex = (selectedIndex + 1) % gameContainers.length;
+                }
             }
             break;
+
         case 'ArrowLeft':
             if (event.shiftKey) {
                 goToPrevPage();
             } else {
-                selectedIndex = (selectedIndex - 1 + gameContainers.length) % gameContainers.length;
+                if (listMode) {
+                    // list -> move one up the list (no wrap)
+                    selectedIndex = Math.max(selectedIndex - 1, 0);
+                } else {
+                    // grid -> original behavior (wrap)
+                    selectedIndex = (selectedIndex - 1 + gameContainers.length) % gameContainers.length;
+                }
             }
             break;
+
         case 'ArrowUp':
-            selectedIndex = _moveRows(selectedIndex, -1);
+            if (listMode) {
+                // list -> simple up by one
+                selectedIndex = Math.max(selectedIndex - 1, 0);
+            } else {
+                selectedIndex = _moveRows(selectedIndex, -1);
+            }
             break;
+
         case 'ArrowDown':
-            selectedIndex = _moveRows(selectedIndex, 1);
+            if (listMode) {
+                // list -> simple down by one
+                selectedIndex = Math.min(selectedIndex + 1, gameContainers.length - 1);
+            } else {
+                selectedIndex = _moveRows(selectedIndex, 1);
+            }
             break;
+
         case 'PageUp':
-            selectedIndex = _moveRows(selectedIndex, -10);
+            if (listMode) {
+                selectedIndex = Math.max(selectedIndex - 10, 0);
+            } else {
+                selectedIndex = _moveRows(selectedIndex, -10);
+            }
             break;
+
         case 'PageDown':
-            selectedIndex = _moveRows(selectedIndex, 10);
+            if (listMode) {
+                selectedIndex = Math.min(selectedIndex + 10, gameContainers.length - 1);
+            } else {
+                selectedIndex = _moveRows(selectedIndex, 10);
+            }
             break;
+
         case 'Home':
-            selectedIndex = 3;
+            if (listMode) {
+                selectedIndex = 0;
+            } else {
+                selectedIndex = 3;
+            }
             break;
+
         case 'End':
             selectedIndex = gameContainers.length - 1;
             break;
+
         case 'i':
             if (!LB.kioskMode) {
                 openGameMenu(gameContainers[selectedIndex]);
             }
             break;
+
         case 'F5':
             if (event.shiftKey) {
                 ipcRenderer.invoke('restart');
@@ -482,18 +538,17 @@ export function initGallery(platformNameOrIndex) {
                 window.location.reload();
             }
             break;
+
         case 'F11':
-            // event.preventDefault();
             toggleFullScreen();
             break;
+
         case 'Enter':
             if (currentPageIndex === 0) {
-                // Settings page - find the selected platform container
                 const selectedPlatformContainer = document.querySelector('.game-container.selected');
                 if (selectedPlatformContainer && !selectedPlatformContainer.classList.contains('empty-platform-game-container')) {
                     const platformName = selectedPlatformContainer.dataset.platform;
                     openPlatformMenu(platformName);
-                    // return;
                 }
             } else {
                 const selectedGameContainer = getSelectedGameContainer(gameContainers, selectedIndex);
@@ -503,9 +558,11 @@ export function initGallery(platformNameOrIndex) {
                 launchGame(selectedGameContainer);
             }
             break;
+
         case 'Escape':
             initSlideShow(document.querySelector('.page.active').dataset.platform);
             break;
+
         case 'q':
             if (event.ctrlKey) {
                 ipcRenderer.invoke('quit');
@@ -513,14 +570,15 @@ export function initGallery(platformNameOrIndex) {
             break;
         }
 
+        // Update visual selection exactly as before
         gameContainers.forEach((container, index) => {
             container.classList.toggle('selected', index === selectedIndex);
-            // Set currentPlatform when platform container is selected in settings page
             if (index === selectedIndex && currentPageIndex === 0 && container.dataset.platform) {
                 LB.currentPlatform = container.dataset.platform;
             }
         });
 
+        // Keep your existing scroll behavior (unchanged)
         if (!event.shiftKey && selectedIndex < gameContainers.length && selectedIndex > 0) {
             gameContainers[selectedIndex].scrollIntoView({
                 behavior: "smooth",
@@ -748,3 +806,29 @@ function showQuitConfirmationDialog() {
     openDialog();
 }
 
+// Toggle between 'grid' (default) and 'list' view on the active page
+export function setGalleryView(mode = 'grid') {
+  const activePage = document.querySelector('.page.active');
+  if (!activePage) return;
+
+  const pageContent = activePage.querySelector('.page-content');
+  if (!pageContent) return;
+
+  if (mode === 'list') {
+    pageContent.classList.add('list');
+  } else {
+    pageContent.classList.remove('list');
+  }
+
+  // Accessibility & focus: focus first tile so keyboard users land sensibly
+  const first = pageContent.querySelector('.game-container');
+  if (first) {
+    // ensure it's focusable
+    if (!first.hasAttribute('tabindex')) first.setAttribute('tabindex', '-1');
+    first.focus({ preventScroll: true });
+    // mark selected visually (you already have .selected)
+    pageContent.querySelectorAll('.game-container').forEach(c => c.classList.remove('selected'));
+    first.classList.add('selected');
+    first.scrollIntoView({ block: 'center', behavior: 'instant' });
+  }
+}

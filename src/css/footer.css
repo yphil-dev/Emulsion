@@ -105,10 +105,6 @@ footer {
   transition: all 0.3s ease;
 }
 
-.control-item.hover:hover {
-  color: var(--color-outline-selected);
-}
-
 .pie-progress {
   opacity: 0;
   transition: opacity 0.8s ease;

@@ -72,10 +72,32 @@ header .platform-image img {
   transition: opacity 0.2s ease;
 }
 
-.pages-nav-links:hover {
-  color: var(--color-outline-selected);
-}
+/* .pages-nav-links:hover { */
+/*   color: var(--color-outline-selected); */
+/* } */
 
 .left-links {
   display: flex;
 }
+
+
+.view-toggle-btn {
+  cursor: pointer;
+}
+
+.view-toggle-btn:hover {
+  color: var(--color-outline-selected);
+  transform: scale(1.05);
+}
+
+.view-toggle-btn.active {
+  color: var(--color-outline-selected);
+}
+
+/* Wrap the right-side elements (toggle + next arrow) */
+header .pages-nav-links.next-link {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* spacing between toggle and arrow */
+}
+

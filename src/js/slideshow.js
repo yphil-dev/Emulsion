@@ -483,6 +483,13 @@ export function initGallery(platformNameOrIndex) {
             if (listMode) {
                 // list -> simple up by one
                 selectedIndex = Math.max(selectedIndex - 1, 0);
+                gameContainers.forEach((container, index) => {
+                    container.classList.toggle('selected', index === selectedIndex);
+                    if (index === selectedIndex) {
+                        updateImagePane(container);
+                    }
+                });
+
             } else {
                 selectedIndex = _moveRows(selectedIndex, -1);
             }
@@ -492,6 +499,15 @@ export function initGallery(platformNameOrIndex) {
             if (listMode) {
                 // list -> simple down by one
                 selectedIndex = Math.min(selectedIndex + 1, gameContainers.length - 1);
+
+                gameContainers.forEach((container, index) => {
+                    container.classList.toggle('selected', index === selectedIndex);
+                    if (index === selectedIndex) {
+                        console.log("updateImagePane: ");
+                        updateImagePane(container);
+                    }
+                });
+
             } else {
                 selectedIndex = _moveRows(selectedIndex, 1);
             }
@@ -831,4 +847,44 @@ export function setGalleryView(mode = 'grid') {
     first.classList.add('selected');
     first.scrollIntoView({ block: 'center', behavior: 'instant' });
   }
+}
+
+function ensureImagePane() {
+    const page = document.querySelector('.page.active');
+    if (!page) return null;
+
+    let imagePane = page.querySelector('.image-pane');
+    if (!imagePane) {
+        imagePane = document.createElement('div');
+        imagePane.classList.add('image-pane');
+        page.appendChild(imagePane);
+    }
+    return imagePane;
+}
+
+function updateImagePane(selectedContainer) {
+    const imagePane = ensureImagePane();
+    if (!imagePane) return;
+
+    if (!selectedContainer) {
+        imagePane.innerHTML = '';
+        return;
+    }
+
+    const imgSrc = selectedContainer.querySelector('img')?.src;
+    if (!imgSrc) {
+        imagePane.innerHTML = '';
+        return;
+    }
+
+    // Update or create the image element
+    let imgEl = imagePane.querySelector('img');
+    if (!imgEl) {
+        imgEl = document.createElement('img');
+        imgEl.style.width = '100%';
+        imgEl.style.height = '100%';
+        imgEl.style.objectFit = 'contain';
+        imagePane.appendChild(imgEl);
+    }
+    imgEl.src = imgSrc;
 }

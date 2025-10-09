@@ -10,6 +10,10 @@
 }
 
 .page {
+  display: flex;
+  flex-wrap: wrap;
+
+  align-content: flex-start;
   position: absolute;
   width: 100vw;
   height: 100vh;
@@ -24,6 +28,65 @@
 
   z-index: 1;
   margin-top: 100px;
+}
+
+/* List mode */
+/* LIST mode: structural overrides */
+.page-content.list {
+  display: block;               /* stop treating content as grid */
+  padding: 0;
+  gap: 0;
+  overflow-y: auto;             /* allow scrolling through full-screen tiles */
+  -webkit-overflow-scrolling: touch;
+  flex: 7; /* 70% */
+}
+
+/* .page-content.list { */
+/*     display: grid; */
+/*     grid-template-columns: 1fr 300px; /\* left column = games, right = image pane *\/ */
+/*     gap: 10px; */
+/* } */
+
+.page .image-pane {
+    background-color: #111;
+    border: 1px solid var(--color-border-off);
+    justify-content: center;
+    flex: 3; /* 30% */
+    /* overflow: hidden; */
+}
+
+/* each tile becomes viewport-height (account for your header offset) */
+.page-content.list .game-container {
+  display: flex !important;     /* ensure centering */
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100%;
+  /* height: calc(100vh - var(--header-height, 100px)); /\* header offset fallback *\/ */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* hide images completely in list mode (prevent layout shift) */
+.page-content.list .game-image {
+  display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
+  pointer-events: none !important;
+}
+
+/* put label into normal flow and center it */
+.page-content.list .game-label {
+  position: static !important;  /* override absolute bottom in grid mode */
+  background: none !important;
+  width: auto !important;
+  height: auto !important;
+  padding: 0 1rem !important;
+  font-size: 1.6rem !important; /* adjust as you want later */
+  text-align: center !important;
+  white-space: normal !important;
+  overflow: visible !important;
 }
 
 .page.disabled {
@@ -268,48 +331,4 @@ div.menu-game-container:hover {
      1px  1px 0 var(--color-outline-game-label);
 
   /* color: #333; */
-}
-
-/* List mode */
-/* LIST mode: structural overrides */
-.page-content.list {
-  display: block;               /* stop treating content as grid */
-  padding: 0;
-  gap: 0;
-  overflow-y: auto;             /* allow scrolling through full-screen tiles */
-  -webkit-overflow-scrolling: touch;
-}
-
-/* each tile becomes viewport-height (account for your header offset) */
-.page-content.list .game-container {
-  display: flex !important;     /* ensure centering */
-  align-items: center !important;
-  justify-content: center !important;
-  width: 100%;
-  /* height: calc(100vh - var(--header-height, 100px)); /\* header offset fallback *\/ */
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* hide images completely in list mode (prevent layout shift) */
-.page-content.list .game-image {
-  display: none !important;
-  visibility: hidden !important;
-  width: 0 !important;
-  height: 0 !important;
-  pointer-events: none !important;
-}
-
-/* put label into normal flow and center it */
-.page-content.list .game-label {
-  position: static !important;  /* override absolute bottom in grid mode */
-  background: none !important;
-  width: auto !important;
-  height: auto !important;
-  padding: 0 1rem !important;
-  font-size: 1.6rem !important; /* adjust as you want later */
-  text-align: center !important;
-  white-space: normal !important;
-  overflow: visible !important;
 }

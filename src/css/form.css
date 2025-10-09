@@ -165,24 +165,6 @@ label.checkbox {
   /* transition: height 0.3s ease; */
 }
 
-#menu::-webkit-scrollbar {
-  width: 10px;
-}
-
-#menu::-webkit-scrollbar-track {
-  background: var(--color-bg1); /* or transparent, etc. */
-}
-
-#menu::-webkit-scrollbar-thumb {
-  background-color: var(--color-border-on); /* or any color */
-  border-radius: 6px;
-  border: 2px solid var(--color-bg1); /* for padding effect */
-}
-
-#menu::-webkit-scrollbar-thumb:hover {
-  background-color: var(--color-border-off);
-}
-
 
 #form-container {
   display: flex;

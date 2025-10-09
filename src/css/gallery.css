@@ -30,38 +30,36 @@
   margin-top: 100px;
 }
 
-/* List mode */
-/* LIST mode: structural overrides */
+/* LEFT LIST */
 .page-content.list {
-  display: block;               /* stop treating content as grid */
-  padding: 0;
-  gap: 0;
-  overflow-y: auto;             /* allow scrolling through full-screen tiles */
-  -webkit-overflow-scrolling: touch;
-  flex: 7; /* 70% */
+    display: block;
+    overflow-y: auto;
+    height: 100%;
+    width: 70%;               /* leave room for right pane */
+    padding: 0;
 }
 
-/* .page-content.list { */
-/*     display: grid; */
-/*     grid-template-columns: 1fr 300px; /\* left column = games, right = image pane *\/ */
-/*     gap: 10px; */
-/* } */
-
+/* RIGHT IMAGE PANE FIXED */
 .game-pane {
-    flex: 3;                /* 30% width */
+    position: fixed;
+    top: 100px;               /* adjust for header if needed */
+    right: 0;
+    width: 30%;               /* fixed width */
+    height: calc(100vh - 100px); /* viewport minus header */
     display: flex;
-    align-items: flex-start;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
     padding: 1rem;
     background-color: #111;
     border-left: 1px solid var(--color-border-off);
 }
 
+/* IMAGE INSIDE GAME-PANE */
 .image-pane {
     width: 100%;
-    height: 100%;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
 }
 

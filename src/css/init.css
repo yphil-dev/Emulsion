@@ -189,3 +189,23 @@ header, footer  {
 .hover:hover {
   color: var(--color-outline-selected);
 }
+
+/* Universal WebKit scrollbar styling */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px; /* horizontal scrollbar if needed */
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--color-bg1);
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--color-border-on);
+  border-radius: 6px;
+  border: 2px solid var(--color-bg1); /* gives padding effect */
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-border-off);
+}

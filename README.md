@@ -30,8 +30,8 @@ Emulsion is a frontend for your games ; It brings everything together in one bea
 - **Fast** - Thousands of games realy to launch under the second
 - **Light** - Emulsion is not a gigantic cathedral that also does coffee like Launch Box or Retropie, or downright an operating system like Batocera 😉
 
-### Unique Features
-Only emulsion does it this way, look it up!
+### *Unique* Features
+Only Emulsion does it this way ; Seriously, look it up!
 
 - **Universal Input** - Keyboard, mouse, or any game controller
 - **Responsive UX** - Adapts perfectly to any screen size / orientation
@@ -40,16 +40,6 @@ Only emulsion does it this way, look it up!
 - **Non-Invasive** - Doesn't mess with your emulator configs
 - **Reproducible** - One config file = instant gaming PC setup
 - **Arcade Ready** - Perfect for driving an arcade cabinet
-
-### What Makes It Different
-
-Unlike other solutions that try to do everything (and often break things), Emulsion focuses on what matters:
-
-- ✅ **Respects your setup** - Works with YOUR emulators, YOUR way
-- ✅ **No controller drama** - Uses your existing configurations and never forgets it (won't even ask)
-- ✅ **Curated art selection** - Cover artwork / image download from 3 major APIs
-- ✅ **Rock solid** - It Won't Randomly Forget Your Controller Setup™
-- ✅ **One config file** - Backup, restore, or share your entire setup in seconds
 
 ---
 

@@ -491,7 +491,7 @@ export function initGallery(platformNameOrIndex) {
                 gameContainers.forEach((container, index) => {
                     container.classList.toggle('selected', index === selectedIndex);
                     if (index === selectedIndex) {
-                        updateImagePane(container);
+                        updateGamePane(container);
                     }
                 });
 
@@ -509,7 +509,7 @@ export function initGallery(platformNameOrIndex) {
                     container.classList.toggle('selected', index === selectedIndex);
                     if (index === selectedIndex) {
                         console.log("updateImagePane: ");
-                        updateImagePane(container);
+                        updateGamePane(container);
                     }
                 });
 
@@ -854,7 +854,7 @@ export function setGalleryView(mode = 'grid') {
   }
 }
 
-function ensureImagePane() {
+function ensureGamePane() {
     const page = document.querySelector('.page.active');
     if (!page) return null;
 
@@ -877,15 +877,15 @@ function ensureImagePane() {
     return imagePane;
 }
 
-function updateImagePane(selectedContainer) {
-    const imagePane = ensureImagePane();
+function updateGamePane(selectedContainer) {
+    const gamePane = ensureGamePane();
 
     const imgSrc = selectedContainer.querySelector('img')?.src;
 
-    let imgEl = imagePane.querySelector('img');
+    let imgEl = gamePane.querySelector('img');
     if (!imgEl) {
         imgEl = document.createElement('img');
-        imagePane.appendChild(imgEl);
+        gamePane.appendChild(imgEl);
     }
     imgEl.src = imgSrc;
 }

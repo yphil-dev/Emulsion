@@ -117,7 +117,6 @@ export async function buildGallery(params) {
         return page;
     }
 
-    // Non-settings page
     const pageContent = document.createElement('div');
     pageContent.classList.add('page-content');
     pageContent.style.gridTemplateColumns = `repeat(${LB.galleryNumOfCols}, 1fr)`;
@@ -203,7 +202,7 @@ export async function buildGallery(params) {
         const coverPath = findImageFile(imagesDir, fileNameWithoutExt);
         const imageExists = fs.existsSync(coverPath);
 
-        const gameEl = buildGameContainer({
+        const gameContainer = buildGameContainer({
             platform,
             emulator,
             emulatorArgs,
@@ -216,7 +215,7 @@ export async function buildGallery(params) {
         });
 
         incrementNbGames(platform);
-        pageContent.appendChild(gameEl);
+        pageContent.appendChild(gameContainer);
     }
 
     page.appendChild(pageContent);

@@ -854,50 +854,48 @@ export function setGalleryView(mode = 'grid') {
   }
 }
 
+function buildGamePane() {
+    const gamePane = document.createElement('div');
+    gamePane.classList.add('game-pane');
+
+    const imagePane = document.createElement('div');
+    imagePane.classList.add('image-pane');
+
+    const paneText = document.createElement('div');
+    paneText.classList.add('pane-text');
+
+    gamePane.appendChild(imagePane);
+    gamePane.appendChild(paneText);
+
+    return gamePane;
+}
+
 function ensureGamePane() {
     const page = document.querySelector('.page.active');
     if (!page) return null;
 
-    // Check if game-pane exists
     let gamePane = page.querySelector('.game-pane');
     if (!gamePane) {
-        // Build complete structure in one go
-        gamePane = document.createElement('div');
-        gamePane.classList.add('game-pane');
-
-        const imagePane = document.createElement('div');
-        imagePane.classList.add('image-pane');
-
-        const paneText = document.createElement('div');
-        paneText.classList.add('pane-text');
-
-        // Build the hierarchy: game-pane > [image-pane, pane-text]
-        gamePane.appendChild(imagePane);
-        gamePane.appendChild(paneText);
-        page.appendChild(gamePane);
+        page.appendChild(buildGamePane());
     }
 
-    // Now we can safely query for the elements since they're guaranteed to exist
     const imagePane = gamePane.querySelector('.image-pane');
     const paneText = gamePane.querySelector('.pane-text');
 
-    // Return both elements for updateGamePane to use
     return { imagePane, paneText };
 }
 
 function updateGamePane(selectedContainer) {
     const { imagePane, paneText } = ensureGamePane();
 
-    // Update image
     const imgSrc = selectedContainer.querySelector('img')?.src;
-    let imgEl = imagePane.querySelector('img');
-    if (!imgEl) {
-        imgEl = document.createElement('img');
-        imagePane.appendChild(imgEl);
+    let paneImage = imagePane.querySelector('img');
+    if (!paneImage) {
+        paneImage = document.createElement('img');
+        imagePane.appendChild(paneImage);
     }
-    imgEl.src = imgSrc;
+    paneImage.src = imgSrc;
 
-    // Update text (example - adjust based on your needs)
-    const gameTitle = selectedContainer.querySelector('.game-title')?.textContent || 'Unknown Game';
+    const gameTitle = selectedContainer.dataset.gameName || 'Unknown Game';
     paneText.textContent = gameTitle;
 }

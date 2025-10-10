@@ -31,25 +31,35 @@
 
 /* LEFT LIST */
 .page-content.list {
-    display: block;
-    overflow-y: auto;
-    height: 100%;
-    width: 70%;               /* leave room for right pane */
-    padding: 0;
+  width: 75%;
+  display: block;
+  overflow-y: auto;
+  height: 100%;
+  padding: 0;
+
+  /* Webkit browsers (Chrome, Safari, Edge) */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Firefox */
+  scrollbar-width: none;
+
+  /* IE/Edge legacy */
+  -ms-overflow-style: none;
+
 }
 
-/* RIGHT IMAGE PANE FIXED */
 .game-pane {
-    position: fixed;
-    right: 0;
-    width: 30%;               /* fixed width */
-    height: calc(100vh - 100px); /* viewport minus header */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    background-color: #111;
-    border-left: 1px solid var(--color-border-off);
+  width: 25%;
+  position: fixed;
+  right: 0;
+  height: calc(100vh - 100px);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background-color: rgba(0, 0, 0, 0);
+  border-left: 1px solid var(--color-border-off);
 }
 
 .image-pane {
@@ -63,18 +73,27 @@
 }
 
 .image-pane img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.pane-text {
+  padding: 0.5em;
+  text-align: left;
+}
+
+.pane-text .game-title {
+  margin: 0;
 }
 
 /* each tile becomes viewport-height (account for your header offset) */
 .page-content.list .game-container {
-  display: flex !important;     /* ensure centering */
-  align-items: center !important;
-  justify-content: center !important;
+  display: flex !important;
+  align-items: flex-start !important;  /* changed from center to flex-start */
+  justify-content: flex-start !important;  /* changed from center to flex-start */
   width: 100%;
-  /* height: calc(100vh - var(--header-height, 100px)); /\* header offset fallback *\/ */
+  /* height: calc(100vh - var(--header-height, 100px)); header offset fallback */
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -89,17 +108,18 @@
   pointer-events: none !important;
 }
 
-/* put label into normal flow and center it */
 .page-content.list .game-label {
-  position: static !important;  /* override absolute bottom in grid mode */
-  background: none !important;
-  width: auto !important;
-  height: auto !important;
-  padding: 0 1rem !important;
-  font-size: 1.6rem !important; /* adjust as you want later */
-  text-align: center !important;
-  white-space: normal !important;
-  overflow: visible !important;
+  position: static;
+  background: none;
+  width: 100%;
+  height: auto;
+  padding-left: 0.1rem;
+  font-size: 1.6rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left !important; /* Force left alignment */
+  display: block !important; /* Ensure block display */
 }
 
 .page.disabled {
@@ -132,17 +152,17 @@
 }
 
 @keyframes expandEffect {
-    0% {
-      transform: scale(1);
-    }
-    100% {
-      transform: scale(5);
-    }
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(5);
+  }
 }
 
 @keyframes fadeInShadow {
-    0% { box-shadow: 0px 0px 0px rgba(255, 255, 255, 0); }
-    100% { box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.6); }
+  0% { box-shadow: 0px 0px 0px rgba(255, 255, 255, 0); }
+  100% { box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.6); }
 }
 
 div.menu-game-container {
@@ -155,9 +175,9 @@ div.platform-info .vendor {
 
   text-shadow:
     -1px -1px 0 var(--color-platform-outline-header),
-     1px -1px 0 var(--color-platform-outline-header),
+    1px -1px 0 var(--color-platform-outline-header),
     -1px  1px 0 var(--color-platform-outline-header),
-     1px  1px 0 var(--color-platform-outline-header)
+    1px  1px 0 var(--color-platform-outline-header)
 }
 
 div.platform-info .name {
@@ -211,20 +231,20 @@ div.platform-container {
 }
 
 .game-image {
-    /* width: 100%; /\* Ensure images fill the container *\/ */
-    /* height: auto; /\* Maintain aspect ratio *\/ */
-    height: 100%;
-    /* object-fit: cover; /\* Ensure images fill the space without distortion *\/ */
-    /* object-fit: contain; /\* Show full image without cropping *\/ */
-    display: block; /* Remove extra space under inline elements */
-    /* aspect-ratio: 4 / 3; /\* Prevent layout shifts *\/ */
-    transition: transform 0.2s ease-out, opacity 0.2s ease-out;
-    /* transform-origin: center; */
-    flex-basis: content;
+  /* width: 100%; /\* Ensure images fill the container *\/ */
+  /* height: auto; /\* Maintain aspect ratio *\/ */
+  height: 100%;
+  /* object-fit: cover; /\* Ensure images fill the space without distortion *\/ */
+  /* object-fit: contain; /\* Show full image without cropping *\/ */
+  display: block; /* Remove extra space under inline elements */
+  /* aspect-ratio: 4 / 3; /\* Prevent layout shifts *\/ */
+  transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+  /* transform-origin: center; */
+  flex-basis: content;
 }
 
 .missing-image {
-    object-fit: cover; /* Ensure images fill the space without distortion */
+  object-fit: cover; /* Ensure images fill the space without distortion */
 }
 
 .menu-game-container .game-label {
@@ -316,7 +336,7 @@ div.menu-game-container:hover {
   /* border-color: var(--color-outline-selected); */
 
   /* border-bottom: var(--color-outline-selected);; */
-    background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .game-label {
@@ -339,9 +359,9 @@ div.menu-game-container:hover {
   text-overflow: ellipsis;
   text-shadow:
     -1px -1px 0 var(--color-outline-game-label),
-     1px -1px 0 var(--color-outline-game-label),
+    1px -1px 0 var(--color-outline-game-label),
     -1px  1px 0 var(--color-outline-game-label),
-     1px  1px 0 var(--color-outline-game-label);
+    1px  1px 0 var(--color-outline-game-label);
 
   /* color: #333; */
 }

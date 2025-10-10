@@ -1,4 +1,4 @@
-import { getPlatformInfo } from './platforms.js';
+import { getPlatformInfo, PLATFORMS } from './platforms.js';
 import { openPlatformMenu, openGameMenu } from './menu.js';
 import { getSelectedGameContainer,
          updateFooterControls,
@@ -326,6 +326,8 @@ export function initGallery(platformNameOrIndex) {
 
     function initCurrentGallery(page) {
 
+        console.log("platform?.display: ", page.dataset.display);
+
         // page.scrollIntoView({
         //     behavior: "smooth",
         //     block: "start",
@@ -421,6 +423,7 @@ export function initGallery(platformNameOrIndex) {
                 initCurrentGallery(page);
                 LB.currentPlatform = page.dataset.platform;
                 page.classList.add('active');
+                setGalleryView(page.dataset.display);
             } else if (prevPage && Number(prevPage.dataset.index) === pageIndexNumber) {
                 page.classList.add('prev');
             } else if (nextPage && Number(nextPage.dataset.index) === pageIndexNumber) {
@@ -857,7 +860,7 @@ export function setGalleryView(mode = 'grid') {
         if (mode === 'list') {
             updateGamePane(selectedContainer);
         }
-        selectedContainer.scrollIntoView({ block: 'center', behavior: 'instant' });
+        // selectedContainer.scrollIntoView({ block: 'center', behavior: 'instant' });
     }
 }
 

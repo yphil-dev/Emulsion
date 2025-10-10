@@ -221,6 +221,7 @@ function loadPreferences() {
                             typeof platformPreferences !== 'object' ||
                                 platformPreferences === null ||
                                 typeof platformPreferences.isEnabled !== 'boolean' ||
+                                typeof platformPreferences.display !== 'string' ||
                                 typeof platformPreferences.gamesDir !== 'string' ||
                                 typeof platformPreferences.emulator !== 'string' ||
                                 typeof platformPreferences.emulatorArgs !== 'string'
@@ -497,6 +498,7 @@ PLATFORMS.forEach((platform, index) => {
     defaultPreferences[platform.name] = {
         isEnabled: false,
         gamesDir: "",
+        display: "grid",
         emulator: "",
         emulatorArgs: "",
         extensions: platform.extensions

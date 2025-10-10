@@ -832,63 +832,33 @@ function showQuitConfirmationDialog() {
     openDialog();
 }
 
-// Safe function for list mode
-export function onListMode() {
-    const activePage = document.querySelector('.page.active');
-    const pageContent = activePage.querySelector('.page-content');
-
-    pageContent.classList.add('list');
-
-    const firstTile = pageContent.querySelector('.game-container');
-    if (firstTile) {
-        updateGamePane(firstTile);
-
-        if (!firstTile.hasAttribute('tabindex')) {
-            firstTile.setAttribute('tabindex', '-1');
-        }
-        firstTile.focus({ preventScroll: true });
-
-        pageContent.querySelectorAll('.game-container').forEach(c => c.classList.remove('selected'));
-        firstTile.classList.add('selected');
-        firstTile.scrollIntoView({ block: 'center', behavior: 'instant' });
-    }
-}
-
-// Safe function for grid mode
-export function onGridMode() {
-    const activePage = document.querySelector('.page.active');
-    const pageContent = activePage.querySelector('.page-content');
-
-    pageContent.classList.remove('list');
-
-    const firstTile = pageContent.querySelector('.game-container');
-    if (firstTile) {
-        updateGamePane(firstTile);
-
-        if (!firstTile.hasAttribute('tabindex')) {
-            firstTile.setAttribute('tabindex', '-1');
-        }
-        firstTile.focus({ preventScroll: true });
-
-        pageContent.querySelectorAll('.game-container').forEach(c => c.classList.remove('selected'));
-        firstTile.classList.add('selected');
-        firstTile.scrollIntoView({ block: 'center', behavior: 'instant' });
-    }
-}
-
-// Toggle between 'grid' (default) and 'list' view on the active page
 export function setGalleryView(mode = 'grid') {
-    const activePage = document.querySelector('.page.active');
-    const pageContent = activePage.querySelector('.page-content');
+
+    const page = document.querySelector('.page.active');
+    if (!page) return;
+
+    const pageContent = page.querySelector('.page-content');
+    const gamePane = page.querySelector('.game-pane');
+    const selectedContainer = pageContent.querySelector('.game-container.selected') || pageContent.querySelector('.game-container') ;
 
     if (mode === 'list') {
-        onListMode();
-        pageContent.classList.add('list');
+        pageContent?.classList.add('list');
+        if (gamePane) {
+            gamePane.style.display = 'flex';
+        }
     } else {
-        onGridMode();
-        pageContent.classList.remove('list');
+        pageContent?.classList.remove('list');
+        if (gamePane) {
+            gamePane.style.display = 'none';
+        }
     }
 
+    if (selectedContainer) {
+        if (mode === 'list') {
+            updateGamePane(selectedContainer);
+        }
+        selectedContainer.scrollIntoView({ block: 'center', behavior: 'instant' });
+    }
 }
 
 function buildGamePane() {
@@ -904,7 +874,7 @@ function buildGamePane() {
     const paneText = document.createElement('div');
     paneText.classList.add('pane-text');
 
-    const gameTitle = document.createElement('h3');
+    const gameTitle = document.createElement('p');
     gameTitle.classList.add('game-title');
 
     imagePane.appendChild(paneImage);

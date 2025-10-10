@@ -85,6 +85,7 @@
 
 .pane-text .game-title {
   margin: 0;
+  font-weight: bold;
 }
 
 /* each tile becomes viewport-height (account for your header offset) */
@@ -298,6 +299,7 @@ div.platform-container {
 /* Page content */
 
 .page-content {
+  width: 100%;
   display: grid;
   gap: 10px;
   padding: 10px;

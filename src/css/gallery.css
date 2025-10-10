@@ -234,12 +234,6 @@ div.platform-container {
   border-radius: 0;
 }
 
-.selected {
-  outline: 4px solid var(--color-outline-selected);
-  border-color: var(--color-outline-selected) !important;
-  /* box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.6); */
-}
-
 /* Better highlight for list mode */
 .page-content.list .game-container.selected {
   outline: none;
@@ -314,7 +308,10 @@ div.menu-game-container {
 
 div.game-container:hover,
 div.menu-game-container:hover {
-  border-color: var(--color-outline-selected);
+  /* border-color: var(--color-outline-selected); */
+
+  /* border-bottom: var(--color-outline-selected);; */
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
 .game-label {

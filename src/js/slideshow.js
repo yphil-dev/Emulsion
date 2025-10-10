@@ -9,13 +9,12 @@ import { getSelectedGameContainer,
          toggleHeaderNavLinks } from './utils.js';
 
 const main = document.querySelector('main');
+const slideshow = document.getElementById("slideshow");
+const galleries = document.getElementById("galleries");
 
 export function initSlideShow(platformToDisplay) {
 
     main.style.top = 0;
-
-    const slideshow = document.getElementById("slideshow");
-    const galleries = document.getElementById("galleries");
 
     galleries.style.display = 'none';
     slideshow.style.display = 'flex';
@@ -855,7 +854,7 @@ export function setGalleryView(mode = 'grid') {
   }
 }
 
-function buildImagePane() {
+function ensureImagePane() {
     const page = document.querySelector('.page.active');
     if (!page) return null;
 
@@ -879,7 +878,7 @@ function buildImagePane() {
 }
 
 function updateImagePane(selectedContainer) {
-    const imagePane = buildImagePane();
+    const imagePane = ensureImagePane();
 
     const imgSrc = selectedContainer.querySelector('img')?.src;
 

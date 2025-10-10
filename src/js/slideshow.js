@@ -858,34 +858,46 @@ function ensureGamePane() {
     const page = document.querySelector('.page.active');
     if (!page) return null;
 
-    // ensure game-pane exists
+    // Check if game-pane exists
     let gamePane = page.querySelector('.game-pane');
     if (!gamePane) {
+        // Build complete structure in one go
         gamePane = document.createElement('div');
         gamePane.classList.add('game-pane');
+
+        const imagePane = document.createElement('div');
+        imagePane.classList.add('image-pane');
+
+        const paneText = document.createElement('div');
+        paneText.classList.add('pane-text');
+
+        // Build the hierarchy: game-pane > [image-pane, pane-text]
+        gamePane.appendChild(imagePane);
+        gamePane.appendChild(paneText);
         page.appendChild(gamePane);
     }
 
-    // ensure image-pane exists inside game-pane
-    let imagePane = gamePane.querySelector('.image-pane');
-    if (!imagePane) {
-        imagePane = document.createElement('div');
-        imagePane.classList.add('image-pane');
-        gamePane.appendChild(imagePane);
-    }
+    // Now we can safely query for the elements since they're guaranteed to exist
+    const imagePane = gamePane.querySelector('.image-pane');
+    const paneText = gamePane.querySelector('.pane-text');
 
-    return imagePane;
+    // Return both elements for updateGamePane to use
+    return { imagePane, paneText };
 }
 
 function updateGamePane(selectedContainer) {
-    const gamePane = ensureGamePane();
+    const { imagePane, paneText } = ensureGamePane();
 
+    // Update image
     const imgSrc = selectedContainer.querySelector('img')?.src;
-
-    let imgEl = gamePane.querySelector('img');
+    let imgEl = imagePane.querySelector('img');
     if (!imgEl) {
         imgEl = document.createElement('img');
-        gamePane.appendChild(imgEl);
+        imagePane.appendChild(imgEl);
     }
     imgEl.src = imgSrc;
+
+    // Update text (example - adjust based on your needs)
+    const gameTitle = selectedContainer.querySelector('.game-title')?.textContent || 'Unknown Game';
+    paneText.textContent = gameTitle;
 }

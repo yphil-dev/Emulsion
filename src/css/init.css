@@ -134,6 +134,7 @@ a:link {
 
 main {
   display: none;
+  position: fixed;
   /* display: flex; */
   justify-content: center;
   align-items: flex-start;
@@ -159,31 +160,6 @@ header, footer  {
   /* pointer-events: none; /\* Prevent the footer from blocking clicks *\/ */
   opacity: 0; /* Start fully transparent */
   animation: fadeIn 0.3s ease-in-out forwards; /* Apply the fadeIn animation */
-}
-
-.icon {
-  width: 70px;
-}
-
-#about-container {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: black;
-  color: var(--color-text-1);
-  z-index: 20;
-  overflow: hidden;
-}
-
-#close-about {
-  position: absolute;
-  top: 10px;
-  right: 20px;
-  font-size: 24px;
-  cursor: pointer;
 }
 
 .hover:hover {

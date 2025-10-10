@@ -8,7 +8,11 @@ import { getSelectedGameContainer,
          toggleFullScreen,
          toggleHeaderNavLinks } from './utils.js';
 
+const main = document.querySelector('main');
+
 export function initSlideShow(platformToDisplay) {
+
+    main.style.top = 0;
 
     const slideshow = document.getElementById("slideshow");
     const galleries = document.getElementById("galleries");
@@ -282,6 +286,8 @@ function launchGame(gameContainer) {
 }
 
 export function initGallery(platformNameOrIndex) {
+
+    main.style.top = '100px';
 
     const viewToggleBtn = document.getElementById('view-toggle-btn');
 
@@ -849,7 +855,7 @@ export function setGalleryView(mode = 'grid') {
   }
 }
 
-function ensureImagePane() {
+function buildImagePane() {
     const page = document.querySelector('.page.active');
     if (!page) return null;
 
@@ -873,19 +879,9 @@ function ensureImagePane() {
 }
 
 function updateImagePane(selectedContainer) {
-    const imagePane = ensureImagePane();
-    if (!imagePane) return;
-
-    if (!selectedContainer) {
-        imagePane.innerHTML = '';
-        return;
-    }
+    const imagePane = buildImagePane();
 
     const imgSrc = selectedContainer.querySelector('img')?.src;
-    if (!imgSrc) {
-        imagePane.innerHTML = '';
-        return;
-    }
 
     let imgEl = imagePane.querySelector('img');
     if (!imgEl) {

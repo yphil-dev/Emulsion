@@ -293,8 +293,6 @@ export function initGallery(platformNameOrIndex) {
     viewToggleBtn.addEventListener('click', () => {
         const pageContent = document.querySelector('.page.active .page-content');
         setGalleryView(pageContent.classList.contains('list') ? 'grid' : 'list');
-        viewToggleBtn.classList.toggle('fa-list');
-        viewToggleBtn.classList.toggle('fa-th');
     });
 
     toggleHeaderNavLinks('show');
@@ -836,6 +834,7 @@ function showQuitConfirmationDialog() {
 
 export function setGalleryView(mode = 'grid') {
 
+    const viewToggleBtn = document.getElementById('view-toggle-btn');
     const page = document.querySelector('.page.active');
     if (!page) return;
 
@@ -845,10 +844,14 @@ export function setGalleryView(mode = 'grid') {
 
     if (mode === 'list') {
         pageContent?.classList.add('list');
+        viewToggleBtn.classList.remove('fa-th');
+        viewToggleBtn.classList.add('fa-list');
         if (gamePane) {
             gamePane.style.display = 'flex';
         }
     } else {
+        viewToggleBtn.classList.remove('fa-list');
+        viewToggleBtn.classList.add('fa-th');
         pageContent?.classList.remove('list');
         if (gamePane) {
             gamePane.style.display = 'none';

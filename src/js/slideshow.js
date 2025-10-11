@@ -602,13 +602,12 @@ export function initGallery(platformNameOrIndex) {
             }
         });
 
-        // Keep your existing scroll behavior (unchanged)
         if (!event.shiftKey && selectedIndex < gameContainers.length && selectedIndex > 0) {
 
             setTimeout(() => {
                 gameContainers[selectedIndex].scrollIntoView({
                     behavior: "smooth",
-                    block: "center"
+                    block: "end"
                 });
             }, 10);
 

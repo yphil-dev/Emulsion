@@ -1039,20 +1039,22 @@ function buildPlatformMenuForm(platformName) {
 
 export function openPlatformMenu(platformName, context) {
 
-    const menu = document.getElementById('menu');
-    const menuContainer = document.getElementById('menu');
+    LB.mode = 'menu';
 
-    menuContainer.innerHTML = '';
+    const menu = document.getElementById('menu');
+    const galleries = document.getElementById('galleries');
+
+    menu.innerHTML = '';
 
     updateFooterControls('dpad', 'button-dpad-nesw', 'Inputs', 'on');
     updateFooterControls('west', 'same', '', 'off');
     updateFooterControls('shoulders', 'same', '', 'off');
 
-    menuContainer.dataset.menuPlatform = platformName;
-    menuContainer.dataset.menuContext = context || null;
+    menu.dataset.menuPlatform = platformName;
+    menu.dataset.menuContext = context || null;
 
     const platformMenuForm = buildPlatformMenuForm(platformName);
-    menuContainer.appendChild(platformMenuForm);
+    menu.appendChild(platformMenuForm);
 
     const header = document.getElementById('header');
 
@@ -1060,11 +1062,34 @@ export function openPlatformMenu(platformName, context) {
         header.removeEventListener('wheel', LB.onHeaderWheel);
     }
 
-    setKeydown(onSettingsAndPlatformMenuKeyDown);
-    // menu.style.height = '85vh';
+    galleries.style.display = 'none';
+    menu.style.display = 'flex';
+    menu.style.height = '100vh';
+
+    // setKeydown(onSettingsAndPlatformMenuKeyDown);
     updateHeader(platformName);
     toggleHeaderNavLinks('hide');
+}
 
+async function closeSettingsOrPlatformMenu() {
+
+    console.warn('CLOSE called', new Date().toISOString(), new Error().stack);
+
+    const menu = document.getElementById('menu');
+
+    updateFooterControls('dpad', 'same', 'Browse', 'on');
+    console.log("menuContainer.dataset.menuContext: ", menu.dataset.menuContext);
+
+    if (menu.dataset.menuContext === 'slideshow') {
+        initSlideShow(menu.dataset.menuPlatform);
+    } else {
+        initGallery('settings');
+    }
+
+    menu.innerHTML = '';
+    menu.style.height = '0';
+
+    // setKeydown('previous');
 }
 
 export async function openGameMenu(gameContainer) {
@@ -1097,7 +1122,7 @@ export async function openGameMenu(gameContainer) {
     menuContainer.appendChild(currentGameImgContainer);
     await populateGameMenu(currentGameImgContainer, gameName, platformName);
 
-    setKeydown(gameMenuKeyDown);
+    // setKeydown(gameMenuKeyDown);
 
     menuContainer.addEventListener('wheel', onGameMenuWheel);
     menuContainer.addEventListener('click', onGameMenuClick);
@@ -1265,29 +1290,6 @@ async function closeSettingsMenu() {
 
 }
 
-async function closeSettingsOrPlatformMenu() {
-
-    console.log("LB.currentPlatform: ", LB.currentPlatform);
-
-    const menu = document.getElementById('menu');
-    const menuContainer = document.getElementById('menu');
-
-    // Normal close - stay on current page and restore gallery handler
-    updateFooterControls('dpad', 'same', 'Browse', 'on');
-
-    console.log("menuContainer.dataset.menuContext: ", menuContainer.dataset.menuContext);
-
-    if (menuContainer.dataset.menuContext === 'slideshow') {
-        initSlideShow(menuContainer.dataset.menuPlatform);
-    } else {
-        initGallery('settings');
-    }
-
-    menuContainer.innerHTML = '';
-    menu.style.height = '0';
-
-}
-
 async function closeGameMenu(imgSrc) {
 
     const menu = document.getElementById('menu');
@@ -1335,5 +1337,5 @@ async function closeGameMenu(imgSrc) {
 
     menuContainer.removeEventListener('wheel', onGameMenuWheel);
     menuContainer.removeEventListener('click', onGameMenuClick);
-    setKeydown('previous');
+    // setKeydown('previous');
 }

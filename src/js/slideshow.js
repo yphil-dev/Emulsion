@@ -12,7 +12,11 @@ const main = document.querySelector('main');
 const slideshow = document.getElementById("slideshow");
 const galleries = document.getElementById("galleries");
 
+let onGalleryKey, onSlideShowKey, onQuitKey;
+
 export function initSlideShow(platformToDisplay) {
+
+    LB.mode = 'slideshow';
 
     main.style.top = 0;
 
@@ -122,6 +126,9 @@ export function initSlideShow(platformToDisplay) {
                 return;
             }
 
+            console.log("LB.mode: ", LB.mode);
+            console.log("activePlatformName: ", activePlatformName);
+
             // Check if platform is enabled or disabled
             if (activePlatformName === 'recents' || activePlatformName === 'settings') {
                 // Special platforms - go directly to gallery
@@ -150,7 +157,12 @@ export function initSlideShow(platformToDisplay) {
             toggleFullScreen();
             break;
         case 'Escape':
-            showQuitConfirmationDialog();
+            if (LB.mode === 'slideshow') {
+                showQuitConfirmationDialog();
+            }
+            if (LB.mode === 'menu') {
+                closeSettingsOrPlatformMenu();
+            }
             break;
         case 'q':
             if (event.ctrlKey || event.metaKey) {
@@ -169,7 +181,26 @@ export function initSlideShow(platformToDisplay) {
         simulateKeyDown('Escape');
     };
 
-    setKeydown(onSlideShowKeyDown);
+    document.addEventListener('keydown', (event) => {
+        if (LB.mode === 'gallery' && onGalleryKey) {
+            onGalleryKey(event);
+        } else if (LB.mode === 'slideshow') {
+            onSlideShowKeyDown(event);
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (LB.mode === 'gallery' && onGalleryKey) {
+            onGalleryKey(event);
+        } else if (LB.mode === 'slideshow') {
+            onSlideShowKey(event);
+        } else if (LB.mode === 'quit' && onQuitKey) {
+            onQuitKey(event);
+        }
+    });
+
+
+    // setKeydown(onSlideShowKeyDown);
     updateSlideShow();
 }
 
@@ -284,151 +315,96 @@ function launchGame(gameContainer) {
     });
 }
 
-export function initGallery(platformNameOrIndex) {
+// export const GalleryState = {
+//   selectedIndex: 0,
+//   currentPageIndex: 0,
+//   gameContainers: [],
+//   enabledPages: [],
+//   goToNextPage: null,
+//   goToPrevPage: null
+// };
 
+export function initGallery(platformNameOrIndex) {
+    LB.mode = 'gallery';
     main.style.top = '100px';
 
-    const viewToggleBtn = document.getElementById('view-toggle-btn');
+    const galleries = document.getElementById('galleries');
+    const header = document.getElementById('header');
 
-    viewToggleBtn.addEventListener('click', () => {
-        const pageContent = document.querySelector('.page.active .page-content');
-        setGalleryView(pageContent.classList.contains('list') ? 'grid' : 'list');
-    });
+    document.getElementById('slideshow').style.display = 'none';
+    galleries.style.display = 'flex';
 
     toggleHeaderNavLinks('show');
 
-    const galleries = document.getElementById('galleries');
     const pages = Array.from(galleries.querySelectorAll('.page'));
-    const header = document.getElementById('header');
-
     let currentPageIndex = 0;
     let gameContainers = [];
 
-    // Find the target page by platform name or fallback to index
-    let targetPage = null;
-    if (typeof platformNameOrIndex === 'string') {
-        // Name-based lookup (preferred)
-        targetPage = pages.find(page => page.dataset.platform === platformNameOrIndex);
-    } else if (typeof platformNameOrIndex === 'number') {
-        // Index-based lookup (fallback for prev/next navigation only)
-        targetPage = pages.find(page => Number(page.dataset.index) === platformNameOrIndex);
-    }
+    // --- Find target page
+    let targetPage = typeof platformNameOrIndex === 'string'
+        ? pages.find(p => p.dataset.platform === platformNameOrIndex)
+        : pages.find(p => Number(p.dataset.index) === platformNameOrIndex);
 
-    if (!targetPage) {
-        console.error('Could not find page for:', platformNameOrIndex);
-        return;
-    }
+    if (!targetPage) return console.error('Could not find page for:', platformNameOrIndex);
 
     currentPageIndex = Number(targetPage.dataset.index);
-    const enabledPages = pages.filter(page => page.dataset.status !== 'disabled');
+
+    const enabledPages = pages.filter(p => p.dataset.status !== 'disabled');
 
     function initCurrentGallery(page) {
-
-        console.log("platform?.display: ", page.dataset.display);
-
-        // page.scrollIntoView({
-        //     behavior: "smooth",
-        //     block: "start",
-        // });
-
         setGalleryFooterControls(page.dataset.platform);
 
         gameContainers = Array.from(page.querySelectorAll('.game-container') || []);
+        gameContainers.forEach(c => c.classList.remove('selected'));
 
-        gameContainers.forEach((container) => {
-            container.classList.remove('selected');
-        });
-
-        // gameContainers.forEach((container) => {
-        //     container.classList.toggle('selected', container.dataset.name === LB.currentPlatform);
-        // });
-
-        function onGamecontainerClick(event) {
-            if (event.currentTarget.classList.contains('empty-platform-game-container')) {
-                return;
-            }
-            if (event.currentTarget.classList.contains('settings')) {
-                const platformName = event.currentTarget.dataset.platform;
-                openPlatformMenu(platformName);
-            } else {
-                launchGame(event.currentTarget);
-            }
-            gameContainers.forEach((container) => {
-                container.classList.remove('selected');
-            });
-        }
-
-        function onGamecontainerRightClick(event) {
-            event.preventDefault(); // Prevent the default context menu
-            if (event.currentTarget.classList.contains('empty-platform-game-container') || event.currentTarget.classList.contains('platform-container')) {
-                return;
-            }
-            const parentDiv = event.target.closest('div.game-container');
-            console.log("parentDiv: ", parentDiv);
-            document.querySelectorAll('.game-container').forEach((container) => {
-                container.classList.remove('selected');
-            });
-            parentDiv.classList.add('selected');
-            openGameMenu(parentDiv);
-        }
-
-        // Only attach listeners once per page to prevent duplicates
         if (!page.dataset.listenersAttached) {
-            gameContainers.forEach((container) => {
-                container.addEventListener('click', onGamecontainerClick);
-                container.addEventListener('contextmenu', onGamecontainerRightClick);
-                container.classList.remove('selected');
+            gameContainers.forEach(container => {
+                container.addEventListener('click', (e) => {
+                    if (container.classList.contains('settings')) openPlatformMenu(container.dataset.platform);
+                    else if (!container.classList.contains('empty-platform-game-container')) launchGame(container);
+
+                    gameContainers.forEach(c => c.classList.remove('selected'));
+                });
+
+                container.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    const parentDiv = e.target.closest('div.game-container');
+                    document.querySelectorAll('.game-container').forEach(c => c.classList.remove('selected'));
+                    parentDiv.classList.add('selected');
+                    openGameMenu(parentDiv);
+                });
             });
-            page.setAttribute('data-listeners-attached', true);
+            page.dataset.listenersAttached = true;
         }
 
         updateHeader(page.dataset.platform);
 
-        document.querySelector('header .prev-link').onclick = function() {
-            goToPrevPage();
-        };
-
-        document.querySelector('header .next-link').onclick = function() {
-            goToNextPage();
-        };
-
+        document.querySelector('header .prev-link').onclick = goToPrevPage;
+        document.querySelector('header .next-link').onclick = goToNextPage;
     }
 
     function updateGallery() {
-
-        // Filter out disabled pages and sort by dataset.index
-        const enabledPages = pages
-              .filter(page => page.dataset.status !== 'disabled')
+        const sortedEnabled = pages.filter(p => p.dataset.status !== 'disabled')
               .sort((a, b) => Number(a.dataset.index) - Number(b.dataset.index));
 
-        // Find the active page's position in the enabled array
-        const activePos = enabledPages.findIndex(page => Number(page.dataset.index) === currentPageIndex);
-
-        // Determine immediate neighbors
-        const prevPage = enabledPages[activePos - 1] || null;
-        const nextPage = enabledPages[activePos + 1] || null;
+        const activePos = sortedEnabled.findIndex(p => Number(p.dataset.index) === currentPageIndex);
+        const prevPage = sortedEnabled[activePos - 1] || null;
+        const nextPage = sortedEnabled[activePos + 1] || null;
 
         pages.forEach(page => {
-            const pageIndexNumber = Number(page.dataset.index);
-
+            const idx = Number(page.dataset.index);
             page.classList.remove('active', 'prev', 'next', 'adjacent');
 
-            if (page.dataset.status === 'disabled') {
-                return;
-            }
+            if (page.dataset.status === 'disabled') return;
 
-            if (pageIndexNumber === currentPageIndex) {
+            if (idx === currentPageIndex) {
                 initCurrentGallery(page);
                 LB.currentPlatform = page.dataset.platform;
                 page.classList.add('active');
                 setGalleryView(page.dataset.display);
-            } else if (prevPage && Number(prevPage.dataset.index) === pageIndexNumber) {
-                page.classList.add('prev');
-            } else if (nextPage && Number(nextPage.dataset.index) === pageIndexNumber) {
-                page.classList.add('next');
-            } else {
-                page.classList.add('adjacent');
-            }
+            } else if (prevPage && Number(prevPage.dataset.index) === idx) page.classList.add('prev');
+            else if (nextPage && Number(nextPage.dataset.index) === idx) page.classList.add('next');
+            else page.classList.add('adjacent');
         });
     }
 
@@ -442,212 +418,63 @@ export function initGallery(platformNameOrIndex) {
     const goToNextPage = () => goToPage(1);
     const goToPrevPage = () => goToPage(-1);
 
+    // --- Gallery wheel
+    galleries.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        if (e.shiftKey) e.deltaY > 0 ? goToNextPage() : goToPrevPage();
+        else simulateKeyDown(e.deltaY > 0 ? 'ArrowDown' : 'ArrowUp');
+    });
+
+    header.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        e.deltaY > 0 ? goToNextPage() : goToPrevPage();
+    });
+
+    // --- Gallery keyboard handler (exposed globally)
     let selectedIndex = 0;
-
-    const _moveRows = (selectedIndex, rowsToMove) => {
-        const col = selectedIndex % LB.galleryNumOfCols;
-        const currentRow = Math.floor(selectedIndex / LB.galleryNumOfCols);
-        const newIndex = (currentRow + rowsToMove) * LB.galleryNumOfCols + col;
-        return Math.min(Math.max(newIndex, 0), gameContainers.length - 1);
-    };
-
-    function onGalleryKeyDown(event) {
-        // detect if the active page is in list mode
+    onGalleryKey = (event) => {
         const activePageContent = document.querySelector('.page.active .page-content');
-        const listMode = !!(activePageContent && activePageContent.classList.contains('list'));
+        const listMode = activePageContent?.classList.contains('list');
+
+        const _moveRows = (selectedIndex, rowsToMove) => {
+            const col = selectedIndex % LB.galleryNumOfCols;
+            const row = Math.floor(selectedIndex / LB.galleryNumOfCols);
+            return Math.min(Math.max((row + rowsToMove) * LB.galleryNumOfCols + col, 0), gameContainers.length - 1);
+        };
 
         switch (event.key) {
         case 'ArrowRight':
-            if (event.shiftKey) {
-                goToNextPage();
-            } else {
-                if (listMode) {
-                    // list -> move one down the list (no wrap)
-                    selectedIndex = Math.min(selectedIndex + 1, gameContainers.length - 1);
-                } else {
-                    // grid -> original behavior (wrap)
-                    selectedIndex = (selectedIndex + 1) % gameContainers.length;
-                }
-            }
+            selectedIndex = listMode ? Math.min(selectedIndex + 1, gameContainers.length - 1)
+                : (selectedIndex + 1) % gameContainers.length;
             break;
-
         case 'ArrowLeft':
-            if (event.shiftKey) {
-                goToPrevPage();
-            } else {
-                if (listMode) {
-                    // list -> move one up the list (no wrap)
-                    selectedIndex = Math.max(selectedIndex - 1, 0);
-                } else {
-                    // grid -> original behavior (wrap)
-                    selectedIndex = (selectedIndex - 1 + gameContainers.length) % gameContainers.length;
-                }
-            }
+            selectedIndex = listMode ? Math.max(selectedIndex - 1, 0)
+                : (selectedIndex - 1 + gameContainers.length) % gameContainers.length;
             break;
-
-        case 'ArrowUp':
-            if (listMode) {
-                // list -> simple up by one
-                selectedIndex = Math.max(selectedIndex - 1, 0);
-                gameContainers.forEach((container, index) => {
-                    container.classList.toggle('selected', index === selectedIndex);
-                    if (index === selectedIndex) {
-                        updateGamePane(container);
-                    }
-                });
-
-            } else {
-                selectedIndex = _moveRows(selectedIndex, -1);
-            }
-            break;
-
-        case 'ArrowDown':
-            if (listMode) {
-                // list -> simple down by one
-                selectedIndex = Math.min(selectedIndex + 1, gameContainers.length - 1);
-
-                gameContainers.forEach((container, index) => {
-                    container.classList.toggle('selected', index === selectedIndex);
-                    if (index === selectedIndex) {
-                        console.log("updateImagePane: ");
-                        updateGamePane(container);
-                    }
-                });
-
-            } else {
-                selectedIndex = _moveRows(selectedIndex, 1);
-            }
-            break;
-
-        case 'PageUp':
-            if (listMode) {
-                selectedIndex = Math.max(selectedIndex - 10, 0);
-            } else {
-                selectedIndex = _moveRows(selectedIndex, -10);
-            }
-            break;
-
-        case 'PageDown':
-            if (listMode) {
-                selectedIndex = Math.min(selectedIndex + 10, gameContainers.length - 1);
-            } else {
-                selectedIndex = _moveRows(selectedIndex, 10);
-            }
-            break;
-
-        case 'Home':
-            if (listMode) {
-                selectedIndex = 0;
-            } else {
-                selectedIndex = 3;
-            }
-            break;
-
-        case 'End':
-            selectedIndex = gameContainers.length - 1;
-            break;
-
-        case 'i':
-            if (!LB.kioskMode) {
-                openGameMenu(gameContainers[selectedIndex]);
-            }
-            break;
-
-        case 'F5':
-            if (event.shiftKey) {
-                ipcRenderer.invoke('restart');
-            } else {
-                window.location.reload();
-            }
-            break;
-
-        case 'F11':
-            toggleFullScreen();
-            break;
-
+        case 'ArrowUp': selectedIndex = listMode ? Math.max(selectedIndex - 1, 0) : _moveRows(selectedIndex, -1); break;
+        case 'ArrowDown': selectedIndex = listMode ? Math.min(selectedIndex + 1, gameContainers.length - 1) : _moveRows(selectedIndex, 1); break;
+        case 'PageUp': selectedIndex = listMode ? Math.max(selectedIndex - 10, 0) : _moveRows(selectedIndex, -10); break;
+        case 'PageDown': selectedIndex = listMode ? Math.min(selectedIndex + 10, gameContainers.length - 1) : _moveRows(selectedIndex, 10); break;
+        case 'Home': selectedIndex = listMode ? 0 : 3; break;
+        case 'End': selectedIndex = gameContainers.length - 1; break;
         case 'Enter':
-            if (currentPageIndex === 0) {
-                const selectedPlatformContainer = document.querySelector('.game-container.selected');
-                if (selectedPlatformContainer && !selectedPlatformContainer.classList.contains('empty-platform-game-container')) {
-                    const platformName = selectedPlatformContainer.dataset.platform;
-                    openPlatformMenu(platformName);
-                }
+            console.log("LB.currentPlatform: ", LB.currentPlatform);
+            if (LB.currentPlatform === 'settings') {
+                openPlatformMenu(gameContainers[selectedIndex].dataset.platform);
             } else {
-                const selectedGameContainer = getSelectedGameContainer(gameContainers, selectedIndex);
-                if (selectedGameContainer.classList.contains('empty-platform-game-container')) {
-                    return;
-                }
-                launchGame(selectedGameContainer);
+                launchGame(gameContainers[selectedIndex]);
             }
             break;
-
-        case 'Escape':
-            initSlideShow(document.querySelector('.page.active').dataset.platform);
-            break;
-
-        case 'q':
-            if (event.ctrlKey) {
-                ipcRenderer.invoke('quit');
-            }
-            break;
+        case 'Escape': initSlideShow(document.querySelector('.page.active').dataset.platform); break;
         }
 
-        // Update visual selection exactly as before
-        gameContainers.forEach((container, index) => {
-            container.classList.toggle('selected', index === selectedIndex);
-            if (index === selectedIndex && currentPageIndex === 0 && container.dataset.platform) {
-                LB.currentPlatform = container.dataset.platform;
-            }
-        });
-
-        if (!event.shiftKey && selectedIndex < gameContainers.length && selectedIndex > 0) {
-
-            setTimeout(() => {
-                gameContainers[selectedIndex].scrollIntoView({
-                    behavior: "smooth",
-                    block: "end"
-                });
-            }, 10);
-
-        }
-
+        gameContainers.forEach((c, i) => c.classList.toggle('selected', i === selectedIndex));
+        gameContainers[selectedIndex]?.scrollIntoView({ behavior: 'smooth', block: 'end' });
     };
 
-    function onGalleryWheel(event) {
-        event.preventDefault();
-        if (event.shiftKey) {
-            if (event.deltaY > 0) {
-                goToNextPage();
-            } else if (event.deltaY < 0) {
-                goToPrevPage();
-            }
-        } else {
-            if (event.deltaY > 0) {
-                simulateKeyDown('ArrowDown');
-            } else if (event.deltaY < 0) {
-                simulateKeyDown('ArrowUp');
-            }
-        }
-    }
-
-    function onHeaderWheel(event) {
-        event.preventDefault();
-        if (event.deltaY > 0) {
-            goToNextPage();
-        } else if (event.deltaY < 0) {
-            goToPrevPage();
-        }
-    }
-
-    galleries.addEventListener('wheel', onGalleryWheel);
-    header.addEventListener('wheel', onHeaderWheel);
-
-    LB.onHeaderWheel = onHeaderWheel;
-
-    setKeydown(onGalleryKeyDown);
-
-    updateGallery(true); // Initialize the pages carousel
+    updateGallery();
 }
+
 
 export function initGamepad () {
     const gamepads = navigator.getGamepads();
@@ -771,7 +598,6 @@ export function initGamepad () {
 }
 
 function showQuitConfirmationDialog() {
-
     const overlay = document.getElementById('quit-confirmation-overlay');
     const okButton = document.getElementById('quit-ok-button');
     const cancelButton = document.getElementById('quit-cancel-button');
@@ -779,7 +605,8 @@ function showQuitConfirmationDialog() {
     let selectedButton = 'cancel';
 
     function openDialog() {
-        setKeydown(quitDialogKeyDown);
+        LB.previousMode = LB.mode;   // Save current mode
+        LB.mode = 'quit';             // Switch to quit dialog mode
         overlay.style.display = 'flex';
         okButton.blur();
         cancelButton.focus();
@@ -787,7 +614,7 @@ function showQuitConfirmationDialog() {
 
     function closeDialog() {
         overlay.style.display = 'none';
-        initSlideShow(LB.currentPlatform);
+        LB.mode = LB.previousMode;    // Restore previous mode
     }
 
     function confirmQuit() {
@@ -799,38 +626,43 @@ function showQuitConfirmationDialog() {
         closeDialog();
     }
 
-    function quitDialogKeyDown(event) {
-        // event.preventDefault();
+    // --- Global keydown handler for quit dialog
+    onQuitKey = (event) => {
         event.stopPropagation();
         event.stopImmediatePropagation();
+
         const buttons = [okButton, cancelButton];
         const currentIndex = buttons.indexOf(document.activeElement);
 
         switch (event.key) {
         case 'ArrowLeft':
-        case 'ArrowRight':
+        case 'ArrowRight': {
             const direction = event.key === 'ArrowRight' ? 1 : -1;
             const nextIndex = (currentIndex + direction + buttons.length) % buttons.length;
             buttons[nextIndex].focus();
             selectedButton = buttons[nextIndex] === okButton ? 'ok' : 'cancel';
             break;
+        }
+        case 'Enter':
+            if (selectedButton === 'ok') confirmQuit();
+            else cancelQuit();
+            break;
         case 'Escape':
             cancelQuit();
             break;
         }
-    }
+    };
 
-    // Button click handlers (but also somehow handles KB input..?)
+    // --- Button click handlers
     okButton.addEventListener('click', confirmQuit);
     cancelButton.addEventListener('click', cancelQuit);
     overlay.addEventListener('click', (event) => {
-        if (event.target === overlay) {
-            cancelQuit();
-        }
+        if (event.target === overlay) cancelQuit();
     });
 
     openDialog();
 }
+
 
 export function setGalleryView(mode = 'grid') {
 
@@ -915,4 +747,24 @@ function updateGamePane(selectedContainer) {
 
     const gameTitle = paneText.querySelector('.game-title');
     gameTitle.textContent = selectedContainer.dataset.gameName;
+}
+
+async function closeSettingsOrPlatformMenu() {
+
+    console.warn('CLOSE called', new Date().toISOString(), new Error().stack);
+
+    const menu = document.getElementById('menu');
+
+    updateFooterControls('dpad', 'same', 'Browse', 'on');
+    console.log("menuContainer.dataset.menuContext: ", menu.dataset.menuContext);
+
+    if (menu.dataset.menuContext === 'slideshow') {
+        initSlideShow(menu.dataset.menuPlatform);
+    } else {
+        initGallery('settings');
+    }
+
+    menu.innerHTML = '';
+    menu.style.height = '0';
+
 }

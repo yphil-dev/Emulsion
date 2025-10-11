@@ -158,8 +158,8 @@ header, footer  {
   font-weight: bold;
   z-index: 3; /* Ensure it's above other content */
   /* pointer-events: none; /\* Prevent the footer from blocking clicks *\/ */
-  opacity: 0; /* Start fully transparent */
-  animation: fadeIn 0.3s ease-in-out forwards; /* Apply the fadeIn animation */
+  /* opacity: 0; /\* Start fully transparent *\/ */
+  /* animation: fadeIn 0.3s ease-in-out forwards; /\* Apply the fadeIn animation *\/ */
 }
 
 .hover:hover {

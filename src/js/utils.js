@@ -62,6 +62,7 @@ export function applyTheme(theme) {
 
 export function setFooterSize(size) {
     const footer = document.getElementById('footer');
+    footer.style.opacity = 1;
     footer.className = `footer-${size}`;
 }
 

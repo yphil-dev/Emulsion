@@ -1061,7 +1061,7 @@ export function openPlatformMenu(platformName, context) {
     }
 
     setKeydown(onSettingsAndPlatformMenuKeyDown);
-    menu.style.height = '85vh';
+    // menu.style.height = '85vh';
     updateHeader(platformName);
     toggleHeaderNavLinks('hide');
 

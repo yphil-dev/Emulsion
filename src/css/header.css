@@ -3,22 +3,20 @@ header {
   top: 0;
   left: 0;
   right: 0;
+  height: 101px;
+  z-index: 12;
 
   display: flex;
   justify-content: space-between;
   align-items: center;
 
-  height: 101px;
-  z-index: 12;
-
   background-color: var(--color-bg-header);
   border-bottom: 1px solid var(--color-border-header);
   color: var(--color-text-footer);
-
-  overflow: hidden; /* prevent horizontal scrollbar */
+  overflow: hidden;
 }
 
-
+/* outer nav arrows */
 .pages-nav-links {
   display: flex;
   align-items: center;
@@ -26,21 +24,21 @@ header {
   width: 80px;
 }
 
+/* 3-column grid in center */
 .center {
   flex: 1;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 200px 120px; /* ← fixed widths for center & image */
+  grid-template-rows: 1fr;
   align-items: center;
-  justify-content: space-between;
-  position: relative;
   padding: 0 20px;
+  gap: 20px;
 }
 
-/* Left column */
+/* Left info stays on left, can grow but doesn't push the others */
 .left-info {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
+  min-width: 0; /* prevent flex overflow */
+  overflow: hidden;
 }
 
 .platform-name {
@@ -52,30 +50,23 @@ header {
      1px -1px 0 var(--color-platform-outline-header),
     -1px  1px 0 var(--color-platform-outline-header),
      1px  1px 0 var(--color-platform-outline-header);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .platform-stats {
   display: flex;
-  flex-direction: row;
   font-size: 12pt;
+  flex-shrink: 0;
 }
 
-.spacer {
-  width: 0.5em;
-}
-
-/* The secret sauce — dead-center controls */
 .controls {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
-  align-items: center;
+  align-items: flex-end;  /* keep bottom-aligned */
   justify-content: center;
-  min-width: 150px;
 }
 
-/* Right column */
 .platform-image {
   width: 120px;
   height: 80px;

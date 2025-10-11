@@ -12,46 +12,39 @@ const main = document.querySelector('main');
 const slideshow = document.getElementById("slideshow");
 const galleries = document.getElementById("galleries");
 
-let onGalleryKey, onSlideShowKey, onQuitKey;
-
 export function initSlideShow(platformToDisplay) {
-
     LB.mode = 'slideshow';
 
     main.style.top = 0;
+
+    const galleries = document.getElementById('galleries');
+    const slideshow = document.getElementById('slideshow');
 
     galleries.style.display = 'none';
     slideshow.style.display = 'flex';
 
     updateHeader('hide');
 
-    const slides = Array.from(document.querySelectorAll('#slideshow .slide'));
-
-    const totalSlides = slides.length;
-    const radius = 90 * totalSlides;
-
-    // Find start index - support both name-based and index-based
+    const slides = Array.from(slideshow.querySelectorAll('.slide'));
     let currentIndex = 0;
+
+    // Find start index by platform name or dataset.index
     if (platformToDisplay) {
-        if (typeof platformToDisplay === 'string') {
-            // Name-based lookup
-            const foundIndex = slides.findIndex(s =>
-                s.dataset.platform === platformToDisplay ||
-                    s.dataset.name === platformToDisplay
-            );
-            if (foundIndex !== -1) currentIndex = foundIndex;
-        } else {
-            // Index-based lookup (legacy)
-            const idx = slides.findIndex(s => Number(s.dataset.index) === Number(platformToDisplay));
-            if (idx !== -1) currentIndex = idx;
-        }
+        const foundIndex = slides.findIndex(
+            s => s.dataset.platform === platformToDisplay || s.dataset.name === platformToDisplay
+        );
+        if (foundIndex !== -1) currentIndex = foundIndex;
     }
 
     function updateSlideShow() {
-        const angleIncrement = 360 / totalSlides;
+        const totalSlides = slides.length;
+        const radius = 90 * totalSlides;
+        const is3D = LB.homeMenuTheme === '3D';
 
         slides.forEach((slide, i) => {
+            const angleIncrement = 360 / totalSlides;
             const angle = angleIncrement * (i - currentIndex);
+
             slide.style.setProperty('--angle', angle);
             slide.style.setProperty('--radius', radius);
 
@@ -60,8 +53,6 @@ export function initSlideShow(platformToDisplay) {
                 'next-slide-3d', 'next-slide-flat',
                 'adjacent-flat', 'adjacent-3d'
             );
-
-            const is3D = (LB.homeMenuTheme === '3D');
 
             if (i === currentIndex) {
                 LB.currentPlatform = slide.dataset.platform;
@@ -77,132 +68,93 @@ export function initSlideShow(platformToDisplay) {
     }
 
     function nextSlide() {
-        currentIndex = (currentIndex + 1) % totalSlides;
+        currentIndex = (currentIndex + 1) % slides.length;
         updateSlideShow();
     }
 
     function prevSlide() {
-        currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+        currentIndex = (currentIndex - 1 + slides.length) % slides.length;
         updateSlideShow();
     }
 
-    slideshow.addEventListener('wheel', (event) => {
+    // Slide click
+    slides.forEach(slide => {
+        slide.addEventListener('click', event => {
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+            const slideDiv = event.target.closest('div.slide');
+
+            if (slideDiv.classList.contains('active')) simulateKeyDown('Enter');
+            else initSlideShow(slideDiv.dataset.platform);
+        });
+    });
+
+    // Wheel scroll
+    slideshow.addEventListener('wheel', event => {
         event.preventDefault();
         event.deltaY > 0 ? nextSlide() : prevSlide();
     });
 
-    slides.forEach((slide, i) => {
-        slide.addEventListener('click', (event) => {
-            event.stopPropagation();
-            event.stopImmediatePropagation();
-
-            const slideDiv = event.target.closest('div.slide');
-
-            if (slideDiv.classList.contains('active')) {
-                simulateKeyDown('Enter');
-            } else { // Adjacent slide
-                initSlideShow(slideDiv.dataset.platform);
-            }
-        });
-    });
-
-    function onSlideShowKeyDown(event) {
+    // Global key handler for slideshow
+    window.onSlideShowKeyDown = function(event) {
         event.stopPropagation();
         event.stopImmediatePropagation();
 
         switch (event.key) {
-        case 'ArrowRight':
-            nextSlide();
-            break;
-        case 'ArrowLeft':
-            prevSlide();
-            break;
-        case 'Enter': {
-            const activeSlide = slides[currentIndex];
-            const activePlatformName = activeSlide.dataset.platform;
+            case 'ArrowRight':
+                nextSlide();
+                break;
+            case 'ArrowLeft':
+                prevSlide();
+                break;
+            case 'Enter': {
+                const activeSlide = slides[currentIndex];
+                const platformName = activeSlide.dataset.platform;
 
-            // Always use platform name for navigation - NO MORE INDICES!
-            if (activePlatformName === 'settings' && LB.kioskMode) {
-                return;
+                if (platformName === 'settings' && LB.kioskMode) return;
+
+                if (platformName === 'recents' || platformName === 'settings') {
+                    initGallery(platformName);
+                } else if (LB.enabledPlatforms.includes(platformName)) {
+                    initGallery(platformName);
+                } else {
+                    openPlatformMenu(platformName, 'slideshow');
+                }
+
+                galleries.style.display = 'flex';
+                slideshow.style.display = 'none';
+                break;
             }
-
-            console.log("LB.mode: ", LB.mode);
-            console.log("activePlatformName: ", activePlatformName);
-
-            // Check if platform is enabled or disabled
-            if (activePlatformName === 'recents' || activePlatformName === 'settings') {
-                // Special platforms - go directly to gallery
-                initGallery(activePlatformName);
-            } else if (LB.enabledPlatforms.includes(activePlatformName)) {
-                // Enabled platform - go directly to platform gallery
-                initGallery(activePlatformName);
-            } else {
-                // Disabled platform - open menu (if policy allows showing disabled platforms)
-                openPlatformMenu(activePlatformName, 'slideshow');
-            }
-
-            document.getElementById('slideshow').style.display = 'none';
-            document.getElementById('galleries').style.display = "flex";
-            break;
-        }
-        case 'Home':
-        case 'End':
-            initSlideShow('settings');
-            break;
-        case 'F5':
-            event.shiftKey ? ipcRenderer.invoke('restart') : window.location.reload();
-            break;
-        case 'F11':
-            // event.preventDefault();
-            toggleFullScreen();
-            break;
-        case 'Escape':
-            if (LB.mode === 'slideshow') {
+            case 'Home':
+            case 'End':
+                initSlideShow('settings');
+                break;
+            case 'F5':
+                event.shiftKey ? ipcRenderer.invoke('restart') : window.location.reload();
+                break;
+            case 'F11':
+                toggleFullScreen();
+                break;
+            case 'Escape':
                 showQuitConfirmationDialog();
-            }
-            if (LB.mode === 'menu') {
-                closeSettingsOrPlatformMenu();
-            }
-            break;
-        case 'q':
-            if (event.ctrlKey || event.metaKey) {
-                ipcRenderer.invoke('quit').catch(() => window.close());
-            }
-            break;
+                break;
+            case 'q':
+                if (event.ctrlKey || event.metaKey) ipcRenderer.invoke('quit').catch(() => window.close());
+                break;
         }
-    }
+    };
 
+    // Footer buttons
     updateFooterControls('dpad', 'button-dpad-ew', 'Platforms', 'on');
     updateFooterControls('shoulders', 'same', 'Platforms', 'off');
     updateFooterControls('west', 'same', 'same', 'off');
     updateFooterControls('east', 'same', 'Exit');
 
-    document.querySelector('footer .back').onclick = function() {
-        simulateKeyDown('Escape');
-    };
+    document.querySelector('footer .back').onclick = () => simulateKeyDown('Escape');
 
-    document.addEventListener('keydown', (event) => {
-        if (LB.mode === 'gallery' && onGalleryKey) {
-            onGalleryKey(event);
-        } else if (LB.mode === 'slideshow') {
-            onSlideShowKeyDown(event);
-        }
-    });
-
-    document.addEventListener('keydown', (event) => {
-        if (LB.mode === 'gallery' && onGalleryKey) {
-            onGalleryKey(event);
-        } else if (LB.mode === 'slideshow') {
-            onSlideShowKey(event);
-        } else if (LB.mode === 'quit' && onQuitKey) {
-            onQuitKey(event);
-        }
-    });
-
-
-    // setKeydown(onSlideShowKeyDown);
     updateSlideShow();
 }
+
 
 export function buildHomeSlide(platformName, preferences) {
 
@@ -314,171 +266,147 @@ function launchGame(gameContainer) {
         platform: gameContainer.dataset.platform
     });
 }
-
-// export const GalleryState = {
-//   selectedIndex: 0,
-//   currentPageIndex: 0,
-//   gameContainers: [],
-//   enabledPages: [],
-//   goToNextPage: null,
-//   goToPrevPage: null
-// };
+// galleryState.js
+export const GalleryState = {
+    selectedIndex: 0,
+    currentPageIndex: 0,
+    gameContainers: [],
+    enabledPages: [],
+};
 
 export function initGallery(platformNameOrIndex) {
     LB.mode = 'gallery';
-    main.style.top = '100px';
 
     const galleries = document.getElementById('galleries');
     const header = document.getElementById('header');
 
     document.getElementById('slideshow').style.display = 'none';
     galleries.style.display = 'flex';
-
     toggleHeaderNavLinks('show');
 
     const pages = Array.from(galleries.querySelectorAll('.page'));
-    let currentPageIndex = 0;
-    let gameContainers = [];
 
     // --- Find target page
-    let targetPage = typeof platformNameOrIndex === 'string'
+    const targetPage = typeof platformNameOrIndex === 'string'
         ? pages.find(p => p.dataset.platform === platformNameOrIndex)
         : pages.find(p => Number(p.dataset.index) === platformNameOrIndex);
 
     if (!targetPage) return console.error('Could not find page for:', platformNameOrIndex);
 
-    currentPageIndex = Number(targetPage.dataset.index);
+    GalleryState.currentPageIndex = Number(targetPage.dataset.index);
 
-    const enabledPages = pages.filter(p => p.dataset.status !== 'disabled');
+    GalleryState.enabledPages = pages.filter(p => p.dataset.status !== 'disabled');
 
     function initCurrentGallery(page) {
-        setGalleryFooterControls(page.dataset.platform);
-
-        gameContainers = Array.from(page.querySelectorAll('.game-container') || []);
-        gameContainers.forEach(c => c.classList.remove('selected'));
+        GalleryState.gameContainers = Array.from(page.querySelectorAll('.game-container'));
+        GalleryState.gameContainers.forEach(c => c.classList.remove('selected'));
 
         if (!page.dataset.listenersAttached) {
-            gameContainers.forEach(container => {
-                container.addEventListener('click', (e) => {
+            GalleryState.gameContainers.forEach(container => {
+                container.addEventListener('click', () => {
                     if (container.classList.contains('settings')) openPlatformMenu(container.dataset.platform);
                     else if (!container.classList.contains('empty-platform-game-container')) launchGame(container);
 
-                    gameContainers.forEach(c => c.classList.remove('selected'));
+                    GalleryState.gameContainers.forEach(c => c.classList.remove('selected'));
                 });
 
                 container.addEventListener('contextmenu', (e) => {
                     e.preventDefault();
-                    const parentDiv = e.target.closest('div.game-container');
-                    document.querySelectorAll('.game-container').forEach(c => c.classList.remove('selected'));
-                    parentDiv.classList.add('selected');
-                    openGameMenu(parentDiv);
+                    GalleryState.gameContainers.forEach(c => c.classList.remove('selected'));
+                    container.classList.add('selected');
+                    openGameMenu(container);
                 });
             });
             page.dataset.listenersAttached = true;
         }
 
         updateHeader(page.dataset.platform);
-
-        document.querySelector('header .prev-link').onclick = goToPrevPage;
-        document.querySelector('header .next-link').onclick = goToNextPage;
     }
 
     function updateGallery() {
-        const sortedEnabled = pages.filter(p => p.dataset.status !== 'disabled')
-              .sort((a, b) => Number(a.dataset.index) - Number(b.dataset.index));
+        const sortedEnabled = GalleryState.enabledPages.sort((a, b) => Number(a.dataset.index) - Number(b.dataset.index));
+        const activePos = sortedEnabled.findIndex(p => Number(p.dataset.index) === GalleryState.currentPageIndex);
 
-        const activePos = sortedEnabled.findIndex(p => Number(p.dataset.index) === currentPageIndex);
-        const prevPage = sortedEnabled[activePos - 1] || null;
-        const nextPage = sortedEnabled[activePos + 1] || null;
-
-        pages.forEach(page => {
-            const idx = Number(page.dataset.index);
+        sortedEnabled.forEach((page, idx) => {
             page.classList.remove('active', 'prev', 'next', 'adjacent');
 
-            if (page.dataset.status === 'disabled') return;
-
-            if (idx === currentPageIndex) {
+            if (idx === activePos) {
                 initCurrentGallery(page);
                 LB.currentPlatform = page.dataset.platform;
                 page.classList.add('active');
                 setGalleryView(page.dataset.display);
-            } else if (prevPage && Number(prevPage.dataset.index) === idx) page.classList.add('prev');
-            else if (nextPage && Number(nextPage.dataset.index) === idx) page.classList.add('next');
+            } else if (idx === activePos - 1) page.classList.add('prev');
+            else if (idx === activePos + 1) page.classList.add('next');
             else page.classList.add('adjacent');
         });
     }
 
     function goToPage(direction = 1) {
-        const current = enabledPages.findIndex(p => +p.dataset.index === currentPageIndex);
-        const next = (current + direction + enabledPages.length) % enabledPages.length;
-        currentPageIndex = +enabledPages[next].dataset.index;
+        const current = GalleryState.enabledPages.findIndex(p => +p.dataset.index === GalleryState.currentPageIndex);
+        const next = (current + direction + GalleryState.enabledPages.length) % GalleryState.enabledPages.length;
+        GalleryState.currentPageIndex = +GalleryState.enabledPages[next].dataset.index;
         updateGallery();
     }
 
-    const goToNextPage = () => goToPage(1);
-    const goToPrevPage = () => goToPage(-1);
+    GalleryState.goToNextPage = () => goToPage(1);
+    GalleryState.goToPrevPage = () => goToPage(-1);
 
-    // --- Gallery wheel
-    galleries.addEventListener('wheel', (e) => {
+    // Wheel scrolling
+    galleries.addEventListener('wheel', e => {
         e.preventDefault();
-        if (e.shiftKey) e.deltaY > 0 ? goToNextPage() : goToPrevPage();
+        if (e.shiftKey) e.deltaY > 0 ? GalleryState.goToNextPage() : GalleryState.goToPrevPage();
         else simulateKeyDown(e.deltaY > 0 ? 'ArrowDown' : 'ArrowUp');
     });
-
-    header.addEventListener('wheel', (e) => {
+    header.addEventListener('wheel', e => {
         e.preventDefault();
-        e.deltaY > 0 ? goToNextPage() : goToPrevPage();
+        e.deltaY > 0 ? GalleryState.goToNextPage() : GalleryState.goToPrevPage();
     });
 
-    // --- Gallery keyboard handler (exposed globally)
-    let selectedIndex = 0;
-    onGalleryKey = (event) => {
-        const activePageContent = document.querySelector('.page.active .page-content');
-        const listMode = activePageContent?.classList.contains('list');
-
-        const _moveRows = (selectedIndex, rowsToMove) => {
-            const col = selectedIndex % LB.galleryNumOfCols;
-            const row = Math.floor(selectedIndex / LB.galleryNumOfCols);
-            return Math.min(Math.max((row + rowsToMove) * LB.galleryNumOfCols + col, 0), gameContainers.length - 1);
-        };
-
-        switch (event.key) {
-        case 'ArrowLeft':
-            if (event.shiftKey) {
-                goToPrevPage();
-            } else {
-                selectedIndex = listMode ? Math.max(selectedIndex - 1, 0) : (selectedIndex - 1 + gameContainers.length) % gameContainers.length;
-            }
-            break;
-        case 'ArrowRight':
-            if (event.shiftKey) {
-                goToNextPage();
-            } else {
-                selectedIndex = listMode ? Math.min(selectedIndex + 1, gameContainers.length - 1) : (selectedIndex + 1) % gameContainers.length;
-            }
-            break;
-        case 'ArrowUp': selectedIndex = listMode ? Math.max(selectedIndex - 1, 0) : _moveRows(selectedIndex, -1); break;
-        case 'ArrowDown': selectedIndex = listMode ? Math.min(selectedIndex + 1, gameContainers.length - 1) : _moveRows(selectedIndex, 1); break;
-        case 'PageUp': selectedIndex = listMode ? Math.max(selectedIndex - 10, 0) : _moveRows(selectedIndex, -10); break;
-        case 'PageDown': selectedIndex = listMode ? Math.min(selectedIndex + 10, gameContainers.length - 1) : _moveRows(selectedIndex, 10); break;
-        case 'Home': selectedIndex = listMode ? 0 : 3; break;
-        case 'End': selectedIndex = gameContainers.length - 1; break;
-        case 'Enter':
-            console.log("LB.currentPlatform: ", LB.currentPlatform);
-            if (LB.currentPlatform === 'settings') {
-                openPlatformMenu(gameContainers[selectedIndex].dataset.platform);
-            } else {
-                launchGame(gameContainers[selectedIndex]);
-            }
-            break;
-        case 'Escape': initSlideShow(document.querySelector('.page.active').dataset.platform); break;
-        }
-
-        gameContainers.forEach((c, i) => c.classList.toggle('selected', i === selectedIndex));
-        gameContainers[selectedIndex]?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-    };
 
     updateGallery();
+}
+
+// --- global key handler
+window.onGalleryKeyDown = function onGalleryKeyDown(event) {
+    const containers = GalleryState.gameContainers;
+    if (!containers.length) return;
+
+    const listMode = document.querySelector('.page.active .page-content')?.classList.contains('list');
+
+    const _moveRows = (idx, rows) => {
+        const col = idx % LB.galleryNumOfCols;
+        const row = Math.floor(idx / LB.galleryNumOfCols);
+        return Math.min(Math.max((row + rows) * LB.galleryNumOfCols + col, 0), containers.length - 1);
+    };
+
+    switch (event.key) {
+    case 'ArrowLeft':
+        GalleryState.selectedIndex = event.shiftKey
+            ? GalleryState.goToPrevPage() || GalleryState.selectedIndex
+            : listMode ? Math.max(GalleryState.selectedIndex - 1, 0) : (GalleryState.selectedIndex - 1 + containers.length) % containers.length;
+        break;
+    case 'ArrowRight':
+        GalleryState.selectedIndex = event.shiftKey
+            ? GalleryState.goToNextPage() || GalleryState.selectedIndex
+            : listMode ? Math.min(GalleryState.selectedIndex + 1, containers.length - 1) : (GalleryState.selectedIndex + 1) % containers.length;
+        break;
+    case 'ArrowUp':
+        GalleryState.selectedIndex = listMode ? Math.max(GalleryState.selectedIndex - 1, 0) : _moveRows(GalleryState.selectedIndex, -1);
+        break;
+    case 'ArrowDown':
+        GalleryState.selectedIndex = listMode ? Math.min(GalleryState.selectedIndex + 1, containers.length - 1) : _moveRows(GalleryState.selectedIndex, 1);
+        break;
+    case 'Enter':
+        const sel = containers[GalleryState.selectedIndex];
+        if (!sel.classList.contains('empty-platform-game-container')) launchGame(sel);
+        break;
+    case 'Escape':
+        initSlideShow(document.querySelector('.page.active').dataset.platform);
+        break;
+    }
+
+    containers.forEach((c, i) => c.classList.toggle('selected', i === GalleryState.selectedIndex));
+    containers[GalleryState.selectedIndex]?.scrollIntoView({ behavior: 'smooth', block: 'end' });
 }
 
 
@@ -604,15 +532,13 @@ export function initGamepad () {
 }
 
 function showQuitConfirmationDialog() {
+    LB.mode = 'quit';
+
     const overlay = document.getElementById('quit-confirmation-overlay');
     const okButton = document.getElementById('quit-ok-button');
     const cancelButton = document.getElementById('quit-cancel-button');
 
-    let selectedButton = 'cancel';
-
     function openDialog() {
-        LB.previousMode = LB.mode;   // Save current mode
-        LB.mode = 'quit';             // Switch to quit dialog mode
         overlay.style.display = 'flex';
         okButton.blur();
         cancelButton.focus();
@@ -620,55 +546,34 @@ function showQuitConfirmationDialog() {
 
     function closeDialog() {
         overlay.style.display = 'none';
-        LB.mode = LB.previousMode;    // Restore previous mode
+        initSlideShow(LB.currentPlatform);
     }
 
-    function confirmQuit() {
-        closeDialog();
-        ipcRenderer.invoke('quit');
-    }
-
-    function cancelQuit() {
-        closeDialog();
-    }
-
-    // --- Global keydown handler for quit dialog
-    onQuitKey = (event) => {
+    window.onQuitKeyDown = function onQuitKeyDown(event) {
         event.stopPropagation();
         event.stopImmediatePropagation();
-
         const buttons = [okButton, cancelButton];
         const currentIndex = buttons.indexOf(document.activeElement);
 
         switch (event.key) {
         case 'ArrowLeft':
-        case 'ArrowRight': {
-            const direction = event.key === 'ArrowRight' ? 1 : -1;
-            const nextIndex = (currentIndex + direction + buttons.length) % buttons.length;
+        case 'ArrowRight':
+            const dir = event.key === 'ArrowRight' ? 1 : -1;
+            const nextIndex = (currentIndex + dir + buttons.length) % buttons.length;
             buttons[nextIndex].focus();
-            selectedButton = buttons[nextIndex] === okButton ? 'ok' : 'cancel';
-            break;
-        }
-        case 'Enter':
-            if (selectedButton === 'ok') confirmQuit();
-            else cancelQuit();
             break;
         case 'Escape':
-            cancelQuit();
+            closeDialog();
             break;
         }
     };
 
-    // --- Button click handlers
-    okButton.addEventListener('click', confirmQuit);
-    cancelButton.addEventListener('click', cancelQuit);
-    overlay.addEventListener('click', (event) => {
-        if (event.target === overlay) cancelQuit();
-    });
+    okButton.addEventListener('click', () => { closeDialog(); ipcRenderer.invoke('quit'); });
+    cancelButton.addEventListener('click', closeDialog);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeDialog(); });
 
     openDialog();
 }
-
 
 export function setGalleryView(mode = 'grid') {
 

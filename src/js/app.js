@@ -38,6 +38,17 @@ async function initializeApp() {
         LB.galleryNumOfCols = appData.preferences.settings.numberOfColumns;
         LB.homeMenuTheme = appData.preferences.settings.homeMenuTheme;
 
+        document.addEventListener('keydown', (event) => {
+            if (LB.mode === 'gallery' && window.onGalleryKeyDown) {
+                window.onGalleryKeyDown(event);
+            } else if (LB.mode === 'slideshow' && window.onSlideShowKeyDown) {
+                window.onSlideShowKeyDown(event);
+            } else if (LB.mode === 'quit' && window.onQuitKeyDown) {
+                window.onQuitKeyDown(event);
+            }
+        });
+
+
         console.log('App initialized successfully');
     } catch (error) {
         console.error('Failed to initialize app:', error);

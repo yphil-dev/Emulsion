@@ -443,13 +443,19 @@ export function initGallery(platformNameOrIndex) {
         };
 
         switch (event.key) {
-        case 'ArrowRight':
-            selectedIndex = listMode ? Math.min(selectedIndex + 1, gameContainers.length - 1)
-                : (selectedIndex + 1) % gameContainers.length;
-            break;
         case 'ArrowLeft':
-            selectedIndex = listMode ? Math.max(selectedIndex - 1, 0)
-                : (selectedIndex - 1 + gameContainers.length) % gameContainers.length;
+            if (event.shiftKey) {
+                goToPrevPage();
+            } else {
+                selectedIndex = listMode ? Math.max(selectedIndex - 1, 0) : (selectedIndex - 1 + gameContainers.length) % gameContainers.length;
+            }
+            break;
+        case 'ArrowRight':
+            if (event.shiftKey) {
+                goToNextPage();
+            } else {
+                selectedIndex = listMode ? Math.min(selectedIndex + 1, gameContainers.length - 1) : (selectedIndex + 1) % gameContainers.length;
+            }
             break;
         case 'ArrowUp': selectedIndex = listMode ? Math.max(selectedIndex - 1, 0) : _moveRows(selectedIndex, -1); break;
         case 'ArrowDown': selectedIndex = listMode ? Math.min(selectedIndex + 1, gameContainers.length - 1) : _moveRows(selectedIndex, 1); break;

@@ -365,7 +365,7 @@ function buildSettingsMenu() {
     saveButton.addEventListener('click', onSettingsMenuSave);
 
     function onSettingsMenuCancel(event) {
-        initSlideShow('settings');
+        closeSettingsOrPlatformMenu();
     }
 
     async function onSettingsMenuSave() {

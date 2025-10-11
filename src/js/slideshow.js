@@ -862,7 +862,6 @@ export function setGalleryView(mode = 'grid') {
         if (mode === 'list') {
             updateGamePane(selectedContainer);
         }
-        // selectedContainer.scrollIntoView({ block: 'center', behavior: 'instant' });
     }
 }
 

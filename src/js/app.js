@@ -45,9 +45,10 @@ async function initializeApp() {
                 window.onSlideShowKeyDown(event);
             } else if (LB.mode === 'quit' && window.onQuitKeyDown) {
                 window.onQuitKeyDown(event);
+            } else if (LB.mode === 'menu' && window.onQuitKeyDown) {
+                window.onQuitKeyDown(event);
             }
         });
-
 
         console.log('App initialized successfully');
     } catch (error) {

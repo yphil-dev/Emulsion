@@ -15,8 +15,6 @@ const galleries = document.getElementById("galleries");
 export function initSlideShow(platformToDisplay) {
     LB.mode = 'slideshow';
 
-    main.style.top = 0;
-
     const galleries = document.getElementById('galleries');
     const slideshow = document.getElementById('slideshow');
 
@@ -95,7 +93,6 @@ export function initSlideShow(platformToDisplay) {
         event.deltaY > 0 ? nextSlide() : prevSlide();
     });
 
-    // Global key handler for slideshow
     window.onSlideShowKeyDown = function(event) {
         event.stopPropagation();
         event.stopImmediatePropagation();
@@ -277,6 +274,8 @@ export const GalleryState = {
 export function initGallery(platformNameOrIndex) {
     LB.mode = 'gallery';
 
+    main.style.top = '100px';
+
     const galleries = document.getElementById('galleries');
     const header = document.getElementById('header');
 
@@ -366,12 +365,12 @@ export function initGallery(platformNameOrIndex) {
     updateGallery();
 }
 
-// --- global key handler
 window.onGalleryKeyDown = function onGalleryKeyDown(event) {
     const containers = GalleryState.gameContainers;
     if (!containers.length) return;
 
-    const listMode = document.querySelector('.page.active .page-content')?.classList.contains('list');
+    const activePage = document.querySelector('.page.active');
+    const isListMode = activePage.querySelector('.page-content').classList.contains('list');
 
     const _moveRows = (idx, rows) => {
         const col = idx % LB.galleryNumOfCols;
@@ -383,18 +382,18 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
     case 'ArrowLeft':
         GalleryState.selectedIndex = event.shiftKey
             ? GalleryState.goToPrevPage() || GalleryState.selectedIndex
-            : listMode ? Math.max(GalleryState.selectedIndex - 1, 0) : (GalleryState.selectedIndex - 1 + containers.length) % containers.length;
+            : isListMode ? Math.max(GalleryState.selectedIndex - 1, 0) : (GalleryState.selectedIndex - 1 + containers.length) % containers.length;
         break;
     case 'ArrowRight':
         GalleryState.selectedIndex = event.shiftKey
             ? GalleryState.goToNextPage() || GalleryState.selectedIndex
-            : listMode ? Math.min(GalleryState.selectedIndex + 1, containers.length - 1) : (GalleryState.selectedIndex + 1) % containers.length;
+            : isListMode ? Math.min(GalleryState.selectedIndex + 1, containers.length - 1) : (GalleryState.selectedIndex + 1) % containers.length;
         break;
     case 'ArrowUp':
-        GalleryState.selectedIndex = listMode ? Math.max(GalleryState.selectedIndex - 1, 0) : _moveRows(GalleryState.selectedIndex, -1);
+        GalleryState.selectedIndex = isListMode ? Math.max(GalleryState.selectedIndex - 1, 0) : _moveRows(GalleryState.selectedIndex, -1);
         break;
     case 'ArrowDown':
-        GalleryState.selectedIndex = listMode ? Math.min(GalleryState.selectedIndex + 1, containers.length - 1) : _moveRows(GalleryState.selectedIndex, 1);
+        GalleryState.selectedIndex = isListMode ? Math.min(GalleryState.selectedIndex + 1, containers.length - 1) : _moveRows(GalleryState.selectedIndex, 1);
         break;
     case 'Enter':
         const sel = containers[GalleryState.selectedIndex];
@@ -406,7 +405,7 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
     }
 
     containers.forEach((c, i) => c.classList.toggle('selected', i === GalleryState.selectedIndex));
-    containers[GalleryState.selectedIndex]?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    containers[GalleryState.selectedIndex]?.scrollIntoView({ behavior: 'smooth', block: isListMode ? 'end' : 'center' });
 }
 
 

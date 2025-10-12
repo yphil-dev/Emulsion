@@ -326,7 +326,7 @@ export function updateHeader(platformName, gameName) {
 
     header.style.display = 'flex';
 
-    const settingsPlatform = { nbGames: PLATFORMS.length };
+    const settingsPlatform = { nbGames: PLATFORMS.length, displayName:"Settings" };
     const platform = platformName === 'settings' ? settingsPlatform : getPlatformByName(platformName);
 
     let itemType = 'game';
@@ -348,7 +348,8 @@ export function updateHeader(platformName, gameName) {
     const pluralize = (count, singular, plural = `${singular}s`) =>
           count === 1 ? singular : plural;
 
-    header.querySelector('.platform-name').textContent = gameName ? gameName : platformName;
+    header.querySelector('.platform-name').textContent = gameName ? gameName : platform.displayName;
+    header.querySelector('.vendor-name').textContent = platform.vendor || 'Emulsion';
     header.querySelector('.item-number').textContent = count;
     header.querySelector('.item-type').textContent = pluralize(count, itemType);
     header.querySelector('.platform-image').style.backgroundImage = `url('../../img/platforms/${platformName}.png')`;

@@ -85,14 +85,7 @@ header {
   border-top-right-radius: 15px;
   border-top-left-radius: 15px;
   border-bottom: none;
-  /* background-color: grey; */
 }
-
-/* .header-button { */
-/*   padding-bottom: 0; /\* Remove any bottom padding *\/ */
-/*   align-self: flex-end; /\* Force bottom alignment *\/ */
-/* } */
-
 .platform-name-container {
     position: relative;
     display: inline-block;

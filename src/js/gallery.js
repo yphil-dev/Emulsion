@@ -14,7 +14,7 @@ export async function buildGalleries (preferences, userDataPath) {
                 let prefs = preferences[platformName];
 
                 if (prefs) {
-                    let gamesDir, display, emulator, emulatorArgs, extensions, isEnabled, index;
+                    let gamesDir, viewMode, emulator, emulatorArgs, extensions, isEnabled, index;
                     if (platformName === 'settings') {
                         gamesDir = 'none';
                         emulator = 'none';
@@ -23,7 +23,7 @@ export async function buildGalleries (preferences, userDataPath) {
                         index = 0; // Settings is always index 0
                     } else {
                         gamesDir = prefs.gamesDir;
-                        display = prefs.display;
+                        viewMode = prefs.viewMode;
                         emulator = prefs.emulator;
                         emulatorArgs = prefs.emulatorArgs;
                         extensions = prefs.extensions;
@@ -33,7 +33,7 @@ export async function buildGalleries (preferences, userDataPath) {
                     const params = {
                         platform: platformName,
                         gamesDir,
-                        display,
+                        viewMode,
                         emulator,
                         emulatorArgs,
                         userDataPath,
@@ -92,7 +92,7 @@ export async function buildGallery(params) {
     const {
         platform,
         gamesDir,
-        display,
+        viewMode,
         emulator,
         emulatorArgs,
         index,
@@ -107,7 +107,7 @@ export async function buildGallery(params) {
     page.classList.add('page');
     page.dataset.index = index;
     page.dataset.platform = platform;
-    page.dataset.display = display;
+    page.dataset.viewMode = viewMode;
 
     // SETTINGS page
     if (platform === 'settings') {

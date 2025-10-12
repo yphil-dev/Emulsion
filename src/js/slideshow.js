@@ -1,4 +1,4 @@
-import { getPlatformInfo, PLATFORMS } from './platforms.js';
+import { getPlatformInfo } from './platforms.js';
 import { openPlatformMenu, openGameMenu } from './menu.js';
 import { getSelectedGameContainer,
          updateFooterControls,
@@ -14,9 +14,6 @@ const galleries = document.getElementById("galleries");
 
 export function initSlideShow(platformToDisplay) {
     LB.mode = 'slideshow';
-
-    const galleries = document.getElementById('galleries');
-    const slideshow = document.getElementById('slideshow');
 
     galleries.style.display = 'none';
     slideshow.style.display = 'flex';
@@ -151,7 +148,6 @@ export function initSlideShow(platformToDisplay) {
 
     updateSlideShow();
 }
-
 
 export function buildHomeSlide(platformName, preferences) {
 
@@ -333,7 +329,7 @@ export function initGallery(platformNameOrIndex) {
                 initCurrentGallery(page);
                 LB.currentPlatform = page.dataset.platform;
                 page.classList.add('active');
-                setGalleryView(page.dataset.display);
+                setGalleryView(page.dataset.viewMode);
             } else if (idx === activePos - 1) page.classList.add('prev');
             else if (idx === activePos + 1) page.classList.add('next');
             else page.classList.add('adjacent');
@@ -356,11 +352,15 @@ export function initGallery(platformNameOrIndex) {
         if (e.shiftKey) e.deltaY > 0 ? GalleryState.goToNextPage() : GalleryState.goToPrevPage();
         else simulateKeyDown(e.deltaY > 0 ? 'ArrowDown' : 'ArrowUp');
     });
+
     header.addEventListener('wheel', e => {
         e.preventDefault();
         e.deltaY > 0 ? GalleryState.goToNextPage() : GalleryState.goToPrevPage();
     });
 
+    document.getElementById('view-toggle-btn').addEventListener('click', function() {
+        setGalleryView(this.classList.contains('fa-th') ? 'grid' : 'list');
+    });
 
     updateGallery();
 }
@@ -582,27 +582,27 @@ export function setGalleryView(mode = 'grid') {
 
     const pageContent = page.querySelector('.page-content');
     const gamePane = page.querySelector('.game-pane');
-    const selectedContainer = pageContent.querySelector('.game-container.selected') || pageContent.querySelector('.game-container') ;
+    const selectedContainer = pageContent.querySelector('.game-container.selected') || pageContent.querySelector('.game-container');
+
+    // Clear all view classes
+    pageContent.classList.remove('list');
+    viewToggleBtn.classList.remove('fa-list', 'fa-th');
 
     if (mode === 'list') {
-        pageContent?.classList.add('list');
-        viewToggleBtn.classList.remove('fa-th');
-        viewToggleBtn.classList.add('fa-list');
+        // List view settings
+        pageContent.classList.add('list');
+        viewToggleBtn.classList.add('fa-th'); // Show grid icon to switch TO grid
         if (gamePane) {
             gamePane.style.display = 'flex';
         }
+        if (selectedContainer) {
+            updateGamePane(selectedContainer);
+        }
     } else {
-        viewToggleBtn.classList.remove('fa-list');
-        viewToggleBtn.classList.add('fa-th');
-        pageContent?.classList.remove('list');
+        // Grid view settings
+        viewToggleBtn.classList.add('fa-list'); // Show list icon to switch TO list
         if (gamePane) {
             gamePane.style.display = 'none';
-        }
-    }
-
-    if (selectedContainer) {
-        if (mode === 'list') {
-            updateGamePane(selectedContainer);
         }
     }
 }

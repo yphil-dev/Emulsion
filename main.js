@@ -221,10 +221,11 @@ function loadPreferences() {
                             typeof platformPreferences !== 'object' ||
                                 platformPreferences === null ||
                                 typeof platformPreferences.isEnabled !== 'boolean' ||
-                                typeof platformPreferences.display !== 'string' ||
+                                typeof platformPreferences.viewMode !== 'string' ||
                                 typeof platformPreferences.gamesDir !== 'string' ||
                                 typeof platformPreferences.emulator !== 'string' ||
-                                typeof platformPreferences.emulatorArgs !== 'string'
+                                typeof platformPreferences.emulatorArgs !== 'string' ||
+                                !Array.isArray(platformPreferences.extensions)
                         ) {
                             console.error(`Invalid preferences for platform: ${platform}`);
                             return { error: 'INVALID_JSON', message: 'The preferences file contains invalid JSON. It will now be reset.' };
@@ -498,7 +499,7 @@ PLATFORMS.forEach((platform, index) => {
     defaultPreferences[platform.name] = {
         isEnabled: false,
         gamesDir: "",
-        display: "grid",
+        viewMode: "grid",
         emulator: "",
         emulatorArgs: "",
         extensions: platform.extensions

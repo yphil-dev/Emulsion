@@ -358,8 +358,17 @@ export function initGallery(platformNameOrIndex) {
         e.deltaY > 0 ? GalleryState.goToNextPage() : GalleryState.goToPrevPage();
     });
 
-    document.getElementById('view-toggle-btn').addEventListener('click', function() {
+    document.getElementById('view-mode-toggle-button').addEventListener('click', function() {
         setGalleryView(this.classList.contains('fa-th') ? 'grid' : 'list');
+    });
+
+    document.getElementById('config-platform-button').addEventListener('click', function() {
+        openPlatformMenu(LB.currentPlatform);
+    });
+
+    document.getElementById('platform-covers-button').addEventListener('click', function() {
+
+
     });
 
     updateGallery();
@@ -396,11 +405,15 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         GalleryState.selectedIndex = isListMode ? Math.min(GalleryState.selectedIndex + 1, containers.length - 1) : _moveRows(GalleryState.selectedIndex, 1);
         break;
     case 'Enter':
-        const sel = containers[GalleryState.selectedIndex];
-        if (!sel.classList.contains('empty-platform-game-container')) launchGame(sel);
+        const selectedContainer = containers[GalleryState.selectedIndex];
+        if (activePage.dataset.platform === 'settings') {
+            openPlatformMenu(selectedContainer.dataset.platform);
+        } else {
+            if (!selectedContainer.classList.contains('empty-platform-game-container')) launchGame(selectedContainer);
+        }
         break;
     case 'Escape':
-        initSlideShow(document.querySelector('.page.active').dataset.platform);
+        initSlideShow(activePage.dataset.platform);
         break;
     }
 
@@ -576,7 +589,7 @@ function showQuitConfirmationDialog() {
 
 export function setGalleryView(mode = 'grid') {
 
-    const viewToggleBtn = document.getElementById('view-toggle-btn');
+    const viewToggleBtn = document.getElementById('view-mode-toggle-button');
     const page = document.querySelector('.page.active');
     if (!page) return;
 

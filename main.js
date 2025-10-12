@@ -192,60 +192,51 @@ function loadRecents() {
 
 function loadPreferences() {
     try {
-        if (fs.existsSync(preferencesFilePath)) {
-            const preferencesFileContent = fs.readFileSync(preferencesFilePath, 'utf8');
-
-            try {
-                const preferences = JSON.parse(preferencesFileContent);;
-
-                for (const [platform, platformPreferences] of Object.entries(preferences)) {
-
-                    if (platform === 'settings') {
-
-                        if (
-                            typeof platformPreferences !== 'object' ||
-                                platformPreferences === null ||
-                                typeof platformPreferences.numberOfColumns !== 'number' ||
-                                typeof platformPreferences.footerSize !== 'string' ||
-                                typeof platformPreferences.homeMenuTheme !== 'string' ||
-                                typeof platformPreferences.disabledPlatformsPolicy !== 'string' ||
-                                typeof platformPreferences.steamGridAPIKey !== 'string'
-                        ) {
-                            console.error(`Invalid preferences`);
-                            return { error: 'INVALID_JSON', message: 'The preferences file contains invalid JSON. It will now be reset.' };
-                        }
-
-                    } else {
-
-                        if (
-                            typeof platformPreferences !== 'object' ||
-                                platformPreferences === null ||
-                                typeof platformPreferences.isEnabled !== 'boolean' ||
-                                typeof platformPreferences.viewMode !== 'string' ||
-                                typeof platformPreferences.gamesDir !== 'string' ||
-                                typeof platformPreferences.emulator !== 'string' ||
-                                typeof platformPreferences.emulatorArgs !== 'string' ||
-                                !Array.isArray(platformPreferences.extensions)
-                        ) {
-                            console.error(`Invalid preferences for platform: ${platform}`);
-                            return { error: 'INVALID_JSON', message: 'The preferences file contains invalid JSON. It will now be reset.' };
-                        }
-
-                    }
-
-                }
-
-                return preferences;
-            } catch (parseError) {
-                console.error('Invalid JSON in preferences file:', parseError);
-                return { error: 'INVALID_JSON', message: 'The preferences file contains invalid JSON. It will now be reset.' };
-            }
-        } else {
+        if (!fs.existsSync(preferencesFilePath)) {
             return { error: 'FILE_NOT_FOUND', message: 'No preferences file found. Using default preferences.' };
         }
+
+        const preferencesFileContent = fs.readFileSync(preferencesFilePath, 'utf8');
+        const preferences = JSON.parse(preferencesFileContent);
+
+        for (const [platform, platformPreferences] of Object.entries(preferences)) {
+            if (platform === 'settings') {
+                if (
+                    typeof platformPreferences !== 'object' ||
+                    platformPreferences === null ||
+                    typeof platformPreferences.numberOfColumns !== 'number' ||
+                    typeof platformPreferences.footerSize !== 'string' ||
+                    typeof platformPreferences.homeMenuTheme !== 'string' ||
+                    typeof platformPreferences.disabledPlatformsPolicy !== 'string' ||
+                    typeof platformPreferences.steamGridAPIKey !== 'string'
+                ) {
+                    console.error(`Invalid preferences`);
+                    return { error: 'INVALID_JSON', message: 'The preferences file contains invalid JSON. It will now be reset.' };
+                }
+            } else {
+                if (
+                    typeof platformPreferences !== 'object' ||
+                    platformPreferences === null ||
+                    typeof platformPreferences.isEnabled !== 'boolean' ||
+                    typeof platformPreferences.viewMode !== 'string' ||
+                    typeof platformPreferences.gamesDir !== 'string' ||
+                    typeof platformPreferences.emulator !== 'string' ||
+                    typeof platformPreferences.emulatorArgs !== 'string' ||
+                    !Array.isArray(platformPreferences.extensions)
+                ) {
+                    console.error(`Invalid preferences for platform: ${platform}`);
+                    return { error: 'INVALID_JSON', message: 'The preferences file contains invalid JSON. It will now be reset.' };
+                }
+            }
+        }
+
+        return preferences;
     } catch (error) {
         console.error('Error loading preferences:', error);
-        return { error: 'UNKNOWN_ERROR', message: 'An unknown error occurred while loading preferences.' };
+        const message = error instanceof SyntaxError
+            ? 'The preferences file contains invalid JSON. It will now be reset.'
+            : 'An unknown error occurred while loading preferences.';
+        return { error: error instanceof SyntaxError ? 'INVALID_JSON' : 'UNKNOWN_ERROR', message };
     }
 }
 

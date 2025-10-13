@@ -531,7 +531,13 @@ export async function batchDownload() {
         page.dataset.platform === LB.currentPlatform
     );
 
-    console.log("PLATFORMS: ", PLATFORMS);
+    console.log("LB.preferences: ", LB.preferences[LB.currentPlatform]);
+
+    if (!LB.preferences[LB.currentPlatform].gamesDir) {
+        console.log("wopop: ");
+        document.getElementById('games-dir-sub-label').textContent = 'This field cannot be empty';
+    }
+
 
     // if (!gamesDirInput.value) {
     //     gamesDirSubLabel.textContent = 'This field cannot be empty';
@@ -566,9 +572,14 @@ export async function batchDownload() {
 function showBatchConfirmationDialog(gameCount) {
     return new Promise((resolve) => {
         const overlay = document.getElementById('batch-confirmation-overlay');
-        const countSpan = document.getElementById('batch-image-count');
 
-        countSpan.textContent = gameCount;
+        const dialogTitle = document.getElementById('batch-dialog-title');
+        const dialogText = document.getElementById('batch-dialog-text');
+
+        dialogTitle.textContent = 'Batch Download';
+
+
+        dialogText.textContent = `Found ${gameCount} missing ${getPlatformByName(LB.currentPlatform).displayName} game cover images`;
 
         overlay.style.display = 'flex';
         document.getElementById('batch-cancel-button').focus();

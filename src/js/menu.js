@@ -9,7 +9,6 @@ import { getSelectedGameContainer,
          simulateKeyDown,
          batchDownload,
          simulateTabNavigation,
-         setKeydown,
          setFooterSize,
          toggleFullScreen,
          toggleHeaderNavLinks } from './utils.js';
@@ -936,7 +935,6 @@ export function openPlatformMenu(platformName, context) {
     menu.style.display = 'flex';
     menu.style.height = '100vh';
 
-    // setKeydown(onSettingsAndPlatformMenuKeyDown);
     updateHeader(platformName);
     toggleHeaderNavLinks('hide');
 }
@@ -959,7 +957,6 @@ async function closeSettingsOrPlatformMenu() {
     menu.innerHTML = '';
     menu.style.height = '0';
 
-    // setKeydown('previous');
 }
 
 export async function openGameMenu(gameContainer) {
@@ -991,8 +988,6 @@ export async function openGameMenu(gameContainer) {
     const currentGameImgContainer = buildCurrentGameImgContainer(gameName, gameImage, platformName);
     menuContainer.appendChild(currentGameImgContainer);
     await populateGameMenu(currentGameImgContainer, gameName, platformName);
-
-    // setKeydown(gameMenuKeyDown);
 
     menuContainer.addEventListener('wheel', onGameMenuWheel);
     menuContainer.addEventListener('click', onGameMenuClick);
@@ -1207,5 +1202,4 @@ async function closeGameMenu(imgSrc) {
 
     menuContainer.removeEventListener('wheel', onGameMenuWheel);
     menuContainer.removeEventListener('click', onGameMenuClick);
-    // setKeydown('previous');
 }

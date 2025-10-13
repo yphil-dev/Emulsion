@@ -3,7 +3,7 @@ import { openPlatformMenu, openGameMenu } from './menu.js';
 import { getSelectedGameContainer,
          updateFooterControls,
          updateHeader,
-         setKeydown,
+         batchDownload,
          simulateKeyDown,
          toggleFullScreen,
          toggleHeaderNavLinks } from './utils.js';
@@ -372,7 +372,7 @@ export function initGallery(platformNameOrIndex) {
     });
 
     document.getElementById('platform-covers-button').addEventListener('click', function() {
-        window.batchDownload();
+        batchDownload();
     });
 
     updateGallery();

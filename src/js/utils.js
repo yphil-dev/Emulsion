@@ -512,7 +512,7 @@ export async function executeBatchDownload(games, platformName) {
 }
 
 
-async function downloadImage(imgSrc, platform, gameName) {
+export async function downloadImage(imgSrc, platform, gameName) {
     const gamesDir = window.LB.preferences[platform]?.gamesDir;
     if (!gamesDir) {
         console.error('No games directory found for platform:', platform);

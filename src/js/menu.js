@@ -6,6 +6,7 @@ import { getSelectedGameContainer,
          updateHeader,
          cleanFileName,
          applyTheme,
+         downloadImage,
          simulateKeyDown,
          batchDownload,
          simulateTabNavigation,
@@ -48,7 +49,9 @@ window.onMenuKeyDown = function onMenuKeyDown(event) {
 
 }
 
-function gameMenuKeyDown(event) {
+window.onGameMenuKeyDown = function onGameMenuKeyDown(event) {
+
+    console.log("event: ", event);
 
     event.stopPropagation();
     event.stopImmediatePropagation();
@@ -100,6 +103,7 @@ function gameMenuKeyDown(event) {
         const selectedGameContainer = getSelectedGameContainer(menuGameContainers, menuState.selectedIndex);
         const selectedImg = selectedGameContainer.querySelector('.game-image');
         closeGameMenu(selectedImg.src);
+        initGallery(LB.currentPlatform);
         break;
 
     case 'F5':
@@ -115,6 +119,7 @@ function gameMenuKeyDown(event) {
         break;
     case 'Escape':
         closeGameMenu();
+        initGallery(LB.currentPlatform);
         break;
     }
 
@@ -122,10 +127,12 @@ function gameMenuKeyDown(event) {
         container.classList.toggle('selected', index === menuState.selectedIndex);
     });
 
-    getSelectedGameContainer(menuGameContainers, menuState.selectedIndex).scrollIntoView({
-        behavior: "smooth",
-        block: "center"
-    });
+    if (event.key.startsWith('Arrow')) {
+        getSelectedGameContainer(menuGameContainers, menuState.selectedIndex).scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+    }
 
 }
 
@@ -963,6 +970,10 @@ async function closeSettingsOrPlatformMenu() {
 }
 
 export async function openGameMenu(gameContainer) {
+
+    console.log("gameContainer: ", gameContainer);
+
+    LB.mode = 'gameMenu';
 
     const menu = document.getElementById('menu');
     const menuContainer = document.getElementById('menu');

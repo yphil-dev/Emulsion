@@ -333,7 +333,6 @@ export function initGallery(platformNameOrIndex) {
                 initCurrentGallery(page);
                 LB.currentPlatform = page.dataset.platform;
                 page.classList.add('active');
-                console.log("page.dataset.empty: ", page.dataset.empty);
                 if (!page.dataset.empty) {
                     console.log("page.dataset.viewMode: ", page.dataset.viewMode);
                     setGalleryViewMode(page.dataset.viewMode);
@@ -457,14 +456,18 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         }
     }
 
-    console.log("isEmptyPage: ", isEmptyPage);
+    if (event.key === 'i') {
+        openGameMenu(selectedContainer);
+    }
 
     containers.forEach((container, index) => container.classList.toggle('selected', index === GalleryState.selectedIndex));
 
     if (!isEmptyPage) {
 
         if (isListMode && event.key.startsWith('Arrow')) {
-            updateGamePane(selectedContainer);
+            if (!event.shiftKey) {
+                updateGamePane(selectedContainer);
+            }
         }
 
         containers[GalleryState.selectedIndex].scrollIntoView({

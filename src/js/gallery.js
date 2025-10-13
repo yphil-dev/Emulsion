@@ -192,7 +192,6 @@ export async function buildGallery(params) {
         let gameFilePath = originalGameFilePath;
         let fileName = path.basename(gameFilePath);
         let fileNameWithoutExt = stripExtensions(fileName, extensions);
-        console.log("fileNameWithoutExt, platform: ", fileNameWithoutExt, platform);
         let displayName = cleanFileName(fileNameWithoutExt);
 
         // PS3 special handling

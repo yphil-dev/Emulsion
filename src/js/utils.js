@@ -366,6 +366,10 @@ export function updateHeader(platformName, gameName) {
         count = 0;
     }
 
+    if (count === 0) {
+        count = 'No';
+    }
+
     const pluralize = (count, singular, plural = `${singular}s`) =>
           count === 1 ? singular : plural;
 

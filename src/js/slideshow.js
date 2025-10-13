@@ -333,15 +333,16 @@ export function initGallery(platformNameOrIndex) {
                 initCurrentGallery(page);
                 LB.currentPlatform = page.dataset.platform;
                 page.classList.add('active');
-                setGalleryViewMode(page.dataset.viewMode);
+                console.log("page.dataset.empty: ", page.dataset.empty);
+                if (!page.dataset.empty) {
+                    console.log("page.dataset.viewMode: ", page.dataset.viewMode);
+                    setGalleryViewMode(page.dataset.viewMode);
+                }
                 updateHeaderControls(page);
             } else if (idx === activePos - 1) page.classList.add('prev');
             else if (idx === activePos + 1) page.classList.add('next');
             else page.classList.add('adjacent');
-
-
         });
-
     }
 
     function updateHeaderControls(page) {
@@ -446,6 +447,7 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
     }
 
     const selectedContainer = containers[GalleryState.selectedIndex];
+    const isEmptyPage = activePage.dataset.empty === 'true';
 
     if (event.key === 'Enter') {
         if (activePage.dataset.platform === 'settings') {
@@ -455,15 +457,22 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         }
     }
 
-    if (isListMode && event.key.startsWith('Arrow')) {
-        updateGamePane(selectedContainer);
-    }
+    console.log("isEmptyPage: ", isEmptyPage);
 
     containers.forEach((container, index) => container.classList.toggle('selected', index === GalleryState.selectedIndex));
-    containers[GalleryState.selectedIndex].scrollIntoView({
-        behavior: isListMode ? 'instant' : 'smooth',
-        block: isListMode ? 'end' : 'center'
-    });
+
+    if (!isEmptyPage) {
+
+        if (isListMode && event.key.startsWith('Arrow')) {
+            updateGamePane(selectedContainer);
+        }
+
+        containers[GalleryState.selectedIndex].scrollIntoView({
+            behavior: isListMode ? 'instant' : 'smooth',
+            block: isListMode ? 'end' : 'center'
+        });
+    }
+
 }
 
 export function initGamepad () {
@@ -654,7 +663,10 @@ export async function setGalleryViewMode(viewMode = 'grid', save) {
             gamePane.style.display = 'flex';
         }
         if (selectedContainer) {
-            updateGamePane(selectedContainer);
+            const isEmptyPage = page.dataset.empty === 'true';
+            if (!isEmptyPage) {
+                updateGamePane(selectedContainer);
+            }
         }
     } else {
         viewToggleBtn.classList.add('fa-list');

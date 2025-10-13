@@ -7,6 +7,7 @@ import { getSelectedGameContainer,
          simulateKeyDown,
          toggleFullScreen,
          toggleHeaderNavLinks } from './utils.js';
+import { updatePreference } from './preferences.js';
 
 const main = document.querySelector('main');
 const slideshow = document.getElementById("slideshow");
@@ -301,7 +302,7 @@ export function initGallery(platformNameOrIndex) {
         if (!page.dataset.listenersAttached) {
             GalleryState.gameContainers.forEach(container => {
                 container.addEventListener('click', () => {
-                    if (container.classList.contains('settings')) openPlatformMenu(container.dataset.platform);
+                    if (container.classList.contains('settings')) openPlatformMenu(container.dataset.platform, 'settings');
                     else if (!container.classList.contains('empty-platform-game-container')) launchGame(container);
 
                     GalleryState.gameContainers.forEach(c => c.classList.remove('selected'));
@@ -332,7 +333,7 @@ export function initGallery(platformNameOrIndex) {
                 initCurrentGallery(page);
                 LB.currentPlatform = page.dataset.platform;
                 page.classList.add('active');
-                setGalleryView(page.dataset.viewMode);
+                setGalleryViewMode(page.dataset.viewMode);
             } else if (idx === activePos - 1) page.classList.add('prev');
             else if (idx === activePos + 1) page.classList.add('next');
             else page.classList.add('adjacent');
@@ -364,11 +365,11 @@ export function initGallery(platformNameOrIndex) {
     });
 
     document.getElementById('view-mode-toggle-button').addEventListener('click', function() {
-        setGalleryView(this.classList.contains('fa-th') ? 'grid' : 'list');
+        setGalleryViewMode(this.classList.contains('fa-th') ? 'grid' : 'list', true);
     });
 
     document.getElementById('config-platform-button').addEventListener('click', function() {
-        openPlatformMenu(LB.currentPlatform);
+        openPlatformMenu(LB.currentPlatform, 'gallery');
     });
 
     document.getElementById('platform-covers-button').addEventListener('click', function() {
@@ -391,6 +392,10 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
     };
 
     const selectedContainer = containers[GalleryState.selectedIndex];
+
+    if (getComputedStyle(document.getElementById('batch-confirmation-overlay')).display !== 'none') {
+        return;
+    }
 
     switch (event.key) {
     case 'ArrowLeft':
@@ -417,7 +422,7 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         break;
     case 'Enter':
         if (activePage.dataset.platform === 'settings') {
-            openPlatformMenu(selectedContainer.dataset.platform);
+            openPlatformMenu(selectedContainer.dataset.platform, 'slideshow');
         } else {
             if (!selectedContainer.classList.contains('empty-platform-game-container')) launchGame(selectedContainer);
         }
@@ -597,24 +602,25 @@ function showQuitConfirmationDialog() {
     openDialog();
 }
 
-export function setGalleryView(mode = 'grid') {
+export async function setGalleryViewMode(viewMode = 'grid', save) {
 
     const viewToggleBtn = document.getElementById('view-mode-toggle-button');
     const page = document.querySelector('.page.active');
-    if (!page) return;
-
     const pageContent = page.querySelector('.page-content');
     const gamePane = page.querySelector('.game-pane');
     const selectedContainer = pageContent.querySelector('.game-container.selected') || pageContent.querySelector('.game-container');
 
-    // Clear all view classes
+    page.dataset.viewMode = viewMode;
     pageContent.classList.remove('list');
     viewToggleBtn.classList.remove('fa-list', 'fa-th');
 
-    if (mode === 'list') {
-        // List view settings
+    if (save) {
+        await updatePreference(LB.currentPlatform, 'viewMode', viewMode);
+    }
+
+    if (viewMode === 'list') {
         pageContent.classList.add('list');
-        viewToggleBtn.classList.add('fa-th'); // Show grid icon to switch TO grid
+        viewToggleBtn.classList.add('fa-th');
         if (gamePane) {
             gamePane.style.display = 'flex';
         }
@@ -622,8 +628,7 @@ export function setGalleryView(mode = 'grid') {
             updateGamePane(selectedContainer);
         }
     } else {
-        // Grid view settings
-        viewToggleBtn.classList.add('fa-list'); // Show list icon to switch TO list
+        viewToggleBtn.classList.add('fa-list');
         if (gamePane) {
             gamePane.style.display = 'none';
         }

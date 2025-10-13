@@ -949,10 +949,13 @@ async function closeSettingsOrPlatformMenu() {
     console.log("menuContainer.dataset.menuContext: ", menu.dataset.menuContext);
 
     if (menu.dataset.menuContext === 'slideshow') {
-        initSlideShow(menu.dataset.menuPlatform);
+        initSlideShow(LB.currentPlatform);
+    } else if (menu.dataset.menuContext === 'gallery') {
+        initGallery(LB.currentPlatform);
     } else {
         initGallery('settings');
     }
+
 
     menu.innerHTML = '';
     menu.style.height = '0';

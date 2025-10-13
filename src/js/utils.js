@@ -573,13 +573,23 @@ function showBatchConfirmationDialog(gameCount) {
     return new Promise((resolve) => {
         const overlay = document.getElementById('batch-confirmation-overlay');
 
+        overlay.dataset.status = 'open';
+
         const dialogTitle = document.getElementById('batch-dialog-title');
         const dialogText = document.getElementById('batch-dialog-text');
 
+        const okButton = document.getElementById('batch-ok-button');
+        const cancelButton = document.getElementById('batch-cancel-button');
+
         dialogTitle.textContent = 'Batch Download';
 
-
         dialogText.textContent = `Found ${gameCount} missing ${getPlatformByName(LB.currentPlatform).displayName} game cover images`;
+
+        if (!gameCount) {
+            dialogText.textContent = `Found no missing ${getPlatformByName(LB.currentPlatform).displayName} game cover images`;
+            okButton.style.display = 'none';
+            cancelButton.textContent = 'Close';
+        }
 
         overlay.style.display = 'flex';
         document.getElementById('batch-cancel-button').focus();
@@ -603,8 +613,8 @@ function showBatchConfirmationDialog(gameCount) {
             document.removeEventListener('keydown', onKeyDown);
         };
 
-        document.getElementById('batch-ok-button').onclick = onOk;
-        document.getElementById('batch-cancel-button').onclick = onCancel;
+        okButton.onclick = onOk;
+        cancelButton.onclick = onCancel;
         document.addEventListener('keydown', onKeyDown);
         overlay.onclick = (e) => { if (e.target === overlay) onCancel(); };
     });

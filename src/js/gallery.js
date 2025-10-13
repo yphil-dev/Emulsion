@@ -128,10 +128,6 @@ export async function buildGallery(params) {
     pageContent.style.gridTemplateColumns = `repeat(${LB.galleryNumOfCols}, 1fr)`;
 
     if (!isEnabled) {
-        const emptyContainer = document.createElement('div');
-        emptyContainer.classList.add('game-container');
-        emptyContainer.dataset.platform = platform;
-        pageContent.appendChild(emptyContainer);
         page.dataset.status = 'disabled';
         page.appendChild(pageContent);
         return page;

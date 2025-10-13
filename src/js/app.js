@@ -23,6 +23,38 @@ const LB = {
 // Make LB globally available for backward compatibility
 window.LB = LB;
 
+
+let mouseBlankerTimer = null;
+let lastInputWasMouse = false;
+const MOUSE_TIMEOUT = 3000;
+
+function handleMouseInput() {
+    lastInputWasMouse = true;
+    showCursor();
+    resetMouseTimer();
+}
+
+function handleNonMouseInput() {
+    lastInputWasMouse = false;
+    hideCursor(); // Immediately hide on non-mouse input
+    resetMouseTimer();
+}
+
+function resetMouseTimer() {
+    if (mouseBlankerTimer) clearTimeout(mouseBlankerTimer);
+    mouseBlankerTimer = setTimeout(hideCursor, MOUSE_TIMEOUT);
+}
+
+function showCursor() {
+    document.body.style.cursor = 'default';
+    document.body.classList.remove('no-hover');
+}
+
+function hideCursor() {
+    document.body.style.cursor = 'none';
+    document.body.classList.add('no-hover');
+}
+
 // Initialize app data on load
 async function initializeApp() {
     try {
@@ -37,6 +69,15 @@ async function initializeApp() {
         LB.preferences = appData.preferences;
         LB.galleryNumOfCols = appData.preferences.settings.numberOfColumns;
         LB.homeMenuTheme = appData.preferences.settings.homeMenuTheme;
+
+        // Start listening
+        document.addEventListener('mousemove', handleMouseInput);
+        document.addEventListener('mousedown', handleMouseInput);
+        document.addEventListener('wheel', handleMouseInput);
+        document.addEventListener('keydown', handleNonMouseInput);
+
+        hideCursor();
+        resetMouseTimer();
 
         document.addEventListener('keydown', (event) => {
             if (LB.mode === 'gallery' && window.onGalleryKeyDown) {

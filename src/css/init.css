@@ -128,6 +128,10 @@ body {
   /* perspective: 600px; */
 }
 
+.no-hover * {
+  pointer-events: none !important;
+}
+
 a:link {
   color: red;
 }

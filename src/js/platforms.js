@@ -1,8 +1,8 @@
 // SINGLE SOURCE OF TRUTH - Platforms definition
 // This is the only place where platforms are defined!
 export const PLATFORMS = [
-    { nbGames: 0, display: "grid", displayName: "2600 - 5800", vendor: "Atari", name: "atari", extensions: [".zip"] },
-    { nbGames: 0, display: "grid", displayName: "GX4000 - CPC - PS204", vendor: "Amstrad", name: "amstrad", extensions: [".zip"] },
+    { nbGames: 0, display: "grid", displayName: "2600+", vendor: "Atari", name: "atari", extensions: [".zip"] },
+    { nbGames: 0, display: "grid", displayName: "GX4000 / CPC", vendor: "Amstrad", name: "amstrad", extensions: [".zip"] },
     { nbGames: 0, display: "grid", displayName: "ZX Spectrum", vendor: "Sinclair", name: "spectrum", extensions: [".zip"] },
     { nbGames: 0, display: "grid", displayName: "C-64", vendor: "Commodore", name: "c64", extensions: [".zip"] },
     { nbGames: 0, display: "grid", displayName: "NES", vendor: "Nintendo", name: "nes", extensions: [".zip"] },

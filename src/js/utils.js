@@ -146,13 +146,23 @@ export function safeFileName(fileName) {
         .replace(/^\s+|\s+$/g, '') || 'default_filename'; // Prevent empty names
 }
 
-export function stripExtensions(fileName) {
+export function stripExtensions(fileName, platformExtensions = []) {
     if (!fileName || typeof fileName !== 'string') return fileName;
+    if (!platformExtensions || platformExtensions.length === 0) {
 
-    const lastDot = fileName.lastIndexOf('.');
-    if (lastDot <= 0) return fileName; // no dot or starts with a dot
+        const lastDot = fileName.lastIndexOf('.');
+        return lastDot > 0 ? fileName.substring(0, lastDot) : fileName;
+    }
 
-    return fileName.substring(0, lastDot);
+    const sortedExtensions = [...platformExtensions].sort((a, b) => b.length - a.length);
+
+    for (const ext of sortedExtensions) {
+        if (fileName.toLowerCase().endsWith(ext.toLowerCase())) {
+            return fileName.substring(0, fileName.length - ext.length);
+        }
+    }
+
+    return fileName;
 }
 
 // Uppercase ALPHANUMER1C

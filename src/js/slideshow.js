@@ -380,6 +380,18 @@ export function initGallery(platformNameOrIndex) {
         }
     });
 
+    document.getElementById('prev-link').addEventListener('click', function() {
+        GalleryState.goToPrevPage();
+    });
+
+    document.getElementById('next-link').addEventListener('click', function() {
+        GalleryState.goToNextPage();
+    });
+
+    document.getElementById('view-mode-toggle-button').addEventListener('click', function() {
+        setGalleryViewMode(this.classList.contains('fa-th') ? 'grid' : 'list', true);
+    });
+
     document.getElementById('view-mode-toggle-button').addEventListener('click', function() {
         setGalleryViewMode(this.classList.contains('fa-th') ? 'grid' : 'list', true);
     });

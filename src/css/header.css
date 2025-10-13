@@ -32,21 +32,34 @@ header {
   padding: 0 20px;
   gap: 2px;
 }
-
-.platform-image {
+header .platform-image {
   flex: 1;
-  height: 100px;
+  height: 120px;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center right;
   opacity: 0.85;
   border-radius: 8px;
+  filter: drop-shadow(0 0 1px var(--color-platform-text-header))
+          drop-shadow(0 0 2px var(--color-platform-text-header));
+  animation: subtle-pulse 12s ease-in-out infinite;
 }
 
-/* Left info stays on left, can grow but doesn't push the others */
+@keyframes subtle-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 1px #FFF)
+            drop-shadow(0 0 2px #FFF);
+  }
+  50% {
+    filter: drop-shadow(0 0 1px var(--color-platform-text-header))
+            drop-shadow(0 0 3px var(--color-platform-text-header))
+            drop-shadow(0 0 6px var(--color-platform-text-header));
+  }
+}
+
 .left-info {
   flex: 4;
-  min-width: 0; /* prevent flex overflow */
+  min-width: 0;
   overflow: hidden;
 }
 
@@ -96,13 +109,16 @@ header {
     position: absolute;
     top: 0;
     left: 48px;
-    background: #ff4444;
-    color: white;
-    font-size: 12pt;
+
     padding: 0 6px;
-    border-radius: 6px;
     font-weight: bold;
     white-space: nowrap;
     z-index: 10;
+
+    color: white;
+    font-size: 12pt;
+
+    border: 1px  solid var(--color-border-header);
+    border-radius: 6px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }

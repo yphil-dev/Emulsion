@@ -338,7 +338,7 @@ div.menu-game-container:hover {
   /* border-color: var(--color-outline-selected); */
 
   /* border-bottom: var(--color-outline-selected);; */
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 75, 0.5);
 }
 
 .game-label {

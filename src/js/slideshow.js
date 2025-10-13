@@ -419,8 +419,6 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         return Math.min(Math.max((row + rows) * LB.galleryNumOfCols + col, 0), containers.length - 1);
     };
 
-    const selectedContainer = containers[GalleryState.selectedIndex];
-
     if (getComputedStyle(document.getElementById('batch-confirmation-overlay')).display !== 'none') {
         return;
     }
@@ -438,31 +436,89 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         break;
     case 'ArrowUp':
         GalleryState.selectedIndex = isListMode ? Math.max(GalleryState.selectedIndex - 1, 0) : _moveRows(GalleryState.selectedIndex, -1);
-        if (isListMode) {
-            updateGamePane(selectedContainer);
-        }
         break;
     case 'ArrowDown':
         GalleryState.selectedIndex = isListMode ? Math.min(GalleryState.selectedIndex + 1, containers.length - 1) : _moveRows(GalleryState.selectedIndex, 1);
-        if (isListMode) {
-            updateGamePane(selectedContainer);
-        }
-        break;
-    case 'Enter':
-        if (activePage.dataset.platform === 'settings') {
-            openPlatformMenu(selectedContainer.dataset.platform, 'slideshow');
-        } else {
-            if (!selectedContainer.classList.contains('empty-platform-game-container')) launchGame(selectedContainer);
-        }
         break;
     case 'Escape':
         initSlideShow(activePage.dataset.platform);
         break;
     }
 
+    const selectedContainer = containers[GalleryState.selectedIndex];
+
+    if (event.key === 'Enter') {
+        if (activePage.dataset.platform === 'settings') {
+            openPlatformMenu(selectedContainer.dataset.platform, 'slideshow');
+        } else {
+            if (!selectedContainer.classList.contains('empty-platform-game-container')) launchGame(selectedContainer);
+        }
+    }
+
+    if (isListMode && event.key.startsWith('Arrow')) {
+        updateGamePane(selectedContainer);
+    }
+
     containers.forEach((c, i) => c.classList.toggle('selected', i === GalleryState.selectedIndex));
     containers[GalleryState.selectedIndex]?.scrollIntoView({ behavior: 'smooth', block: isListMode ? 'end' : 'center' });
 }
+
+// window.onGalleryKeyDown = function onGalleryKeyDown(event) {
+//     const containers = GalleryState.gameContainers;
+
+//     const activePage = document.querySelector('.page.active');
+//     const isListMode = activePage.querySelector('.page-content').classList.contains('list');
+
+//     const _moveRows = (idx, rows) => {
+//         const col = idx % LB.galleryNumOfCols;
+//         const row = Math.floor(idx / LB.galleryNumOfCols);
+//         return Math.min(Math.max((row + rows) * LB.galleryNumOfCols + col, 0), containers.length - 1);
+//     };
+
+//     const selectedContainer = containers[GalleryState.selectedIndex];
+
+//     if (getComputedStyle(document.getElementById('batch-confirmation-overlay')).display !== 'none') {
+//         return;
+//     }
+
+//     switch (event.key) {
+//     case 'ArrowLeft':
+//         GalleryState.selectedIndex = event.shiftKey
+//             ? GalleryState.goToPrevPage() || GalleryState.selectedIndex
+//             : isListMode ? Math.max(GalleryState.selectedIndex - 1, 0) : (GalleryState.selectedIndex - 1 + containers.length) % containers.length;
+//         break;
+//     case 'ArrowRight':
+//         GalleryState.selectedIndex = event.shiftKey
+//             ? GalleryState.goToNextPage() || GalleryState.selectedIndex
+//             : isListMode ? Math.min(GalleryState.selectedIndex + 1, containers.length - 1) : (GalleryState.selectedIndex + 1) % containers.length;
+//         break;
+//     case 'ArrowUp':
+//         GalleryState.selectedIndex = isListMode ? Math.max(GalleryState.selectedIndex - 1, 0) : _moveRows(GalleryState.selectedIndex, -1);
+//         if (isListMode) {
+//             updateGamePane(selectedContainer);
+//         }
+//         break;
+//     case 'ArrowDown':
+//         GalleryState.selectedIndex = isListMode ? Math.min(GalleryState.selectedIndex + 1, containers.length - 1) : _moveRows(GalleryState.selectedIndex, 1);
+//         if (isListMode) {
+//             updateGamePane(selectedContainer);
+//         }
+//         break;
+//     case 'Enter':
+//         if (activePage.dataset.platform === 'settings') {
+//             openPlatformMenu(selectedContainer.dataset.platform, 'slideshow');
+//         } else {
+//             if (!selectedContainer.classList.contains('empty-platform-game-container')) launchGame(selectedContainer);
+//         }
+//         break;
+//     case 'Escape':
+//         initSlideShow(activePage.dataset.platform);
+//         break;
+//     }
+
+//     containers.forEach((c, i) => c.classList.toggle('selected', i === GalleryState.selectedIndex));
+//     containers[GalleryState.selectedIndex]?.scrollIntoView({ behavior: 'smooth', block: isListMode ? 'end' : 'center' });
+// }
 
 
 export function initGamepad () {

@@ -59,6 +59,9 @@ header .platform-image {
 
 .left-info {
   flex: 4;
+
+  display: flex;
+
   min-width: 0;
   overflow: hidden;
 }

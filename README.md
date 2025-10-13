@@ -14,7 +14,7 @@
 
 [Website](https://yphil.gitlab.io/emulsion) • [Download](https://github.com/yPhil-gh/emulsion/releases/latest) • [Documentation](#configuration) • [Community](https://gitlab.com/yphil/emulsion/-/issues)
 
-![Emulsion Hero](https://yphil.gitlab.io/images/emulsion-screenshot00.png?cache=xyz)
+![Emulsion Hero](https://yphil.gitlab.io/images/emulsion-screenshot_01.png?cache=xyz)
 
 </div>
 

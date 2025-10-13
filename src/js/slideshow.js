@@ -643,7 +643,7 @@ function showQuitConfirmationDialog() {
     openDialog();
 }
 
-export async function setGalleryViewMode(viewMode = 'grid', save) {
+export async function setGalleryViewMode(viewMode, save) {
 
     const viewToggleBtn = document.getElementById('view-mode-toggle-button');
     const page = document.querySelector('.page.active');
@@ -672,6 +672,8 @@ export async function setGalleryViewMode(viewMode = 'grid', save) {
             }
         }
     } else {
+        pageContent.classList.remove('list');
+        pageContent.classList.add('grid');
         viewToggleBtn.classList.add('fa-list');
         if (gamePane) {
             gamePane.style.display = 'none';

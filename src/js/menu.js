@@ -1087,9 +1087,9 @@ async function populateGameMenu(gameMenuContainer, gameName, platformName) {
     });
 }
 
-function createManualSelectButton(gameName, platformName, imgElem) {
+function buildManualSelectButton(gameName, platformName, imgElem) {
     const btn = document.createElement('button');
-    btn.classList.add('button-wide');
+    btn.classList.add('button', 'button-wide');
     btn.title = 'Select image';
     btn.innerHTML = '<i class="fa fa-plus" aria-hidden="true"></i>';
 
@@ -1139,7 +1139,7 @@ function buildCurrentGameImgContainer(gameName, image, platformName) {
     gameLabel.classList.add('game-label');
     // gameLabel.textContent = 'Current Image';
 
-    const manualBtn = createManualSelectButton(gameName, platformName, currentImage);
+    const manualBtn = buildManualSelectButton(gameName, platformName, currentImage);
 
     gameLabel.appendChild(manualBtn);
 

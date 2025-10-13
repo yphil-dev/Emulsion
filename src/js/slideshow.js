@@ -15,6 +15,8 @@ const galleries = document.getElementById("galleries");
 export function initSlideShow(platformToDisplay) {
     LB.mode = 'slideshow';
 
+    main.style.top = 0;
+
     galleries.style.display = 'none';
     slideshow.style.display = 'flex';
 
@@ -316,6 +318,7 @@ export function initGallery(platformNameOrIndex) {
         }
 
         updateHeader(page.dataset.platform);
+        setGalleryFooterControls(page.dataset.platform);
     }
 
     function updateGallery() {
@@ -355,7 +358,9 @@ export function initGallery(platformNameOrIndex) {
 
     header.addEventListener('wheel', e => {
         e.preventDefault();
-        e.deltaY > 0 ? GalleryState.goToNextPage() : GalleryState.goToPrevPage();
+        if (LB.mode === 'gallery') {
+            e.deltaY > 0 ? GalleryState.goToNextPage() : GalleryState.goToPrevPage();
+        }
     });
 
     document.getElementById('view-mode-toggle-button').addEventListener('click', function() {
@@ -367,8 +372,7 @@ export function initGallery(platformNameOrIndex) {
     });
 
     document.getElementById('platform-covers-button').addEventListener('click', function() {
-
-
+        window.batchDownload();
     });
 
     updateGallery();
@@ -376,7 +380,6 @@ export function initGallery(platformNameOrIndex) {
 
 window.onGalleryKeyDown = function onGalleryKeyDown(event) {
     const containers = GalleryState.gameContainers;
-    if (!containers.length) return;
 
     const activePage = document.querySelector('.page.active');
     const isListMode = activePage.querySelector('.page-content').classList.contains('list');
@@ -386,6 +389,8 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         const row = Math.floor(idx / LB.galleryNumOfCols);
         return Math.min(Math.max((row + rows) * LB.galleryNumOfCols + col, 0), containers.length - 1);
     };
+
+    const selectedContainer = containers[GalleryState.selectedIndex];
 
     switch (event.key) {
     case 'ArrowLeft':
@@ -400,12 +405,17 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         break;
     case 'ArrowUp':
         GalleryState.selectedIndex = isListMode ? Math.max(GalleryState.selectedIndex - 1, 0) : _moveRows(GalleryState.selectedIndex, -1);
+        if (isListMode) {
+            updateGamePane(selectedContainer);
+        }
         break;
     case 'ArrowDown':
         GalleryState.selectedIndex = isListMode ? Math.min(GalleryState.selectedIndex + 1, containers.length - 1) : _moveRows(GalleryState.selectedIndex, 1);
+        if (isListMode) {
+            updateGamePane(selectedContainer);
+        }
         break;
     case 'Enter':
-        const selectedContainer = containers[GalleryState.selectedIndex];
         if (activePage.dataset.platform === 'settings') {
             openPlatformMenu(selectedContainer.dataset.platform);
         } else {

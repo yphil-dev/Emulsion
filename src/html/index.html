@@ -11,7 +11,7 @@
         <link rel="stylesheet" href="../css/gallery.css">
         <link rel="stylesheet" href="../css/footer.css">
     </head>
-    <body>
+    <body class="themed-background">
 
         <div id="splash" tabindex="0">
             <div class="slide-content">
@@ -30,7 +30,7 @@
                 <div class="left-info">
                     <div class="platform-name-container">
                         <span class="platform-name"></span>
-                        <span class="vendor-name"></span>
+                        <span class="vendor-name themed-background"></span>
                     </div>
                     <span class="platform-stats">
                         <span class="item-number"></span>
@@ -46,7 +46,7 @@
                 <i class="fa fa-2x fa-chevron-right hover next-link" aria-hidden="true"></i>
             </div>
 
-            <div class="controls">
+            <div id="header-controls" class="controls themed-background">
                 <i id="config-platform-button" class="fa fa-cog hover"></i>
                 <i id="platform-covers-button" class="fa fa-image hover"></i>
                 <i id="view-mode-toggle-button" class="fa fa-list hover"></i>
@@ -61,7 +61,7 @@
             <div id="galleries" tabindex="-1"></div>
         </main>
 
-        <div id="menu"></div>
+        <div id="menu" class="themed-background"></div>
 
         <footer id="footer">
             <div id="controls" class="left">
@@ -114,7 +114,7 @@
             </div>
         </div>
 
-<script type="module" src="../js/app.js"></script>
+        <script type="module" src="../js/app.js"></script>
         <script type="module" src="../js/renderer.js"></script>
     </body>
 </html>

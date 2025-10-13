@@ -7,6 +7,7 @@ import { getSelectedGameContainer,
          cleanFileName,
          applyTheme,
          simulateKeyDown,
+         batchDownload,
          simulateTabNavigation,
          setKeydown,
          setFooterSize,
@@ -17,7 +18,7 @@ let menuState = {
     selectedIndex: 1,
 };
 
-function onSettingsAndPlatformMenuKeyDown(event) {
+window.onMenuKeyDown = function onMenuKeyDown(event) {
 
     event.stopPropagation();
     event.stopImmediatePropagation();
@@ -148,32 +149,6 @@ function onGameMenuWheel(event) {
         simulateKeyDown('ArrowUp');
     }
 }
-
-async function downloadImage(imgSrc, platform, gameName) {
-    const gamesDir = window.LB.preferences[platform]?.gamesDir;
-    if (!gamesDir) {
-        console.error('No games directory found for platform:', platform);
-        return null;
-    }
-
-    try {
-        const result = await ipcRenderer.invoke('download-image', imgSrc, platform, gameName, gamesDir);
-        if (result.success) {
-            console.info(`Image saved at ${result.path}`);
-            // notify(`Image saved at ${result.path}`);
-            return result.path;
-        } else {
-            console.error(`Error saving image: ${result.error}`);
-            // notify(`Error saving image: ${result.error}`);
-            return null;
-        }
-    } catch (error) {
-        console.error('Error communicating with main process:', error);
-        alert('Failed to save image');
-        return null;
-    }
-}
-
 
 function buildPrefsFormItem(name, iconName, type, description, shortDescription, value, onChangeFct) {
 
@@ -570,7 +545,7 @@ function buildPlatformMenuForm(platformName) {
     batchButton.classList.add('button', 'button-browse');
     batchButton.textContent = 'Go';
 
-    batchButton.addEventListener('click', batchButtonClick);
+    batchButton.addEventListener('click', batchDownload);
 
     batchCtn.appendChild(batchIcon);
     batchCtn.appendChild(batchInput);
@@ -922,155 +897,6 @@ function buildPlatformMenuForm(platformName) {
         return container;
     }
 
-    function setProgress(current, total) {
-        const fill = document.getElementById('menu-progress-fill');
-        const pie = document.getElementById('footer-progress');
-
-        if (total > 0) {
-            const percent = Math.round((current / total) * 100);
-            if (fill) fill.style.width = `${percent}%`;
-            pie.style.setProperty('--p', percent);
-            pie.textContent = `${percent}%`;
-        }
-
-    }
-
-    async function batchButtonClick() {
-        console.info("Batch download started");
-
-        // Find games with missing images in the current platform
-        const pages = document.querySelectorAll('#galleries .page');
-        const currentPlatformPage = Array.from(pages).find(page =>
-            page.dataset.platform === platformName
-        );
-
-        if (!gamesDirInput.value) {
-            gamesDirSubLabel.textContent = 'This field cannot be empty';
-            return;
-        }
-
-        if (!currentPlatformPage) {
-            console.error("Platform page not found");
-            return;
-        }
-
-        const games = currentPlatformPage.querySelectorAll(".game-container[data-missing-image]");
-        if (!games.length) {
-            console.warn("No games with missing images found");
-            batchSubLabel.textContent = 'No missing images found';
-            return;
-        }
-
-        console.info(`Found ${games.length} games with missing images`);
-
-        // Show confirmation dialog
-        const confirmed = await showBatchConfirmationDialog(games.length);
-        if (!confirmed) {
-            console.info("Batch download cancelled by user");
-            return;
-        }
-
-        // Proceed with batch download
-        await executeBatchDownload(games);
-    }
-
-    function showBatchConfirmationDialog(gameCount) {
-        return new Promise((resolve) => {
-            const overlay = document.getElementById('batch-confirmation-overlay');
-            const countSpan = document.getElementById('batch-image-count');
-
-            countSpan.textContent = gameCount;
-
-            overlay.style.display = 'flex';
-            document.getElementById('batch-cancel-button').focus();
-
-            const onOk = () => {
-                cleanup();
-                resolve(true);
-            };
-
-            const onCancel = () => {
-                cleanup();
-                resolve(false);
-            };
-
-            const onKeyDown = (event) => {
-                if (event.key === 'Escape') onCancel();
-            };
-
-            const cleanup = () => {
-                overlay.style.display = 'none';
-                document.removeEventListener('keydown', onKeyDown);
-            };
-
-            document.getElementById('batch-ok-button').onclick = onOk;
-            document.getElementById('batch-cancel-button').onclick = onCancel;
-            document.addEventListener('keydown', onKeyDown);
-            overlay.onclick = (e) => { if (e.target === overlay) onCancel(); };
-        });
-    }
-
-    async function executeBatchDownload(games) {
-        const pie = document.getElementById("footer-progress");
-        pie.style.opacity = 1;
-
-        function setProgressText(newText, colorCode) {
-            const text = document.getElementById('menu-progress-text');
-            if (text) {
-                text.classList.remove('success', 'error');
-                text.classList.add(colorCode);
-                text.textContent = newText;
-            }
-        }
-
-        for (let i = 0; i < games.length; i++) {
-            setProgress(i + 1, games.length);
-
-            const gameContainer = games[i];
-            const gameName = gameContainer.dataset.gameName;
-
-            setProgressText(`${gameName}`, 'none');
-
-            try {
-                const urls = await new Promise((resolve) => {
-                    ipcRenderer.send('fetch-images', gameName, platformName, LB.steamGridAPIKey, LB.giantBombAPIKey);
-                    ipcRenderer.once('image-urls', (event, urls) => resolve(urls));
-                });
-
-                if (!urls.length) {
-                    setProgressText(`${gameName}`, 'error');
-                    await new Promise(r => setTimeout(r, 100));
-                    continue;
-                }
-
-                setProgressText(`${gameName}`, 'success');
-
-                const url = typeof urls[0] === 'string' ? urls[0] : urls[0]?.url;
-                if (!url) continue;
-
-                const result = await downloadImage(
-                    url,
-                    platformName,
-                    gameName
-                );
-
-                if (result) {
-                    const imgEl = gameContainer.querySelector("img");
-                    if (imgEl) {
-                        imgEl.src = result + '?t=' + Date.now();
-                        gameContainer.removeAttribute('data-missing-image');
-                    }
-                }
-
-            } catch (err) {
-                console.error(`Failed batch Dload for ${gameName}:`, err);
-            }
-        }
-
-        setProgressText(`Batch download complete!`, 'success');
-        pie.style.opacity = 0;
-    }
-
     formContainer.appendChild(formContainerButtons);
 
     const formContainerVSpacerDiv = document.createElement('div');
@@ -1083,6 +909,7 @@ function buildPlatformMenuForm(platformName) {
 export function openPlatformMenu(platformName, context) {
 
     LB.mode = 'menu';
+    LB.currentPlatform = platformName;
 
     const menu = document.getElementById('menu');
     const galleries = document.getElementById('galleries');

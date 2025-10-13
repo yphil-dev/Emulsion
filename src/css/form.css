@@ -177,6 +177,7 @@ label.checkbox {
   gap: 1em;
   justify-content: flex-end;
   margin-top: 1em;
+  margin-bottom: 100px;
 }
 
 .spacer-div {

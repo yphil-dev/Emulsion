@@ -128,7 +128,9 @@ window.onGameMenuKeyDown = function onGameMenuKeyDown(event) {
     });
 
     if (event.key.startsWith('Arrow')) {
-        getSelectedGameContainer(menuGameContainers, menuState.selectedIndex).scrollIntoView({
+        const selectedContainer = menuGameContainers.find((container, index) => index === menuState.selectedIndex);
+
+        selectedContainer.scrollIntoView({
             behavior: "smooth",
             block: "center"
         });
@@ -991,9 +993,9 @@ export async function openGameMenu(gameContainer) {
     updateFooterControls('dpad', 'button-dpad-nesw', 'Images', 'on');
     updateFooterControls('shoulders', 'same', '', 'off');
 
-    menu.style.height = '85vh';
-    document.querySelector('#header .prev-link').style.opacity = 0;
-    document.querySelector('#header .next-link').style.opacity = 0;
+    menu.style.height = '100vh';
+
+    toggleHeaderNavLinks('hide');
 
     // Clear and populate menu
     menuContainer.innerHTML = '';
@@ -1003,7 +1005,7 @@ export async function openGameMenu(gameContainer) {
     menuContainer.appendChild(currentGameImgContainer);
     await populateGameMenu(currentGameImgContainer, gameName, platformName);
 
-    menuContainer.addEventListener('wheel', onGameMenuWheel);
+    // menuContainer.addEventListener('wheel', onGameMenuWheel);
     menuContainer.addEventListener('click', onGameMenuClick);
 
 }
@@ -1169,7 +1171,7 @@ async function closeSettingsMenu() {
 
 }
 
-async function closeGameMenu(imgSrc) {
+export async function closeGameMenu(imgSrc) {
 
     const menu = document.getElementById('menu');
     const menuContainer = document.getElementById('menu');
@@ -1214,6 +1216,9 @@ async function closeGameMenu(imgSrc) {
         }
     }
 
-    menuContainer.removeEventListener('wheel', onGameMenuWheel);
+    // menuContainer.removeEventListener('wheel', onGameMenuWheel);
     menuContainer.removeEventListener('click', onGameMenuClick);
+
+    initGallery(LB.currentPlatform);
+
 }

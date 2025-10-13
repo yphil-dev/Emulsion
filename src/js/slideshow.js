@@ -1,5 +1,5 @@
 import { getPlatformInfo } from './platforms.js';
-import { openPlatformMenu, openGameMenu } from './menu.js';
+import { openPlatformMenu, openGameMenu, closeGameMenu } from './menu.js';
 import { getSelectedGameContainer,
          updateFooterControls,
          updateHeader,
@@ -280,7 +280,6 @@ export function initGallery(platformNameOrIndex) {
 
     document.getElementById('slideshow').style.display = 'none';
     galleries.style.display = 'flex';
-    toggleHeaderNavLinks('show');
 
     const pages = Array.from(galleries.querySelectorAll('.page'));
 
@@ -298,6 +297,8 @@ export function initGallery(platformNameOrIndex) {
     function initCurrentGallery(page) {
         GalleryState.gameContainers = Array.from(page.querySelectorAll('.game-container'));
         GalleryState.gameContainers.forEach(c => c.classList.remove('selected'));
+
+        toggleHeaderNavLinks('show');
 
         if (!page.dataset.listenersAttached) {
             GalleryState.gameContainers.forEach(container => {
@@ -408,7 +409,14 @@ export function initGallery(platformNameOrIndex) {
 }
 
 window.onGalleryKeyDown = function onGalleryKeyDown(event) {
-    const containers = GalleryState.gameContainers;
+
+    // console.log("event: ", event);
+
+    const menu = document.getElementById('menu');
+
+    const isGallery = LB.mode === 'gallery';
+
+    const containers = isGallery ? GalleryState.gameContainers : Array.from(menu.querySelectorAll('.menu-game-container'));
 
     const activePage = document.querySelector('.page.active');
     const isListMode = activePage.querySelector('.page-content').classList.contains('list');
@@ -449,11 +457,17 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
     const isEmptyPage = activePage.dataset.empty === 'true';
 
     if (event.key === 'Enter') {
-        if (activePage.dataset.platform === 'settings') {
-            openPlatformMenu(selectedContainer.dataset.platform, 'slideshow');
+
+        if (isGallery) {
+            if (activePage.dataset.platform === 'settings') {
+                openPlatformMenu(selectedContainer.dataset.platform, 'slideshow');
+            } else {
+                if (!selectedContainer.classList.contains('empty-platform-game-container')) launchGame(selectedContainer);
+            }
         } else {
-            if (!selectedContainer.classList.contains('empty-platform-game-container')) launchGame(selectedContainer);
+            closeGameMenu(selectedContainer.querySelector('img').src);
         }
+
     }
 
     if (event.key === 'i') {

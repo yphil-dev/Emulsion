@@ -334,10 +334,26 @@ export function initGallery(platformNameOrIndex) {
                 LB.currentPlatform = page.dataset.platform;
                 page.classList.add('active');
                 setGalleryViewMode(page.dataset.viewMode);
+                updateHeaderControls(page);
             } else if (idx === activePos - 1) page.classList.add('prev');
             else if (idx === activePos + 1) page.classList.add('next');
             else page.classList.add('adjacent');
+
+
         });
+
+    }
+
+    function updateHeaderControls(page) {
+        const toggleViewModeButton = document.getElementById('view-mode-toggle-button');
+        const platformCoversButton = document.getElementById('platform-covers-button');
+        if (page.dataset.empty) {
+            toggleViewModeButton.classList.add('disabled');
+            platformCoversButton.classList.add('disabled');
+        } else {
+            toggleViewModeButton.classList.remove('disabled');
+            platformCoversButton.classList.remove('disabled');
+        }
     }
 
     function goToPage(direction = 1) {

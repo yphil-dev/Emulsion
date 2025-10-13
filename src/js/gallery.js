@@ -164,6 +164,8 @@ export async function buildGallery(params) {
         textCode.innerHTML = gamesDir;
         titleP.appendChild(textCode);
 
+        page.dataset.empty = true;
+
         const icon = document.createElement('i');
         icon.className = 'fa fa-heartbeat fa-5x';
         icon.setAttribute('aria-hidden', 'true');

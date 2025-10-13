@@ -536,16 +536,6 @@ export async function batchDownload() {
     if (!LB.preferences[LB.currentPlatform].gamesDir) {
         console.log("wopop: ");
         document.getElementById('games-dir-sub-label').textContent = 'This field cannot be empty';
-    }
-
-
-    // if (!gamesDirInput.value) {
-    //     gamesDirSubLabel.textContent = 'This field cannot be empty';
-    //     return;
-    // }
-
-    if (!currentPlatformPage) {
-        console.error("Platform page not found");
         return;
     }
 
@@ -583,12 +573,15 @@ function showBatchConfirmationDialog(gameCount) {
 
         dialogTitle.textContent = 'Batch Download';
 
-        dialogText.textContent = `Found ${gameCount} missing ${getPlatformByName(LB.currentPlatform).displayName} game cover images`;
+        dialogText.innerHTML = `Found <strong>${gameCount}</strong> missing <strong>${getPlatformByName(LB.currentPlatform).displayName}</strong> game cover images`;
 
         if (!gameCount) {
-            dialogText.textContent = `Found no missing ${getPlatformByName(LB.currentPlatform).displayName} game cover images`;
+            dialogText.innerHTML = `Found no missing <strong>${getPlatformByName(LB.currentPlatform).displayName}</strong> game cover images`;
             okButton.style.display = 'none';
             cancelButton.textContent = 'Close';
+        } else {
+            okButton.style.display = 'block';
+            cancelButton.textContent = 'Cancel';
         }
 
         overlay.style.display = 'flex';

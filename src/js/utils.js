@@ -445,7 +445,7 @@ function setProgress(current, total) {
         const percent = Math.round((current / total) * 100);
         if (fill) fill.style.width = `${percent}%`;
         pie.style.setProperty('--p', percent);
-        pie.textContent = `${percent}%`;
+        // pie.textContent = `${percent}%`;
     }
 
 }

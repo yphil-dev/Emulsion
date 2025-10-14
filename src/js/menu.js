@@ -929,7 +929,7 @@ export function openPlatformMenu(platformName, context) {
     updateFooterControls('shoulders', 'same', '', 'off');
 
     menu.dataset.menuPlatform = platformName;
-    menu.dataset.menuContext = context || null;
+    menu.dataset.context = context || null;
 
     const platformMenuForm = buildPlatformMenuForm(platformName);
     menu.appendChild(platformMenuForm);
@@ -955,11 +955,11 @@ async function closeSettingsOrPlatformMenu() {
     const menu = document.getElementById('menu');
 
     updateFooterControls('dpad', 'same', 'Browse', 'on');
-    console.log("menuContainer.dataset.menuContext: ", menu.dataset.menuContext);
+    console.log("Context: ", menu.dataset.context);
 
-    if (menu.dataset.menuContext === 'slideshow') {
+    if (menu.dataset.context === 'slideshow') {
         initSlideShow(LB.currentPlatform);
-    } else if (menu.dataset.menuContext === 'gallery') {
+    } else if (menu.dataset.context === 'gallery') {
         initGallery(LB.currentPlatform);
     } else {
         initGallery('settings');

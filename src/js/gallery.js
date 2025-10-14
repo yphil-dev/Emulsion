@@ -239,10 +239,11 @@ export function buildGameContainer({
 }) {
     const container = document.createElement('div');
     container.classList.add('game-container');
-    container.title = `${displayName} (${dataName}) real name: ${path.basename(filePath)}
+    container.title = `${displayName}
 
+- File: ${filePath}
 - Click to launch with ${emulator}
-- Right-click to configure`;
+- Right-click to fetch cover art image`;
 
     container.dataset.gameName = dataName;
     container.dataset.platform = platform;

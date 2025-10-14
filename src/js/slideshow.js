@@ -330,25 +330,27 @@ export function initGallery(platformNameOrIndex) {
         sortedEnabled.forEach((page, idx) => {
             page.classList.remove('active', 'prev', 'next', 'adjacent');
 
+            const isEmpty = page.dataset.empty;
+
             if (idx === activePos) {
                 initCurrentGallery(page);
                 LB.currentPlatform = page.dataset.platform;
                 page.classList.add('active');
-                if (!page.dataset.empty) {
+                if (isEmpty) {
                     console.log("page.dataset.viewMode: ", page.dataset.viewMode);
                     setGalleryViewMode(page.dataset.viewMode);
                 }
-                updateHeaderControls(page);
+                updateHeaderControls(isEmpty);
             } else if (idx === activePos - 1) page.classList.add('prev');
             else if (idx === activePos + 1) page.classList.add('next');
             else page.classList.add('adjacent');
         });
     }
 
-    function updateHeaderControls(page) {
+    function updateHeaderControls(isEmpty) {
         const toggleViewModeButton = document.getElementById('view-mode-toggle-button');
         const platformCoversButton = document.getElementById('platform-covers-button');
-        if (page.dataset.empty) {
+        if (isEmpty) {
             toggleViewModeButton.classList.add('disabled');
             platformCoversButton.classList.add('disabled');
         } else {
@@ -464,7 +466,7 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
 
         if (isGallery) {
             if (activePage.dataset.platform === 'settings') {
-                openPlatformMenu(selectedContainer.dataset.platform, 'slideshow');
+                openPlatformMenu(selectedContainer.dataset.platform, 'settings');
             } else {
                 if (!selectedContainer.classList.contains('empty-platform-game-container')) launchGame(selectedContainer);
             }
@@ -758,9 +760,8 @@ async function closeSettingsOrPlatformMenu() {
     const menu = document.getElementById('menu');
 
     updateFooterControls('dpad', 'same', 'Browse', 'on');
-    console.log("menuContainer.dataset.menuContext: ", menu.dataset.menuContext);
 
-    if (menu.dataset.menuContext === 'slideshow') {
+    if (menu.dataset.context === 'slideshow') {
         initSlideShow(menu.dataset.menuPlatform);
     } else {
         initGallery('settings');

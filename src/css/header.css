@@ -85,12 +85,11 @@ header .platform-image {
 }
 
 .controls {
-  position: fixed;     /* fixed so we can place over main */
-  top: 99px;           /* header height minus 1px to overlap main */
+  position: fixed;
+  top: 73px;
   right: 30vw;
   height: 28px;
   width: 120px;
-  /* background-color: #04ff00; */
   display: flex;
   justify-content: space-evenly;
   align-items: center;
@@ -98,7 +97,7 @@ header .platform-image {
   border-top-right-radius: 15px;
   border-top-left-radius: 15px;
   border-bottom: none;
-  z-index: 101;        /* above main */
+  z-index: 101;
 }
 
 .platform-name-container {

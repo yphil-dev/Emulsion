@@ -81,7 +81,6 @@ export async function buildGalleries (preferences, userDataPath) {
                 platforms.push("recents");
             }
 
-            LB.favoritesPolicy = 'show';
 
             if (LB.favoritesPolicy === 'show') {
                 const favGallery = await buildFavoritesGallery({ userDataPath, index: platforms.length });
@@ -281,12 +280,11 @@ export function buildGameContainer({
 
 async function buildFavoritesGallery({ index }) {
     const favorites = LB.favorites;
+
     if (!favorites || favorites.length === 0 || favorites.error) {
         console.log("No favorite entries found.");
         return null;
     }
-
-    const sortedFavorites = [...favorites].sort((a, b) => new Date(b.date) - new Date(a.date));
 
     const page = document.createElement('div');
     page.classList.add('page');
@@ -297,11 +295,14 @@ async function buildFavoritesGallery({ index }) {
     pageContent.classList.add('page-content');
     pageContent.style.gridTemplateColumns = `repeat(${LB.galleryNumOfCols}, 1fr)`;
 
-    for (const [i, favorite] of sortedFavorites.entries()) {
+    for (const [i, favorite] of favorites.entries()) {
         try {
             const gamesDir = await getPreference(favorite.platform, 'gamesDir');
-            const coverPath = findImageFile(path.join(gamesDir, 'images'), favorite.fileName);
+            const coverPath = findImageFile(path.join(gamesDir, 'images'), favorite.gameName);
             const imageExists = coverPath && fs.existsSync(coverPath);
+
+            console.log("favorite.gameName: ", favorite.gameName);
+            console.log("gamesDir, coverPath: ", gamesDir, coverPath);
 
             const gameContainer = buildGameContainer({
                 platform: favorite.platform,
@@ -309,7 +310,7 @@ async function buildFavoritesGallery({ index }) {
                 emulatorArgs: favorite.emulatorArgs,
                 filePath: favorite.filePath,
                 displayName: favorite.gameName,
-                dataName: favorite.fileName,
+                dataName: favorite.gameName,
                 imagePath: coverPath,
                 imageExists,
                 index: i

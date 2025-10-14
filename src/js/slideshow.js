@@ -15,6 +15,9 @@ const main = document.querySelector('main');
 const slideshow = document.getElementById("slideshow");
 const galleries = document.getElementById("galleries");
 
+let pendingAction = null;
+let confirmationTimeout = null;
+
 export function initSlideShow(platformToDisplay) {
     LB.mode = 'slideshow';
 
@@ -112,7 +115,7 @@ export function initSlideShow(platformToDisplay) {
 
                 if (platformName === 'settings' && LB.kioskMode) return;
 
-                if (platformName === 'recents' || platformName === 'settings') {
+                if (platformName === 'recents' || platformName === 'settings' || platformName === 'favorites') {
                     initGallery(platformName);
                 } else if (LB.enabledPlatforms.includes(platformName)) {
                     initGallery(platformName);
@@ -175,6 +178,11 @@ export function buildHomeSlide(platformName, preferences) {
 
     if (platformName === 'recents') {
         slide.setAttribute('data-index', LB.totalNumberOfPlatforms);
+        return slide;
+    }
+
+    if (platformName === 'favorites') {
+        slide.setAttribute('data-index', Number(LB.totalNumberOfPlatforms) +1);
         return slide;
     }
 
@@ -539,9 +547,21 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
     }
 
     if (event.key === '+') {
-        addFavorite(selectedContainer);
-    }
+        event.preventDefault();
 
+        if (pendingAction === 'add') {
+            // Second press - execute add
+            const existingDialog = document.getElementById('favorite-confirmation');
+            if (existingDialog) existingDialog.remove();
+            pendingAction = null;
+            clearTimeout(confirmationTimeout);
+            addFavorite(selectedContainer);
+        } else {
+            // First press - show confirmation
+            pendingAction = 'add';
+            showConfirmationDialog('Press + again to add to favorites');
+        }
+    }
     if (event.key === '-') {
         removeFavorite(selectedContainer);
     }
@@ -840,4 +860,39 @@ async function closeSettingsOrPlatformMenu() {
     menu.innerHTML = '';
     menu.style.height = '0';
 
+}
+
+function showConfirmationDialog(message) {
+    // Remove existing dialog if any
+    const existingDialog = document.getElementById('favorite-confirmation');
+    if (existingDialog) {
+        existingDialog.remove();
+    }
+
+    const dialog = document.createElement('div');
+    dialog.id = 'favorite-confirmation';
+    dialog.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.9);
+        color: white;
+        padding: 20px 30px;
+        border-radius: 10px;
+        border: 2px solid #00ffae;
+        z-index: 10000;
+        font-family: Arial, sans-serif;
+        text-align: center;
+    `;
+    dialog.textContent = message;
+    document.body.appendChild(dialog);
+
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        if (document.body.contains(dialog)) {
+            dialog.remove();
+            pendingAction = null;
+        }
+    }, 5000);
 }

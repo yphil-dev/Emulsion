@@ -44,8 +44,13 @@ export function getPlatformInfo(platformName) {
     if (platformName === 'settings') {
         return { vendor: 'Emulsion', name: 'Settings', index: 0 };
     }
+
     if (platformName === 'recents') {
         return { vendor: 'Emulsion', name: 'Recents', index: PLATFORMS.length + 1 };
+    }
+
+    if (platformName === 'favorites') {
+        return { vendor: 'Emulsion', name: 'Favorites', index: PLATFORMS.length + 2 };
     }
 
     // Final fallback

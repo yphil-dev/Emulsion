@@ -329,57 +329,45 @@ export function toggleHeaderNavLinks(display) {
 }
 
 export function updateHeader(platformName, gameName) {
-
     const header = document.getElementById("header");
-
     const headerControls = document.getElementById("header-controls");
 
-    if (LB.mode === 'menu' || platformName === 'settings') {
-        headerControls.style.display = 'none';
-    } else {
-        headerControls.style.display = 'flex';
-    }
+    // Handle visibility
+    const showHeader = platformName !== 'hide';
+    const showControls = !(LB.mode === 'menu' || platformName === 'settings');
 
-    if (platformName === 'hide') {
-        header.style.display = 'none';
-        return;
-    }
+    header.style.display = showHeader ? 'flex' : 'none';
+    headerControls.style.display = showControls ? 'flex' : 'none';
 
-    header.style.display = 'flex';
+    if (!showHeader) return;
 
-    const settingsPlatform = { nbGames: PLATFORMS.length, displayName:"Settings" };
-    const platform = platformName === 'settings' ? settingsPlatform : getPlatformByName(platformName);
-
-    let itemType = 'game';
-    let count = platform?.nbGames;
-    let vendor = platform.vendor;
-
+    // Get platform data
+    let platform;
     if (platformName === 'settings') {
-        itemType = 'platform';
+        platform = { nbGames: PLATFORMS.length, displayName: "Settings", vendor: "Emulsion" };
+    } else if (platformName === 'favorites') {
+        platform = { nbGames: LB.favorites.length, displayName: "Favorites", vendor: "Emulsion" };
+    } else {
+        platform = getPlatformByName(platformName);
     }
 
-    if (platformName === 'recents') {
-        count = LB.recents.length;
-    }
+    // Determine item type and count
+    let itemType = gameName ? 'image' : 'game';
+    let count = platform.nbGames;
 
-    if (gameName) {
-        itemType = 'image';
-        count = 0;
-    }
+    if (platformName === 'settings') itemType = 'platform';
+    if (platformName === 'recents') count = LB.recents.length;
+    if (count === 0) count = 'No';
 
-    if (count === 0) {
-        count = 'No';
-    }
+    // Update vendor for game menu mode
+    const vendor = LB.mode === 'gameMenu' ? platform.displayName : platform.vendor || 'Emulsion';
 
-    if (LB.mode === 'gameMenu') {
-        vendor = platform.displayName;
-    }
+    // Pluralize helper
+    const pluralize = (count, singular) => count === 1 ? singular : `${singular}s`;
 
-    const pluralize = (count, singular, plural = `${singular}s`) =>
-          count === 1 ? singular : plural;
-
-    header.querySelector('.platform-name').textContent = gameName ? gameName : platform.displayName;
-    header.querySelector('.vendor-name').textContent = gameName ? vendor : platform.vendor || 'Emulsion';
+    // Update DOM elements
+    header.querySelector('.platform-name').textContent = gameName || platform.displayName;
+    header.querySelector('.vendor-name').textContent = vendor;
     header.querySelector('.item-number').textContent = count;
     header.querySelector('.item-type').textContent = pluralize(count, itemType);
     header.querySelector('.platform-image').style.backgroundImage = `url('../../img/platforms/${platformName}.png')`;

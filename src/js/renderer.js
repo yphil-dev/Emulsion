@@ -19,6 +19,9 @@ loadPreferences()
         LB.theme = preferences.settings.theme;
         LB.disabledPlatformsPolicy = preferences.settings.disabledPlatformsPolicy;
         LB.recentlyPlayedPolicy = preferences.settings.recentlyPlayedPolicy;
+        LB.favoritesPolicy = preferences.settings.favoritesPolicy;
+
+        console.log("LB.favoritesPolicy: ", LB.favoritesPolicy);
 
         setFooterSize(LB.footerSize);
         applyTheme(LB.theme);

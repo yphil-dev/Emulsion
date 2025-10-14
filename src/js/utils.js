@@ -352,6 +352,7 @@ export function updateHeader(platformName, gameName) {
 
     let itemType = 'game';
     let count = platform?.nbGames;
+    let vendor = platform.vendor;
 
     if (platformName === 'settings') {
         itemType = 'platform';
@@ -370,11 +371,15 @@ export function updateHeader(platformName, gameName) {
         count = 'No';
     }
 
+    if (LB.mode === 'gameMenu') {
+        vendor = platform.displayName;
+    }
+
     const pluralize = (count, singular, plural = `${singular}s`) =>
           count === 1 ? singular : plural;
 
     header.querySelector('.platform-name').textContent = gameName ? gameName : platform.displayName;
-    header.querySelector('.vendor-name').textContent = platform.vendor || 'Emulsion';
+    header.querySelector('.vendor-name').textContent = gameName ? vendor : platform.vendor || 'Emulsion';
     header.querySelector('.item-number').textContent = count;
     header.querySelector('.item-type').textContent = pluralize(count, itemType);
     header.querySelector('.platform-image').style.backgroundImage = `url('../../img/platforms/${platformName}.png')`;
@@ -511,6 +516,65 @@ export async function executeBatchDownload(games, platformName) {
     pie.style.opacity = 0;
 }
 
+export async function addFavorite(container) {
+
+    const favoriteEntry = {
+        gameName: container.dataset.gameName,
+        gamePath: container.dataset.gamePath,
+        command: container.dataset.command,
+        emulator: container.dataset.emulator,
+        emulatorArgs: container.dataset.emulatorArgs,
+        platform: container.dataset.platform
+    };
+
+    console.log("favoriteEntry: ", favoriteEntry);
+
+    try {
+        const result = await ipcRenderer.invoke('add-favorite', favoriteEntry);
+        console.log("result: ", result);
+        if (result.success) {
+            console.info(`Yo, ${result.path}`);
+            // notify(`Image saved at ${result.path}`);
+            return result.path;
+        } else {
+            console.error(`Error: ${result.error}`);
+            // notify(`Error saving image: ${result.error}`);
+            return null;
+        }
+    } catch (error) {
+        console.error('Error communicating with main process:', error);
+        // alert('Fail');
+        return null;
+    }
+}
+
+export async function removeFavorite(container) {
+    const favoriteEntry = {
+        gameName: container.dataset.gameName,
+        gamePath: container.dataset.gamePath,
+        command: container.dataset.command,
+        emulator: container.dataset.emulator,
+        emulatorArgs: container.dataset.emulatorArgs,
+        platform: container.dataset.platform
+    };
+
+    console.log("removeFavorite - favoriteEntry: ", favoriteEntry);
+
+    try {
+        const result = await ipcRenderer.invoke('remove-favorite', favoriteEntry);
+        console.log("removeFavorite - result: ", result);
+        if (result.success) {
+            console.info(`Removed favorite: ${favoriteEntry.gameName}`);
+            return result.path;
+        } else {
+            console.error(`Error removing favorite: ${result.error}`);
+            return null;
+        }
+    } catch (error) {
+        console.error('Error communicating with main process:', error);
+        return null;
+    }
+}
 
 export async function downloadImage(imgSrc, platform, gameName) {
     const gamesDir = window.LB.preferences[platform]?.gamesDir;

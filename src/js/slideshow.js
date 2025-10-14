@@ -2,6 +2,8 @@ import { getPlatformInfo } from './platforms.js';
 import { openPlatformMenu, openGameMenu, closeGameMenu } from './menu.js';
 import { getSelectedGameContainer,
          updateFooterControls,
+         addFavorite,
+         removeFavorite,
          updateHeader,
          batchDownload,
          simulateKeyDown,
@@ -534,6 +536,14 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
             closeGameMenu(selectedContainer.querySelector('img').src);
         }
 
+    }
+
+    if (event.key === '+') {
+        addFavorite(selectedContainer);
+    }
+
+    if (event.key === '-') {
+        removeFavorite(selectedContainer);
     }
 
     if (event.key === 'i') {

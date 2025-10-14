@@ -81,6 +81,16 @@ export async function buildGalleries (preferences, userDataPath) {
                 platforms.push("recents");
             }
 
+            LB.favoritesPolicy = 'show';
+
+            if (LB.favoritesPolicy === 'show') {
+                const favGallery = await buildFavoritesGallery({ userDataPath, index: platforms.length });
+                if (favGallery) {
+                    galleriesContainer.appendChild(favGallery);
+                }
+                platforms.push("favorites");
+            }
+
             resolve(platforms);
         } catch (error) {
             reject(error);
@@ -267,6 +277,53 @@ export function buildGameContainer({
     container.appendChild(label);
 
     return container;
+}
+
+async function buildFavoritesGallery({ index }) {
+    const favorites = LB.favorites;
+    if (!favorites || favorites.length === 0 || favorites.error) {
+        console.log("No favorite entries found.");
+        return null;
+    }
+
+    const sortedFavorites = [...favorites].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    const page = document.createElement('div');
+    page.classList.add('page');
+    page.dataset.index = index;
+    page.dataset.platform = 'favorites';
+
+    const pageContent = document.createElement('div');
+    pageContent.classList.add('page-content');
+    pageContent.style.gridTemplateColumns = `repeat(${LB.galleryNumOfCols}, 1fr)`;
+
+    for (const [i, favorite] of sortedFavorites.entries()) {
+        try {
+            const gamesDir = await getPreference(favorite.platform, 'gamesDir');
+            const coverPath = findImageFile(path.join(gamesDir, 'images'), favorite.fileName);
+            const imageExists = coverPath && fs.existsSync(coverPath);
+
+            const gameContainer = buildGameContainer({
+                platform: favorite.platform,
+                emulator: favorite.emulator,
+                emulatorArgs: favorite.emulatorArgs,
+                filePath: favorite.filePath,
+                displayName: favorite.gameName,
+                dataName: favorite.fileName,
+                imagePath: coverPath,
+                imageExists,
+                index: i
+            });
+
+            pageContent.appendChild(gameContainer);
+
+        } catch (err) {
+            console.error('Failed to get platform preference:', err);
+        }
+    }
+
+    page.appendChild(pageContent);
+    return page;
 }
 
 async function buildRecentGallery({ index }) {

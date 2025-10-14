@@ -122,6 +122,7 @@ async function loadPackageJson() {
 
 const preferencesFilePath = path.join(app.getPath('userData'), "preferences.json");
 const recentFilePath = path.join(app.getPath('userData'), "recently_played.json");
+const favoritesFilePath = path.join(app.getPath('userData'), "favorites.json");
 
 function showHelp() {
     console.log(`
@@ -143,6 +144,50 @@ atari spectrum c64 nes sms pcengine amiga megadrive gameboy lynx gamegear snes j
 
 if (process.argv.includes('--help')) {
     showHelp();
+}
+
+function loadFavorites() {
+    try {
+        if (fs.existsSync(favoritesFilePath)) {
+            const favoritesFileContent = fs.readFileSync(favoritesFilePath, 'utf8');
+
+            try {
+                const favorites = JSON.parse(favoritesFileContent);
+
+                if (!Array.isArray(favorites)) {
+                    throw new Error("Expected an array");
+                }
+
+                const isValidRecord = (record) =>
+                      record &&
+                      typeof record.gameName === 'string' &&
+                      typeof record.gamePath === 'string' &&
+                      typeof record.command === 'string' &&
+                      typeof record.emulator === 'string' &&
+                      typeof record.emulatorArgs === 'string' && // Can be empty string
+                      typeof record.platform === 'string';
+
+                const validRecords = favorites.filter(isValidRecord);
+
+                // Optionally overwrite the file if invalid entries were removed
+                if (validRecords.length !== favorites.length) {
+                    fs.writeFileSync(favoritesFilePath, JSON.stringify(validRecords, null, 2), 'utf8');
+                    console.warn(`Removed ${favorites.length - validRecords.length} invalid entries from favorites file.`);
+                }
+
+                return validRecords;
+
+            } catch (parseError) {
+                console.error('Invalid JSON in favorites file:', parseError);
+                return { error: 'INVALID_JSON', message: 'The favorites file contains invalid JSON. It will now be reset.' };
+            }
+        } else {
+            return { error: 'FILE_NOT_FOUND', message: 'No favorites file found.' };
+        }
+    } catch (error) {
+        console.error('Error loading favorites:', error);
+        return { error: 'UNKNOWN_ERROR', message: 'An unknown error occurred while loading favorites.' };
+    }
 }
 
 function loadRecents() {
@@ -406,10 +451,75 @@ ipcMain.on('fetch-images', (event, gameName, platformName, steamGridAPIKey, gian
         });
 });
 
-function getRecentlyPlayedPath() {
+function getUserConfigFile(file) {
     const userDataPath = app.getPath('userData');
-    return path.join(userDataPath, 'recently_played.json');
+    return path.join(userDataPath, file);
 }
+
+// Main process
+ipcMain.handle('add-favorite', async (event, favoriteEntry) => {
+    const favoriteFilePath = getUserConfigFile('favorites.json');
+    let favorites = [];
+
+    if (fs.existsSync(favoriteFilePath)) {
+        try {
+            const fileData = fs.readFileSync(favoriteFilePath, 'utf8');
+            favorites = JSON.parse(fileData);
+        } catch (readErr) {
+            console.error("Error reading favorites.json:", readErr);
+            favorites = [];
+        }
+    }
+
+    const existingIndex = favorites.findIndex(entry => entry.gamePath === favoriteEntry.gamePath);
+
+    if (existingIndex >= 0) {
+        return { success: false, error: "Already exists" };
+    } else {
+        favorites.push(favoriteEntry);
+    }
+
+    try {
+        fs.writeFileSync(favoriteFilePath, JSON.stringify(favorites, null, 4), 'utf8');
+        console.log("Updated favorites.json with new/updated entry.");
+        return { success: true, path: favoriteFilePath };
+    } catch (writeErr) {
+        console.error("Error writing favorites.json:", writeErr);
+        return { success: false, error: writeErr.message };
+    }
+});
+
+ipcMain.handle('remove-favorite', async (event, favoriteEntry) => {
+    const favoriteFilePath = getUserConfigFile('favorites.json');
+    let favorites = [];
+
+    if (fs.existsSync(favoriteFilePath)) {
+        try {
+            const fileData = fs.readFileSync(favoriteFilePath, 'utf8');
+            favorites = JSON.parse(fileData);
+        } catch (readErr) {
+            console.error("Error reading favorites.json:", readErr);
+            return { success: false, error: "Failed to read favorites file" };
+        }
+    }
+
+    // Find and remove the entry with the same gamePath
+    const initialLength = favorites.length;
+    favorites = favorites.filter(entry => entry.gamePath !== favoriteEntry.gamePath);
+
+    if (favorites.length === initialLength) {
+        return { success: false, error: "Favorite not found" };
+    }
+
+    try {
+        fs.writeFileSync(favoriteFilePath, JSON.stringify(favorites, null, 4), 'utf8');
+        console.log("Updated favorites.json - removed entry.");
+        return { success: true, path: favoriteFilePath };
+    } catch (writeErr) {
+        console.error("Error writing favorites.json:", writeErr);
+        return { success: false, error: writeErr.message };
+    }
+});
 
 ipcMain.on('run-command', (event, data) => {
     const { fileName, filePath, gameName, emulator, emulatorArgs, platform } = data;
@@ -426,7 +536,7 @@ ipcMain.on('run-command', (event, data) => {
 
     const command = `${emulator} ${emulatorArgs || ""} "${filePath}"`;
 
-    const recentFilePath = getRecentlyPlayedPath();
+    const recentFilePath = getUserConfigFile('recently_played.json');
     let recents = [];
 
     if (fs.existsSync(recentFilePath)) {
@@ -502,6 +612,7 @@ PLATFORMS.forEach((platform, index) => {
 ipcMain.handle('load-preferences', () => {
     const preferences = loadPreferences();
     const recents = loadRecents();
+    const favorites = loadFavorites();
 
     const userDataPath = app.getPath('userData');
     const appPath = app.getAppPath();
@@ -530,6 +641,10 @@ ipcMain.handle('load-preferences', () => {
 
     if (recents.error) {
         console.log("recent.message: ", recents.message);
+    }
+
+    if (favorites.error) {
+        console.log("favorite.message: ", favorites.message);
     }
 
     if (preferences.error && preferences.error === 'INVALID_JSON') {
@@ -570,6 +685,7 @@ ipcMain.handle('load-preferences', () => {
         preferences.autoSelect = getNamedArg('auto-select');
         // preferences.autoOpen = getNamedArg('auto-open');
         preferences.recents = recents;
+        preferences.favorites = favorites;
         return preferences;
     }
 });

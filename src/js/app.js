@@ -66,6 +66,7 @@ async function initializeApp() {
         LB.kioskMode = appData.kioskMode;
         LB.autoSelect = appData.autoSelect;
         LB.recents = appData.recents;
+        LB.favorites = appData.favorites;
         LB.preferences = appData.preferences;
         LB.galleryNumOfCols = appData.preferences.settings.numberOfColumns;
         LB.homeMenuTheme = appData.preferences.settings.homeMenuTheme;

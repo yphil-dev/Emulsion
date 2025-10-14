@@ -12,6 +12,7 @@ async function loadUserData() {
         const kioskMode = preferences.kioskMode;
         const autoSelect = preferences.autoSelect;
         const recents = preferences.recents;
+        const favorites = preferences.favorites;
 
         delete preferences.userDataPath;
         delete preferences.appPath;
@@ -19,6 +20,7 @@ async function loadUserData() {
         delete preferences.kioskMode;
         delete preferences.autoSelect;
         delete preferences.recents;
+        delete preferences.favorites;
 
         return {
             preferences,
@@ -27,7 +29,9 @@ async function loadUserData() {
             versionNumber,
             kioskMode,
             autoSelect,
-            recents
+            recents,
+            favorites
+
         };
     } catch (error) {
         console.error("Failed to load preferences:", error);

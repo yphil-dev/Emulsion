@@ -270,7 +270,8 @@ export const GalleryState = {
     enabledPages: [],
 };
 
-export function initGallery(platformNameOrIndex) {
+export function initGallery(platformNameOrIndex, focusIndex = null) {
+
     LB.mode = 'gallery';
 
     main.style.top = '100px';
@@ -300,17 +301,38 @@ export function initGallery(platformNameOrIndex) {
 
         toggleHeaderNavLinks('show');
 
+        if (focusIndex !== null && GalleryState.gameContainers[focusIndex]) {
+            GalleryState.selectedIndex = focusIndex;
+            GalleryState.gameContainers[focusIndex].classList.add('selected');
+            GalleryState.gameContainers[focusIndex].scrollIntoView({
+                behavior: 'instant',
+                block: 'center'
+            });
+            focusIndex = null;
+        } else {
+            GalleryState.selectedIndex = 0;
+            if (GalleryState.gameContainers[0]) {
+                GalleryState.gameContainers[0].classList.add('selected');
+            }
+        }
+
         if (!page.dataset.listenersAttached) {
             GalleryState.gameContainers.forEach(container => {
-                container.addEventListener('click', () => {
+                container.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    event.stopImmediatePropagation();
+
                     if (container.classList.contains('settings')) openPlatformMenu(container.dataset.platform, 'settings');
                     else if (!container.classList.contains('empty-platform-game-container')) launchGame(container);
 
                     GalleryState.gameContainers.forEach(c => c.classList.remove('selected'));
                 });
 
-                container.addEventListener('contextmenu', (e) => {
-                    e.preventDefault();
+                container.addEventListener('contextmenu', (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    event.stopImmediatePropagation();
+
                     GalleryState.gameContainers.forEach(c => c.classList.remove('selected'));
                     container.classList.add('selected');
                     openGameMenu(container);
@@ -327,22 +349,27 @@ export function initGallery(platformNameOrIndex) {
         const sortedEnabled = GalleryState.enabledPages.sort((a, b) => Number(a.dataset.index) - Number(b.dataset.index));
         const activePos = sortedEnabled.findIndex(p => Number(p.dataset.index) === GalleryState.currentPageIndex);
 
-        sortedEnabled.forEach((page, idx) => {
+        sortedEnabled.forEach((page, index) => {
             page.classList.remove('active', 'prev', 'next', 'adjacent');
 
             const isEmpty = page.dataset.empty;
 
-            if (idx === activePos) {
+            if (index === activePos) {
                 initCurrentGallery(page);
                 LB.currentPlatform = page.dataset.platform;
                 page.classList.add('active');
-                if (isEmpty) {
-                    console.log("page.dataset.viewMode: ", page.dataset.viewMode);
+
+                if (!isEmpty) {
                     setGalleryViewMode(page.dataset.viewMode);
+                } else {
+                    updateFooterControls('dpad', 'button-dpad-nesw', 'Games', 'off');
+                    updateFooterControls('west', 'same', 'Cover', 'off');
+                    updateFooterControls('south', 'same', 'Cover', 'off');
                 }
+
                 updateHeaderControls(isEmpty);
-            } else if (idx === activePos - 1) page.classList.add('prev');
-            else if (idx === activePos + 1) page.classList.add('next');
+            } else if (index === activePos - 1) page.classList.add('prev');
+            else if (index === activePos + 1) page.classList.add('next');
             else page.classList.add('adjacent');
         });
     }
@@ -436,33 +463,68 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
 
     switch (event.key) {
     case 'ArrowLeft':
-        GalleryState.selectedIndex = event.shiftKey
-            ? GalleryState.goToPrevPage() || GalleryState.selectedIndex
-            : isListMode ? Math.max(GalleryState.selectedIndex - 1, 0) : (GalleryState.selectedIndex - 1 + containers.length) % containers.length;
+        if (event.shiftKey) {
+            const prevPage = GalleryState.goToPrevPage();
+            if (prevPage) {
+                GalleryState.selectedIndex = prevPage;
+            }
+        } else {
+            if (isListMode && LB.mode === 'gallery') {
+                GalleryState.selectedIndex = Math.max(GalleryState.selectedIndex - 1, 0);
+            } else {
+                GalleryState.selectedIndex = (GalleryState.selectedIndex - 1 + containers.length) % containers.length;
+            }
+        }
         break;
+
     case 'ArrowRight':
-        GalleryState.selectedIndex = event.shiftKey
-            ? GalleryState.goToNextPage() || GalleryState.selectedIndex
-            : isListMode ? Math.min(GalleryState.selectedIndex + 1, containers.length - 1) : (GalleryState.selectedIndex + 1) % containers.length;
+        if (event.shiftKey) {
+            const nextPage = GalleryState.goToNextPage();
+            if (nextPage) {
+                GalleryState.selectedIndex = nextPage;
+            }
+        } else {
+            if (isListMode && LB.mode === 'gallery') {
+                GalleryState.selectedIndex = Math.min(GalleryState.selectedIndex + 1, containers.length - 1);
+            } else {
+                GalleryState.selectedIndex = (GalleryState.selectedIndex + 1) % containers.length;
+            }
+        }
         break;
+
     case 'ArrowUp':
-        GalleryState.selectedIndex = isListMode ? Math.max(GalleryState.selectedIndex - 1, 0) : _moveRows(GalleryState.selectedIndex, -1);
+        if (isListMode && LB.mode === 'gallery') {
+            GalleryState.selectedIndex = Math.max(GalleryState.selectedIndex - 1, 0);
+        } else {
+            GalleryState.selectedIndex = _moveRows(GalleryState.selectedIndex, -1);
+        }
         break;
+
     case 'ArrowDown':
-        GalleryState.selectedIndex = isListMode ? Math.min(GalleryState.selectedIndex + 1, containers.length - 1) : _moveRows(GalleryState.selectedIndex, 1);
+        if (isListMode && LB.mode === 'gallery') {
+            GalleryState.selectedIndex = Math.min(GalleryState.selectedIndex + 1, containers.length - 1);
+        } else {
+            GalleryState.selectedIndex = _moveRows(GalleryState.selectedIndex, 1);
+        }
         break;
+
     case 'Escape':
         if (isGameMenu) {
             closeGameMenu();
+        } else {
+            initSlideShow(activePage.dataset.platform);
         }
-        initSlideShow(activePage.dataset.platform);
         break;
     }
+
 
     const selectedContainer = containers[GalleryState.selectedIndex];
     const isEmptyPage = activePage.dataset.empty === 'true';
 
     if (event.key === 'Enter') {
+
+        event.stopPropagation();
+        event.stopImmediatePropagation();
 
         if (isGallery) {
             if (activePage.dataset.platform === 'settings') {

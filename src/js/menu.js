@@ -955,7 +955,6 @@ async function closeSettingsOrPlatformMenu() {
     const menu = document.getElementById('menu');
 
     updateFooterControls('dpad', 'same', 'Browse', 'on');
-    console.log("Context: ", menu.dataset.context);
 
     if (menu.dataset.context === 'slideshow') {
         initSlideShow(LB.currentPlatform);
@@ -965,23 +964,22 @@ async function closeSettingsOrPlatformMenu() {
         initGallery('settings');
     }
 
-
     menu.innerHTML = '';
     menu.style.height = '0';
 
 }
 
-export async function openGameMenu(gameContainer) {
+export async function openGameMenu(container) {
 
-    console.log("gameContainer: ", gameContainer);
+    console.log("gameContainer: ", container);
 
     LB.mode = 'gameMenu';
 
     const menu = document.getElementById('menu');
     const menuContainer = document.getElementById('menu');
-    const gameName = gameContainer.dataset.gameName;
-    const platformName = gameContainer.dataset.platform;
-    const gameImage = gameContainer.querySelector('img');
+    const gameName = container.dataset.gameName;
+    const platformName = container.dataset.platform;
+    const gameImage = container.querySelector('img');
 
     updateHeader(platformName, cleanFileName(gameName));
 
@@ -1186,10 +1184,27 @@ export async function closeGameMenu(imgSrc) {
     menuContainer.innerHTML = '';
     menu.style.height = '0';
 
+    const activePage = document.querySelector('.page.active');
+    const gameContainers = Array.from(activePage.querySelectorAll('.game-container'));
+
+    let selectedGame = null;
+    let selectedIndex = -1;
+
+    for (let i = 0; i < gameContainers.length; i++) {
+        const c = gameContainers[i];
+        if (c.classList.contains('selected')) {
+            selectedGame = c;
+            selectedIndex = i;
+            break; // stop immediately — minimal overhead
+        }
+    }
+
+
+    console.log("selectedGame: ", selectedGame);
+
     // Download and update image if provided
     if (imgSrc && LB.currentPlatform) {
-        const gameContainers = Array.from(document.querySelectorAll('.game-container'));
-        const selectedGame = gameContainers.find(c => c.classList.contains('selected'));
+
 
         if (selectedGame) {
             const selectedGameImg = selectedGame.querySelector('.game-image');
@@ -1222,6 +1237,6 @@ export async function closeGameMenu(imgSrc) {
     // menuContainer.removeEventListener('wheel', onGameMenuWheel);
     menuContainer.removeEventListener('click', onGameMenuClick);
 
-    initGallery(LB.currentPlatform);
+    initGallery(LB.currentPlatform, selectedIndex);
 
 }

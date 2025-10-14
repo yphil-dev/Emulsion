@@ -292,6 +292,10 @@ function buildSettingsMenu() {
     const recentlyPlayedPolicyGroup = recentlyPlayedPolicy.group;
     const recentlyPlayedPolicyRadios = recentlyPlayedPolicy.radios;
 
+    const favoritesPolicy = buildPrefsFormItem('favoritesPolicy', 'thumbs-o-up', ['show', 'hide'], '', 'Favorites', LB.favoritesPolicy);
+    const favoritesPolicyGroup = favoritesPolicy.group;
+    const favoritesPolicyRadios = favoritesPolicy.radios;
+
     const steamGridAPIKey = buildPrefsFormItem('steamGridAPIKey', 'steam-square', 'text', 'Your SteamGrid API Key', 'SteamGrid API Key', LB.steamGridAPIKey || '');
     const steamGridAPIKeyGroup = steamGridAPIKey.group;
     const steamGridAPIKeyInput = steamGridAPIKey.input;
@@ -307,6 +311,7 @@ function buildSettingsMenu() {
     formContainer.appendChild(footerSizeGroup);
     formContainer.appendChild(disabledPlatformsPolicyGroup);
     formContainer.appendChild(recentlyPlayedPolicyGroup);
+    formContainer.appendChild(favoritesPolicyGroup);
     formContainer.appendChild(steamGridAPIKeyGroup);
     formContainer.appendChild(giantBombAPIKeyGroup);
 
@@ -369,6 +374,7 @@ function buildSettingsMenu() {
                 theme: themeRadios.find(radio => radio.checked)?.value,
                 disabledPlatformsPolicy: disabledPlatformsPolicyRadios.find(radio => radio.checked)?.value,
                 recentlyPlayedPolicy: recentlyPlayedPolicyRadios.find(radio => radio.checked)?.value,
+                favoritesPolicy: favoritesPolicyRadios.find(radio => radio.checked)?.value,
                 steamGridAPIKey: steamGridAPIKeyInput.value,
                 giantBombAPIKey: giantBombAPIKeyInput.value
             };
@@ -380,6 +386,7 @@ function buildSettingsMenu() {
             await updatePreference('settings', 'theme', newPrefs.theme);
             await updatePreference('settings', 'disabledPlatformsPolicy', newPrefs.disabledPlatformsPolicy);
             await updatePreference('settings', 'recentlyPlayedPolicy', newPrefs.recentlyPlayedPolicy);
+            await updatePreference('settings', 'favoritesPolicy', newPrefs.favoritesPolicy);
             await updatePreference('settings', 'steamGridAPIKey', newPrefs.steamGridAPIKey);
             await updatePreference('settings', 'giantBombAPIKey', newPrefs.giantBombAPIKey);
 
@@ -389,6 +396,7 @@ function buildSettingsMenu() {
                   newPrefs.homeMenuTheme !== LB.homeMenuTheme ||
                   newPrefs.disabledPlatformsPolicy !== LB.disabledPlatformsPolicy ||
                   newPrefs.recentlyPlayedPolicy !== LB.recentlyPlayedPolicy ||
+                  newPrefs.favoritesPolicy !== LB.favoritesPolicy ||
                   newPrefs.steamGridAPIKey !== (LB.steamGridAPIKey || '') ||
                   newPrefs.giantBombAPIKey !== (LB.giantBombAPIKey || '');
 
@@ -400,6 +408,7 @@ function buildSettingsMenu() {
                 theme: newPrefs.theme,
                 disabledPlatformsPolicy: newPrefs.disabledPlatformsPolicy,
                 recentlyPlayedPolicy: newPrefs.recentlyPlayedPolicy,
+                favoritesPolicy: newPrefs.favoritesPolicy,
                 steamGridAPIKey: newPrefs.steamGridAPIKey,
                 giantBombAPIKey: newPrefs.giantBombAPIKey
             });

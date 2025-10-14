@@ -346,10 +346,9 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
     }
 
     function updateGallery() {
-        const sortedEnabled = GalleryState.enabledPages.sort((a, b) => Number(a.dataset.index) - Number(b.dataset.index));
-        const activePos = sortedEnabled.findIndex(p => Number(p.dataset.index) === GalleryState.currentPageIndex);
+        const activePos = GalleryState.enabledPages.findIndex(p => Number(p.dataset.index) === GalleryState.currentPageIndex);
 
-        sortedEnabled.forEach((page, index) => {
+        GalleryState.enabledPages.forEach((page, index) => {
             page.classList.remove('active', 'prev', 'next', 'adjacent');
 
             const isEmpty = page.dataset.empty;
@@ -516,7 +515,6 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         }
         break;
     }
-
 
     const selectedContainer = containers[GalleryState.selectedIndex];
     const isEmptyPage = activePage.dataset.empty === 'true';

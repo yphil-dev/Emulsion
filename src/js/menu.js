@@ -1180,7 +1180,6 @@ export async function closeGameMenu(imgSrc) {
     updateFooterControls('dpad', 'same', 'Browse', 'on');
     toggleHeaderNavLinks('show');
 
-    window.LB.imageSrc = imgSrc;
     menuContainer.innerHTML = '';
     menu.style.height = '0';
 
@@ -1199,12 +1198,7 @@ export async function closeGameMenu(imgSrc) {
         }
     }
 
-
-    console.log("selectedGame: ", selectedGame);
-
-    // Download and update image if provided
-    if (imgSrc && LB.currentPlatform) {
-
+    if (imgSrc) {
 
         if (selectedGame) {
             const selectedGameImg = selectedGame.querySelector('.game-image');

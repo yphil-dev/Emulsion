@@ -290,6 +290,7 @@ async function buildFavoritesGallery({ index }) {
     page.classList.add('page');
     page.dataset.index = index;
     page.dataset.platform = 'favorites';
+    page.dataset.viewMode = LB.favoritesViewMode;
 
     const pageContent = document.createElement('div');
     pageContent.classList.add('page-content');

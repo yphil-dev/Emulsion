@@ -756,7 +756,13 @@ export async function setGalleryViewMode(viewMode, save) {
     viewToggleBtn.classList.remove('fa-list', 'fa-th');
 
     if (save) {
-        await updatePreference(LB.currentPlatform, 'viewMode', viewMode);
+        if (LB.currentPlatform === 'favorites') {
+            await updatePreference('settings', 'favoritesViewMode', viewMode);
+        } else if (LB.currentPlatform === 'recents') {
+            await updatePreference('settings', 'recentlyPlayedViewMode', viewMode);
+        } else {
+            await updatePreference(LB.currentPlatform, 'viewMode', viewMode);
+        }
     }
 
     if (viewMode === 'list') {

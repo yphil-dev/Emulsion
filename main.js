@@ -589,7 +589,9 @@ const defaultPreferences = {
         homeMenuTheme: "flat",
         disabledPlatformsPolicy: "show",
         recentlyPlayedPolicy: "hide",
+        recentlyPlayedViewMode: "grid",
         favoritesPolicy: "hide",
+        favoritesViewMode: "grid",
         theme: "default",
         steamGridAPIKey: "",
         giantBombAPIKey: ""

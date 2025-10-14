@@ -332,7 +332,6 @@ export function updateHeader(platformName, gameName) {
     const header = document.getElementById("header");
     const headerControls = document.getElementById("header-controls");
 
-    // Handle visibility
     const showHeader = platformName !== 'hide';
     const showControls = !(LB.mode === 'menu' || platformName === 'settings');
 
@@ -341,17 +340,17 @@ export function updateHeader(platformName, gameName) {
 
     if (!showHeader) return;
 
-    // Get platform data
     let platform;
     if (platformName === 'settings') {
         platform = { nbGames: PLATFORMS.length, displayName: "Settings", vendor: "Emulsion" };
     } else if (platformName === 'favorites') {
         platform = { nbGames: LB.favorites.length, displayName: "Favorites", vendor: "Emulsion" };
+    } else if (platformName === 'recents') {
+        platform = { nbGames: LB.recents.length, displayName: "Recently played", vendor: "Emulsion" };
     } else {
         platform = getPlatformByName(platformName);
     }
 
-    // Determine item type and count
     let itemType = gameName ? 'image' : 'game';
     let count = platform.nbGames;
 
@@ -359,13 +358,10 @@ export function updateHeader(platformName, gameName) {
     if (platformName === 'recents') count = LB.recents.length;
     if (count === 0) count = 'No';
 
-    // Update vendor for game menu mode
     const vendor = LB.mode === 'gameMenu' ? platform.displayName : platform.vendor || 'Emulsion';
 
-    // Pluralize helper
     const pluralize = (count, singular) => count === 1 ? singular : `${singular}s`;
 
-    // Update DOM elements
     header.querySelector('.platform-name').textContent = gameName || platform.displayName;
     header.querySelector('.vendor-name').textContent = vendor;
     header.querySelector('.item-number').textContent = count;

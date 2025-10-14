@@ -301,15 +301,16 @@ async function buildFavoritesGallery({ index }) {
             const coverPath = findImageFile(path.join(gamesDir, 'images'), favorite.gameName);
             const imageExists = coverPath && fs.existsSync(coverPath);
 
-            console.log("favorite.gameName: ", favorite.gameName);
-            console.log("gamesDir, coverPath: ", gamesDir, coverPath);
+            const displayName = cleanFileName(favorite.gameName);
+
+            console.log("favorite.gamePath: ", favorite.gamePath);
 
             const gameContainer = buildGameContainer({
                 platform: favorite.platform,
                 emulator: favorite.emulator,
                 emulatorArgs: favorite.emulatorArgs,
-                filePath: favorite.filePath,
-                displayName: favorite.gameName,
+                filePath: favorite.gamePath,
+                displayName: displayName,
                 dataName: favorite.gameName,
                 imagePath: coverPath,
                 imageExists,

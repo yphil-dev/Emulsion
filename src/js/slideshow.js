@@ -548,22 +548,12 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
 
     if (event.key === '+') {
         event.preventDefault();
-
-        if (pendingAction === 'add') {
-            // Second press - execute add
-            const existingDialog = document.getElementById('favorite-confirmation');
-            if (existingDialog) existingDialog.remove();
-            pendingAction = null;
-            clearTimeout(confirmationTimeout);
-            addFavorite(selectedContainer);
-        } else {
-            // First press - show confirmation
-            pendingAction = 'add';
-            showConfirmationDialog('Press + again to add to favorites');
-        }
+        handleFavoriteKey('add', selectedContainer);
     }
+
     if (event.key === '-') {
-        removeFavorite(selectedContainer);
+        event.preventDefault();
+        handleFavoriteKey('remove', selectedContainer);
     }
 
     if (event.key === 'i') {
@@ -895,4 +885,32 @@ function showConfirmationDialog(message) {
             pendingAction = null;
         }
     }, 5000);
+}
+
+function handleFavoriteKey(actionType, selectedContainer) {
+    const actions = {
+        'add': {
+            func: addFavorite,
+            message: 'Press + again to add to favorites'
+        },
+        'remove': {
+            func: removeFavorite,
+            message: 'Press - again to remove from favorites'
+        }
+    };
+
+    const { func, message } = actions[actionType];
+
+    if (pendingAction === actionType) {
+        // Second press - execute action
+        const existingDialog = document.getElementById('favorite-confirmation');
+        if (existingDialog) existingDialog.remove();
+        pendingAction = null;
+        clearTimeout(confirmationTimeout);
+        func(selectedContainer);
+    } else {
+        // First press - show confirmation
+        pendingAction = actionType;
+        showConfirmationDialog(message);
+    }
 }

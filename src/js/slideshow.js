@@ -415,6 +415,7 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
     const menu = document.getElementById('menu');
 
     const isGallery = LB.mode === 'gallery';
+    const isGameMenu = LB.mode === 'gameMenu';
 
     const containers = isGallery ? GalleryState.gameContainers : Array.from(menu.querySelectorAll('.menu-game-container'));
 
@@ -449,6 +450,9 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         GalleryState.selectedIndex = isListMode ? Math.min(GalleryState.selectedIndex + 1, containers.length - 1) : _moveRows(GalleryState.selectedIndex, 1);
         break;
     case 'Escape':
+        if (isGameMenu) {
+            closeGameMenu();
+        }
         initSlideShow(activePage.dataset.platform);
         break;
     }

@@ -1102,22 +1102,25 @@ function buildManualSelectButton(gameName, platformName, imgElem) {
         const srcPath = await ipcRenderer.invoke('pick-image');
         if (!srcPath) return;  // user cancelled
 
-        // Destination in user data covers folder
-        const destPath = path.join(
-            LB.userDataPath,
-            'covers',
-            platformName,
-            `${gameName}.jpg`
-        );
+        const gamesDir = window.LB.preferences[platformName].gamesDir;
 
-        // Update the img element to the new file (with cache‐bust)
-        imgElem.src = `file://${destPath}?${Date.now()}`;
+        const extension = srcPath.split('.').pop();
+
+        // Destination in user data covers folder
+        const destPath = path.join(gamesDir, 'images', `${gameName}.${extension}`);
 
         // Tell main to copy the file
-        const ok = await ipcRenderer.invoke('save-cover', srcPath, destPath);
-        console.log(ok
-                    ? `Cover saved to ${destPath}`
-                    : 'Failed to save cover');
+        const success = await ipcRenderer.invoke('save-cover', srcPath, destPath);
+
+        console.log("imgSrc: ", success);
+
+        if (success) {
+            imgElem.src = `file://${destPath}?${Date.now()}`;
+            console.log(`Cover saved to ${destPath}`);
+        } else {
+            console.log('Failed to save cover');
+        }
+
     });
 
     return btn;

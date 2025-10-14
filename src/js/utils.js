@@ -519,6 +519,8 @@ export async function downloadImage(imgSrc, platform, gameName) {
         return null;
     }
 
+    console.log("imgSrc, platform, gameName, gamesDir: ", imgSrc, platform, gameName, gamesDir);
+
     try {
         const result = await ipcRenderer.invoke('download-image', imgSrc, platform, gameName, gamesDir);
         if (result.success) {

@@ -1,37 +1,53 @@
 // src/js/backends/wikipedia-text.js
 
-const fetchGameDataStructured = async (gameName) => {
+const fetchGameDataStructured = async (gameName, platform = null) => {
     try {
-        // First use Wikipedia API to find the canonical page
+        // Build Wikipedia search URL
         const wikiSearchUrl = new URL('https://en.wikipedia.org/w/api.php');
         wikiSearchUrl.searchParams.set('action', 'query');
         wikiSearchUrl.searchParams.set('format', 'json');
         wikiSearchUrl.searchParams.set('origin', '*');
         wikiSearchUrl.searchParams.set('list', 'search');
-        wikiSearchUrl.searchParams.set('srsearch', `"${gameName}" video game`);
+
+        // If platform provided, include it to bias search results
+        const srsearch = platform
+            ? `"${gameName}" video game ${platform}`
+            : `"${gameName}" video game`;
+
+        wikiSearchUrl.searchParams.set('srsearch', srsearch);
         wikiSearchUrl.searchParams.set('srlimit', '10');
 
         const wikiSearchResp = await fetch(wikiSearchUrl.toString());
         const wikiSearchData = await wikiSearchResp.json();
 
-        const normalize = str => str.toLowerCase().replace(/[^a-z0-9]+/g, '');
-        const query = normalize(gameName);
         const candidates = wikiSearchData.query?.search || [];
-
-        // 1️⃣ Exact match first
-        let mainGamePage = candidates.find(p => normalize(p.title) === query);
-
-        // 2️⃣ Then prefix match
-        if (!mainGamePage) {
-            mainGamePage = candidates.find(p => normalize(p.title).startsWith(query));
+        if (!candidates.length) {
+            console.log('❌ No Wikipedia search results');
+            return null;
         }
 
-        // 3️⃣ Then any partial match, excluding junk
+        // Normalizers
+        const normalize = str => (str || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+        const stripHtml = s => (s || '').replace(/<[^>]+>/g, '');
+        const query = normalize(gameName);
+        const platformNorm = platform ? platform.toLowerCase() : null;
+
+        // Candidate selection strategy:
+        // 1) exact title
+        // 2) snippet includes platform (if provided)
+        // 3) title starts with query (prefix)
+        // 4) title contains query (partial) excluding film/movie/etc.
+        // 5) snippet contains "video game"
+        let mainGamePage =
+            candidates.find(p => normalize(p.title) === query) ||
+            (platform ? candidates.find(p => stripHtml(p.snippet).toLowerCase().includes(platformNorm)) : null) ||
+            candidates.find(p => normalize(p.title).startsWith(query)) ||
+            candidates.find(p => normalize(p.title).includes(query) && !/film|movie|collection|lcd|watch/.test(p.title.toLowerCase())) ||
+            candidates.find(p => stripHtml(p.snippet).toLowerCase().includes('video game'));
+
         if (!mainGamePage) {
-            mainGamePage = candidates.find(p =>
-                normalize(p.title).includes(query) &&
-                !/film|movie|collection|lcd|watch/.test(p.title.toLowerCase())
-            );
+            // As last resort, pick the top candidate
+            mainGamePage = candidates[0];
         }
 
         if (!mainGamePage) {
@@ -99,7 +115,6 @@ const fetchGameDataStructured = async (gameName) => {
         `;
 
         const url = `http://dbpedia.org/sparql?query=${encodeURIComponent(sparqlQuery)}&format=json`;
-
         const response = await fetch(url);
         const data = await response.json();
 
@@ -108,19 +123,18 @@ const fetchGameDataStructured = async (gameName) => {
             return null;
         }
 
-        // --- Aggregate all bindings ---
+        // Aggregate all bindings
         const results = data.results.bindings;
         const base = results[0];
 
-        // Helper to extract clean platform names
+        // Extract platforms array (unique)
         const extractPlatform = (item) =>
             item.platform?.value
                 ? item.platform.value.split('/').pop().replace(/_/g, ' ')
                 : null;
+        const platforms = [...new Set(results.map(extractPlatform).filter(Boolean))];
 
-        const platforms = [...new Set(results.map(extractPlatform).filter(Boolean))]; // unique array
-
-        // Clean up the data
+        // Helpers
         const cleanValue = (value) => {
             if (!value) return null;
             if (typeof value === 'string' && value.startsWith('http://dbpedia.org/resource/')) {
@@ -128,7 +142,6 @@ const fetchGameDataStructured = async (gameName) => {
             }
             return value;
         };
-
         const parseArray = (value) => {
             if (!value) return null;
             return value.split(', ').map(item => cleanValue(item.trim())).filter(item => item);
@@ -163,12 +176,12 @@ const fetchGameDataStructured = async (gameName) => {
 
 
 // --- Test Runner ---
-const testGame = async (gameName) => {
-    console.log(`\n🎮 === Testing: "${gameName}" ===`);
+const testGame = async (gameName, platform = null) => {
+    console.log(`\n🎮 === Testing: "${gameName}" ${platform ? `(platform: ${platform})` : ''} ===`);
     console.log('='.repeat(60));
 
     const startTime = Date.now();
-    const result = await fetchGameDataStructured(gameName);
+    const result = await fetchGameDataStructured(gameName, platform);
     const endTime = Date.now();
 
     console.log(`\n⏱️ Request took: ${endTime - startTime}ms`);
@@ -182,8 +195,15 @@ const testGame = async (gameName) => {
 
 // --- Run Tests ---
 (async () => {
+    // Nitro (video game) — prefer Amiga (example)
+    await testGame('nitro', 'Amiga');
+
+    // // Try without platform hint
+    // await testGame('nitro');
+
+    // // A few more checks
     // await testGame('outrun');
-    await testGame('outrun 2006');
+    // await testGame('zelda');
     // await testGame('banshee');
 
     console.log('\n✅ === All tests completed ===');

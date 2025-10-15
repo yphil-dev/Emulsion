@@ -1,6 +1,7 @@
+// src/js/backends/wikipedia-text.js
+
 const fetchGameDataStructured = async (gameName) => {
     try {
-
         // First use Wikipedia API to find the canonical page
         const wikiSearchUrl = new URL('https://en.wikipedia.org/w/api.php');
         wikiSearchUrl.searchParams.set('action', 'query');
@@ -13,28 +14,36 @@ const fetchGameDataStructured = async (gameName) => {
         const wikiSearchResp = await fetch(wikiSearchUrl.toString());
         const wikiSearchData = await wikiSearchResp.json();
 
-        // Find the main game page (exclude films, collections, etc.)
-        const mainGamePage = wikiSearchData.query?.search?.find(page =>
-            page.title.toLowerCase().includes(gameName.toLowerCase()) &&
-            !page.title.toLowerCase().includes('film') &&
-            !page.title.toLowerCase().includes('movie') &&
-            !page.title.toLowerCase().includes('collection') &&
-            !page.title.toLowerCase().includes('lcd') &&
-            !page.title.toLowerCase().includes('watch')
-        );
+        const normalize = str => str.toLowerCase().replace(/[^a-z0-9]+/g, '');
+        const query = normalize(gameName);
+        const candidates = wikiSearchData.query?.search || [];
+
+        // 1️⃣ Exact match first
+        let mainGamePage = candidates.find(p => normalize(p.title) === query);
+
+        // 2️⃣ Then prefix match
+        if (!mainGamePage) {
+            mainGamePage = candidates.find(p => normalize(p.title).startsWith(query));
+        }
+
+        // 3️⃣ Then any partial match, excluding junk
+        if (!mainGamePage) {
+            mainGamePage = candidates.find(p =>
+                normalize(p.title).includes(query) &&
+                !/film|movie|collection|lcd|watch/.test(p.title.toLowerCase())
+            );
+        }
 
         if (!mainGamePage) {
             console.log('❌ No main game page found');
             return null;
         }
 
-        // console.log(`🎯 Main Wikipedia page: "${mainGamePage.title}"`);
+        console.log(`🎯 Main Wikipedia page: "${mainGamePage.title}"`);
 
         // Convert Wikipedia title to DBpedia resource name
         const dbpediaResource = mainGamePage.title.replace(/ /g, '_');
-        // console.log(`🔗 DBpedia resource: ${dbpediaResource}`);
 
-        // Enhanced query to get release date from the franchise page
         const sparqlQuery = `
             PREFIX dbo: <http://dbpedia.org/ontology/>
             PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -43,21 +52,19 @@ const fetchGameDataStructured = async (gameName) => {
 
             SELECT ?label ?abstract ?genre ?publisher ?platform
                    (GROUP_CONCAT(DISTINCT ?dev; SEPARATOR=", ") AS ?developers)
-                   (MIN(?relDate) AS ?firstReleaseDate)  # Get the earliest release date
+                   (MIN(?relDate) AS ?firstReleaseDate)
             WHERE {
                 <http://dbpedia.org/resource/${dbpediaResource}> rdfs:label ?label ;
                      dbo:abstract ?abstract .
                 FILTER(LANG(?label) = "en")
                 FILTER(LANG(?abstract) = "en")
 
-                # Try multiple property variations for each field
                 OPTIONAL {
                     { <http://dbpedia.org/resource/${dbpediaResource}> dbo:genre ?genre }
                     UNION
                     { <http://dbpedia.org/resource/${dbpediaResource}> dbp:genre ?genre }
                 }
 
-                # Multiple developers (array)
                 OPTIONAL {
                     { <http://dbpedia.org/resource/${dbpediaResource}> dbo:developer ?dev }
                     UNION
@@ -70,7 +77,6 @@ const fetchGameDataStructured = async (gameName) => {
                     { <http://dbpedia.org/resource/${dbpediaResource}> dbp:publisher ?publisher }
                 }
 
-                # Try to find ANY release date property
                 OPTIONAL {
                     { <http://dbpedia.org/resource/${dbpediaResource}> dbo:releaseDate ?relDate }
                     UNION
@@ -93,71 +99,61 @@ const fetchGameDataStructured = async (gameName) => {
         `;
 
         const url = `http://dbpedia.org/sparql?query=${encodeURIComponent(sparqlQuery)}&format=json`;
-        // console.log(`📡 SPARQL URL: ${url.substring(0, 200)}...`);
 
         const response = await fetch(url);
         const data = await response.json();
-
-        // console.log('📦 Raw DBpedia response:', JSON.stringify(data, null, 2));
 
         if (!data.results.bindings.length) {
             console.log('❌ No DBpedia data found for this resource');
             return null;
         }
-if (!data.results.bindings.length) {
-    console.log('❌ No DBpedia data found for this resource');
-    return null;
-}
 
-// --- Aggregate all bindings ---
-const results = data.results.bindings;
+        // --- Aggregate all bindings ---
+        const results = data.results.bindings;
+        const base = results[0];
 
-// All rows share label/abstract, so take those from the first
-const base = results[0];
+        // Helper to extract clean platform names
+        const extractPlatform = (item) =>
+            item.platform?.value
+                ? item.platform.value.split('/').pop().replace(/_/g, ' ')
+                : null;
 
-// Helper to extract clean platform names
-const extractPlatform = (item) =>
-    item.platform?.value
-        ? item.platform.value.split('/').pop().replace(/_/g, ' ')
-        : null;
+        const platforms = [...new Set(results.map(extractPlatform).filter(Boolean))]; // unique array
 
-const platforms = [...new Set(results.map(extractPlatform).filter(Boolean))]; // unique array
+        // Clean up the data
+        const cleanValue = (value) => {
+            if (!value) return null;
+            if (typeof value === 'string' && value.startsWith('http://dbpedia.org/resource/')) {
+                return value.split('/').pop().replace(/_/g, ' ');
+            }
+            return value;
+        };
 
-// Clean up the data
-const cleanValue = (value) => {
-    if (!value) return null;
-    if (typeof value === 'string' && value.startsWith('http://dbpedia.org/resource/')) {
-        return value.split('/').pop().replace(/_/g, ' ');
-    }
-    return value;
-};
+        const parseArray = (value) => {
+            if (!value) return null;
+            return value.split(', ').map(item => cleanValue(item.trim())).filter(item => item);
+        };
 
-const parseArray = (value) => {
-    if (!value) return null;
-    return value.split(', ').map(item => cleanValue(item.trim())).filter(item => item);
-};
+        // Fallback: Extract year from description if no release date found
+        let releaseDate = base.firstReleaseDate?.value;
+        if (!releaseDate && base.abstract?.value) {
+            const yearMatch = base.abstract.value.match(/\b(19|20)\d{2}\b/);
+            if (yearMatch) releaseDate = yearMatch[0];
+        }
 
-// Fallback: Extract year from description if no release date found
-let releaseDate = base.firstReleaseDate?.value;
-if (!releaseDate && base.abstract?.value) {
-    const yearMatch = base.abstract.value.match(/\b(19|20)\d{2}\b/);
-    if (yearMatch) releaseDate = yearMatch[0];
-}
+        const finalResult = {
+            title: base.label?.value,
+            description: base.abstract?.value,
+            genre: cleanValue(base.genre?.value),
+            developers: parseArray(base.developers?.value),
+            publisher: cleanValue(base.publisher?.value),
+            releaseDate,
+            platforms,
+            wikipediaPage: mainGamePage.title,
+            dbpediaUri: `http://dbpedia.org/resource/${dbpediaResource}`
+        };
 
-const finalResult = {
-    title: base.label?.value,
-    description: base.abstract?.value,
-    genre: cleanValue(base.genre?.value),
-    developers: parseArray(base.developers?.value),
-    publisher: cleanValue(base.publisher?.value),
-    releaseDate,
-    platforms,
-    wikipediaPage: mainGamePage.title,
-    dbpediaUri: `http://dbpedia.org/resource/${dbpediaResource}`
-};
-
-return finalResult;
-
+        return finalResult;
 
     } catch (err) {
         console.error(`❌ [DBpedia] Error: ${err.message}`);
@@ -165,7 +161,8 @@ return finalResult;
     }
 };
 
-// Test function
+
+// --- Test Runner ---
 const testGame = async (gameName) => {
     console.log(`\n🎮 === Testing: "${gameName}" ===`);
     console.log('='.repeat(60));
@@ -182,10 +179,12 @@ const testGame = async (gameName) => {
     return result;
 };
 
-// Run tests
+
+// --- Run Tests ---
 (async () => {
-    // Test with Zelda
-    await testGame('Zeewolf');
+    // await testGame('outrun');
+    await testGame('outrun 2006');
+    // await testGame('banshee');
 
     console.log('\n✅ === All tests completed ===');
 })();

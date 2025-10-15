@@ -162,38 +162,9 @@ export async function buildGallery(params) {
     const gameFiles = await scanDirectory(gamesDir, extensions, true);
 
     if (gameFiles.length === 0) {
-        const emptyGameContainer = document.createElement('div');
-        emptyGameContainer.classList.add('empty-platform-game-container');
-        // emptyGameContainer.style.gridColumn = `1 / span 2`;
-
-        emptyGameContainer.style.gridColumn = `1 / span ${LB.galleryNumOfCols}`;
-
-        const iconP = document.createElement('p');
-        const titleP = document.createElement('p');
-        const textCode = document.createElement('code');
-
-        titleP.textContent = `No game files found in `;
-        textCode.innerHTML = gamesDir;
-        titleP.appendChild(textCode);
-
+        const emptyContainer = buildEmptyPageGameContainer(platform, gamesDir);
         page.dataset.empty = true;
-
-        const icon = document.createElement('i');
-        icon.className = 'fa fa-heartbeat fa-5x';
-        icon.setAttribute('aria-hidden', 'true');
-
-        const confButton = document.createElement('button');
-        confButton.classList.add('button');
-        confButton.textContent = `Configure ${getPlatformInfo(platform).vendor} ${getPlatformInfo(platform).name}`;
-
-        confButton.addEventListener('click', () => openPlatformMenu(platform));
-
-        iconP.appendChild(icon);
-        emptyGameContainer.appendChild(iconP);
-        emptyGameContainer.appendChild(titleP);
-        emptyGameContainer.appendChild(confButton);
-
-        pageContent.appendChild(emptyGameContainer);
+        pageContent.appendChild(emptyContainer);
         page.appendChild(pageContent);
         return page;
     }
@@ -278,10 +249,7 @@ export function buildGameContainer({
 async function buildFavoritesGallery({ index }) {
     const favorites = LB.favorites;
 
-    if (!favorites || favorites.length === 0 || favorites.error) {
-        console.log("No favorite entries found.");
-        return null;
-    }
+    const noFavorites = (!favorites || favorites.length === 0 || favorites.error);
 
     const page = document.createElement('div');
     page.classList.add('page');
@@ -310,6 +278,12 @@ async function buildFavoritesGallery({ index }) {
         } catch (err) {
             console.error('Failed to get platform preference:', err);
         }
+    }
+
+    if (noFavorites) {
+        const emptyContainer = buildEmptyPageGameContainer();
+        pageContent.appendChild(emptyContainer);
+
     }
 
     page.appendChild(pageContent);
@@ -414,4 +388,41 @@ function buildSettingsPageContent(platforms) {
     return pageContent;
 }
 
+
+function buildEmptyPageGameContainer(platform, gamesDir) {
+    const container = document.createElement('div');
+    container.classList.add('empty-platform-game-container');
+    container.style.gridColumn = `1 / span ${LB.galleryNumOfCols}`;
+
+    const iconP = document.createElement('p');
+    const titleP = document.createElement('p');
+    const icon = document.createElement('i');
+    let confButton = null;
+
+    if (platform && gamesDir) {
+        const textCode = document.createElement('code');
+        textCode.textContent = gamesDir;
+
+        titleP.textContent = 'No game files found in ';
+        titleP.appendChild(textCode);
+
+        icon.className = 'fa fa-heartbeat fa-5x';
+        icon.setAttribute('aria-hidden', 'true');
+        iconP.appendChild(icon);
+
+        confButton = document.createElement('button');
+        confButton.classList.add('button');
+        confButton.textContent = `Configure ${getPlatformInfo(platform).vendor} ${getPlatformInfo(platform).name}`;
+        confButton.addEventListener('click', () => openPlatformMenu(platform));
+    } else {
+        titleP.textContent = 'No favorites yet — go add some!';
+        icon.className = 'fa fa-thumbs-o-down fa-5x';
+        iconP.appendChild(icon);
+    }
+
+    container.append(iconP, titleP);
+    if (confButton) container.append(confButton);
+
+    return container;
+}
 

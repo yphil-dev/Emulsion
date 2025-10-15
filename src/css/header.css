@@ -65,7 +65,7 @@ header .platform-image {
 }
 
 .platform-name {
-  font-size: 42pt;
+  font-size: 1.8em;
   font-weight: bold;
   color: var(--color-platform-text-header);
   text-shadow:
@@ -76,6 +76,24 @@ header .platform-image {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+}
+
+.vendor-name {
+    position: absolute;
+    top: 0;
+    left: 48px;
+
+    padding: 0 6px;
+    font-weight: bold;
+    white-space: nowrap;
+    z-index: 10;
+
+    color: white;
+    font-size: 0.5em;
+
+    border: 1px  solid var(--color-border-header);
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .platform-stats {
@@ -103,22 +121,4 @@ header .platform-image {
 .platform-name-container {
     position: relative;
     display: inline-block;
-}
-
-.vendor-name {
-    position: absolute;
-    top: 0;
-    left: 48px;
-
-    padding: 0 6px;
-    font-weight: bold;
-    white-space: nowrap;
-    z-index: 10;
-
-    color: white;
-    font-size: 12pt;
-
-    border: 1px  solid var(--color-border-header);
-    border-radius: 6px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }

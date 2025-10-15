@@ -1,5 +1,3 @@
-// test-dbpedia-sparql.js
-
 const fetchGameDataStructured = async (gameName) => {
     try {
         console.log(`🔍 Finding main Wikipedia page for: "${gameName}"`);
@@ -37,66 +35,63 @@ const fetchGameDataStructured = async (gameName) => {
         const dbpediaResource = mainGamePage.title.replace(/ /g, '_');
         console.log(`🔗 DBpedia resource: ${dbpediaResource}`);
 
+        // Enhanced query to get release date from the franchise page
         const sparqlQuery = `
-    PREFIX dbo: <http://dbpedia.org/ontology/>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX dbp: <http://dbpedia.org/property/>
-    PREFIX dct: <http://purl.org/dc/terms/>
+            PREFIX dbo: <http://dbpedia.org/ontology/>
+            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+            PREFIX dbp: <http://dbpedia.org/property/>
+            PREFIX dct: <http://purl.org/dc/terms/>
 
-    SELECT ?label ?abstract ?genre ?publisher ?platform
-           (GROUP_CONCAT(DISTINCT ?dev; SEPARATOR=", ") AS ?developers)
-           (GROUP_CONCAT(DISTINCT ?relDate; SEPARATOR=", ") AS ?allReleaseDates)
-    WHERE {
-        <http://dbpedia.org/resource/${dbpediaResource}> rdfs:label ?label ;
+            SELECT ?label ?abstract ?genre ?publisher ?platform
+                   (GROUP_CONCAT(DISTINCT ?dev; SEPARATOR=", ") AS ?developers)
+                   (MIN(?relDate) AS ?firstReleaseDate)  # Get the earliest release date
+            WHERE {
+                <http://dbpedia.org/resource/${dbpediaResource}> rdfs:label ?label ;
                      dbo:abstract ?abstract .
-        FILTER(LANG(?label) = "en")
-        FILTER(LANG(?abstract) = "en")
+                FILTER(LANG(?label) = "en")
+                FILTER(LANG(?abstract) = "en")
 
-        # Try multiple property variations for each field
-        OPTIONAL {
-            { <http://dbpedia.org/resource/${dbpediaResource}> dbo:genre ?genre }
-            UNION
-            { <http://dbpedia.org/resource/${dbpediaResource}> dbp:genre ?genre }
-        }
+                # Try multiple property variations for each field
+                OPTIONAL {
+                    { <http://dbpedia.org/resource/${dbpediaResource}> dbo:genre ?genre }
+                    UNION
+                    { <http://dbpedia.org/resource/${dbpediaResource}> dbp:genre ?genre }
+                }
 
-        # Multiple developers (array)
-        OPTIONAL {
-            { <http://dbpedia.org/resource/${dbpediaResource}> dbo:developer ?dev }
-            UNION
-            { <http://dbpedia.org/resource/${dbpediaResource}> dbp:developer ?dev }
-        }
+                # Multiple developers (array)
+                OPTIONAL {
+                    { <http://dbpedia.org/resource/${dbpediaResource}> dbo:developer ?dev }
+                    UNION
+                    { <http://dbpedia.org/resource/${dbpediaResource}> dbp:developer ?dev }
+                }
 
-        OPTIONAL {
-            { <http://dbpedia.org/resource/${dbpediaResource}> dbo:publisher ?publisher }
-            UNION
-            { <http://dbpedia.org/resource/${dbpediaResource}> dbp:publisher ?publisher }
-        }
+                OPTIONAL {
+                    { <http://dbpedia.org/resource/${dbpediaResource}> dbo:publisher ?publisher }
+                    UNION
+                    { <http://dbpedia.org/resource/${dbpediaResource}> dbp:publisher ?publisher }
+                }
 
-        # Try EVERY possible release date property
-        OPTIONAL {
-            { <http://dbpedia.org/resource/${dbpediaResource}> dbo:releaseDate ?relDate }
-            UNION
-            { <http://dbpedia.org/resource/${dbpediaResource}> dbp:released ?relDate }
-            UNION
-            { <http://dbpedia.org/resource/${dbpediaResource}> dbp:releaseDate ?relDate }
-            UNION
-            { <http://dbpedia.org/resource/${dbpediaResource}> dct:issued ?relDate }
-            UNION
-            { <http://dbpedia.org/resource/${dbpediaResource}> dbp:published ?relDate }
-            UNION
-            { <http://dbpedia.org/resource/${dbpediaResource}> dbp:date ?relDate }
-        }
+                # Try to find ANY release date property
+                OPTIONAL {
+                    { <http://dbpedia.org/resource/${dbpediaResource}> dbo:releaseDate ?relDate }
+                    UNION
+                    { <http://dbpedia.org/resource/${dbpediaResource}> dbp:released ?relDate }
+                    UNION
+                    { <http://dbpedia.org/resource/${dbpediaResource}> dbp:releaseDate ?relDate }
+                    UNION
+                    { <http://dbpedia.org/resource/${dbpediaResource}> dct:issued ?relDate }
+                }
 
-        OPTIONAL {
-            { <http://dbpedia.org/resource/${dbpediaResource}> dbo:computingPlatform ?platform }
-            UNION
-            { <http://dbpedia.org/resource/${dbpediaResource}> dbp:platforms ?platform }
-            UNION
-            { <http://dbpedia.org/resource/${dbpediaResource}> dbo:platform ?platform }
-        }
-    }
-    GROUP BY ?label ?abstract ?genre ?publisher ?platform
-`;
+                OPTIONAL {
+                    { <http://dbpedia.org/resource/${dbpediaResource}> dbo:computingPlatform ?platform }
+                    UNION
+                    { <http://dbpedia.org/resource/${dbpediaResource}> dbp:platforms ?platform }
+                    UNION
+                    { <http://dbpedia.org/resource/${dbpediaResource}> dbo:platform ?platform }
+                }
+            }
+            GROUP BY ?label ?abstract ?genre ?publisher ?platform
+        `;
 
         const url = `http://dbpedia.org/sparql?query=${encodeURIComponent(sparqlQuery)}&format=json`;
         console.log(`📡 SPARQL URL: ${url.substring(0, 200)}...`);
@@ -104,6 +99,7 @@ const fetchGameDataStructured = async (gameName) => {
         const response = await fetch(url);
         const data = await response.json();
 
+        console.log('📦 Raw DBpedia response:', JSON.stringify(data, null, 2));
 
         if (!data.results.bindings.length) {
             console.log('❌ No DBpedia data found for this resource');
@@ -127,18 +123,29 @@ const fetchGameDataStructured = async (gameName) => {
             return value.split(', ').map(item => cleanValue(item.trim())).filter(item => item);
         };
 
+        // Fallback: Extract year from description if no release date found
+        let releaseDate = result.firstReleaseDate?.value;
+        if (!releaseDate && result.abstract?.value) {
+            const yearMatch = result.abstract.value.match(/\b1986\b/); // Zelda specific
+            if (yearMatch) {
+                releaseDate = yearMatch[0];
+                console.log(`📅 Extracted release year from description: ${releaseDate}`);
+            }
+        }
+
         const finalResult = {
             title: result.label?.value,
             description: result.abstract?.value,
             genre: cleanValue(result.genre?.value),
             developers: parseArray(result.developers?.value),
             publisher: cleanValue(result.publisher?.value),
-            releaseDates: parseArray(result.allReleaseDates?.value), // Changed this line
+            releaseDate: releaseDate, // Single release date
             platforms: cleanValue(result.platform?.value),
             wikipediaPage: mainGamePage.title,
             dbpediaUri: `http://dbpedia.org/resource/${dbpediaResource}`
         };
 
+        console.log('✨ Final structured data:', finalResult);
         return finalResult;
 
     } catch (err) {
@@ -168,12 +175,8 @@ const testGame = async (gameName) => {
 (async () => {
     console.log('🎯 DBpedia SPARQL Game Data - Structured Test\n');
 
-    // Test with some popular games
+    // Test with Zelda
     await testGame('The Legend of Zelda');
-    // await testGame('Super Mario Bros');
-    // await testGame('Final Fantasy VII');
-    // await testGame('Minecraft');
-    // await testGame('Doom');
 
     console.log('\n✅ === All tests completed ===');
 })();

@@ -1,5 +1,5 @@
 import { PLATFORMS } from './platforms.js';
-import { buildGameContainer } from './gallery.js';
+import { buildEmptyPageGameContainer } from './gallery.js';
 
 // DOM and UI utility functions
 
@@ -509,9 +509,14 @@ export async function addFavorite(container) {
         platform: container.dataset.platform
     };
 
+    const emptyPageGameContainer = favPage.querySelector('.empty-platform-game-container');
+
     if (favPage) {
+        if (emptyPageGameContainer) {
+            emptyPageGameContainer.remove();
+        }
         const clone = container.cloneNode(true);
-        clone.classList.remove('selected'); // optional
+        clone.classList.remove('selected');
         favPage.appendChild(clone);
     }
 
@@ -532,6 +537,9 @@ export async function addFavorite(container) {
 }
 
 export async function removeFavorite(container) {
+    const galleries = document.getElementById('galleries');
+    const favPage = galleries.querySelector('.page[data-platform="favorites"] .page-content');
+
     const favoriteEntry = {
         gameName: container.dataset.gameName,
         gamePath: container.dataset.gamePath,
@@ -547,7 +555,17 @@ export async function removeFavorite(container) {
         const result = await ipcRenderer.invoke('remove-favorite', favoriteEntry);
         console.log("removeFavorite - result: ", result);
         if (result.success) {
-            container.remove();
+
+            if (favPage) {
+                const favorite = favPage.querySelector(`.game-container[data-game-name="${favoriteEntry.gameName}"]`);
+                favorite.remove();
+                const remaining = favPage.querySelectorAll('.game-container').length;
+                if (remaining === 0) {
+                    const emptyPageGameContainer = buildEmptyPageGameContainer();
+                    favPage.appendChild(emptyPageGameContainer);
+                }
+            }
+
             console.info(`Removed favorite: ${favoriteEntry.gameName}`);
             return result.path;
         } else {

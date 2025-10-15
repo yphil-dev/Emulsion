@@ -41,10 +41,6 @@ window.onMenuKeyDown = function onMenuKeyDown(event) {
     case 'Enter':
         document.querySelector('.save-button').click();
         break;
-
-    case 'F11':
-        toggleFullScreen();
-        break;
     }
 
 }
@@ -104,18 +100,6 @@ window.onGameMenuKeyDown = function onGameMenuKeyDown(event) {
         const selectedImg = selectedGameContainer.querySelector('.game-image');
         closeGameMenu(selectedImg.src);
         initGallery(LB.currentPlatform);
-        break;
-
-    case 'F5':
-        if (event.shiftKey) {
-            ipcRenderer.invoke('restart');
-        } else {
-            window.location.reload();
-        }
-        break;
-    case 'F11':
-        // event.preventDefault();
-        toggleFullScreen();
         break;
     case 'Escape':
         closeGameMenu();

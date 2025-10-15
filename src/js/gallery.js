@@ -214,7 +214,9 @@ export function buildGameContainer({
     const gamesDir = LB.preferences[platform].gamesDir;
     const displayName = cleanFileName(gameName);
     const coverPath = findImageFile(path.join(gamesDir, 'images'), gameName);
-
+    const platformBadge = document.createElement('div');
+    platformBadge.className = 'platform-badge';
+    platformBadge.textContent = platform;
     container.classList.add('game-container');
     container.title = `${displayName}
 
@@ -230,17 +232,23 @@ export function buildGameContainer({
     container.dataset.gamePath = filePath;
     container.dataset.index = index;
 
-    const imgEl = document.createElement('img');
-    imgEl.classList.add('game-image');
-    imgEl.src = coverPath ? coverPath : path.join(LB.baseDir, 'img', 'missing.png');
+    const gameImage = document.createElement('img');
+    gameImage.classList.add('game-image');
+    gameImage.src = coverPath ? coverPath : path.join(LB.baseDir, 'img', 'missing.png');
     if (!coverPath) container.dataset.missingImage = true;
-    if (!coverPath) imgEl.classList.add('missing-image');
+    if (!coverPath) gameImage.classList.add('missing-image');
+
+    const imageContainer = document.createElement('div');
+    imageContainer.classList.add('game-container-image');
 
     const label = document.createElement('div');
     label.classList.add('game-label');
+    const labelText = document.createElement('div');
     label.textContent = displayName;
 
-    container.appendChild(imgEl);
+    imageContainer.appendChild(gameImage);
+    container.appendChild(imageContainer);
+    container.appendChild(platformBadge);
     container.appendChild(label);
 
     return container;
@@ -389,13 +397,14 @@ function buildSettingsPageContent(platforms) {
 }
 
 
-function buildEmptyPageGameContainer(platform, gamesDir) {
+export function buildEmptyPageGameContainer(platform, gamesDir) {
     const container = document.createElement('div');
     container.classList.add('empty-platform-game-container');
     container.style.gridColumn = `1 / span ${LB.galleryNumOfCols}`;
 
     const iconP = document.createElement('p');
     const titleP = document.createElement('p');
+    const subTitleP = document.createElement('p');
     const icon = document.createElement('i');
     let confButton = null;
 
@@ -416,11 +425,13 @@ function buildEmptyPageGameContainer(platform, gamesDir) {
         confButton.addEventListener('click', () => openPlatformMenu(platform));
     } else {
         titleP.textContent = 'No favorites yet — go add some!';
+        subTitleP.textContent = 'Press □ to add the selected game to favorites';
+
         icon.className = 'fa fa-thumbs-o-down fa-5x';
         iconP.appendChild(icon);
     }
 
-    container.append(iconP, titleP);
+    container.append(iconP, titleP, subTitleP);
     if (confButton) container.append(confButton);
 
     return container;

@@ -131,12 +131,6 @@ export function initSlideShow(platformToDisplay) {
             case 'End':
                 initSlideShow('settings');
                 break;
-            case 'F5':
-                event.shiftKey ? ipcRenderer.invoke('restart') : window.location.reload();
-                break;
-            case 'F11':
-                toggleFullScreen();
-                break;
             case 'Escape':
                 showQuitConfirmationDialog();
                 break;

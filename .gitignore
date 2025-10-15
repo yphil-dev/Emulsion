@@ -6,7 +6,7 @@ tmp/
 /out/
 /DEBIAN
 emulsion.desktop
-
+preferences.json
 # Temporary files
 .tmp/
 tmp/

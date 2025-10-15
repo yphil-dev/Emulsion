@@ -51,22 +51,19 @@ export function initSlideShow(platformToDisplay) {
             slide.style.setProperty('--angle', angle);
             slide.style.setProperty('--radius', radius);
 
-            slide.classList.remove(
-                'active', 'prev-slide-3d', 'prev-slide-flat',
-                'next-slide-3d', 'next-slide-flat',
-                'adjacent-flat', 'adjacent-3d'
-            );
+            slide.classList.remove('active', 'incoming', 'outgoing', 'hidden');
 
             if (i === currentIndex) {
                 LB.currentPlatform = slide.dataset.platform;
                 slide.classList.add('active');
             } else if (i === (currentIndex - 1 + totalSlides) % totalSlides) {
-                slide.classList.add(is3D ? 'prev-slide-3d' : 'prev-slide-flat');
+                slide.classList.add('outgoing'); // slide we just left
             } else if (i === (currentIndex + 1) % totalSlides) {
-                slide.classList.add(is3D ? 'next-slide-3d' : 'next-slide-flat');
+                slide.classList.add('incoming'); // slide coming in next
             } else {
-                slide.classList.add(is3D ? 'adjacent-3d' : 'adjacent-flat');
+                slide.classList.add('hidden');
             }
+
         });
     }
 

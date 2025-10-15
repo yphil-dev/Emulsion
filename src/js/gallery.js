@@ -1,5 +1,11 @@
 import { getPlatformInfo, PLATFORMS } from './platforms.js';
-import { safeFileName, cleanFileName, stripExtensions, scanDirectory, findImageFile } from './utils.js';
+import { safeFileName,
+         cleanFileName,
+         stripExtensions,
+         scanDirectory,
+         getPs3GameName,
+         getEbootPath,
+         findImageFile } from './utils.js';
 import { getPreference, incrementNbGames } from './preferences.js';
 import { openPlatformMenu } from './menu.js';
 
@@ -143,7 +149,6 @@ export async function buildGallery(params) {
     }
 
     const imagesDir = path.join(gamesDir, 'images');
-    const getEbootPath = (gameFile) => path.join(path.dirname(gameFile), 'USRDIR', 'EBOOT.BIN');
 
     async function getPs3GameTitleSafe(filePath) {
         try {
@@ -197,33 +202,24 @@ export async function buildGallery(params) {
         let gameFilePath = originalGameFilePath;
         let fileName = path.basename(gameFilePath);
         let fileNameWithoutExt = stripExtensions(fileName, extensions);
-        let displayName = cleanFileName(fileNameWithoutExt);
 
         // PS3 special handling
         if (platform === 'ps3') {
-            const ps3Title = await getPs3GameTitleSafe(gameFilePath);
+            const ps3Title = await getPs3GameName(gameFilePath);
             if (ps3Title) {
                 fileNameWithoutExt = safeFileName(ps3Title);
-                displayName = ps3Title;
             } else {
                 fileNameWithoutExt = stripExtensions(fileName);
-                displayName = cleanFileName(fileNameWithoutExt);
             }
             gameFilePath = getEbootPath(originalGameFilePath);
         }
-
-        const coverPath = findImageFile(imagesDir, fileNameWithoutExt);
-        const imageExists = fs.existsSync(coverPath);
 
         const gameContainer = buildGameContainer({
             platform,
             emulator,
             emulatorArgs,
             filePath: gameFilePath,
-            displayName,
-            dataName: fileNameWithoutExt,
-            imagePath: coverPath,
-            imageExists,
+            gameName: fileNameWithoutExt,
             index: i
         });
 
@@ -240,13 +236,14 @@ export function buildGameContainer({
     emulator,
     emulatorArgs,
     filePath,
-    displayName,
-    dataName,
-    imagePath,
-    imageExists,
+    gameName,
     index
 }) {
     const container = document.createElement('div');
+    const gamesDir = LB.preferences[platform].gamesDir;
+    const displayName = cleanFileName(gameName);
+    const coverPath = findImageFile(path.join(gamesDir, 'images'), gameName);
+
     container.classList.add('game-container');
     container.title = `${displayName}
 
@@ -254,7 +251,7 @@ export function buildGameContainer({
 - Click to launch with ${emulator}
 - Right-click to fetch cover art image`;
 
-    container.dataset.gameName = dataName;
+    container.dataset.gameName = gameName;
     container.dataset.platform = platform;
     container.dataset.command = `${emulator} ${emulatorArgs} ${filePath}`;
     container.dataset.emulator = emulator;
@@ -264,9 +261,9 @@ export function buildGameContainer({
 
     const imgEl = document.createElement('img');
     imgEl.classList.add('game-image');
-    imgEl.src = imageExists ? imagePath : path.join(LB.baseDir, 'img', 'missing.png');
-    if (!imageExists) container.dataset.missingImage = true;
-    if (!imageExists) imgEl.classList.add('missing-image');
+    imgEl.src = coverPath ? coverPath : path.join(LB.baseDir, 'img', 'missing.png');
+    if (!coverPath) container.dataset.missingImage = true;
+    if (!coverPath) imgEl.classList.add('missing-image');
 
     const label = document.createElement('div');
     label.classList.add('game-label');
@@ -298,23 +295,13 @@ async function buildFavoritesGallery({ index }) {
 
     for (const [i, favorite] of favorites.entries()) {
         try {
-            const gamesDir = await getPreference(favorite.platform, 'gamesDir');
-            const coverPath = findImageFile(path.join(gamesDir, 'images'), favorite.gameName);
-            const imageExists = coverPath && fs.existsSync(coverPath);
-
-            const displayName = cleanFileName(favorite.gameName);
-
-            console.log("favorite.gamePath: ", favorite.gamePath);
 
             const gameContainer = buildGameContainer({
                 platform: favorite.platform,
                 emulator: favorite.emulator,
                 emulatorArgs: favorite.emulatorArgs,
                 filePath: favorite.gamePath,
-                displayName: displayName,
-                dataName: favorite.gameName,
-                imagePath: coverPath,
-                imageExists,
+                gameName: favorite.gameName,
                 index: i
             });
 
@@ -342,6 +329,7 @@ async function buildRecentGallery({ index }) {
     page.classList.add('page');
     page.dataset.index = index;
     page.dataset.platform = 'recents';
+    page.dataset.viewMode = LB.recentlyPlayedViewMode;
 
     const pageContent = document.createElement('div');
     pageContent.classList.add('page-content');
@@ -349,19 +337,13 @@ async function buildRecentGallery({ index }) {
 
     for (const [i, recent] of sortedRecents.entries()) {
         try {
-            const gamesDir = await getPreference(recent.platform, 'gamesDir');
-            const coverPath = findImageFile(path.join(gamesDir, 'images'), recent.fileName);
-            const imageExists = coverPath && fs.existsSync(coverPath);
 
             const gameContainer = buildGameContainer({
                 platform: recent.platform,
                 emulator: recent.emulator,
                 emulatorArgs: recent.emulatorArgs,
                 filePath: recent.filePath,
-                displayName: recent.gameName,
-                dataName: recent.fileName,
-                imagePath: coverPath,
-                imageExists,
+                gameName: recent.fileName,
                 index: i
             });
 

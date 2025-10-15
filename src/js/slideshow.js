@@ -368,7 +368,7 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
                 LB.currentPlatform = page.dataset.platform;
                 page.classList.add('active');
 
-                if (!isEmpty) {
+                if (!page.dataset.empty) {
                     setGalleryViewMode(page.dataset.viewMode);
                 } else {
                     updateFooterControls('dpad', 'button-dpad-nesw', 'Games', 'off');
@@ -376,17 +376,26 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
                     updateFooterControls('south', 'same', 'Cover', 'off');
                 }
 
-                updateHeaderControls(isEmpty);
+                updateHeaderControls(page.dataset);
             } else if (index === activePos - 1) page.classList.add('prev');
             else if (index === activePos + 1) page.classList.add('next');
             else page.classList.add('adjacent');
         });
     }
 
-    function updateHeaderControls(isEmpty) {
+    function updateHeaderControls(pageDataset) {
+
         const toggleViewModeButton = document.getElementById('view-mode-toggle-button');
         const platformCoversButton = document.getElementById('platform-covers-button');
-        if (isEmpty) {
+        const configPlatformButton = document.getElementById('config-platform-button');
+
+        configPlatformButton.classList.remove('disabled');
+
+        if (pageDataset.platform === 'recents' || pageDataset.platform === 'favorites') {
+            configPlatformButton.classList.add('disabled');
+        }
+
+        if (pageDataset.empty) {
             toggleViewModeButton.classList.add('disabled');
             platformCoversButton.classList.add('disabled');
         } else {

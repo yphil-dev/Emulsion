@@ -73,6 +73,8 @@ async function initializeApp() {
         LB.galleryNumOfCols = appData.preferences.settings.numberOfColumns;
         LB.homeMenuTheme = appData.preferences.settings.homeMenuTheme;
 
+        console.log("LB.favoritesViewMode: ", LB.favoritesViewMode);
+
         // Start listening
         document.addEventListener('mousemove', handleMouseInput);
         document.addEventListener('mousedown', handleMouseInput);

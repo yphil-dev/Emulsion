@@ -19,7 +19,9 @@ loadPreferences()
         LB.theme = preferences.settings.theme;
         LB.disabledPlatformsPolicy = preferences.settings.disabledPlatformsPolicy;
         LB.recentlyPlayedPolicy = preferences.settings.recentlyPlayedPolicy;
+        LB.recentlyPlayedViewMode = preferences.settings.recentlyPlayedViewMode;
         LB.favoritesPolicy = preferences.settings.favoritesPolicy;
+        LB.favoritesViewMode = preferences.settings.favoritesViewMode;
 
         console.log("LB.favoritesPolicy: ", LB.favoritesPolicy);
 

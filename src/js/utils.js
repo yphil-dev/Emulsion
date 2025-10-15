@@ -548,6 +548,7 @@ export async function removeFavorite(container) {
         const result = await ipcRenderer.invoke('remove-favorite', favoriteEntry);
         console.log("removeFavorite - result: ", result);
         if (result.success) {
+            container.remove();
             console.info(`Removed favorite: ${favoriteEntry.gameName}`);
             return result.path;
         } else {
@@ -675,4 +676,17 @@ function showBatchConfirmationDialog(gameCount) {
         document.addEventListener('keydown', onKeyDown);
         overlay.onclick = (e) => { if (e.target === overlay) onCancel(); };
     });
+}
+
+export async function getPs3GameName(filePath) {
+    try {
+        return await ipcRenderer.invoke('parse-sfo', filePath);
+    } catch (err) {
+        console.error('Failed to parse SFO:', err);
+        return null;
+    }
+}
+
+export function getEbootPath(gameFile) {
+    path.join(path.dirname(gameFile), 'USRDIR', 'EBOOT.BIN');
 }

@@ -62,37 +62,36 @@ p.name {
   height: 700px;
   background-size: cover;
   background-position: center;
-  border-radius: 24px;
   opacity: 0;
-  transform: translateX(100vw) scale(0.9);
-  transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.6s ease;
+  transform: translateX(100vw);
+  transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1), opacity 1.5s ease;
+  animation: slide-pulse-glow 5s infinite ease-in-out;
   z-index: 0;
 }
 
 .slide.active {
   opacity: 1;
-  transform: translateX(0) scale(1);
+  transform: translateX(0);
   z-index: 2;
 }
 
 .slide.incoming {
-  opacity: 0.8;
-  transform: translateX(100vw) scale(0.9);
+  opacity: 0;
+  transform: translateX(50vw);
   z-index: 1;
 }
 
 .slide.outgoing {
   opacity: 0;
-  transform: translateX(-100vw) scale(0.9);
+  transform: translateX(-50vw);
   z-index: 0;
 }
 
 .slide.hidden {
   opacity: 0;
-  transform: translateX(100vw) scale(0.8);
+  transform: translateX(100vw);
   z-index: 0;
 }
-
 
 .slide-content {
   position: relative;

@@ -1,6 +1,5 @@
 const fetchGameDataStructured = async (gameName) => {
     try {
-        console.log(`🔍 Finding main Wikipedia page for: "${gameName}"`);
 
         // First use Wikipedia API to find the canonical page
         const wikiSearchUrl = new URL('https://en.wikipedia.org/w/api.php');
@@ -29,11 +28,11 @@ const fetchGameDataStructured = async (gameName) => {
             return null;
         }
 
-        console.log(`🎯 Main Wikipedia page: "${mainGamePage.title}"`);
+        // console.log(`🎯 Main Wikipedia page: "${mainGamePage.title}"`);
 
         // Convert Wikipedia title to DBpedia resource name
         const dbpediaResource = mainGamePage.title.replace(/ /g, '_');
-        console.log(`🔗 DBpedia resource: ${dbpediaResource}`);
+        // console.log(`🔗 DBpedia resource: ${dbpediaResource}`);
 
         // Enhanced query to get release date from the franchise page
         const sparqlQuery = `
@@ -94,59 +93,71 @@ const fetchGameDataStructured = async (gameName) => {
         `;
 
         const url = `http://dbpedia.org/sparql?query=${encodeURIComponent(sparqlQuery)}&format=json`;
-        console.log(`📡 SPARQL URL: ${url.substring(0, 200)}...`);
+        // console.log(`📡 SPARQL URL: ${url.substring(0, 200)}...`);
 
         const response = await fetch(url);
         const data = await response.json();
 
-        console.log('📦 Raw DBpedia response:', JSON.stringify(data, null, 2));
+        // console.log('📦 Raw DBpedia response:', JSON.stringify(data, null, 2));
 
         if (!data.results.bindings.length) {
             console.log('❌ No DBpedia data found for this resource');
             return null;
         }
+if (!data.results.bindings.length) {
+    console.log('❌ No DBpedia data found for this resource');
+    return null;
+}
 
-        const result = data.results.bindings[0];
+// --- Aggregate all bindings ---
+const results = data.results.bindings;
 
-        // Clean up the data
-        const cleanValue = (value) => {
-            if (!value) return null;
-            if (typeof value === 'string' && value.startsWith('http://dbpedia.org/resource/')) {
-                return value.split('/').pop().replace(/_/g, ' ');
-            }
-            return value;
-        };
+// All rows share label/abstract, so take those from the first
+const base = results[0];
 
-        // Parse arrays from comma-separated strings
-        const parseArray = (value) => {
-            if (!value) return null;
-            return value.split(', ').map(item => cleanValue(item.trim())).filter(item => item);
-        };
+// Helper to extract clean platform names
+const extractPlatform = (item) =>
+    item.platform?.value
+        ? item.platform.value.split('/').pop().replace(/_/g, ' ')
+        : null;
 
-        // Fallback: Extract year from description if no release date found
-        let releaseDate = result.firstReleaseDate?.value;
-        if (!releaseDate && result.abstract?.value) {
-            const yearMatch = result.abstract.value.match(/\b1986\b/); // Zelda specific
-            if (yearMatch) {
-                releaseDate = yearMatch[0];
-                console.log(`📅 Extracted release year from description: ${releaseDate}`);
-            }
-        }
+const platforms = [...new Set(results.map(extractPlatform).filter(Boolean))]; // unique array
 
-        const finalResult = {
-            title: result.label?.value,
-            description: result.abstract?.value,
-            genre: cleanValue(result.genre?.value),
-            developers: parseArray(result.developers?.value),
-            publisher: cleanValue(result.publisher?.value),
-            releaseDate: releaseDate, // Single release date
-            platforms: cleanValue(result.platform?.value),
-            wikipediaPage: mainGamePage.title,
-            dbpediaUri: `http://dbpedia.org/resource/${dbpediaResource}`
-        };
+// Clean up the data
+const cleanValue = (value) => {
+    if (!value) return null;
+    if (typeof value === 'string' && value.startsWith('http://dbpedia.org/resource/')) {
+        return value.split('/').pop().replace(/_/g, ' ');
+    }
+    return value;
+};
 
-        console.log('✨ Final structured data:', finalResult);
-        return finalResult;
+const parseArray = (value) => {
+    if (!value) return null;
+    return value.split(', ').map(item => cleanValue(item.trim())).filter(item => item);
+};
+
+// Fallback: Extract year from description if no release date found
+let releaseDate = base.firstReleaseDate?.value;
+if (!releaseDate && base.abstract?.value) {
+    const yearMatch = base.abstract.value.match(/\b(19|20)\d{2}\b/);
+    if (yearMatch) releaseDate = yearMatch[0];
+}
+
+const finalResult = {
+    title: base.label?.value,
+    description: base.abstract?.value,
+    genre: cleanValue(base.genre?.value),
+    developers: parseArray(base.developers?.value),
+    publisher: cleanValue(base.publisher?.value),
+    releaseDate,
+    platforms,
+    wikipediaPage: mainGamePage.title,
+    dbpediaUri: `http://dbpedia.org/resource/${dbpediaResource}`
+};
+
+return finalResult;
+
 
     } catch (err) {
         console.error(`❌ [DBpedia] Error: ${err.message}`);
@@ -173,10 +184,8 @@ const testGame = async (gameName) => {
 
 // Run tests
 (async () => {
-    console.log('🎯 DBpedia SPARQL Game Data - Structured Test\n');
-
     // Test with Zelda
-    await testGame('The Legend of Zelda');
+    await testGame('Zeewolf');
 
     console.log('\n✅ === All tests completed ===');
 })();

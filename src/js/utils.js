@@ -1,4 +1,6 @@
 import { PLATFORMS } from './platforms.js';
+import { buildGameContainer } from './gallery.js';
+
 // DOM and UI utility functions
 
 export function updateFooterControls(section, newIcon, newText, display) {
@@ -257,12 +259,6 @@ function _titleCase(s) {
         .join(' ');
 }
 
-export function handleKeyDownListeners(context) {
-    const slideshow = document.getElementById('slideshow');
-    const galleries = document.getElementById('galleries');
-    const menu = document.getElementById('menu');
-}
-
 export function setKeydown(newHandler) {
     // Initialize the storage if it doesn't exist
     if (!LB._keydownHistory) LB._keydownHistory = [];
@@ -501,6 +497,8 @@ export async function executeBatchDownload(games, platformName) {
 }
 
 export async function addFavorite(container) {
+    const galleries = document.getElementById('galleries');
+    const favPage = galleries.querySelector('.page[data-platform="favorites"] .page-content');
 
     const favoriteEntry = {
         gameName: container.dataset.gameName,
@@ -511,23 +509,24 @@ export async function addFavorite(container) {
         platform: container.dataset.platform
     };
 
-    console.log("favoriteEntry: ", favoriteEntry);
+    if (favPage) {
+        const clone = container.cloneNode(true);
+        clone.classList.remove('selected'); // optional
+        favPage.appendChild(clone);
+    }
 
     try {
         const result = await ipcRenderer.invoke('add-favorite', favoriteEntry);
-        console.log("result: ", result);
+        console.log("result:", result);
         if (result.success) {
             console.info(`Yo, ${result.path}`);
-            // notify(`Image saved at ${result.path}`);
             return result.path;
         } else {
             console.error(`Error: ${result.error}`);
-            // notify(`Error saving image: ${result.error}`);
             return null;
         }
     } catch (error) {
         console.error('Error communicating with main process:', error);
-        // alert('Fail');
         return null;
     }
 }

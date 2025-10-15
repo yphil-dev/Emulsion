@@ -314,10 +314,10 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
             });
             focusIndex = null;
         } else {
-            GalleryState.selectedIndex = 0;
-            if (GalleryState.gameContainers[0]) {
-                GalleryState.gameContainers[0].classList.add('selected');
-            }
+            // GalleryState.selectedIndex = 0;
+            // if (GalleryState.gameContainers[0]) {
+            //     GalleryState.gameContainers[0].classList.add('selected');
+            // }
         }
 
         if (!page.dataset.listenersAttached) {
@@ -361,6 +361,13 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
                 initCurrentGallery(page);
                 LB.currentPlatform = page.dataset.platform;
                 page.classList.add('active');
+
+                if (page.dataset.platform === 'recents' || page.dataset.platform === 'favorites') {
+                    const platformBadges = page.querySelectorAll('.platform-badge');
+                    platformBadges.forEach(badge => {
+                        badge.style.display = 'block';
+                    });
+                }
 
                 if (!page.dataset.empty) {
                     setGalleryViewMode(page.dataset.viewMode);
@@ -451,8 +458,6 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
 
 window.onGalleryKeyDown = function onGalleryKeyDown(event) {
 
-    // console.log("event: ", event);
-
     const menu = document.getElementById('menu');
 
     const isGallery = LB.mode === 'gallery';
@@ -484,6 +489,7 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
             if (isListMode && LB.mode === 'gallery') {
                 GalleryState.selectedIndex = Math.max(GalleryState.selectedIndex - 1, 0);
             } else {
+                console.log("GalleryState.selectedIndex: ", GalleryState.selectedIndex);
                 GalleryState.selectedIndex = (GalleryState.selectedIndex - 1 + containers.length) % containers.length;
             }
         }

@@ -964,8 +964,6 @@ async function closeSettingsOrPlatformMenu() {
 
 export async function openGameMenu(container) {
 
-    console.log("gameContainer: ", container);
-
     LB.mode = 'gameMenu';
 
     const menu = document.getElementById('menu');

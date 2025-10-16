@@ -809,17 +809,16 @@ function readMeta(params) {
         const gamesDir = LB.preferences[params.platformName].gamesDir;
         params.gamesDir = gamesDir;
 
-        console.log("paramz: ", params);
 
         ipcRenderer.send('read-meta', params);
         ipcRenderer.once('game-meta-data', (event, data) => {
-            console.log("data: ", data);
+            console.log("readMeta data: ", data);
             resolve(data);
         });
     });
 }
 
-function getMeta(params) {
+function fetchMeta(params) {
 
     const gamesDir = LB.preferences[params.platformName].gamesDir;
 
@@ -883,15 +882,15 @@ function buildGamePane() {
     webLinkButton.classList.add('pane-meta-button', 'button');
     webLinkButton.appendChild(webLinkIcon);
 
-    fetchMetaButton.addEventListener('click', () => {
+    fetchMetaButton.addEventListener('click', async () => {
         const params = {
             cleanName:gamePane.dataset.cleanName,
             platformName:gamePane.dataset.platformName,
-            gameFileName:gamePane.dataset.gameName,
+            gameFileName:gamePane.dataset.gameFileName,
         };
-        console.log("params: ", params);
-        // const metaData = getMeta(params);
-        // console.log("metaData: ", metaData);
+        console.log("PARAMS: ", params);
+        const metaData = await fetchMeta(params);
+        console.log("metaData: ", metaData);
     });
 
     webLinkButton.addEventListener('click', async () => {

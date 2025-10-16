@@ -418,8 +418,6 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
 
         const scrollableDiv = document.querySelector('.game-meta-data');
 
-        console.log("scrollableDiv: ", scrollableDiv);
-
         if (scrollableDiv && scrollableDiv.contains(event.target)) {
             // Let normal scrolling happen
             return;
@@ -809,7 +807,6 @@ function readMeta(params) {
         const gamesDir = LB.preferences[params.platformName].gamesDir;
         params.gamesDir = gamesDir;
 
-
         ipcRenderer.send('read-meta', params);
         ipcRenderer.once('game-meta-data', (event, data) => {
             console.log("readMeta data: ", data);
@@ -819,16 +816,32 @@ function readMeta(params) {
 }
 
 function fetchMeta(params) {
+    return new Promise((resolve) => {
+        const gamesDir = LB.preferences[params.platformName].gamesDir;
+        params.gamesDir = gamesDir;
 
-    const gamesDir = LB.preferences[params.platformName].gamesDir;
+        ipcRenderer.send('fetch-meta', params);
+        ipcRenderer.once('game-data', (event, data) => {
+            console.log("fetchMeta data: ", data);
+            resolve(data);
+        });
+    });
+}
 
-    params.gamesDir = gamesDir;
+function getMeta(params) {
+    return new Promise((resolve) => {
+        const gamesDir = LB.preferences[params.platformName].gamesDir;
+        params.gamesDir = gamesDir;
+        const platformDisplayName = LB.preferences[params.platformName].displayName;
+        params.platformDisplayName = platformDisplayName;
 
-    console.log("paramz: ", params);
+        console.log("getMeta params: ", params);
 
-    ipcRenderer.send('fetch-meta', params);
-    ipcRenderer.once('game-data', (event, data) => {
-        console.log("data: ", data);
+        ipcRenderer.send(params.action, params);
+        ipcRenderer.once('game-meta-data', (event, data) => {
+            console.log("DATA: ", data);
+            resolve(data);
+        });
     });
 }
 
@@ -884,13 +897,14 @@ function buildGamePane() {
 
     fetchMetaButton.addEventListener('click', async () => {
         const params = {
-            cleanName:gamePane.dataset.cleanName,
-            platformName:gamePane.dataset.platformName,
-            gameFileName:gamePane.dataset.gameFileName,
+            cleanName: gamePane.dataset.cleanName,
+            platformName: gamePane.dataset.platformName,
+            gameFileName: gamePane.dataset.gameFileName,
+            action: 'fetch-meta'
         };
-        console.log("PARAMS: ", params);
-        const metaData = await fetchMeta(params);
-        console.log("metaData: ", metaData);
+
+        await updateGamePaneText(params);
+
     });
 
     webLinkButton.addEventListener('click', async () => {
@@ -942,10 +956,13 @@ function createGameMetaDataDL(metadata) {
 }
 
 async function updateGamePaneText(params) {
-    const gameMetaData = await readMeta(params);
+
+    console.log("updateGamePaneText params: ", params);
+
+    const gameMetaData = await getMeta(params);
 
     // --- Manage metadata display elegantly ---
-    let metaContainer = params.paneText.querySelector('.meta-container');
+    let metaContainer = document.querySelector('.meta-container');
 
     if (!metaContainer) {
         metaContainer = document.createElement('div');
@@ -956,10 +973,13 @@ async function updateGamePaneText(params) {
     // Clear old content
     metaContainer.innerHTML = '';
 
+    console.log("gameMetaData: ", gameMetaData);
+
     if (gameMetaData) {
         const dl = createGameMetaDataDL(gameMetaData);
         metaContainer.appendChild(dl);
         metaContainer.style.display = 'block';
+        // console.log("metaContainer: ", metaContainer);
     } else {
         metaContainer.style.display = 'none';
     }
@@ -984,7 +1004,8 @@ async function updateGamePane(selectedContainer) {
     const params = {
         platformName: selectedContainer.dataset.platform,
         gameFileName: selectedContainer.dataset.gameName,
-        paneText
+        paneText,
+        action: 'read-meta'
     };
     await updateGamePaneText(params);
 }

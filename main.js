@@ -481,7 +481,7 @@ ipcMain.on('fetch-meta', (event, params) => {
     const gamesDir = params.gamesDir;
 
     console.log("paramzz: ", params);
-    const searchParams = {cleanName:params.cleanName, platformName:params.platformName,};
+    const searchParams = {cleanName:params.cleanName, platformName:params.platformDisplayName};
 
     getGameMetaData(searchParams)
         .then((data) => {
@@ -511,7 +511,7 @@ ipcMain.on('fetch-meta', (event, params) => {
                 console.error('❌ Failed to write JSON file:', fileError);
             }
 
-            event.reply('game-data', data);
+            event.reply('game-meta-data', data);
         })
         .catch((err) => {
             console.error('Failed to fetch game meta data:', err);

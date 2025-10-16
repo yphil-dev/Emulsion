@@ -255,16 +255,16 @@ const testGame = async (gameName, platform = null) => {
     return result;
 };
 
-// (async () => {
-//     // await testGame('nitro');
-//     // await testGame('nitro', 'commodore amiga');
+(async () => {
+    // await testGame('nitro');
+    await testGame('nitro', 'amiga');
 
-//     // await testGame('nitro (video game)');
+    // await testGame('nitro (video game)');
 
-//     // await testGame('outrun 2006');
-//     // await testGame('outrun 2006', 'sony playstation');
-//     await testGame('Ninja Gaiden');
-//     // await testGame('banshee');
+    // await testGame('outrun 2006');
+    // await testGame('outrun 2006', 'sony playstation');
+    await testGame('Army Men - World War', 'playstation');
+    // await testGame('banshee');
 
-//     console.log('\n✅ === All tests completed ===');
-// })();
+    console.log('\n✅ === All tests completed ===');
+})();

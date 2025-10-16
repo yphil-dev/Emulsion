@@ -1,6 +1,9 @@
 // src/js/backends/wikipedia-text.js
 
-const fetchGameDataStructured = async (gameName, platform = null) => {
+// src/js/backends/wikipedia-text.js
+
+export const fetchGameMetaData = async (gameName, platform = null) => {
+    console.log("gameName, platform: ", gameName, platform);
     try {
         // Build Wikipedia search URL
         const wikiSearchUrl = new URL('https://en.wikipedia.org/w/api.php');
@@ -32,21 +35,79 @@ const fetchGameDataStructured = async (gameName, platform = null) => {
         const query = normalize(gameName);
         const platformNorm = platform ? platform.toLowerCase() : null;
 
-        // Candidate selection strategy:
-        // 1) exact title
-        // 2) snippet includes platform (if provided)
-        // 3) title starts with query (prefix)
-        // 4) title contains query (partial) excluding film/movie/etc.
-        // 5) snippet contains "video game"
-        let mainGamePage =
-            candidates.find(p => normalize(p.title) === query) ||
-            (platform ? candidates.find(p => stripHtml(p.snippet).toLowerCase().includes(platformNorm)) : null) ||
-            candidates.find(p => normalize(p.title).startsWith(query)) ||
-            candidates.find(p => normalize(p.title).includes(query) && !/film|movie|collection|lcd|watch/.test(p.title.toLowerCase())) ||
-            candidates.find(p => stripHtml(p.snippet).toLowerCase().includes('video game'));
+        // Score candidates based on multiple criteria
+        const scoreCandidate = (candidate) => {
+            let score = 0;
+            const title = candidate.title.toLowerCase();
+            const normalizedTitle = normalize(candidate.title);
+            const snippet = stripHtml(candidate.snippet).toLowerCase();
+
+            // High priority: exact title match
+            if (normalizedTitle === query) {
+                score += 100;
+            }
+
+            // High priority: title starts with query
+            if (normalizedTitle.startsWith(query)) {
+                score += 50;
+            }
+
+            // Medium priority: title contains query
+            if (normalizedTitle.includes(query)) {
+                score += 25;
+            }
+
+            // High priority: contains "video game" in title or snippet
+            if (title.includes('video game') || snippet.includes('video game')) {
+                score += 30;
+            }
+
+            // High priority: platform match in title (if platform provided)
+            if (platformNorm && title.includes(platformNorm)) {
+                score += 40;
+            }
+
+            // Medium priority: platform match in snippet (if platform provided)
+            if (platformNorm && snippet.includes(platformNorm)) {
+                score += 20;
+            }
+
+            // Penalty: list articles and non-game content
+            if (title.includes('list of') || title.includes('lists of')) {
+                score -= 100;
+            }
+            if (title.includes('(film)') || title.includes('(movie)')) {
+                score -= 50;
+            }
+
+            // Penalty: terms that suggest non-game content
+            const nonGameTerms = ['film', 'movie', 'collection', 'lcd', 'watch', 'tv', 'television'];
+            if (nonGameTerms.some(term => title.includes(term))) {
+                score -= 30;
+            }
+
+            return score;
+        };
+
+        // Score all candidates and sort by score
+        const scoredCandidates = candidates.map(candidate => ({
+            candidate,
+            score: scoreCandidate(candidate)
+        })).sort((a, b) => b.score - a.score);
+
+        // console.log('🔍 Candidate scores:');
+        // scoredCandidates.forEach(({ candidate, score }) => {
+        //     console.log(`  ${score}: "${candidate.title}"`);
+        // });
+
+        // Pick the highest scoring candidate that has a positive score
+        const bestCandidate = scoredCandidates[0];
+        const mainGamePage = bestCandidate && bestCandidate.score > 0
+            ? bestCandidate.candidate
+            : null;
 
         if (!mainGamePage) {
-            // As last resort, pick the top candidate
+            // As last resort, pick the top candidate regardless of score
             mainGamePage = candidates[0];
         }
 
@@ -55,8 +116,9 @@ const fetchGameDataStructured = async (gameName, platform = null) => {
             return null;
         }
 
-        console.log(`🎯 Main Wikipedia page: "${mainGamePage.title}"`);
+        // console.log(`🎯 Main Wikipedia page: "${mainGamePage.title}" (score: ${bestCandidate.score})`);
 
+        // ... rest of the function remains the same ...
         // Convert Wikipedia title to DBpedia resource name
         const dbpediaResource = mainGamePage.title.replace(/ /g, '_');
 
@@ -123,6 +185,7 @@ const fetchGameDataStructured = async (gameName, platform = null) => {
             return null;
         }
 
+        // ... rest of data processing remains the same ...
         // Aggregate all bindings
         const results = data.results.bindings;
         const base = results[0];
@@ -181,7 +244,7 @@ const testGame = async (gameName, platform = null) => {
     console.log('='.repeat(60));
 
     const startTime = Date.now();
-    const result = await fetchGameDataStructured(gameName, platform);
+    const result = await fetchGameMetaData(gameName, platform);
     const endTime = Date.now();
 
     console.log(`\n⏱️ Request took: ${endTime - startTime}ms`);
@@ -192,19 +255,16 @@ const testGame = async (gameName, platform = null) => {
     return result;
 };
 
+// (async () => {
+//     // await testGame('nitro');
+//     // await testGame('nitro', 'commodore amiga');
 
-// --- Run Tests ---
-(async () => {
-    // Nitro (video game) — prefer Amiga (example)
-    await testGame('nitro', 'Amiga');
+//     // await testGame('nitro (video game)');
 
-    // // Try without platform hint
-    // await testGame('nitro');
+//     // await testGame('outrun 2006');
+//     // await testGame('outrun 2006', 'sony playstation');
+//     await testGame('Ninja Gaiden');
+//     // await testGame('banshee');
 
-    // // A few more checks
-    // await testGame('outrun');
-    // await testGame('zelda');
-    // await testGame('banshee');
-
-    console.log('\n✅ === All tests completed ===');
-})();
+//     console.log('\n✅ === All tests completed ===');
+// })();

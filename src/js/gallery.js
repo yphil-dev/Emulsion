@@ -212,19 +212,20 @@ export function buildGameContainer({
 }) {
     const container = document.createElement('div');
     const gamesDir = LB.preferences[platform].gamesDir;
-    const displayName = cleanFileName(gameName);
+    const cleanName = cleanFileName(gameName);
     const coverPath = findImageFile(path.join(gamesDir, 'images'), gameName);
     const platformBadge = document.createElement('div');
     platformBadge.className = 'platform-badge';
     platformBadge.textContent = platform;
     container.classList.add('game-container');
-    container.title = `${displayName}
+    container.title = `${cleanName}
 
 - File: ${filePath}
 - Click to launch with ${emulator}
 - Right-click to fetch cover art image`;
 
     container.dataset.gameName = gameName;
+    container.dataset.cleanName = cleanName;
     container.dataset.platform = platform;
     container.dataset.command = `${emulator} ${emulatorArgs} ${filePath}`;
     container.dataset.emulator = emulator;
@@ -244,7 +245,7 @@ export function buildGameContainer({
     const label = document.createElement('div');
     label.classList.add('game-label');
     const labelText = document.createElement('div');
-    label.textContent = displayName;
+    label.textContent = cleanName;
 
     imageContainer.appendChild(gameImage);
     container.appendChild(imageContainer);

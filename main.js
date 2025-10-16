@@ -4,7 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { spawn, exec } from 'child_process';
-import { getAllCoverImageUrls } from './src/js/backends.js';
+import { getAllCoverImageUrls, getGameMetaData } from './src/js/backends.js';
 
 import axios from 'axios';
 import os from 'os';
@@ -448,6 +448,17 @@ ipcMain.on('fetch-images', (event, gameName, platformName, steamGridAPIKey, gian
         .catch((err) => {
             console.error('Failed to fetch image URLs:', err);
             event.reply('image-urls', []);
+        });
+});
+
+ipcMain.on('fetch-meta', (event, gameName, platformName) => {
+    getGameMetaData(gameName, platformName)
+        .then((data) => {
+            event.reply('game-data', data);
+        })
+        .catch((err) => {
+            console.error('Failed to fetch game meta data:', err);
+            event.reply('game-data', '');
         });
 });
 

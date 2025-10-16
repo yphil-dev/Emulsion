@@ -1,6 +1,15 @@
 import { fetchImages as steamgridFetch } from './backends/steamgrid.js';
 import { fetchImages as wikipediaFetch } from './backends/wikipedia.js';
 import { fetchImages as giantbombFetch } from './backends/giantbomb.js';
+import { fetchGameMetaData } from './backends/wikipedia-text.js';
+
+export const getGameMetaData = async (gameName, platform) => {
+
+    const result = await fetchGameMetaData(gameName, platform);
+    // console.log("result: ", result);
+    return result;
+
+};
 
 export const getAllCoverImageUrls = async (gameName, platform, options = {}) => {
     const { steamGridAPIKey, giantBombAPIKey } = options;

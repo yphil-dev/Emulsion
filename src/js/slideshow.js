@@ -796,6 +796,13 @@ export async function setGalleryViewMode(viewMode, save) {
     }
 }
 
+function getMeta(gameName, platformName) {
+    ipcRenderer.send('fetch-meta', gameName, platformName);
+    ipcRenderer.once('game-data', (event, data) => {
+        console.log("data: ", data);
+    });
+}
+
 function buildGamePane() {
     const gamePane = document.createElement('div');
     gamePane.classList.add('game-pane');
@@ -812,11 +819,22 @@ function buildGamePane() {
     const gameTitle = document.createElement('p');
     gameTitle.classList.add('game-title');
 
+    const metaButton = document.createElement('button');
+    metaButton.classList.add('pane-meta-button', 'button');
+    metaButton.textContent = 'Fetch meta data';
+
+    metaButton.addEventListener('click', () => {
+        console.log("gamePane.dataset.gameName: ", gamePane.dataset.gameName);
+        console.log("gamePane.dataset.platformName: ", gamePane.dataset.platformName);
+        getMeta(gamePane.dataset.cleanName, gamePane.dataset.platformName);
+    });
+
     imagePane.appendChild(paneImage);
     paneText.appendChild(gameTitle);
 
     gamePane.appendChild(imagePane);
     gamePane.appendChild(paneText);
+    gamePane.appendChild(metaButton);
 
     return gamePane;
 }
@@ -836,6 +854,10 @@ function ensureGamePane() {
 
 function updateGamePane(selectedContainer) {
     const gamePane = ensureGamePane();
+
+    gamePane.dataset.gameName = selectedContainer.dataset.gameName;
+    gamePane.dataset.cleanName = selectedContainer.dataset.cleanName;
+    gamePane.dataset.platformName = selectedContainer.dataset.platform;
 
     const imagePane = gamePane.querySelector('.image-pane');
     const paneText = gamePane.querySelector('.pane-text');

@@ -188,8 +188,11 @@ label.checkbox {
   /* min-width: 200px; */
 }
 
+
 button {
   font-family: var(--font-main);
+  background: var(--color-button-off);
+  color: #FFFFFF;
 }
 
 .button-wide {
@@ -198,25 +201,11 @@ button {
 }
 
 .button {
-  background: var(--color-button-off);
   border: 1px solid var(--color-border-on);
   border-radius: 6px;
-  box-sizing: border-box;
-  color: #FFFFFF;
-  display: inline-block;
-  /* font-family: nunito,roboto,proxima-nova,"proxima nova",sans-serif; */
   font-size: 16px;
   font-weight: 800;
-  line-height: 16px;
-  min-height: 40px;
-  outline: 0;
   padding: 12px 14px;
-  text-rendering: geometricprecision;
-  text-transform: none;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  vertical-align: middle;
 }
 
 .button:hover {

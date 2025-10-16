@@ -325,7 +325,7 @@ i.disabled { pointer-events: none; opacity: 0.5; }
   right: 0;
   display: flex;
   flex-direction: column;
-  border-left: 1px solid var(--color-border-off);
+  /* border-left: 1px solid var(--color-border-off); */
 }
 
 /* image pane: width dictates height via aspect-ratio */
@@ -350,6 +350,19 @@ i.disabled { pointer-events: none; opacity: 0.5; }
 .pane-text {
   text-align: left;
   margin: 0;
+  background-color: var(--color-bg-header);
+}
+
+.pane-controls {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.pane-controls button {
+  flex: 1;
+  margin: 2px;
+  padding: 1px;
 }
 
 .pane-text .game-title {

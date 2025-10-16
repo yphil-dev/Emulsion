@@ -858,16 +858,26 @@ function buildGamePane() {
     const paneText = document.createElement('div');
     paneText.classList.add('pane-text');
 
+    const paneControls = document.createElement('div');
+    paneControls.classList.add('pane-controls');
+
     const gameTitle = document.createElement('p');
     gameTitle.classList.add('game-title');
 
     const fetchMetaButton = document.createElement('button');
     fetchMetaButton.classList.add('pane-meta-button', 'button');
-    fetchMetaButton.textContent = 'Fetch meta data';
 
-    const readMetaButton = document.createElement('button');
-    readMetaButton.classList.add('pane-meta-button', 'button');
-    readMetaButton.textContent = 'Read meta data';
+    const metaIcon = document.createElement('i');
+    metaIcon.className = 'fa fa-refresh';
+
+    fetchMetaButton.appendChild(metaIcon);
+
+    const webLinkIcon = document.createElement('i');
+    webLinkIcon.className = 'fa fa-external-link';
+
+    const webLinkButton = document.createElement('button');
+    webLinkButton.classList.add('pane-meta-button', 'button');
+    webLinkButton.appendChild(webLinkIcon);
 
     fetchMetaButton.addEventListener('click', () => {
         const params = {
@@ -879,7 +889,7 @@ function buildGamePane() {
         console.log("metaData: ", metaData);
     });
 
-    readMetaButton.addEventListener('click', async () => {
+    webLinkButton.addEventListener('click', async () => {
         const params = {
             platformName: gamePane.dataset.platformName,
             gameFileName: gamePane.dataset.gameName,
@@ -888,12 +898,15 @@ function buildGamePane() {
         console.log("meta: ", gameMetaData);
     });
 
+    paneControls.appendChild(fetchMetaButton);
+    paneControls.appendChild(webLinkButton);
+
     imagePane.appendChild(paneImage);
     paneText.appendChild(gameTitle);
+    paneText.appendChild(paneControls);
 
     gamePane.appendChild(imagePane);
     gamePane.appendChild(paneText);
-    // gamePane.appendChild(fetchMetaButton);
 
     return gamePane;
 }
@@ -922,30 +935,16 @@ function createGameMetaDataDL(metadata) {
     return dl;
 }
 
-async function updateGamePane(selectedContainer) {
-    const gamePane = ensureGamePane();
-    const paneText = gamePane.querySelector('.pane-text');
-    const imagePane = gamePane.querySelector('.pane-image');
-
-    // --- Basic setup ---
-    const imgSrc = selectedContainer.querySelector('img')?.src;
-    imagePane.querySelector('img').src = imgSrc;
-    paneText.querySelector('.game-title').textContent = selectedContainer.dataset.gameName;
-
-    // --- Load metadata ---
-    const params = {
-        platformName: selectedContainer.dataset.platform,
-        gameFileName: selectedContainer.dataset.gameName,
-    };
+async function updateGamePaneText(params) {
     const gameMetaData = await readMeta(params);
 
     // --- Manage metadata display elegantly ---
-    let metaContainer = paneText.querySelector('.meta-container');
+    let metaContainer = params.paneText.querySelector('.meta-container');
 
     if (!metaContainer) {
         metaContainer = document.createElement('div');
         metaContainer.classList.add('meta-container');
-        paneText.appendChild(metaContainer);
+        params.paneText.appendChild(metaContainer);
     }
 
     // Clear old content
@@ -958,6 +957,26 @@ async function updateGamePane(selectedContainer) {
     } else {
         metaContainer.style.display = 'none';
     }
+
+}
+
+async function updateGamePane(selectedContainer) {
+    const gamePane = ensureGamePane();
+    const paneText = gamePane.querySelector('.pane-text');
+    const imagePane = gamePane.querySelector('.pane-image');
+
+    // --- Basic setup ---
+    const imgSrc = selectedContainer.querySelector('img').src;
+    imagePane.querySelector('img').src = imgSrc;
+    paneText.querySelector('.game-title').textContent = selectedContainer.dataset.gameName;
+
+    // --- Load metadata ---
+    const params = {
+        platformName: selectedContainer.dataset.platform,
+        gameFileName: selectedContainer.dataset.gameName,
+        paneText
+    };
+    await updateGamePaneText(params);
 }
 
 async function closeSettingsOrPlatformMenu() {

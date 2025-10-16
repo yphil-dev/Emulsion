@@ -69,6 +69,7 @@ export function setFooterSize(size) {
     const footer = document.getElementById('footer');
     footer.style.opacity = 1;
     footer.className = `footer-${size}`;
+    LB.preferences['settings'].footerSize = size;
 }
 
 export function getSelectedGameContainer(gameContainers, selectedIndex) {

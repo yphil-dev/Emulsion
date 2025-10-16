@@ -1,4 +1,4 @@
-import { getPlatformInfo } from './platforms.js';
+import { getPlatformInfo, PLATFORMS } from './platforms.js';
 import { openPlatformMenu, openGameMenu, closeGameMenu } from './menu.js';
 import { getSelectedGameContainer,
          updateFooterControls,
@@ -802,44 +802,19 @@ export async function setGalleryViewMode(viewMode, save) {
     }
 }
 
-function readMeta(params) {
-    return new Promise((resolve) => {
-        const gamesDir = LB.preferences[params.platformName].gamesDir;
-        params.gamesDir = gamesDir;
-
-        ipcRenderer.send('read-meta', params);
-        ipcRenderer.once('game-meta-data', (event, data) => {
-            console.log("readMeta data: ", data);
-            resolve(data);
-        });
-    });
-}
-
-function fetchMeta(params) {
-    return new Promise((resolve) => {
-        const gamesDir = LB.preferences[params.platformName].gamesDir;
-        params.gamesDir = gamesDir;
-
-        ipcRenderer.send('fetch-meta', params);
-        ipcRenderer.once('game-data', (event, data) => {
-            console.log("fetchMeta data: ", data);
-            resolve(data);
-        });
-    });
-}
-
 function getMeta(params) {
     return new Promise((resolve) => {
         const gamesDir = LB.preferences[params.platformName].gamesDir;
         params.gamesDir = gamesDir;
-        const platformDisplayName = LB.preferences[params.platformName].displayName;
+        const platformDisplayName = getPlatformInfo(params.platformName).name;
         params.platformDisplayName = platformDisplayName;
 
-        console.log("getMeta params: ", params);
+        console.log("LB.preferences: ", LB.preferences);
+        console.log("platformDisplayName: ", platformDisplayName);
 
         ipcRenderer.send(params.action, params);
         ipcRenderer.once('game-meta-data', (event, data) => {
-            console.log("DATA: ", data);
+            console.log("data: ", data);
             resolve(data);
         });
     });
@@ -913,9 +888,6 @@ function buildGamePane() {
             platformName: gamePane.dataset.platformName,
             gameFileName: gamePane.dataset.gameName,
         };
-        console.log("params: ", params);
-        // const gameMetaData = await readMeta(params);
-        // console.log("meta: ", gameMetaData);
     });
 
     paneControls.appendChild(fetchMetaButton);
@@ -934,6 +906,16 @@ function buildGamePane() {
 function createGameMetaDataDL(metadata) {
     const dl = document.createElement('dl');
     dl.classList.add('game-meta-data');
+
+    console.log("LB.preferences: ", LB.preferences['settings'].footerSize);
+
+    if (LB.preferences['settings'].footerSize === 'small') {
+        dl.style.maxHeight = '40.5vh';
+    } else if (LB.preferences['settings'].footerSize === 'medium') {
+        dl.style.maxHeight = '38vh';
+    } else if (LB.preferences['settings'].footerSize === 'big') {
+        dl.style.maxHeight = '35vh';
+    }
 
     const addMeta = (title, value) => {
         if (!value) return;
@@ -957,8 +939,6 @@ function createGameMetaDataDL(metadata) {
 
 async function updateGamePaneText(params) {
 
-    console.log("updateGamePaneText params: ", params);
-
     const gameMetaData = await getMeta(params);
 
     // --- Manage metadata display elegantly ---
@@ -974,12 +954,10 @@ async function updateGamePaneText(params) {
     metaContainer.innerHTML = '';
 
     console.log("gameMetaData: ", gameMetaData);
-
     if (gameMetaData) {
         const dl = createGameMetaDataDL(gameMetaData);
         metaContainer.appendChild(dl);
         metaContainer.style.display = 'block';
-        // console.log("metaContainer: ", metaContainer);
     } else {
         metaContainer.style.display = 'none';
     }

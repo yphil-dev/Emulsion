@@ -7,8 +7,8 @@
 }
 
 @font-face {
-  font-family: 'Exo2';
-  src: url('../font/Exo2-Regular.otf') format('opentype');
+  font-family: 'MeromSans';
+  src: url('../font/MeromSans-Regular.ttf') format('opentype');
   font-weight: normal; /* For variable fonts */
   font-style: normal;
 }
@@ -24,6 +24,7 @@
   --font-main: 'Orbitron', sans-serif;
   --font-second: 'TaylorSans', sans-serif;
   --font-third: "Inter", "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+  --font-fourth: "MeromSans", sans-serif;
   --color-succes: #00ff18;
   --color-icon: #007bff;
 

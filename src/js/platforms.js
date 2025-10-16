@@ -36,7 +36,6 @@ export function getPlatformInfo(platformName) {
         return {
             vendor: platform.vendor,
             name: platform.displayName,
-            index: PLATFORMS.indexOf(platform) + 1  // +1 because settings is index 0
         };
     }
 

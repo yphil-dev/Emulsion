@@ -833,15 +833,19 @@ function getMeta(params) {
     });
 }
 
-function ensureGamePane() {
+function ensureGamePane(params) {
     const page = document.querySelector('.page.active');
     if (!page) return null;
 
     let gamePane = page.querySelector('.game-pane');
     if (!gamePane) {
-        gamePane = buildGamePane();
+        gamePane = buildGamePane(params);
         page.appendChild(gamePane);
     }
+
+    gamePane.dataset.platformName = params.platformName;
+    gamePane.dataset.gameFileName = params.gameFileName;
+    gamePane.dataset.cleanName = params.cleanName;
 
     return gamePane;
 }
@@ -885,17 +889,20 @@ function buildGamePane() {
             platformName:gamePane.dataset.platformName,
             gameFileName:gamePane.dataset.gameName,
         };
-        const metaData = getMeta(params);
-        console.log("metaData: ", metaData);
+        console.log("params: ", params);
+        // const metaData = getMeta(params);
+        // console.log("metaData: ", metaData);
     });
 
     webLinkButton.addEventListener('click', async () => {
+
         const params = {
             platformName: gamePane.dataset.platformName,
             gameFileName: gamePane.dataset.gameName,
         };
-        const gameMetaData = await readMeta(params);
-        console.log("meta: ", gameMetaData);
+        console.log("params: ", params);
+        // const gameMetaData = await readMeta(params);
+        // console.log("meta: ", gameMetaData);
     });
 
     paneControls.appendChild(fetchMetaButton);
@@ -961,7 +968,11 @@ async function updateGamePaneText(params) {
 }
 
 async function updateGamePane(selectedContainer) {
-    const gamePane = ensureGamePane();
+    const gamePane = ensureGamePane({
+        platformName: selectedContainer.dataset.platform,
+        gameFileName: selectedContainer.dataset.gameName,
+        cleanName: selectedContainer.dataset.cleanName
+    });
     const paneText = gamePane.querySelector('.pane-text');
     const imagePane = gamePane.querySelector('.pane-image');
 

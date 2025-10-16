@@ -341,6 +341,48 @@ async function buildRecentGallery({ index }) {
     return page;
 }
 
+export function buildPlatformContainer({
+    platformName,
+    index,
+    galleryNumOfCols
+}) {
+    const container = document.createElement('div');
+    const platformInfo = getPlatformInfo(platformName);
+
+    container.classList.add('game-container', 'platform-container', 'settings');
+    container.dataset.platform = platformName;
+    container.dataset.name = platformName;
+    container.dataset.index = index;
+
+    container.title = platformName;
+    container.style.height = `calc(120vw / ${galleryNumOfCols})`;
+
+    const infoDiv = document.createElement('div');
+    infoDiv.classList.add('platform-info');
+
+    const vendorSpan = document.createElement('span');
+    vendorSpan.classList.add('vendor');
+    vendorSpan.textContent = platformInfo.vendor;
+
+    const nameSpan = document.createElement('span');
+    nameSpan.classList.add('name');
+    nameSpan.textContent = platformInfo.name;
+
+    infoDiv.appendChild(vendorSpan);
+    infoDiv.appendChild(document.createElement('br'));
+    infoDiv.appendChild(nameSpan);
+
+    const image = document.createElement('img');
+    image.src = path.join(LB.baseDir, 'img', 'platforms', `${platformName}.png`);
+    image.classList.add('platform-image', 'game-image');
+
+    container.appendChild(image);
+    container.appendChild(infoDiv);
+
+    return container;
+}
+
+
 function buildSettingsPageContent(platforms) {
     const pageContent = document.createElement('div');
     pageContent.classList.add('page-content');
@@ -348,51 +390,15 @@ function buildSettingsPageContent(platforms) {
     pageContent.style.gridTemplateColumns = `repeat(${LB.galleryNumOfCols}, 1fr)`;
 
     let i = 0;
-    platforms.forEach((platformName) => {
-        // if (platformName === "settings") return;
-
-        const platformContainer = document.createElement('div');
-        platformContainer.setAttribute('data-platform', platformName);
-        platformContainer.classList.add('game-container', 'platform-container');
-        platformContainer.style.height = 'calc(120vw / ' + LB.galleryNumOfCols + ')';
-
-        platformContainer.title = platformName;
-        platformContainer.classList.add('settings');
-        platformContainer.setAttribute('data-name', platformName);
-        platformContainer.setAttribute('data-index', i);
-
-        const platformInfo = getPlatformInfo(platformName);
-
-        const platformNameElement = document.createElement('div');
-        platformNameElement.classList.add('platform-info');
-
-        const vendorSpan = document.createElement('span');
-        vendorSpan.classList.add('vendor');
-        vendorSpan.textContent = platformInfo.vendor;
-
-        const nameSpan = document.createElement('span');
-        nameSpan.classList.add('name');
-        nameSpan.textContent = platformInfo.name;
-
-        const lineBreak = document.createElement('br');
-
-        platformNameElement.appendChild(vendorSpan);
-        platformNameElement.appendChild(lineBreak);
-        platformNameElement.appendChild(nameSpan);
-
-        const platformImage = document.createElement('img');
-
-        platformImage.src = path.join(LB.baseDir, 'img', 'platforms', `${platformName}.png`);
-
-        platformImage.classList.add('platform-image');
-        platformImage.classList.add('game-image');
-
-        platformContainer.appendChild(platformNameElement);
-        platformContainer.appendChild(platformImage);
-
+    platforms.forEach(platformName => {
+        const platformContainer = buildPlatformContainer({
+            platformName,
+            index: i++,
+            galleryNumOfCols: LB.galleryNumOfCols
+        });
         pageContent.appendChild(platformContainer);
-        i++;
     });
+
 
     return pageContent;
 }

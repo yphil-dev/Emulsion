@@ -851,17 +851,15 @@ function buildGamePane() {
     gamePane.classList.add('game-pane');
 
     const imagePane = document.createElement('div');
-    imagePane.classList.add('image-pane');
+    imagePane.classList.add('pane-image');
 
     const paneImage = document.createElement('img');
-    paneImage.classList.add('pane-image');
 
     const paneText = document.createElement('div');
     paneText.classList.add('pane-text');
 
     const gameTitle = document.createElement('p');
     gameTitle.classList.add('game-title');
-
 
     const fetchMetaButton = document.createElement('button');
     fetchMetaButton.classList.add('pane-meta-button', 'button');
@@ -927,11 +925,11 @@ function createGameMetaDataDL(metadata) {
 async function updateGamePane(selectedContainer) {
     const gamePane = ensureGamePane();
     const paneText = gamePane.querySelector('.pane-text');
-    const imagePane = gamePane.querySelector('.image-pane');
+    const imagePane = gamePane.querySelector('.pane-image');
 
     // --- Basic setup ---
     const imgSrc = selectedContainer.querySelector('img')?.src;
-    imagePane.querySelector('.pane-image').src = imgSrc;
+    imagePane.querySelector('img').src = imgSrc;
     paneText.querySelector('.game-title').textContent = selectedContainer.dataset.gameName;
 
     // --- Load metadata ---

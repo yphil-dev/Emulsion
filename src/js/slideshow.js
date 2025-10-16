@@ -92,7 +92,6 @@ export function initSlideShow(platformToDisplay) {
         });
     });
 
-    // Wheel scroll
     slideshow.addEventListener('wheel', event => {
         event.preventDefault();
         event.deltaY > 0 ? nextSlide() : prevSlide();
@@ -415,17 +414,26 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
     GalleryState.goToNextPage = () => goToPage(1);
     GalleryState.goToPrevPage = () => goToPage(-1);
 
-    // Wheel scrolling
-    galleries.addEventListener('wheel', e => {
-        e.preventDefault();
-        if (e.shiftKey) e.deltaY > 0 ? GalleryState.goToNextPage() : GalleryState.goToPrevPage();
-        else simulateKeyDown(e.deltaY > 0 ? 'ArrowDown' : 'ArrowUp');
+    galleries.addEventListener('wheel', event => {
+
+        const scrollableDiv = document.querySelector('.game-meta-data');
+
+        console.log("scrollableDiv: ", scrollableDiv);
+
+        if (scrollableDiv && scrollableDiv.contains(event.target)) {
+            // Let normal scrolling happen
+            return;
+        }
+
+        event.preventDefault();
+        if (event.shiftKey) event.deltaY > 0 ? GalleryState.goToNextPage() : GalleryState.goToPrevPage();
+        else simulateKeyDown(event.deltaY > 0 ? 'ArrowDown' : 'ArrowUp');
     });
 
-    header.addEventListener('wheel', e => {
-        e.preventDefault();
+    header.addEventListener('wheel', event => {
+        event.preventDefault();
         if (LB.mode === 'gallery') {
-            e.deltaY > 0 ? GalleryState.goToNextPage() : GalleryState.goToPrevPage();
+            event.deltaY > 0 ? GalleryState.goToNextPage() : GalleryState.goToPrevPage();
         }
     });
 
@@ -783,7 +791,7 @@ export async function setGalleryViewMode(viewMode, save) {
         if (selectedContainer) {
             const isEmptyPage = page.dataset.empty === 'true';
             if (!isEmptyPage) {
-                updateGamePane(selectedContainer);
+                await updateGamePane(selectedContainer);
             }
         }
     } else {
@@ -796,8 +804,30 @@ export async function setGalleryViewMode(viewMode, save) {
     }
 }
 
-function getMeta(gameName, platformName) {
-    ipcRenderer.send('fetch-meta', gameName, platformName);
+function readMeta(params) {
+    return new Promise((resolve) => {
+        const gamesDir = LB.preferences[params.platformName].gamesDir;
+        params.gamesDir = gamesDir;
+
+        console.log("paramz: ", params);
+
+        ipcRenderer.send('read-meta', params);
+        ipcRenderer.once('game-meta-data', (event, data) => {
+            console.log("data: ", data);
+            resolve(data);
+        });
+    });
+}
+
+function getMeta(params) {
+
+    const gamesDir = LB.preferences[params.platformName].gamesDir;
+
+    params.gamesDir = gamesDir;
+
+    console.log("paramz: ", params);
+
+    ipcRenderer.send('fetch-meta', params);
     ipcRenderer.once('game-data', (event, data) => {
         console.log("data: ", data);
     });
@@ -819,14 +849,32 @@ function buildGamePane() {
     const gameTitle = document.createElement('p');
     gameTitle.classList.add('game-title');
 
-    const metaButton = document.createElement('button');
-    metaButton.classList.add('pane-meta-button', 'button');
-    metaButton.textContent = 'Fetch meta data';
 
-    metaButton.addEventListener('click', () => {
-        console.log("gamePane.dataset.gameName: ", gamePane.dataset.gameName);
-        console.log("gamePane.dataset.platformName: ", gamePane.dataset.platformName);
-        getMeta(gamePane.dataset.cleanName, gamePane.dataset.platformName);
+    const fetchMetaButton = document.createElement('button');
+    fetchMetaButton.classList.add('pane-meta-button', 'button');
+    fetchMetaButton.textContent = 'Fetch meta data';
+
+    const readMetaButton = document.createElement('button');
+    readMetaButton.classList.add('pane-meta-button', 'button');
+    readMetaButton.textContent = 'Read meta data';
+
+    fetchMetaButton.addEventListener('click', () => {
+        const params = {
+            cleanName:gamePane.dataset.cleanName,
+            platformName:gamePane.dataset.platformName,
+            gameFileName:gamePane.dataset.gameName,
+        };
+        const metaData = getMeta(params);
+        console.log("metaData: ", metaData);
+    });
+
+    readMetaButton.addEventListener('click', async () => {
+        const params = {
+            platformName: gamePane.dataset.platformName,
+            gameFileName: gamePane.dataset.gameName,
+        };
+        const gameMetaData = await readMeta(params);
+        console.log("meta: ", gameMetaData);
     });
 
     imagePane.appendChild(paneImage);
@@ -834,7 +882,7 @@ function buildGamePane() {
 
     gamePane.appendChild(imagePane);
     gamePane.appendChild(paneText);
-    gamePane.appendChild(metaButton);
+    // gamePane.appendChild(fetchMetaButton);
 
     return gamePane;
 }
@@ -852,22 +900,66 @@ function ensureGamePane() {
     return gamePane;
 }
 
-function updateGamePane(selectedContainer) {
+function createGameMetaDataDL(metadata) {
+    const dl = document.createElement('dl');
+    dl.classList.add('game-meta-data');
+
+    const addMeta = (title, value) => {
+        if (!value) return;
+        const dt = document.createElement('dt');
+        dt.className = 'meta-key';
+        dt.textContent = title;
+        const dd = document.createElement('dd');
+        dd.className = 'meta-value';
+        dd.textContent = value;
+        dl.append(dt, dd);
+    };
+
+    addMeta('Publisher', metadata.publisher);
+    addMeta('Release Date', metadata.releaseDate);
+    addMeta('Description', metadata.description);
+    addMeta('Platforms', metadata.platforms);
+    addMeta('Genre', metadata.genre);
+
+    return dl;
+}
+
+async function updateGamePane(selectedContainer) {
     const gamePane = ensureGamePane();
-
-    gamePane.dataset.gameName = selectedContainer.dataset.gameName;
-    gamePane.dataset.cleanName = selectedContainer.dataset.cleanName;
-    gamePane.dataset.platformName = selectedContainer.dataset.platform;
-
-    const imagePane = gamePane.querySelector('.image-pane');
     const paneText = gamePane.querySelector('.pane-text');
+    const imagePane = gamePane.querySelector('.image-pane');
 
+    // --- Basic setup ---
     const imgSrc = selectedContainer.querySelector('img')?.src;
-    let paneImage = imagePane.querySelector('.pane-image');
-    paneImage.src = imgSrc;
+    imagePane.querySelector('.pane-image').src = imgSrc;
+    paneText.querySelector('.game-title').textContent = selectedContainer.dataset.gameName;
 
-    const gameTitle = paneText.querySelector('.game-title');
-    gameTitle.textContent = selectedContainer.dataset.gameName;
+    // --- Load metadata ---
+    const params = {
+        platformName: selectedContainer.dataset.platform,
+        gameFileName: selectedContainer.dataset.gameName,
+    };
+    const gameMetaData = await readMeta(params);
+
+    // --- Manage metadata display elegantly ---
+    let metaContainer = paneText.querySelector('.meta-container');
+
+    if (!metaContainer) {
+        metaContainer = document.createElement('div');
+        metaContainer.classList.add('meta-container');
+        paneText.appendChild(metaContainer);
+    }
+
+    // Clear old content
+    metaContainer.innerHTML = '';
+
+    if (gameMetaData) {
+        const dl = createGameMetaDataDL(gameMetaData);
+        metaContainer.appendChild(dl);
+        metaContainer.style.display = 'block';
+    } else {
+        metaContainer.style.display = 'none';
+    }
 }
 
 async function closeSettingsOrPlatformMenu() {

@@ -451,9 +451,66 @@ ipcMain.on('fetch-images', (event, gameName, platformName, steamGridAPIKey, gian
         });
 });
 
-ipcMain.on('fetch-meta', (event, gameName, platformName) => {
-    getGameMetaData(gameName, platformName)
+ipcMain.on('read-meta', (event, params) => {
+    console.log("PARAMS: ", params);
+    try {
+        const metadataDir = path.join(params.gamesDir, 'metadata');
+        const filePath = path.join(metadataDir, `${params.gameFileName}.json`);
+
+        // Check if file exists
+        if (!fs.existsSync(filePath)) {
+            console.log(`❌ Metadata file not found: ${filePath}`);
+            event.reply('game-data', '');
+        }
+
+        // Read and parse the file
+        const fileContent = fs.readFileSync(filePath, 'utf8');
+        const parsedData = JSON.parse(fileContent);
+
+        console.log("parsedData: ", parsedData.gameMetaData);
+
+        event.reply('game-meta-data', parsedData.gameMetaData);
+
+    } catch (error) {
+        console.error(`❌ Failed to read metadata file: ${error.message}`);
+        event.reply('game-meta-data', '');
+    }
+});
+
+ipcMain.on('fetch-meta', (event, params) => {
+    const gamesDir = params.gamesDir;
+
+    console.log("paramzz: ", params);
+    const searchParams = {cleanName:params.cleanName, platformName:params.platformName,};
+
+    getGameMetaData(searchParams)
         .then((data) => {
+            // Write to JSON file (replace entire content)
+            try {
+                const metadataDir = path.join(params.gamesDir, 'metadata');
+                const filePath = path.join(metadataDir, `${params.gameFileName}.json`);
+
+                // Ensure metadata directory exists (but gamesDir must already exist)
+                if (!fs.existsSync(metadataDir)) {
+                    fs.mkdirSync(metadataDir, { recursive: false });
+                    console.log(`✅ Created metadata directory: ${metadataDir}`);
+                }
+
+                // Create the data structure
+                const fileData = {
+                    timestamp: new Date().toISOString(),
+                    searchParams: searchParams,
+                    gameMetaData: data
+                };
+
+                // Write/replace the entire file
+                fs.writeFileSync(filePath, JSON.stringify(fileData, null, 2));
+                console.log(`✅ Game metadata saved to: ${filePath}`);
+
+            } catch (fileError) {
+                console.error('❌ Failed to write JSON file:', fileError);
+            }
+
             event.reply('game-data', data);
         })
         .catch((err) => {

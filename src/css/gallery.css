@@ -227,58 +227,6 @@ div.menu-game-container {
   margin: 0.4em;
 }
 
-/* ===========================
-   Game Pane / Side Panel
-   =========================== */
-.game-pane {
-  width: 22vw; /* Use viewport width instead of percentage */
-  aspect-ratio: 0.28; /* 22/78 ≈ 0.28 - maintains ratio to page-content */
-  position: fixed;
-  right: 0;
-  display: flex;
-  flex-direction: column;
-  background-color: rgba(0,0,0,0);
-  border-left: 1px solid var(--color-border-off);
-}
-
-.page-content.list {
-  width: 78vw; /* Match with viewport units */
-  display: block;
-  overflow-y: auto;
-  height: 100%;
-  padding: 0;
-  list-style: none;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.image-pane {
-  width: 100%;
-  height: 40vh; /* Always 40% of viewport height */
-  min-height: 250px; /* Fallback minimum */
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  position: relative;
-  border-bottom: 1px solid var(--color-border-off);
-}
-
-.image-pane img {
-  width: 100%;
-  height: 100%;
-  /* object-fit: cover; */
-}
-
-.pane-text {
-  padding: 0.5em;
-  text-align: left;
-}
-
-.pane-text .game-title {
-  margin: 0;
-  font-weight: bold;
-}
-
 .prefs-platform-img {
   max-width: 150px;
 }
@@ -351,3 +299,76 @@ div.platform-info .name {
 p { margin-top: 0; }
 
 i.disabled { pointer-events: none; opacity: 0.5; }
+
+
+/* ===========================
+   Game Pane / Side Panel
+   =========================== */
+.game-pane {
+  width: 22vw; /* Use viewport width instead of percentage */
+  aspect-ratio: 0.28; /* 22/78 ≈ 0.28 - maintains ratio to page-content */
+  position: fixed;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(0,0,0,0);
+  border-left: 1px solid var(--color-border-off);
+}
+
+.page-content.list {
+  width: 78vw; /* Match with viewport units */
+  display: block;
+  overflow-y: auto;
+  height: 100%;
+  padding: 0;
+  list-style: none;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.image-pane {
+  width: 100%;
+  height: 40vh; /* Always 40% of viewport height */
+  min-height: 250px; /* Fallback minimum */
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  position: relative;
+  border-bottom: 1px solid var(--color-border-off);
+}
+
+.image-pane img {
+  width: 100%;
+  height: 100%;
+  /* object-fit: cover; */
+}
+
+.pane-text {
+  text-align: left;
+  margin: 0;
+}
+
+.pane-text .game-title {
+  padding: 0.5em;
+  font-weight: bold;
+  margin: 0;
+}
+
+dl.game-meta-data {
+  margin: 0;
+  max-height: 38vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 0.5em;
+}
+
+dt.meta-key {
+  font-weight: bold;
+}
+
+dd.meta-value {
+  margin-inline-start: 12px;
+  font-family: var(--font-third);
+  font-weight: bold;
+  color: whitesmoke;
+}

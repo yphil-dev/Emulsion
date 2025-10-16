@@ -23,6 +23,7 @@
 :root {
   --font-main: 'Orbitron', sans-serif;
   --font-second: 'TaylorSans', sans-serif;
+  --font-third: "Inter", "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
   --color-succes: #00ff18;
   --color-icon: #007bff;
 

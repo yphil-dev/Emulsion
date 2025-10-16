@@ -833,6 +833,19 @@ function getMeta(params) {
     });
 }
 
+function ensureGamePane() {
+    const page = document.querySelector('.page.active');
+    if (!page) return null;
+
+    let gamePane = page.querySelector('.game-pane');
+    if (!gamePane) {
+        gamePane = buildGamePane();
+        page.appendChild(gamePane);
+    }
+
+    return gamePane;
+}
+
 function buildGamePane() {
     const gamePane = document.createElement('div');
     gamePane.classList.add('game-pane');
@@ -883,19 +896,6 @@ function buildGamePane() {
     gamePane.appendChild(imagePane);
     gamePane.appendChild(paneText);
     // gamePane.appendChild(fetchMetaButton);
-
-    return gamePane;
-}
-
-function ensureGamePane() {
-    const page = document.querySelector('.page.active');
-    if (!page) return null;
-
-    let gamePane = page.querySelector('.game-pane');
-    if (!gamePane) {
-        gamePane = buildGamePane();
-        page.appendChild(gamePane);
-    }
 
     return gamePane;
 }

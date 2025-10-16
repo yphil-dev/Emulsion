@@ -301,20 +301,6 @@ p { margin-top: 0; }
 i.disabled { pointer-events: none; opacity: 0.5; }
 
 
-/* ===========================
-   Game Pane / Side Panel
-   =========================== */
-.game-pane {
-  width: 22vw; /* Use viewport width instead of percentage */
-  aspect-ratio: 0.28; /* 22/78 ≈ 0.28 - maintains ratio to page-content */
-  position: fixed;
-  right: 0;
-  display: flex;
-  flex-direction: column;
-  background-color: rgba(0,0,0,0);
-  border-left: 1px solid var(--color-border-off);
-}
-
 .page-content.list {
   width: 78vw; /* Match with viewport units */
   display: block;
@@ -326,21 +312,39 @@ i.disabled { pointer-events: none; opacity: 0.5; }
   -ms-overflow-style: none;
 }
 
-.image-pane {
-  width: 100%;
-  height: 40vh; /* Always 40% of viewport height */
-  min-height: 250px; /* Fallback minimum */
+/* ===========================
+   Game Pane / Side Panel
+   =========================== */
+
+/* Sidebar */
+.game-pane {
+  width: 22vw;            /* fluid */
+  min-width: 240px;       /* prevents becoming too tiny (avoids squashing) */
+  max-width: 480px;       /* optional */
+  position: fixed;
+  right: 0;
   display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  position: relative;
-  border-bottom: 1px solid var(--color-border-off);
+  flex-direction: column;
+  border-left: 1px solid var(--color-border-off);
 }
 
+/* image pane: width dictates height via aspect-ratio */
+.image-pane {
+  width: 100%;            /* fill .game-pane width */
+  aspect-ratio: 2 / 3;    /* portrait box art — width / height. Change to 3/4, 1/1, etc. */
+  overflow: hidden;
+  position: relative;
+  border-bottom: 1px solid var(--color-border-off);
+  /* optional visual constraints: */
+  max-height: calc(100vh - 160px); /* avoids insane tall boxes on very short viewports */
+}
+
+/* image inside: preserve intrinsic aspect, no squashing */
 .image-pane img {
   width: 100%;
   height: 100%;
-  /* object-fit: cover; */
+  object-fit: cover;      /* fills frame while preserving image aspect (cropping possible) */
+  display: block;
 }
 
 .pane-text {

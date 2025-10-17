@@ -471,7 +471,9 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
     const isGallery = LB.mode === 'gallery';
     const isGameMenu = LB.mode === 'gameMenu';
 
-    const containers = isGallery ? GalleryState.gameContainers : Array.from(menu.querySelectorAll('.menu-game-container'));
+    const containers = isGallery
+          ? GalleryState.gameContainers
+          : Array.from(menu.querySelectorAll('.menu-game-container'));
 
     const activePage = document.querySelector('.page.active');
     const isListMode = activePage.querySelector('.page-content').classList.contains('list');
@@ -546,52 +548,82 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
             initSlideShow(activePage.dataset.platform);
         }
         break;
+
+    case 'Enter':
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+
+        const selectedContainer = containers[GalleryState.selectedIndex];
+
+        if (isGallery) {
+            if (activePage.dataset.platform === 'settings') {
+                openPlatformMenu(selectedContainer.dataset.platform, 'settings');
+            } else if (!selectedContainer.classList.contains('empty-platform-game-container')) {
+                launchGame(selectedContainer);
+            }
+        } else {
+            closeGameMenu(selectedContainer.querySelector('img').src);
+        }
+        break;
+
+    case '+':
+        event.preventDefault();
+        handleFavoriteToggle(containers[GalleryState.selectedIndex]);
+        break;
+
+    default:
+        // 🔍 NEW FEATURE: letter key search with wrap-around
+        if (!event.ctrlKey && !event.altKey && !event.metaKey && /^[a-z0-9]$/i.test(event.key)) {
+            const key = event.key.toLowerCase();
+            const startIndex = GalleryState.selectedIndex + 1;
+            let matchIndex = -1;
+
+            // Search from next item to end
+            for (let i = startIndex; i < containers.length; i++) {
+                const name = (containers[i].dataset.cleanName || containers[i].dataset.gameName || '').toLowerCase();
+                if (name.startsWith(key)) {
+                    matchIndex = i;
+                    break;
+                }
+            }
+
+            // Wrap-around: search from start to current index
+            if (matchIndex === -1) {
+                for (let i = 0; i < startIndex; i++) {
+                    const name = (containers[i].dataset.cleanName || containers[i].dataset.gameName || '').toLowerCase();
+                    if (name.startsWith(key)) {
+                        matchIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            if (matchIndex >= 0) {
+                GalleryState.selectedIndex = matchIndex;
+            }
+        }
+        break;
+
     }
 
     const selectedContainer = containers[GalleryState.selectedIndex];
     const isEmptyPage = activePage.dataset.empty === 'true';
 
-    if (event.key === 'Enter') {
+    containers.forEach((container, index) =>
+        container.classList.toggle('selected', index === GalleryState.selectedIndex)
+    );
 
-        event.stopPropagation();
-        event.stopImmediatePropagation();
-
-        if (isGallery) {
-            if (activePage.dataset.platform === 'settings') {
-                openPlatformMenu(selectedContainer.dataset.platform, 'settings');
-            } else {
-                if (!selectedContainer.classList.contains('empty-platform-game-container')) launchGame(selectedContainer);
-            }
-        } else {
-            closeGameMenu(selectedContainer.querySelector('img').src);
+    if (!isEmptyPage && !event.shiftKey) {
+        if (isListMode && event.key.startsWith('Arrow')) {
+            updateGamePane(selectedContainer);
         }
-
+        selectedContainer.scrollIntoView({
+            behavior: isListMode ? 'instant' : 'smooth',
+            block: isListMode ? 'end' : 'center'
+        });
     }
+};
 
-    if (event.key === '+') {
-        event.preventDefault();
-        handleFavoriteToggle(selectedContainer);
-    }
-
-    if (event.key === 'i') {
-        openGameMenu(selectedContainer);
-    }
-
-    containers.forEach((container, index) => container.classList.toggle('selected', index === GalleryState.selectedIndex));
-
-    if (!isEmptyPage) {
-        if (!event.shiftKey) {
-            if (isListMode && event.key.startsWith('Arrow')) {
-                updateGamePane(selectedContainer);
-            }
-            containers[GalleryState.selectedIndex].scrollIntoView({
-                behavior: isListMode ? 'instant' : 'smooth',
-                block: isListMode ? 'end' : 'center'
-            });
-        }
-    }
-
-}
 
 export function initGamepad () {
     const gamepads = navigator.getGamepads();

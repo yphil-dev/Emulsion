@@ -32,20 +32,6 @@ function handleMouseInput() {
     lastInputWasMouse = true;
     showCursor();
     resetMouseTimer();
-
-    // Remove all selected classes in galleries
-    const galleries = document.getElementById('galleries');
-    const pageContent = galleries.querySelector('.page.active .page-content');
-
-    if (pageContent) {
-        const selectedElements = pageContent.querySelectorAll('.selected');
-        selectedElements.forEach(element => {
-            element.classList.remove('selected');
-        });
-
-        // Optional: log for debugging
-        console.log(`Removed 'selected' class from ${selectedElements.length} elements`);
-    }
 }
 
 function handleNonMouseInput() {

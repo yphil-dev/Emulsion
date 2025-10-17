@@ -73,13 +73,21 @@
   list-style: none;
 }
 
-.page-content.list .game-container.selected {
+.page-content.list .game-container.selected,
+.page-content.list .game-container:hover {
   background-color: #333;
   color: whitesmoke;
 }
 
 .page-content.list .game-container.selected .game-label {
   text-shadow: none;
+}
+
+/* Hover effects */
+.page-content:not(.list) div.game-container:hover,
+.page-content div.menu-game-container:hover {
+  outline: 2px solid var(--color-outline-selected);
+  background-color: rgba(0, 0, 75, 0.5);
 }
 
 .page-content.list .game-image {
@@ -121,18 +129,6 @@
   top: 0.1em;
   right: 0;
   pointer-events: auto;
-}
-
-/* Hover effects */
-.page-content:not(.list) div.game-container:hover,
-.page-content div.menu-game-container:hover {
-  outline: 2px solid var(--color-outline-selected);
-  background-color: rgba(0, 0, 75, 0.5);
-}
-
-.page-content.list div.game-container:hover {
-  background-color: grey;
-  color: black;
 }
 
 /* ===========================

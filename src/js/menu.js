@@ -20,6 +20,7 @@ let menuState = {
 
 window.onMenuKeyDown = function onMenuKeyDown(event) {
 
+    // console.log("event: ", event);
     event.stopPropagation();
     event.stopImmediatePropagation();
 

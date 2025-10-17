@@ -580,17 +580,15 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
     containers.forEach((container, index) => container.classList.toggle('selected', index === GalleryState.selectedIndex));
 
     if (!isEmptyPage) {
-
-        if (isListMode && event.key.startsWith('Arrow')) {
-            if (!event.shiftKey) {
+        if (!event.shiftKey) {
+            if (isListMode && event.key.startsWith('Arrow')) {
                 updateGamePane(selectedContainer);
             }
+            containers[GalleryState.selectedIndex].scrollIntoView({
+                behavior: isListMode ? 'instant' : 'smooth',
+                block: isListMode ? 'end' : 'center'
+            });
         }
-
-        containers[GalleryState.selectedIndex].scrollIntoView({
-            behavior: isListMode ? 'instant' : 'smooth',
-            block: isListMode ? 'end' : 'center'
-        });
     }
 
 }
@@ -691,6 +689,7 @@ export function initGamepad () {
             simulateKeyDown('i');
             break;
         case 3:
+            simulateKeyDown('+');
             console.log("3 (triangle)");
             break;
         case 4:

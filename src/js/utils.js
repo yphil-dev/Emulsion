@@ -135,27 +135,55 @@ export function getSelectedGameContainer(gameContainers, selectedIndex) {
 }
 
 export function simulateTabNavigation(shiftKey = false) {
+    // Get all potentially focusable elements
     const focusableElements = document.querySelectorAll(
-        'button, input, select, textarea'
+        'button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
 
-    const currentIndex = Array.from(focusableElements).indexOf(document.activeElement);
+    console.log("focusableElements found: ", focusableElements.length);
+
+    // Filter to only elements that are visible and not disabled
+    const visibleFocusableElements = Array.from(focusableElements).filter(el => {
+        return el.offsetWidth > 0 &&
+               el.offsetHeight > 0 &&
+               !el.disabled &&
+               getComputedStyle(el).visibility !== 'hidden' &&
+               getComputedStyle(el).display !== 'none';
+    });
+
+    console.log("visibleFocusableElements: ", visibleFocusableElements);
+
+    if (visibleFocusableElements.length === 0) {
+        console.warn("No focusable elements found");
+        return;
+    }
+
+    const currentIndex = visibleFocusableElements.indexOf(document.activeElement);
     let nextIndex;
 
     if (shiftKey) {
         // Shift+Tab - move backward
-        nextIndex = currentIndex <= 0 ? focusableElements.length - 1 : currentIndex - 1;
+        nextIndex = currentIndex <= 0 ? visibleFocusableElements.length - 1 : currentIndex - 1;
     } else {
         // Tab - move forward
-        nextIndex = currentIndex >= focusableElements.length - 1 ? 0 : currentIndex + 1;
+        nextIndex = currentIndex >= visibleFocusableElements.length - 1 ? 0 : currentIndex + 1;
     }
 
-    const nextElement = focusableElements[nextIndex];
+    const nextElement = visibleFocusableElements[nextIndex];
+    console.log(`Moving focus from index ${currentIndex} to ${nextIndex}`, nextElement);
+
     if (nextElement) {
-        nextElement.focus();
+        // Ensure the element is focusable
+        if (!nextElement.hasAttribute('tabindex')) {
+            nextElement.setAttribute('tabindex', '0');
+        }
+
+        nextElement.focus({ preventScroll: false });
+
         nextElement.scrollIntoView({
             behavior: 'smooth',
-            block: 'center'
+            block: 'center',
+            inline: 'center'
         });
     }
 }
@@ -391,13 +419,18 @@ export function updateHeader(platformName, gameName) {
 
     if (!showHeader) return;
 
+    const galleries = document.getElementById('galleries');
+
+    const favPage = galleries.querySelector('.page[data-platform="favorites"] .page-content');
+    const recentsPage = galleries.querySelector('.page[data-platform="recents"] .page-content');
+
     let platform;
     if (platformName === 'settings') {
         platform = { nbGames: PLATFORMS.length, displayName: "Settings", vendor: "Emulsion" };
     } else if (platformName === 'favorites') {
-        platform = { nbGames: LB.favorites.length, displayName: "Favorites", vendor: "Emulsion" };
+        platform = { nbGames: favPage.children.length, displayName: "Favorites", vendor: "Emulsion" };
     } else if (platformName === 'recents') {
-        platform = { nbGames: LB.recents.length, displayName: "Recently played", vendor: "Emulsion" };
+        platform = { nbGames: recentsPage.children.length, displayName: "Recently played", vendor: "Emulsion" };
     } else {
         platform = getPlatformByName(platformName);
     }

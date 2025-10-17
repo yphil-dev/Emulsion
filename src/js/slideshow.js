@@ -495,8 +495,6 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
             if (isListMode && LB.mode === 'gallery') {
                 GalleryState.selectedIndex = Math.max(GalleryState.selectedIndex - 1, 0);
             } else {
-                console.log("GalleryState.selectedIndex: ", GalleryState.selectedIndex);
-                console.log("LB.mode: ", LB.mode);
                 if (LB.mode === 'gameMenu' && GalleryState.selectedIndex === 1) {
                     return;
                 }
@@ -524,7 +522,6 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         if (isListMode && LB.mode === 'gallery') {
             GalleryState.selectedIndex = Math.max(GalleryState.selectedIndex - 1, 0);
         } else {
-            console.log("GalleryState.selectedIndex: ", GalleryState.selectedIndex);
             if (LB.mode === 'gameMenu' && GalleryState.selectedIndex === LB.galleryNumOfCols) {
                 return;
             }
@@ -571,12 +568,7 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
 
     if (event.key === '+') {
         event.preventDefault();
-        handleFavoriteKey('add', selectedContainer);
-    }
-
-    if (event.key === '-') {
-        event.preventDefault();
-        handleFavoriteKey('remove', selectedContainer);
+        handleFavoriteToggle(selectedContainer);
     }
 
     if (event.key === 'i') {
@@ -817,12 +809,8 @@ function getMeta(params) {
         const platformDisplayName = getPlatformInfo(params.platformName).name;
         params.platformDisplayName = platformDisplayName;
 
-        console.log("LB.preferences: ", LB.preferences);
-        console.log("platformDisplayName: ", platformDisplayName);
-
-        ipcRenderer.send(params.action, params);
+        ipcRenderer.send(params.function, params);
         ipcRenderer.once('game-meta-data', (event, data) => {
-            console.log("data: ", data);
             resolve(data);
         });
     });
@@ -884,7 +872,7 @@ function buildGamePane() {
             cleanName: gamePane.dataset.cleanName,
             platformName: gamePane.dataset.platformName,
             gameFileName: gamePane.dataset.gameFileName,
-            action: 'fetch-meta'
+            function: 'fetch-meta'
         };
 
         await updateGamePaneText(params);
@@ -961,9 +949,8 @@ async function updateGamePaneText(params) {
     fetchMetaButton.classList.add('is-loading');
 
     const gameMetaData = await getMeta(params);
-
-    // --- Manage metadata display elegantly ---
-    let metaContainer = document.querySelector('.meta-container');
+    const activePage = document.querySelector('.page.active');
+    let metaContainer = activePage.querySelector('.meta-container');
 
     if (!metaContainer) {
         metaContainer = document.createElement('div');
@@ -976,7 +963,6 @@ async function updateGamePaneText(params) {
     // Clear old content
     metaContainer.innerHTML = '';
 
-    console.log("gameMetaData: ", gameMetaData);
     if (gameMetaData) {
         fetchMetaButton.classList.remove('is-loading');
         const dl = createGameMetaDataDL(gameMetaData);
@@ -984,8 +970,7 @@ async function updateGamePaneText(params) {
         metaContainer.style.display = 'block';
     } else {
         fetchMetaButton.classList.remove('is-loading');
-        console.log("params.action: ", params.action);
-        if (params.action === 'fetch-meta') {
+        if (params.function === 'fetch-meta') {
             metaContainer.style.display = 'block';
             metaContainer.appendChild(metaNotFoundDiv);
         } else {
@@ -1014,7 +999,7 @@ async function updateGamePane(selectedContainer) {
         platformName: selectedContainer.dataset.platform,
         gameFileName: selectedContainer.dataset.gameName,
         paneText,
-        action: 'read-meta'
+        function: 'read-meta'
     };
     await updateGamePaneText(params);
 }
@@ -1073,30 +1058,55 @@ function showConfirmationDialog(message) {
     }, 5000);
 }
 
-function handleFavoriteKey(actionType, selectedContainer) {
-    const actions = {
-        'add': {
-            func: addFavorite,
-            message: 'Press + again to add to favorites'
-        },
-        'remove': {
-            func: removeFavorite,
-            message: 'Press - again to remove from favorites'
-        }
+function checkIfFavorite(container) {
+    const galleries = document.getElementById('galleries');
+    const favPage = galleries.querySelector('.page[data-platform="favorites"] .page-content');
+
+    if (!favPage) return false;
+
+    const favoriteEntry = {
+        gameName: container.dataset.gameName,
+        gamePath: container.dataset.gamePath,
+        command: container.dataset.command,
+        emulator: container.dataset.emulator,
+        emulatorArgs: container.dataset.emulatorArgs,
+        platform: container.dataset.platform
     };
 
-    const { func, message } = actions[actionType];
+    // Check if this game exists in favorites page
+    const existingFavorite = favPage.querySelector(`.game-container[data-game-name="${favoriteEntry.gameName}"][data-game-path="${favoriteEntry.gamePath}"]`);
+    return existingFavorite !== null;
+}
 
-    if (pendingAction === actionType) {
+function handleFavoriteToggle(selectedContainer) {
+    if (pendingAction === 'toggle-favorite') {
         // Second press - execute action
         const existingDialog = document.getElementById('favorite-confirmation');
         if (existingDialog) existingDialog.remove();
         pendingAction = null;
         clearTimeout(confirmationTimeout);
-        func(selectedContainer);
+        toggleFavorite(selectedContainer);
     } else {
         // First press - show confirmation
-        pendingAction = actionType;
+        pendingAction = 'toggle-favorite';
+
+        // Check if it's already a favorite to show appropriate message
+        const isFavorite = checkIfFavorite(selectedContainer);
+        const message = isFavorite
+            ? 'Press + again to remove from favorites'
+            : 'Press + again to add to favorites';
+
         showConfirmationDialog(message);
     }
 }
+
+async function toggleFavorite(container) {
+    const isFavorite = checkIfFavorite(container);
+
+    if (isFavorite) {
+        await removeFavorite(container);
+    } else {
+        await addFavorite(container);
+    }
+}
+

@@ -144,7 +144,7 @@ div.empty-platform-game-container,
 div.menu-game-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  /* align-items: center; */
   text-align: center;
   justify-content: flex-start;
   font-size: 20px;
@@ -338,6 +338,7 @@ i.disabled { pointer-events: none; opacity: 0.5; }
   overflow: hidden;
   position: relative;
   border-bottom: 1px solid var(--color-border-off);
+  /* outline-bottom: 1px solid var(--color-border-off); */
   /* optional visual constraints: */
   max-height: calc(100vh - 160px); /* avoids insane tall boxes on very short viewports */
 }
@@ -356,6 +357,14 @@ i.disabled { pointer-events: none; opacity: 0.5; }
   background-color: var(--color-bg-header);
 }
 
+.pane-text .game-title {
+  height: 50px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* number of lines to show */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 .pane-controls {
   display: flex;
   flex-direction: row;
@@ -366,6 +375,22 @@ i.disabled { pointer-events: none; opacity: 0.5; }
   flex: 1;
   margin: 2px;
   padding: 1px;
+}
+
+/* Pulse effect while searching/loading */
+.pane-controls button.is-loading {
+  animation: pulse-button 1s infinite ease-in-out;
+}
+
+@keyframes pulse-button {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.6;
+  }
 }
 
 .pane-text .game-title {
@@ -392,4 +417,24 @@ dd.meta-value {
   font-size: 0.8em;
   font-weight: bold;
   color: whitesmoke;
+}
+
+div.menu-current-image-container {
+  flex-direction: column-reverse;
+}
+
+.manual-select-button {
+  position: absolute;
+  bottom: 0;
+  border-radius: 0;
+}
+
+.button-wide {
+  width: 100%;
+}
+
+.empty-platform-game-container button {
+  width: max-content;
+  margin: 0 auto;
+  display: inline-block;
 }

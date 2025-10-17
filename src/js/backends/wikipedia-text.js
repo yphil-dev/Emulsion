@@ -261,9 +261,9 @@ const testGame = async (gameName, platform = null) => {
 
     // await testGame('nitro (video game)');
 
-    // await testGame('outrun 2006');
+    await testGame('Super Spike V ball');
     // await testGame('outrun 2006', 'sony playstation');
-    await testGame('Army Men - World War', 'playstation');
+    // await testGame('Army Men - World War', 'playstation');
     // await testGame('banshee');
 
     console.log('\n✅ === All tests completed ===');

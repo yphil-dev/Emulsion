@@ -413,14 +413,23 @@ export async function scanDirectory(gamesDir, extensions, recursive = true, igno
 }
 
 export function findImageFile(basePath, fileNameWithoutExt) {
-    const imageFormats = ['jpg', 'png', 'webp'];
-    for (const format of imageFormats) {
-        const imagePath = path.join(basePath, `${fileNameWithoutExt}.${format}`);
+    const extensions = ['png', 'jpg', 'webp'];
+    let newestImage = null;
+    let newestTime = 0;
+
+    for (const extension of extensions) {
+        const imagePath = path.join(basePath, `${fileNameWithoutExt}.${extension}`);
         if (fs.existsSync(imagePath)) {
-            return imagePath;
+            const stats = fs.statSync(imagePath);
+            const mtime = stats.mtimeMs;
+            if (mtime > newestTime) {
+                newestTime = mtime;
+                newestImage = imagePath;
+            }
         }
     }
-    return null;
+
+    return newestImage;
 }
 
 function setProgress(current, total) {

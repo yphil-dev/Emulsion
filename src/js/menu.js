@@ -1080,7 +1080,7 @@ async function populateGameMenu(gameMenuContainer, gameName, platformName) {
 
 function buildManualSelectButton(gameName, platformName, imgElem) {
     const btn = document.createElement('button');
-    btn.classList.add('button', 'button-wide');
+    btn.classList.add('button', 'button-wide', 'manual-select-button');
     btn.title = 'Select image';
     btn.innerHTML = '<i class="fa fa-plus" aria-hidden="true"></i>';
 
@@ -1121,7 +1121,7 @@ function buildCurrentGameImgContainer(gameName, image, platformName) {
     gameMenuContainer.style.gridTemplateColumns = `repeat(${LB.galleryNumOfCols}, 1fr)`;
 
     const currentImageContainer = document.createElement('div');
-    currentImageContainer.classList.add('menu-game-container');
+    currentImageContainer.classList.add('menu-game-container', 'menu-current-image-container');
     currentImageContainer.style.height = 'calc(120vw / ' + LB.galleryNumOfCols + ')';
 
     const currentImage = document.createElement('img');
@@ -1135,10 +1135,10 @@ function buildCurrentGameImgContainer(gameName, image, platformName) {
 
     const manualBtn = buildManualSelectButton(gameName, platformName, currentImage);
 
-    gameLabel.appendChild(manualBtn);
+    console.log("manualBtn: ", manualBtn);
 
     currentImageContainer.appendChild(currentImage);
-    currentImageContainer.appendChild(gameLabel);
+    currentImageContainer.appendChild(manualBtn);
 
     gameMenuContainer.appendChild(currentImageContainer);
 

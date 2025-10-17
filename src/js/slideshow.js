@@ -496,6 +496,10 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
                 GalleryState.selectedIndex = Math.max(GalleryState.selectedIndex - 1, 0);
             } else {
                 console.log("GalleryState.selectedIndex: ", GalleryState.selectedIndex);
+                console.log("LB.mode: ", LB.mode);
+                if (LB.mode === 'gameMenu' && GalleryState.selectedIndex === 1) {
+                    return;
+                }
                 GalleryState.selectedIndex = (GalleryState.selectedIndex - 1 + containers.length) % containers.length;
             }
         }
@@ -520,6 +524,10 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         if (isListMode && LB.mode === 'gallery') {
             GalleryState.selectedIndex = Math.max(GalleryState.selectedIndex - 1, 0);
         } else {
+            console.log("GalleryState.selectedIndex: ", GalleryState.selectedIndex);
+            if (LB.mode === 'gameMenu' && GalleryState.selectedIndex === LB.galleryNumOfCols) {
+                return;
+            }
             GalleryState.selectedIndex = _moveRows(GalleryState.selectedIndex, -1);
         }
         break;
@@ -856,19 +864,20 @@ function buildGamePane() {
     gameTitle.classList.add('game-title');
 
     const fetchMetaButton = document.createElement('button');
-    fetchMetaButton.classList.add('pane-meta-button', 'button');
+    fetchMetaButton.classList.add('pane-fetch-meta-button', 'button');
 
     const metaIcon = document.createElement('i');
-    metaIcon.className = 'fa fa-refresh';
-
+    metaIcon.className = 'fa fa-wikidata';
     fetchMetaButton.appendChild(metaIcon);
+    fetchMetaButton.appendChild(document.createTextNode(' Meta'));
+
+    const webLinkButton = document.createElement('button');
+    webLinkButton.classList.add('pane-web-link-button', 'button');
 
     const webLinkIcon = document.createElement('i');
     webLinkIcon.className = 'fa fa-external-link';
-
-    const webLinkButton = document.createElement('button');
-    webLinkButton.classList.add('pane-meta-button', 'button');
     webLinkButton.appendChild(webLinkIcon);
+    webLinkButton.appendChild(document.createTextNode(' WebLink'));
 
     fetchMetaButton.addEventListener('click', async () => {
         const params = {
@@ -883,11 +892,7 @@ function buildGamePane() {
     });
 
     webLinkButton.addEventListener('click', async () => {
-
-        const params = {
-            platformName: gamePane.dataset.platformName,
-            gameFileName: gamePane.dataset.gameName,
-        };
+        ipcRenderer.invoke('go-to-url', 'https://yphil.gitlab.io/ext/support.html');
     });
 
     paneControls.appendChild(fetchMetaButton);
@@ -907,37 +912,53 @@ function createGameMetaDataDL(metadata) {
     const dl = document.createElement('dl');
     dl.classList.add('game-meta-data');
 
-    console.log("LB.preferences: ", LB.preferences['settings'].footerSize);
-
-    if (LB.preferences['settings'].footerSize === 'small') {
-        dl.style.maxHeight = '40.5vh';
-    } else if (LB.preferences['settings'].footerSize === 'medium') {
-        dl.style.maxHeight = '38vh';
-    } else if (LB.preferences['settings'].footerSize === 'big') {
-        dl.style.maxHeight = '35vh';
-    }
+    const footerSize = LB.preferences['settings']?.footerSize;
+    if (footerSize === 'small') dl.style.maxHeight = '40.5vh';
+    else if (footerSize === 'medium') dl.style.maxHeight = '38vh';
+    else if (footerSize === 'big') dl.style.maxHeight = '35vh';
 
     const addMeta = (title, value) => {
-        if (!value) return;
+        // normalize and validate
+        if (
+            value == null ||
+            (typeof value === 'string' && value.trim() === '') ||
+            value === 'N/A' ||
+            value === 'Unknown' ||
+            value === 'undefined' ||
+            value === 'null' ||
+            value === '0000-12-31T00:00:00Z'
+        ) {
+            return; // skip invalid/empty entries entirely
+        }
+
         const dt = document.createElement('dt');
         dt.className = 'meta-key';
         dt.textContent = title;
+
         const dd = document.createElement('dd');
         dd.className = 'meta-value';
         dd.textContent = value;
+
         dl.append(dt, dd);
     };
 
     addMeta('Publisher', metadata.publisher);
+    addMeta('Developers', metadata.developers);
     addMeta('Release Date', metadata.releaseDate);
     addMeta('Description', metadata.description);
     addMeta('Platforms', metadata.platforms);
     addMeta('Genre', metadata.genre);
 
+    // hide the <dl> entirely if it ends up empty
+    if (!dl.children.length) dl.style.display = 'none';
+
     return dl;
 }
 
 async function updateGamePaneText(params) {
+
+    let fetchMetaButton = document.querySelector('.pane-fetch-meta-button');
+    fetchMetaButton.classList.add('is-loading');
 
     const gameMetaData = await getMeta(params);
 
@@ -950,16 +971,26 @@ async function updateGamePaneText(params) {
         params.paneText.appendChild(metaContainer);
     }
 
+    const metaNotFoundDiv = document.createElement('div');
+    metaNotFoundDiv.textContent = `No metadata found for ${params.cleanName}`;
     // Clear old content
     metaContainer.innerHTML = '';
 
     console.log("gameMetaData: ", gameMetaData);
     if (gameMetaData) {
+        fetchMetaButton.classList.remove('is-loading');
         const dl = createGameMetaDataDL(gameMetaData);
         metaContainer.appendChild(dl);
         metaContainer.style.display = 'block';
     } else {
-        metaContainer.style.display = 'none';
+        fetchMetaButton.classList.remove('is-loading');
+        console.log("params.action: ", params.action);
+        if (params.action === 'fetch-meta') {
+            metaContainer.style.display = 'block';
+            metaContainer.appendChild(metaNotFoundDiv);
+        } else {
+            metaContainer.style.display = 'none';
+        }
     }
 
 }
@@ -976,7 +1007,7 @@ async function updateGamePane(selectedContainer) {
     // --- Basic setup ---
     const imgSrc = selectedContainer.querySelector('img').src;
     imagePane.querySelector('img').src = imgSrc;
-    paneText.querySelector('.game-title').textContent = selectedContainer.dataset.gameName;
+    paneText.querySelector('.game-title').textContent = selectedContainer.dataset.cleanName;
 
     // --- Load metadata ---
     const params = {

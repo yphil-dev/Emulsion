@@ -1,5 +1,5 @@
 import { PLATFORMS } from './platforms.js';
-import { applyTheme, setFooterSize } from './utils.js';
+import { applyTheme, setFooterSize, initFooterControls } from './utils.js';
 import { buildHomeSlide, initSlideShow, initGallery, initGamepad } from './slideshow.js';
 import { loadPreferences } from './preferences.js';
 import { buildGalleries } from './gallery.js';
@@ -7,6 +7,7 @@ import { buildGalleries } from './gallery.js';
 const slideshow = document.getElementById("slideshow");
 
 initGamepad();
+initFooterControls();
 
 loadPreferences()
     .then((preferences) => {

@@ -1,13 +1,11 @@
 import { getPlatformInfo, PLATFORMS } from './platforms.js';
 import { openPlatformMenu, openGameMenu, closeGameMenu } from './menu.js';
-import { getSelectedGameContainer,
-         updateFooterControls,
+import { updateFooterControlsFor,
          addFavorite,
          removeFavorite,
          updateHeader,
          batchDownload,
          simulateKeyDown,
-         toggleFullScreen,
          toggleHeaderNavLinks } from './utils.js';
 import { updatePreference } from './preferences.js';
 
@@ -139,11 +137,13 @@ export function initSlideShow(platformToDisplay) {
         }
     };
 
-    // Footer buttons
-    updateFooterControls('dpad', 'button-dpad-ew', 'Platforms', 'on');
-    updateFooterControls('shoulders', 'same', 'Platforms', 'off');
-    updateFooterControls('west', 'same', 'same', 'off');
-    updateFooterControls('east', 'same', 'Exit');
+    // // Footer buttons
+    // updateFooterControls('dpad', 'button-dpad-ew', 'Platforms', 'on');
+    // updateFooterControls('shoulders', 'same', 'Platforms', 'off');
+    // updateFooterControls('west', 'same', 'same', 'off');
+    // updateFooterControls('east', 'same', 'Exit');
+
+    updateFooterControlsFor('slide-show');
 
     document.querySelector('footer .back').onclick = () => simulateKeyDown('Escape');
 
@@ -190,17 +190,15 @@ export function buildHomeSlide(platformName, preferences) {
     return slide;
 }
 
-function setGalleryFooterControls(platformName) {
-    if (platformName === 'settings') {
-        updateFooterControls('dpad', 'button-dpad-nesw', 'Platforms', 'on');
-        updateFooterControls('shoulders', 'same', 'Platforms', 'on');
-        updateFooterControls('west', 'same', 'Cover', 'off');
+function setGalleryFooterControls(pageDataset) {
+    if (pageDataset.platformName === 'settings') {
+        console.log("yep: ");
+        updateFooterControlsFor('settings');
+    } else if (pageDataset.empty) {
+        updateFooterControlsFor('empty-page');
     } else {
-        updateFooterControls('dpad', 'button-dpad-nesw', 'Games', 'on');
-        updateFooterControls('west', 'same', 'Cover', 'on');
-        updateFooterControls('shoulders', 'same', 'Platforms', 'on');
+        updateFooterControlsFor('gallery');
     }
-    updateFooterControls('east', 'same', 'Back');
 }
 
 function explodeGameContainer(gameContainer) {
@@ -345,7 +343,15 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
         }
 
         updateHeader(page.dataset.platform);
-        setGalleryFooterControls(page.dataset.platform);
+
+        const isEmpty = page.dataset.empty;
+
+        if (page.dataset.empty) {
+
+        }
+
+        setGalleryFooterControls(page.dataset);
+
     }
 
     function updateGallery() {
@@ -370,10 +376,6 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
 
                 if (!page.dataset.empty) {
                     setGalleryViewMode(page.dataset.viewMode);
-                } else {
-                    updateFooterControls('dpad', 'button-dpad-nesw', 'Games', 'off');
-                    updateFooterControls('west', 'same', 'Cover', 'off');
-                    updateFooterControls('south', 'same', 'Cover', 'off');
                 }
 
                 updateHeaderControls(page.dataset);
@@ -1002,25 +1004,6 @@ async function updateGamePane(selectedContainer) {
         function: 'read-meta'
     };
     await updateGamePaneText(params);
-}
-
-async function closeSettingsOrPlatformMenu() {
-
-    console.warn('CLOSE called', new Date().toISOString(), new Error().stack);
-
-    const menu = document.getElementById('menu');
-
-    updateFooterControls('dpad', 'same', 'Browse', 'on');
-
-    if (menu.dataset.context === 'slideshow') {
-        initSlideShow(menu.dataset.menuPlatform);
-    } else {
-        initGallery('settings');
-    }
-
-    menu.innerHTML = '';
-    menu.style.height = '0';
-
 }
 
 function showConfirmationDialog(message) {

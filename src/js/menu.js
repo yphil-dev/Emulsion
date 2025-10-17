@@ -2,7 +2,7 @@ import { getPlatformInfo } from './platforms.js';
 import { initSlideShow, initGallery } from './slideshow.js';
 import { updatePreference, getPreference } from './preferences.js';
 import { getSelectedGameContainer,
-         updateFooterControls,
+         updateFooterControlsFor,
          updateHeader,
          cleanFileName,
          applyTheme,
@@ -917,9 +917,11 @@ export function openPlatformMenu(platformName, context) {
 
     menu.innerHTML = '';
 
-    updateFooterControls('dpad', 'button-dpad-nesw', 'Inputs', 'on');
-    updateFooterControls('west', 'same', '', 'off');
-    updateFooterControls('shoulders', 'same', '', 'off');
+    updateFooterControlsFor('platform-menu');
+
+    // updateFooterControls('dpad', 'button-dpad-nesw', 'Inputs', 'on');
+    // updateFooterControls('west', 'same', '', 'off');
+    // updateFooterControls('shoulders', 'same', '', 'off');
 
     menu.dataset.menuPlatform = platformName;
     menu.dataset.context = context || null;
@@ -947,7 +949,7 @@ async function closeSettingsOrPlatformMenu() {
 
     const menu = document.getElementById('menu');
 
-    updateFooterControls('dpad', 'same', 'Browse', 'on');
+    // updateFooterControls('dpad', 'same', 'Browse', 'on');
 
     if (menu.dataset.context === 'slideshow') {
         initSlideShow(LB.currentPlatform);
@@ -978,9 +980,12 @@ export async function openGameMenu(container) {
     menuState.selectedIndex = 1;
 
     // Update UI
-    updateFooterControls('west', 'same', '', 'off');
-    updateFooterControls('dpad', 'button-dpad-nesw', 'Images', 'on');
-    updateFooterControls('shoulders', 'same', '', 'off');
+    // updateFooterControls('west', 'same', '', 'off');
+    // updateFooterControls('dpad', 'button-dpad-nesw', 'Images', 'on');
+    // updateFooterControls('shoulders', 'same', '', 'off');
+
+    updateFooterControlsFor('game-menu');
+
 
     menu.style.height = '100vh';
 
@@ -1168,7 +1173,7 @@ export async function closeGameMenu(imgSrc) {
     const menu = document.getElementById('menu');
     const menuContainer = document.getElementById('menu');
 
-    updateFooterControls('dpad', 'same', 'Browse', 'on');
+    // updateFooterControls('dpad', 'same', 'Browse', 'on');
     toggleHeaderNavLinks('show');
 
     menuContainer.innerHTML = '';

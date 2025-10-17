@@ -1,9 +1,62 @@
 import { PLATFORMS } from './platforms.js';
 import { buildEmptyPageGameContainer } from './gallery.js';
 
-// DOM and UI utility functions
+export function initFooterControls() {
+    updateFooterControls('dpad', 'button-dpad-ew', 'Platforms', 'on');
+    updateFooterControls('shoulders', 'same', 'same', 'off');
+    updateFooterControls('west', 'same', 'same', 'off');
+    updateFooterControls('north', 'same', 'same', 'off');
+    updateFooterControls('east', 'same', 'Exit', 'on');
+    updateFooterControls('south', 'same', 'same', 'on'); // Make sure south is on
+}
 
-export function updateFooterControls(section, newIcon, newText, display) {
+export function updateFooterControlsFor(context) {
+
+    switch (context) {
+    case 'gallery':
+        updateFooterControls('dpad', 'button-dpad-nesw', 'Games', 'on');
+        updateFooterControls('west', 'same', 'Cover', 'on');
+        updateFooterControls('west', 'button-west', 'Cover', 'on');
+        updateFooterControls('north', 'button-north', 'Favorite', 'on');
+        updateFooterControls('shoulders', 'same', 'Platforms', 'on');
+        break;
+
+    case 'settings':
+        updateFooterControls('dpad', 'button-dpad-nesw', 'Platforms', 'on');
+        updateFooterControls('shoulders', 'same', 'Platforms', 'on');
+        updateFooterControls('west', 'same', 'Cover', 'off');
+        updateFooterControls('north', 'same', 'same', 'off');
+        break;
+
+    case 'game-menu':
+        updateFooterControls('dpad', 'button-dpad-nesw', 'Platforms', 'on');
+        updateFooterControls('shoulders', 'same', 'Platforms', 'on');
+        updateFooterControls('west', 'same', 'Cover', 'off');
+        updateFooterControls('north', 'same', 'same', 'off');
+        break;
+
+    case 'platform-menu':
+        updateFooterControls('dpad', 'button-dpad-nesw', 'Inputs', 'on');
+        updateFooterControls('west', 'same', '', 'off');
+        updateFooterControls('shoulders', 'same', '', 'off');
+        updateFooterControls('north', 'same', 'same', 'off');
+        break;
+
+    case 'empty-page':
+        updateFooterControls('dpad', 'button-dpad-nesw', 'Platforms', 'off');
+        updateFooterControls('shoulders', 'same', 'Platforms', 'on');
+        updateFooterControls('west', 'same', 'Cover', 'off');
+        updateFooterControls('north', 'same', 'same', 'off');
+        break;
+
+    case 'slide-show':
+        initFooterControls();
+        break;
+
+    }
+}
+
+function updateFooterControls(section, newIcon, newText, display) {
     const sectionDiv = document.getElementById(section);
     if (!sectionDiv) {
         console.warn(`Section '${section}' not found!`);
@@ -15,6 +68,7 @@ export function updateFooterControls(section, newIcon, newText, display) {
 
     if (display === 'off') {
         sectionDiv.style.display = 'none';
+        console.log("sectionDiv OFF: ", sectionDiv);
     }
 
     if (display === 'on') {

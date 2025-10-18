@@ -12,7 +12,7 @@
 
 **One interface. All your emulators. Zero hassle.**
 
-[Website](https://yphil.gitlab.io/emulsion) • [Download](https://github.com/yPhil-gh/emulsion/releases/latest) • [Documentation](#configuration) • [Community](https://gitlab.com/yphil/emulsion/-/issues)
+[Website](https://yphil.gitlab.io/emulsion) • [Download](https://github.com/yPhil-gh/emulsion/releases/latest) • [Documentation](#configuration) • [Cracktro](https://yphil.gitlab.io/ext/emulsion.html)
 
 ![Emulsion Hero](https://yphil.gitlab.io/images/emulsion-screenshot_01.png?cache=xyzz)
 

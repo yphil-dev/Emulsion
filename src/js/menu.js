@@ -147,7 +147,6 @@ function buildPrefsFormItem(name, iconName, type, description, shortDescription,
 
     let input;
     const group = document.createElement('div');
-
     const radios = [];
 
     if (typeof type === 'object') {
@@ -453,6 +452,7 @@ function buildPlatformMenuForm(platformName) {
     statusLabel.appendChild(statusLabelPlatormStatus);
 
     const gamesDirGroup = document.createElement('div');
+    gamesDirGroup.classList.add('form-menu-input-group');
 
     const gamesDirInput = document.createElement('input');
     gamesDirInput.type = 'text';
@@ -488,6 +488,7 @@ function buildPlatformMenuForm(platformName) {
     gamesDirGroup.appendChild(gamesDirCtn);
 
     const emulatorGroup = document.createElement('div');
+    emulatorGroup.classList.add('form-menu-input-group');
 
     const emulatorIcon = document.createElement('div');
     emulatorIcon.classList.add('form-icon');
@@ -524,6 +525,7 @@ function buildPlatformMenuForm(platformName) {
 
     // ======== BATCH DOWNLOAD SECTION ========
     const batchGroup = document.createElement('div');
+    batchGroup.classList.add('form-menu-input-group');
 
     const batchIcon = document.createElement('div');
     batchIcon.classList.add('form-icon');
@@ -559,6 +561,7 @@ function buildPlatformMenuForm(platformName) {
 
     // ======== NEW EXTENSIONS SECTION ========
     const extensionsGroup = document.createElement('div');
+    extensionsGroup.classList.add('form-menu-input-group');
 
     // Label
     const extensionsLabel = document.createElement('label');
@@ -622,6 +625,7 @@ function buildPlatformMenuForm(platformName) {
     // ======== END EXTENSIONS SECTION ========
 
     const emulatorArgsGroup = document.createElement('div');
+    emulatorArgsGroup.classList.add('form-menu-input-group');
 
     const emulatorArgsCtn = document.createElement('div');
     emulatorArgsCtn.classList.add('dual-ctn');

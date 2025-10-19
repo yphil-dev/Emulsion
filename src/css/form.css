@@ -46,6 +46,9 @@
   font-weight: normal;
   font-style: normal;
   font-size: 1em;
+}
+
+.form-menu-input-group .form-label {
   margin-left: 60px;
 }
 

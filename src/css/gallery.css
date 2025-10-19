@@ -90,12 +90,16 @@
   border-color: var(--color-outline-selected);
 }
 
-.page-content.list .game-image {
-  display: none;
-  visibility: hidden;
-  width: 0;
-  height: 0;
-  pointer-events: none;
+/* example: 3:4 portrait box-art (width / height = 3/4) */
+.page-content:not(.list) div.game-container-image {
+  aspect-ratio: 3 / 4;   /* <-- fixed ratio: change to your desired ratio */
+  height: auto;
+  width: 100%;           /* let the grid or parent determine width */
+  /* max-width: calc(100%); /\* optional *\/ */
+  /* display: flex;         /\* you already use flex inside *\/ */
+  /* flex-direction: column; */
+  /* box-sizing: border-box; */
+  /* remove any explicit height here */
 }
 
 /* Target each child specifically to find the bullet source */

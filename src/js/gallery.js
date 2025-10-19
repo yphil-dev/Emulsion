@@ -244,6 +244,10 @@ export function buildGameContainer({
 
     const label = document.createElement('div');
     label.classList.add('game-label');
+
+    label.setAttribute('lang', 'en');
+
+
     const labelText = document.createElement('div');
     label.textContent = cleanName;
 

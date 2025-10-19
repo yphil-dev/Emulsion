@@ -95,11 +95,6 @@
   aspect-ratio: 3 / 4;   /* <-- fixed ratio: change to your desired ratio */
   height: auto;
   width: 100%;           /* let the grid or parent determine width */
-  /* max-width: calc(100%); /\* optional *\/ */
-  /* display: flex;         /\* you already use flex inside *\/ */
-  /* flex-direction: column; */
-  /* box-sizing: border-box; */
-  /* remove any explicit height here */
 }
 
 /* Target each child specifically to find the bullet source */
@@ -176,14 +171,29 @@ div.menu-game-container {
 
 .game-label {
   width: 100%;
-  font-size: 0.8em;
-  display: flex;
+
+  font-size: 1.2vw; /* pure vw scaling, no clamp */
+
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
   padding: 0 10px;
   z-index: 1;
   pointer-events: none;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* number of lines to show */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+
+  /* Hyphenation and word breaking */
+  word-break: break-word;        /* fallback for very long words */
+  overflow-wrap: anywhere;       /* modern universal behavior */
+  hyphens: auto;                 /* enable automatic hyphenation */
+
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+  text-align: center;            /* optional, looks better with hyphens */
 }
 
 .label-text {

@@ -15,7 +15,7 @@
   align-content: flex-start;
   position: absolute;
   width: 100vw;
-  height: calc(100vh - 180px);
+  height: calc(100vh - (var(--footer-height) + 100px));
   background-repeat: repeat;
   opacity: 1;
   left: 0;
@@ -326,7 +326,7 @@ i.disabled { pointer-events: none; opacity: 0.5; }
     max-width: 480px;
     display: flex;
     flex-direction: column;
-    background: #222;
+    /* background: #222; */
     z-index: 2;
     overflow: hidden;
     align-items: stretch;
@@ -357,12 +357,17 @@ i.disabled { pointer-events: none; opacity: 0.5; }
   flex: 1 1 auto;             /* grow to fill remaining .game-pane */
   overflow: hidden;            /* meta-container scrolls inside */
 }
+
 .pane-text .game-title {
-  height: 50px;
+  /* min-height: 2.6em; */
+  min-height: 25px;
+  max-height: 25px;
   display: -webkit-box;
   -webkit-line-clamp: 2; /* number of lines to show */
   -webkit-box-orient: vertical;
-  overflow: hidden;
+  /* overflow: hidden; */
+  font-weight: bold;
+  padding: 0 0.5em;
 }
 
 .pane-controls {
@@ -401,6 +406,7 @@ i.disabled { pointer-events: none; opacity: 0.5; }
 
 .meta-container {
   flex: 1 1 auto;
+  overflow-x: hidden;
   overflow-y: auto;            /* always scrollable if needed */
   min-height: 0;               /* important for flex scroll to work */
   padding-bottom: 1em;

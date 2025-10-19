@@ -418,7 +418,7 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
 
     galleries.addEventListener('wheel', event => {
 
-        const scrollableDiv = document.querySelector('.game-meta-data');
+        const scrollableDiv = document.querySelector('.game-pane');
 
         if (scrollableDiv && scrollableDiv.contains(event.target)) {
             // Let normal scrolling happen
@@ -895,9 +895,9 @@ function buildGamePane() {
     fetchMetaButton.classList.add('pane-fetch-meta-button', 'button');
 
     const metaIcon = document.createElement('i');
-    metaIcon.className = 'fa fa-wikidata';
+    metaIcon.className = 'fa fa-refresh';
     fetchMetaButton.appendChild(metaIcon);
-    fetchMetaButton.appendChild(document.createTextNode(' Meta'));
+    // fetchMetaButton.appendChild(document.createTextNode(' Meta'));
 
     const webLinkButton = document.createElement('button');
     webLinkButton.classList.add('pane-web-link-button', 'button');
@@ -905,7 +905,7 @@ function buildGamePane() {
     const webLinkIcon = document.createElement('i');
     webLinkIcon.className = 'fa fa-external-link';
     webLinkButton.appendChild(webLinkIcon);
-    webLinkButton.appendChild(document.createTextNode(' WebLink'));
+    // webLinkButton.appendChild(document.createTextNode(' WebLink'));
 
     fetchMetaButton.addEventListener('click', async () => {
         const params = {
@@ -994,12 +994,7 @@ async function updateGamePaneText(params) {
     let metaContainer = activePage.querySelector('.meta-container');
 
     if (!metaContainer) {
-        console.log("🚧 creating metaContainer and spacerDiv now");
         metaContainer = document.createElement('div');
-        const spacerDiv = document.createElement('div');
-        spacerDiv.classList.add('spacer-div');
-        spacerDiv.textContent = "plop";
-        metaContainer.appendChild(spacerDiv);
         metaContainer.classList.add('meta-container');
         params.paneText.appendChild(metaContainer);
     }

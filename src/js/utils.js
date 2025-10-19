@@ -122,9 +122,30 @@ export function applyTheme(theme) {
 export function setFooterSize(size) {
     const footer = document.getElementById('footer');
     footer.style.opacity = 1;
+
+    // Set class
     footer.className = `footer-${size}`;
     LB.preferences['settings'].footerSize = size;
+
+    // Set CSS variable --footer-height dynamically
+    let heightValue;
+    switch (size) {
+        case 'small':
+            heightValue = '50px';
+            break;
+        case 'medium':
+            heightValue = '80px';
+            break;
+        case 'big':
+            heightValue = '110px';
+            break;
+        default:
+            heightValue = '80px';
+    }
+
+    document.documentElement.style.setProperty('--footer-height', heightValue);
 }
+
 
 export function getSelectedGameContainer(gameContainers, selectedIndex) {
     // Direct access if index is valid

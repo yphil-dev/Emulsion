@@ -103,21 +103,21 @@ footer {
 
 /* --- Responsive scaling modifiers --- */
 footer.footer-small {
-  --footer-height: 44px;
+  /* --footer-height: 44px; */
   --footer-font: 14px;
   --footer-gap: 5px;
   --icon-size: 28px;
 }
 
 footer.footer-medium {
-  --footer-height: 70px;
+  /* --footer-height: 70px; */
   --footer-font: 18px;
   --footer-gap: 7px;
   --icon-size: 60px;
 }
 
 footer.footer-big {
-  --footer-height: 100px;
+  /* --footer-height: 100px; */
   --footer-font: 20px;
   --footer-gap: 10px;
   --icon-size: 80px;

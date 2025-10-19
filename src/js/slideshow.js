@@ -567,8 +567,15 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         break;
 
     case '+':
-        event.preventDefault();
         handleFavoriteToggle(containers[GalleryState.selectedIndex]);
+        break;
+
+    case 'i':
+        if (event.ctrlKey) {
+            const selectedContainer = containers[GalleryState.selectedIndex];
+            openGameMenu(selectedContainer);
+        }
+
         break;
 
     default:
@@ -934,9 +941,9 @@ function createGameMetaDataDL(metadata) {
     dl.classList.add('game-meta-data');
 
     const footerSize = LB.preferences['settings']?.footerSize;
-    if (footerSize === 'small') dl.style.maxHeight = '40.5vh';
-    else if (footerSize === 'medium') dl.style.maxHeight = '38vh';
-    else if (footerSize === 'big') dl.style.maxHeight = '35vh';
+    if (footerSize === 'small') dl.style.height = '40.5vh';
+    else if (footerSize === 'medium') dl.style.height = '80%';
+    else if (footerSize === 'big') dl.style.height = '35vh';
 
     const addMeta = (title, value) => {
         // normalize and validate
@@ -947,7 +954,8 @@ function createGameMetaDataDL(metadata) {
             value === 'Unknown' ||
             value === 'undefined' ||
             value === 'null' ||
-            value === '0000-12-31T00:00:00Z'
+                value === '0000-12-31T00:00:00Z' ||
+            /^--\d{2}-\d{2}$/.test(value)
         ) {
             return; // skip invalid/empty entries entirely
         }
@@ -986,23 +994,31 @@ async function updateGamePaneText(params) {
     let metaContainer = activePage.querySelector('.meta-container');
 
     if (!metaContainer) {
+        console.log("🚧 creating metaContainer and spacerDiv now");
         metaContainer = document.createElement('div');
+        const spacerDiv = document.createElement('div');
+        spacerDiv.classList.add('spacer-div');
+        spacerDiv.textContent = "plop";
+        metaContainer.appendChild(spacerDiv);
         metaContainer.classList.add('meta-container');
         params.paneText.appendChild(metaContainer);
     }
 
+    // ✳️ Replace only old metadata, not the spacer
+    const oldDl = metaContainer.querySelector('dl.game-meta-data');
+    if (oldDl) oldDl.remove();
+    const oldNotFound = metaContainer.querySelector('.meta-not-found');
+    if (oldNotFound) oldNotFound.remove();
+
     const metaNotFoundDiv = document.createElement('div');
+    metaNotFoundDiv.classList.add('meta-not-found');
     metaNotFoundDiv.textContent = `No metadata found for ${params.cleanName}`;
-    // Clear old content
-    metaContainer.innerHTML = '';
 
     if (gameMetaData) {
-        fetchMetaButton.classList.remove('is-loading');
         const dl = createGameMetaDataDL(gameMetaData);
-        metaContainer.appendChild(dl);
+        metaContainer.prepend(dl);
         metaContainer.style.display = 'block';
     } else {
-        fetchMetaButton.classList.remove('is-loading');
         if (params.function === 'fetch-meta') {
             metaContainer.style.display = 'block';
             metaContainer.appendChild(metaNotFoundDiv);
@@ -1010,6 +1026,7 @@ async function updateGamePaneText(params) {
             metaContainer.style.display = 'none';
         }
     }
+    fetchMetaButton.classList.remove('is-loading');
 
 }
 

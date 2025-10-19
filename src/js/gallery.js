@@ -159,7 +159,8 @@ export async function buildGallery(params) {
         }
     }
 
-    const gameFiles = await scanDirectory(gamesDir, extensions, true);
+    const gameFiles = (await scanDirectory(gamesDir, extensions, true))
+          .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
 
     if (gameFiles.length === 0) {
         const emptyContainer = buildEmptyPageGameContainer(platform, gamesDir);

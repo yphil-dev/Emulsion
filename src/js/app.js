@@ -98,7 +98,7 @@ async function initializeApp() {
         document.addEventListener('keydown', (event) => {
 
             if (event.key === 'F11') {
-                toggleFullScreen();
+                // toggleFullScreen();
             }
 
             if (event.key === 'F5') {

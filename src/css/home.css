@@ -187,3 +187,12 @@ p.name {
   justify-content: center;
   margin-top: 20px;
 }
+
+.footer-small { max-height: 40.5vh !important; }
+.footer-medium { max-height: 38vh !important; }
+.footer-big { max-height: 35vh !important; }
+
+/* Optional: Add media queries for fullscreen adjustments */
+:fullscreen .footer-small { max-height: calc(100vh - 200px) !important; }
+:fullscreen .footer-medium { max-height: calc(100vh - 250px) !important; }
+:fullscreen .footer-big { max-height: calc(100vh - 300px) !important; }

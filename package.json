@@ -21,7 +21,7 @@
     },
     "devDependencies": {
         "code-narrator": "^1.0.17",
-        "electron": "38.2.1",
+        "electron": "38.3.0",
         "electron-builder": "26.0.12"
     },
     "dependencies": {

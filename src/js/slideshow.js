@@ -8,7 +8,7 @@ import { updateFooterControlsFor,
          simulateKeyDown,
          toggleHeaderNavLinks } from './utils.js';
 import { updatePreference } from './preferences.js';
-import { getMeta, openEditMetaDialog } from './metadata.js';
+import { getMeta, openEditMetaDialog, displayMetaData } from './metadata.js';
 
 const main = document.querySelector('main');
 const slideshow = document.getElementById("slideshow");
@@ -927,7 +927,7 @@ function buildGamePane() {
             function: 'fetch-meta'
         };
 
-        await updateGamePaneText(params);
+        await displayMetaData(params);
 
         metaIcon.classList.remove('spin');
 
@@ -953,90 +953,6 @@ function buildGamePane() {
     return gamePane;
 }
 
-function createGameMetaDataDL(metadata) {
-    const dl = document.createElement('dl');
-    dl.classList.add('game-meta-data');
-
-    const footerSize = LB.preferences['settings']?.footerSize;
-    if (footerSize === 'small') dl.style.height = '40.5vh';
-    else if (footerSize === 'medium') dl.style.height = '80%';
-    else if (footerSize === 'big') dl.style.height = '35vh';
-
-    const addMeta = (title, value) => {
-        // normalize and validate
-        if (
-            value == null ||
-            (typeof value === 'string' && value.trim() === '') ||
-            value === 'N/A' ||
-            value === 'Unknown' ||
-            value === 'undefined' ||
-            value === 'null' ||
-                value === '0000-12-31T00:00:00Z' ||
-            /^--\d{2}-\d{2}$/.test(value)
-        ) {
-            return; // skip invalid/empty entries entirely
-        }
-
-        const dt = document.createElement('dt');
-        dt.className = 'meta-key';
-        dt.textContent = title;
-
-        const dd = document.createElement('dd');
-        dd.className = 'meta-value';
-        dd.textContent = value;
-
-        dl.append(dt, dd);
-    };
-
-    addMeta('Publisher', metadata.publisher);
-    addMeta('Developers', metadata.developers);
-    addMeta('Release Date', metadata.releaseDate);
-    addMeta('Description', metadata.description);
-    addMeta('Platforms', metadata.platforms);
-    addMeta('Genre', metadata.genre);
-
-    // hide the <dl> entirely if it ends up empty
-    if (!dl.children.length) dl.style.display = 'none';
-
-    return dl;
-}
-
-async function updateGamePaneText(params) {
-
-    const gameMetaData = await getMeta(params);
-    const activePage = document.querySelector('.page.active');
-    let metaContainer = activePage.querySelector('.meta-container');
-
-    if (!metaContainer) {
-        metaContainer = document.createElement('div');
-        metaContainer.classList.add('meta-container');
-        params.paneText.appendChild(metaContainer);
-    }
-
-    // ✳️ Replace only old metadata, not the spacer
-    const oldDl = metaContainer.querySelector('dl.game-meta-data');
-    if (oldDl) oldDl.remove();
-    const oldNotFound = metaContainer.querySelector('.meta-not-found');
-    if (oldNotFound) oldNotFound.remove();
-
-    const metaNotFoundDiv = document.createElement('div');
-    metaNotFoundDiv.classList.add('meta-not-found');
-    metaNotFoundDiv.textContent = `No metadata found for ${params.cleanName}`;
-
-    if (gameMetaData) {
-        const dl = createGameMetaDataDL(gameMetaData);
-        metaContainer.prepend(dl);
-        metaContainer.style.display = 'block';
-    } else {
-        if (params.function === 'fetch-meta') {
-            metaContainer.style.display = 'block';
-            metaContainer.appendChild(metaNotFoundDiv);
-        } else {
-            metaContainer.style.display = 'none';
-        }
-    }
-}
-
 async function updateGamePane(selectedContainer) {
     const gamePane = ensureGamePane({
         platformName: selectedContainer.dataset.platform,
@@ -1058,7 +974,7 @@ async function updateGamePane(selectedContainer) {
         paneText,
         function: 'read-meta'
     };
-    await updateGamePaneText(params);
+    await displayMetaData(params);
 }
 
 function showConfirmationDialog(message) {

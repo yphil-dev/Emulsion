@@ -8,6 +8,7 @@ import { updateFooterControlsFor,
          simulateKeyDown,
          toggleHeaderNavLinks } from './utils.js';
 import { updatePreference } from './preferences.js';
+import { getMeta, openEditMetaDialog } from './metadata.js';
 
 const main = document.querySelector('main');
 const slideshow = document.getElementById("slideshow");
@@ -842,20 +843,6 @@ export async function setGalleryViewMode(viewMode, save) {
     }
 }
 
-function getMeta(params) {
-    return new Promise((resolve) => {
-        const gamesDir = LB.preferences[params.platformName].gamesDir;
-        params.gamesDir = gamesDir;
-        const platformDisplayName = getPlatformInfo(params.platformName).name;
-        params.platformDisplayName = platformDisplayName;
-
-        ipcRenderer.send(params.function, params);
-        ipcRenderer.once('game-meta-data', (event, data) => {
-            resolve(data);
-        });
-    });
-}
-
 function ensureGamePane(params) {
     const page = document.querySelector('.page.active');
     if (!page) return null;
@@ -873,114 +860,7 @@ function ensureGamePane(params) {
     return gamePane;
 }
 
-function createEditMetaForm(params, gameMetaData) {
-    console.log("createEditMetaForm params, gameMetaData: ", params, gameMetaData);
-    const form = document.createElement('form');
-    form.classList.add('edit-metadata-dialog');
 
-    const title = document.createElement('h3');
-    title.textContent = 'Edit Game Metadata';
-    form.appendChild(title);
-
-    const fields = [
-        { label: 'Genre', name: 'genre', type: 'text' },
-        { label: 'Developers (comma-separated)', name: 'developers', type: 'text' },
-        { label: 'Publisher', name: 'publisher', type: 'text' },
-        { label: 'Release Date', name: 'releaseDate', type: 'date' },
-        { label: 'Platforms (comma-separated)', name: 'platforms', type: 'text' },
-        { label: 'Description', name: 'description', type: 'textarea' },
-    ];
-
-    fields.forEach(f => {
-        const label = document.createElement('label');
-        label.className = 'form-label';
-        label.textContent = f.label;
-        form.appendChild(label);
-
-        let input;
-        if (f.type === 'textarea') {
-            input = document.createElement('textarea');
-            input.style.flex = '1';        // Grow to fill remaining space
-            input.style.height = '100%';   // Fill vertically
-            input.style.resize = 'none';   // Optional: prevent manual resize
-        } else {
-            input = document.createElement('input');
-            input.type = f.type;
-        }
-        input.className = 'input';
-        input.name = f.name;
-
-        // Pre-fill values
-        if (f.name === 'developers') input.value = (gameMetaData.developers || []).join(', ');
-        else if (f.name === 'platforms') input.value = (gameMetaData.platforms || []).join(', ');
-        else if (f.name === 'genre') input.value = gameMetaData.genre || '';
-        else if (f.name === 'description') input.value = gameMetaData.description || '';
-        else if (f.name === 'releaseDate') input.value = gameMetaData.releaseDate?.slice(0, 10) || '';
-        else input.value = gameMetaData[f.name] || '';
-
-        form.appendChild(input);
-    });
-
-    const btnContainer = document.createElement('div');
-    btnContainer.classList.add('bottom-buttons');
-    btnContainer.style.cssText = 'display:flex; justify-content:flex-end; gap:10px;';
-
-    const cancelBtn = document.createElement('button');
-    cancelBtn.type = 'button';
-    cancelBtn.className = 'button';
-    cancelBtn.textContent = 'Cancel';
-    cancelBtn.addEventListener('click', () => {
-        form.closest('.popup-overlay')?.remove();
-        LB.mode = 'gallery';
-    });
-
-    const saveBtn = document.createElement('button');
-    saveBtn.type = 'submit';
-    saveBtn.className = 'button';
-    saveBtn.textContent = 'Save';
-
-    btnContainer.append(cancelBtn, saveBtn);
-    form.appendChild(btnContainer);
-
-    form.addEventListener('submit', e => {
-        e.preventDefault();
-        const editedData = {
-            genre: form.genre.value,
-            developers: form.developers.value.split(',').map(s => s.trim()).filter(Boolean),
-            publisher: form.publisher.value,
-            releaseDate: form.releaseDate.value,
-            platforms: form.platforms.value.split(',').map(s => s.trim()).filter(Boolean),
-            description: form.description.value
-        };
-        ipcRenderer.send('save-meta', params, editedData);
-        form.closest('.popup-overlay')?.remove();
-        LB.mode = 'gallery';
-    });
-
-    return form;
-}
-
-// Example usage:
-function openEditMetaDialog(params, gameMetaData) {
-    const overlay = document.createElement('div');
-    overlay.className = 'popup-overlay';
-    overlay.style.cssText = `
-        position: fixed; inset: 0;
-        display:flex; justify-content:center; align-items:center;
-        background: rgba(0,0,0,0.5); z-index:9999;
-    `;
-    const form = createEditMetaForm(params, gameMetaData);
-    overlay.appendChild(form);
-    document.body.appendChild(overlay);
-
-    console.log("params, gameMetaData: ", params, gameMetaData);
-
-    window.onMetaEditKeyDown = function onMetaEditKeyDown(event) {
-        event.stopPropagation();
-        event.stopImmediatePropagation();
-    };
-    LB.mode = 'metaEdit';
-}
 
 function buildGamePane() {
     const gamePane = document.createElement('div');
@@ -1039,6 +919,7 @@ function buildGamePane() {
     });
 
     fetchMetaButton.addEventListener('click', async () => {
+        metaIcon.classList.add('spin');
         const params = {
             cleanName: gamePane.dataset.cleanName,
             platformName: gamePane.dataset.platformName,
@@ -1047,6 +928,8 @@ function buildGamePane() {
         };
 
         await updateGamePaneText(params);
+
+        metaIcon.classList.remove('spin');
 
     });
 
@@ -1120,9 +1003,6 @@ function createGameMetaDataDL(metadata) {
 
 async function updateGamePaneText(params) {
 
-    let fetchMetaButton = document.querySelector('.pane-fetch-meta-button');
-    fetchMetaButton.classList.add('is-loading');
-
     const gameMetaData = await getMeta(params);
     const activePage = document.querySelector('.page.active');
     let metaContainer = activePage.querySelector('.meta-container');
@@ -1155,8 +1035,6 @@ async function updateGamePaneText(params) {
             metaContainer.style.display = 'none';
         }
     }
-    fetchMetaButton.classList.remove('is-loading');
-
 }
 
 async function updateGamePane(selectedContainer) {

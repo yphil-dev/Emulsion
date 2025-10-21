@@ -382,28 +382,6 @@ i.disabled { pointer-events: none; opacity: 0.5; }
   padding: 1px;
 }
 
-/* Pulse effect while searching/loading */
-.pane-controls button.is-loading {
-  animation: pulse-button 1s infinite ease-in-out;
-}
-
-@keyframes pulse-button {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.1);
-    opacity: 0.6;
-  }
-}
-
-/* Assuming:
-   --footer-height is your footer height (100px in your previous example)
-   .pane-image has a fixed aspect-ratio or height
-   .game-title + .pane-controls have known heights
-*/
-
 .meta-container {
   flex: 1 1 auto;
   overflow-x: hidden;
@@ -456,4 +434,14 @@ div.menu-current-image-container {
   width: max-content;
   margin: 0 auto;
   display: inline-block;
+}
+
+i.spin {
+  display: inline-block;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }

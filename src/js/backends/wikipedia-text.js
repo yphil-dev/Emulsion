@@ -106,13 +106,17 @@ export const fetchGameMetaData = async (gameName, platform = null) => {
             ? bestCandidate.candidate
             : null;
 
-        if (!mainGamePage) {
-            // As last resort, pick the top candidate regardless of score
-            mainGamePage = candidates[0];
+        // Extra filter: reject if the title doesn't include the game name at all
+        if (mainGamePage) {
+            const titleNorm = normalize(mainGamePage.title);
+            if (!titleNorm.includes(query)) {
+                console.log(`🚫 Rejected candidate "${mainGamePage.title}" — title doesn't contain game name "${gameName}"`);
+                mainGamePage = null;
+            }
         }
 
         if (!mainGamePage) {
-            console.log('❌ No main game page found');
+            console.log('❌ No valid Wikipedia match after filtering.');
             return null;
         }
 
@@ -259,7 +263,7 @@ const testGame = async (gameName, platform = null) => {
 //     // await testGame('nitro');
 //     // await testGame('nitro', 'amiga');
 
-//     await testGame('Bomber Hehhe (video game)');
+//     await testGame('Aero Blasters (video game)');
 
 //     // await testGame('Super Spike V ball');
 //     // await testGame('outrun 2006', 'sony playstation');

@@ -860,9 +860,7 @@ function ensureGamePane(params) {
     return gamePane;
 }
 
-
-
-function buildGamePane() {
+function buildGamePane(params) {
     const gamePane = document.createElement('div');
     gamePane.classList.add('game-pane');
 
@@ -897,7 +895,7 @@ function buildGamePane() {
     // webLinkButton.appendChild(document.createTextNode(' WebLink'));
 
     const editMetaButton = document.createElement('button');
-    editMetaButton.classList.add('pane-web-link-button', 'button');
+    editMetaButton.classList.add('pane-edit-meta-button', 'button');
 
     const editMetaIcon = document.createElement('i');
     editMetaIcon.className = 'fa fa-edit';
@@ -912,10 +910,14 @@ function buildGamePane() {
             gameFileName: gamePane.dataset.gameFileName,
             function: 'read-meta'
         };
-        const gameMetaData = await getMeta(params);
 
-        // open popup
-        openEditMetaDialog(params, gameMetaData);
+        try {
+            const metaData = await getMeta(params);
+            openEditMetaDialog(params, metaData);
+        } catch (err) {
+            openEditMetaDialog(params, {});
+        }
+
     });
 
     fetchMetaButton.addEventListener('click', async () => {
@@ -926,6 +928,30 @@ function buildGamePane() {
             gameFileName: gamePane.dataset.gameFileName,
             function: 'fetch-meta'
         };
+
+        const gameMetaData = await getMeta(params);
+
+
+        try {
+            const gameMetaData = await getMeta(params);
+
+            console.log("gameMetaData: ", gameMetaData);
+            if (gameMetaData && !gameMetaData.error) {
+                const dl = createGameMetaDataDL(gameMetaData);
+                metaContainer.prepend(dl);
+                metaContainer.style.display = 'block';
+            } else {
+                if (params.function === 'fetch-meta') {
+                    metaContainer.appendChild(metaNotFoundDiv);
+                } else {
+                    metaContainer.style.display = 'none';
+                }
+            }
+
+        } catch (err) {
+            metaContainer.appendChild(metaNotFoundDiv);
+            console.warn("err: ", err);
+        }
 
         await displayMetaData(params);
 
@@ -954,6 +980,7 @@ function buildGamePane() {
 }
 
 async function updateGamePane(selectedContainer) {
+
     const gamePane = ensureGamePane({
         platformName: selectedContainer.dataset.platform,
         gameFileName: selectedContainer.dataset.gameName,
@@ -962,12 +989,19 @@ async function updateGamePane(selectedContainer) {
     const paneText = gamePane.querySelector('.pane-text');
     const imagePane = gamePane.querySelector('.pane-image');
 
-    // --- Basic setup ---
+    const webLinkButton = gamePane.querySelector('.pane-web-link-button');
+    webLinkButton.title = `Search the web for "${selectedContainer.dataset.cleanName}"`;
+
+    const editMetaButton = gamePane.querySelector('.pane-edit-meta-button');
+    editMetaButton.title = `Edit meta data for "${selectedContainer.dataset.cleanName}"`;
+
+    const fetchMetaButton = gamePane.querySelector('.pane-fetch-meta-button');
+    fetchMetaButton.title = `Fetch meta data from WikiData for "${selectedContainer.dataset.cleanName}"`;
+
     const imgSrc = selectedContainer.querySelector('img').src;
     imagePane.querySelector('img').src = imgSrc;
     paneText.querySelector('.game-title').textContent = selectedContainer.dataset.cleanName;
 
-    // --- Load metadata ---
     const params = {
         platformName: selectedContainer.dataset.platform,
         gameFileName: selectedContainer.dataset.gameName,

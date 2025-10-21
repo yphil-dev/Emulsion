@@ -475,7 +475,6 @@ ipcMain.on('read-meta', (event, params) => {
 });
 
 function saveMetaToFile(params, data) {
-    console.log("params, data: ", params, data);
     const searchParams = {
         cleanName: params.cleanName,
         platformName: params.platformDisplayName
@@ -516,10 +515,10 @@ ipcMain.on('fetch-meta', (event, params) => {
     getGameMetaData(searchParams)
         .then((data) => {
             console.log("data: ", data);
-            const result = saveMetaToFile(params, data);
+            const result = data ? saveMetaToFile(params, data) : null;
             event.reply('game-meta-data', {
-                data,
-                saveResult: result
+                data: data,
+                success: result
             });
         })
         .catch((err) => {
@@ -531,7 +530,6 @@ ipcMain.on('fetch-meta', (event, params) => {
 });
 
 ipcMain.on('save-meta', async (event, params, metaData) => {
-    console.log("params, metaData: ", params, metaData);
     const result = saveMetaToFile(params, metaData);
     // event.reply('meta-saved', result);
 });

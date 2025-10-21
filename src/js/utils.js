@@ -68,7 +68,6 @@ function updateFooterControls(section, newIcon, newText, display) {
 
     if (display === 'off') {
         sectionDiv.style.display = 'none';
-        console.log("sectionDiv OFF: ", sectionDiv);
     }
 
     if (display === 'on') {

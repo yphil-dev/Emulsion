@@ -621,7 +621,7 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         container.classList.toggle('selected', index === GalleryState.selectedIndex)
     );
 
-    if (!isEmptyPage && !event.shiftKey) {
+    if (!isEmptyPage && !event.shiftKey && selectedContainer) {
         if (isListMode && event.key.startsWith('Arrow')) {
             updateGamePane(selectedContainer);
         }
@@ -936,7 +936,7 @@ function buildGamePane() {
     webLinkButton.addEventListener('click', async () => {
         const cleanName = gamePane.dataset.cleanName;
         const query = encodeURIComponent(cleanName);
-        const googleUrl = `https://www.duckduckgo.com?q=${query}`;
+        const googleUrl = `https://www.duckduckgo.com?q=${query}+(video+game)`;
 
         ipcRenderer.invoke('go-to-url', googleUrl);
     });

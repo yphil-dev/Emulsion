@@ -515,6 +515,7 @@ ipcMain.on('fetch-meta', (event, params) => {
 
     getGameMetaData(searchParams)
         .then((data) => {
+            console.log("data: ", data);
             const result = saveMetaToFile(params, data);
             event.reply('game-meta-data', {
                 data,

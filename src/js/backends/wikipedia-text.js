@@ -102,7 +102,7 @@ export const fetchGameMetaData = async (gameName, platform = null) => {
 
         // Pick the highest scoring candidate that has a positive score
         const bestCandidate = scoredCandidates[0];
-        const mainGamePage = bestCandidate && bestCandidate.score > 0
+        let mainGamePage = bestCandidate && bestCandidate.score > 0
             ? bestCandidate.candidate
             : null;
 

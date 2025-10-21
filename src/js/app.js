@@ -113,6 +113,8 @@ async function initializeApp() {
                 window.onQuitKeyDown(event);
             } else if (LB.mode === 'menu' && window.onMenuKeyDown) {
                 window.onMenuKeyDown(event);
+            } else if (LB.mode === 'metaEdit' && window.onMetaEditKeyDown) {
+                window.onMetaEditKeyDown(event);
             } else if (LB.mode === 'gameMenu' && window.onGalleryKeyDown) {
                 window.onGalleryKeyDown(event);
             }

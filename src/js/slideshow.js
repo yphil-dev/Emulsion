@@ -929,7 +929,10 @@ function createEditMetaForm(params, gameMetaData) {
     cancelBtn.type = 'button';
     cancelBtn.className = 'button';
     cancelBtn.textContent = 'Cancel';
-    cancelBtn.addEventListener('click', () => form.closest('.popup-overlay')?.remove());
+    cancelBtn.addEventListener('click', () => {
+        form.closest('.popup-overlay')?.remove();
+        LB.mode = 'gallery';
+    });
 
     const saveBtn = document.createElement('button');
     saveBtn.type = 'submit';
@@ -951,6 +954,7 @@ function createEditMetaForm(params, gameMetaData) {
         };
         ipcRenderer.send('save-meta', params, editedData);
         form.closest('.popup-overlay')?.remove();
+        LB.mode = 'gallery';
     });
 
     return form;
@@ -970,6 +974,12 @@ function openEditMetaDialog(params, gameMetaData) {
     document.body.appendChild(overlay);
 
     console.log("params, gameMetaData: ", params, gameMetaData);
+
+    window.onMetaEditKeyDown = function onMetaEditKeyDown(event) {
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+    };
+    LB.mode = 'metaEdit';
 }
 
 function buildGamePane() {
@@ -1041,7 +1051,11 @@ function buildGamePane() {
     });
 
     webLinkButton.addEventListener('click', async () => {
-        ipcRenderer.invoke('go-to-url', 'https://yphil.gitlab.io/ext/support.html');
+        const cleanName = gamePane.dataset.cleanName;
+        const query = encodeURIComponent(cleanName);
+        const googleUrl = `https://www.duckduckgo.com?q=${query}`;
+
+        ipcRenderer.invoke('go-to-url', googleUrl);
     });
 
     paneControls.append(fetchMetaButton, webLinkButton, editMetaButton);

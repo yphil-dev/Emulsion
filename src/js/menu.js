@@ -316,7 +316,7 @@ function buildSettingsMenu() {
     cancelButton.textContent = 'Cancel';
 
     const formContainerButtons = document.createElement('div');
-    formContainerButtons.classList.add('cancel-save-buttons');
+    formContainerButtons.classList.add('bottom-buttons-menu', 'bottom-buttons');
     formContainerButtons.appendChild(cancelButton);
     formContainerButtons.appendChild(aboutButton);
     formContainerButtons.appendChild(saveButton);
@@ -716,7 +716,7 @@ function buildPlatformMenuForm(platformName) {
     formContainer.appendChild(emulatorArgsGroup);
 
     const formContainerButtons = document.createElement('div');
-    formContainerButtons.classList.add('cancel-save-buttons');
+    formContainerButtons.classList.add('bottom-buttons-menu', 'bottom-buttons');
     formContainerButtons.appendChild(cancelButton);
     formContainerButtons.appendChild(helpButton);
     formContainerButtons.appendChild(saveButton);

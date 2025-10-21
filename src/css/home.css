@@ -75,7 +75,7 @@ p.name {
   background-size: cover;
   background-position: center;
   border-radius: 24px;
-  opacity: 0.8;
+  /* opacity: 0.8; */
   transition: transform 0.4s ease, opacity 0.1s ease, box-shadow 0.5s ease;
 }
 
@@ -95,19 +95,20 @@ p.name {
 
 .slide.prev-slide-3d {
   transform: translateX(-50vw) scale(0.9) rotateY(10deg);
+  filter: brightness(70%);
   opacity: 0.9;
 }
 
 .slide.next-slide-3d {
   transform: translateX(50vw) scale(0.9) rotateY(-10deg);
+  filter: brightness(70%);
   opacity: 0.9;
 }
 
 .slide.adjacent-3d {
   /* transform: translateX(-900px) scale(0.7) rotateY(20deg); */
-    transform: rotateY(calc(var(--angle) * 1deg)) translateZ(calc(var(--radius) * 1px));
-
-  opacity: 0.4;
+  transform: rotateY(calc(var(--angle) * 1deg)) translateZ(calc(var(--radius) * 1px));
+  filter: brightness(50%);
 }
 
 .slide.adjacent-flat {

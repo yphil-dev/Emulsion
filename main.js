@@ -452,7 +452,6 @@ ipcMain.on('fetch-images', (event, gameName, platformName, steamGridAPIKey, gian
 });
 
 ipcMain.on('read-meta', (event, params) => {
-    console.log("PARAMS: ", params);
     try {
         const metadataDir = path.join(params.gamesDir, 'metadata');
         const filePath = path.join(metadataDir, `${params.gameFileName}.json`);
@@ -467,8 +466,6 @@ ipcMain.on('read-meta', (event, params) => {
         const fileContent = fs.readFileSync(filePath, 'utf8');
         const parsedData = JSON.parse(fileContent);
 
-        console.log("parsedData: ", parsedData.gameMetaData);
-
         event.reply('game-meta-data', parsedData.gameMetaData);
 
     } catch (error) {
@@ -477,46 +474,65 @@ ipcMain.on('read-meta', (event, params) => {
     }
 });
 
-ipcMain.on('fetch-meta', (event, params) => {
-    const gamesDir = params.gamesDir;
+function saveMetaToFile(params, data) {
+    console.log("params, data: ", params, data);
+    const searchParams = {
+        cleanName: params.cleanName,
+        platformName: params.platformDisplayName
+    };
 
-    console.log("paramzz: ", params);
-    const searchParams = {cleanName:params.cleanName, platformName:params.platformDisplayName};
+    try {
+        const metadataDir = path.join(params.gamesDir, 'metadata');
+        const filePath = path.join(metadataDir, `${params.gameFileName}.json`);
+
+        // Ensure metadata directory exists (gamesDir should exist already)
+        if (!fs.existsSync(metadataDir)) {
+            fs.mkdirSync(metadataDir);
+            console.log(`✅ Created metadata directory: ${metadataDir}`);
+        }
+
+        const fileData = {
+            timestamp: new Date().toISOString(),
+            searchParams,
+            gameMetaData: data
+        };
+
+        fs.writeFileSync(filePath, JSON.stringify(fileData, null, 2));
+        console.log(`✅ Game metadata saved to: ${filePath}`);
+        return { success: true, filePath };
+    } catch (error) {
+        console.error('❌ Failed to write JSON file:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+ipcMain.on('fetch-meta', (event, params) => {
+
+    const searchParams = {
+        cleanName: params.cleanName,
+        platformName: params.platformDisplayName
+    };
 
     getGameMetaData(searchParams)
         .then((data) => {
-            // Write to JSON file (replace entire content)
-            try {
-                const metadataDir = path.join(params.gamesDir, 'metadata');
-                const filePath = path.join(metadataDir, `${params.gameFileName}.json`);
-
-                // Ensure metadata directory exists (but gamesDir must already exist)
-                if (!fs.existsSync(metadataDir)) {
-                    fs.mkdirSync(metadataDir, { recursive: false });
-                    console.log(`✅ Created metadata directory: ${metadataDir}`);
-                }
-
-                // Create the data structure
-                const fileData = {
-                    timestamp: new Date().toISOString(),
-                    searchParams: searchParams,
-                    gameMetaData: data
-                };
-
-                // Write/replace the entire file
-                fs.writeFileSync(filePath, JSON.stringify(fileData, null, 2));
-                console.log(`✅ Game metadata saved to: ${filePath}`);
-
-            } catch (fileError) {
-                console.error('❌ Failed to write JSON file:', fileError);
-            }
-
-            event.reply('game-meta-data', data);
+            const result = saveMetaToFile(params, data);
+            event.reply('game-meta-data', {
+                data,
+                saveResult: result
+            });
         })
         .catch((err) => {
-            console.error('Failed to fetch game meta data:', err);
-            event.reply('game-data', '');
+            console.error('❌ Failed to fetch game meta data:', err);
+            event.reply('game-meta-data', {
+                error: err.message
+            });
         });
+});
+
+ipcMain.on('save-meta', async (event, params, metaData) => {
+    console.log("params, metaData: ", params, metaData);
+    const result = saveMetaToFile(params, metaData);
+    // event.reply('meta-saved', result);
 });
 
 function getUserConfigFile(file) {

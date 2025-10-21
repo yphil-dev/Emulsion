@@ -147,6 +147,8 @@ label.checkbox {
   /* height: 100vh; */
   position: absolute;
   left: 0;
+
+
   /* background-color: var(--color-bg1); */
   /* background-image: url('../../img/sky2.jpg'); */
   /* align-items: center; */
@@ -174,7 +176,19 @@ label.checkbox {
   align-items: center;
 }
 
-.cancel-save-buttons {
+.bottom-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 1em;
+  justify-content: flex-end;
+  margin-top: 1em;
+}
+
+.bottom-buttons-menu {
+  margin-bottom: 100px;
+}
+
+.cancel-save-buttons-platform-menu {
   display: flex;
   flex-direction: row;
   gap: 1em;
@@ -383,4 +397,16 @@ div.form-icon {
 
 #menu-progress-text.error {
   color: red;
+}
+
+.edit-metadata-dialog {
+  background:#222;
+  color:#fff;
+  padding:20px;
+  border-radius:8px;
+  width:600px;
+  height:90vh;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
 }

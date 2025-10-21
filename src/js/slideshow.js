@@ -873,12 +873,10 @@ function ensureGamePane(params) {
     return gamePane;
 }
 
-function createEditMetaForm(gameMetaData, onSave) {
+function createEditMetaForm(params, gameMetaData) {
+    console.log("createEditMetaForm params, gameMetaData: ", params, gameMetaData);
     const form = document.createElement('form');
-    form.style.cssText = `
-        background:#222; color:#fff; padding:20px;
-        border-radius:8px; width:400px; display:flex; flex-direction:column; gap:10px;
-    `;
+    form.classList.add('edit-metadata-dialog');
 
     const title = document.createElement('h3');
     title.textContent = 'Edit Game Metadata';
@@ -902,7 +900,9 @@ function createEditMetaForm(gameMetaData, onSave) {
         let input;
         if (f.type === 'textarea') {
             input = document.createElement('textarea');
-            input.rows = 4;
+            input.style.flex = '1';        // Grow to fill remaining space
+            input.style.height = '100%';   // Fill vertically
+            input.style.resize = 'none';   // Optional: prevent manual resize
         } else {
             input = document.createElement('input');
             input.type = f.type;
@@ -912,7 +912,8 @@ function createEditMetaForm(gameMetaData, onSave) {
 
         // Pre-fill values
         if (f.name === 'developers') input.value = (gameMetaData.developers || []).join(', ');
-        else if (f.name === 'platforms') input.value = (gameMetaData[" "] || []).join(', ');
+        else if (f.name === 'platforms') input.value = (gameMetaData.platforms || []).join(', ');
+        else if (f.name === 'genre') input.value = gameMetaData.genre || '';
         else if (f.name === 'description') input.value = gameMetaData.description || '';
         else if (f.name === 'releaseDate') input.value = gameMetaData.releaseDate?.slice(0, 10) || '';
         else input.value = gameMetaData[f.name] || '';
@@ -921,6 +922,7 @@ function createEditMetaForm(gameMetaData, onSave) {
     });
 
     const btnContainer = document.createElement('div');
+    btnContainer.classList.add('bottom-buttons');
     btnContainer.style.cssText = 'display:flex; justify-content:flex-end; gap:10px;';
 
     const cancelBtn = document.createElement('button');
@@ -940,18 +942,14 @@ function createEditMetaForm(gameMetaData, onSave) {
     form.addEventListener('submit', e => {
         e.preventDefault();
         const editedData = {
-            timestamp: new Date().toISOString(),
-            searchParams: {},
-            gameMetaData: {
-                genre: form.genre.value,
-                developers: form.developers.value.split(',').map(s => s.trim()).filter(Boolean),
-                publisher: form.publisher.value,
-                releaseDate: form.releaseDate.value || "0000-12-31T00:00:00Z",
-                " ": form.platforms.value.split(',').map(s => s.trim()).filter(Boolean),
-                description: form.description.value
-            }
+            genre: form.genre.value,
+            developers: form.developers.value.split(',').map(s => s.trim()).filter(Boolean),
+            publisher: form.publisher.value,
+            releaseDate: form.releaseDate.value,
+            platforms: form.platforms.value.split(',').map(s => s.trim()).filter(Boolean),
+            description: form.description.value
         };
-        onSave(editedData);
+        ipcRenderer.send('save-meta', params, editedData);
         form.closest('.popup-overlay')?.remove();
     });
 
@@ -959,7 +957,7 @@ function createEditMetaForm(gameMetaData, onSave) {
 }
 
 // Example usage:
-function openEditMetaPopup(gameMetaData, onSave) {
+function openEditMetaDialog(params, gameMetaData) {
     const overlay = document.createElement('div');
     overlay.className = 'popup-overlay';
     overlay.style.cssText = `
@@ -967,9 +965,11 @@ function openEditMetaPopup(gameMetaData, onSave) {
         display:flex; justify-content:center; align-items:center;
         background: rgba(0,0,0,0.5); z-index:9999;
     `;
-    const form = createEditMetaForm(gameMetaData, onSave);
+    const form = createEditMetaForm(params, gameMetaData);
     overlay.appendChild(form);
     document.body.appendChild(overlay);
+
+    console.log("params, gameMetaData: ", params, gameMetaData);
 }
 
 function buildGamePane() {
@@ -1025,10 +1025,7 @@ function buildGamePane() {
         const gameMetaData = await getMeta(params);
 
         // open popup
-        openEditMetaPopup(gameMetaData, editedData => {
-            console.log("Edited JSON:", editedData);
-            // Here: save to file, IPC, or update UI as needed
-        });
+        openEditMetaDialog(params, gameMetaData);
     });
 
     fetchMetaButton.addEventListener('click', async () => {

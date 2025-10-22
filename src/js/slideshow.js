@@ -8,7 +8,8 @@ import { updateFooterControlsFor,
          simulateKeyDown,
          toggleHeaderNavLinks } from './utils.js';
 import { updatePreference } from './preferences.js';
-import { getMeta, openEditMetaDialog, displayMetaData } from './metadata.js';
+import { getMeta, displayMetaData } from './metadata.js';
+import { quitDialog, editMetaDialog, toggleFavDialog, kbShortcutsDialog } from './dialog.js';
 
 const main = document.querySelector('main');
 const slideshow = document.getElementById("slideshow");
@@ -130,7 +131,7 @@ export function initSlideShow(platformToDisplay) {
                 initSlideShow('settings');
                 break;
             case 'Escape':
-                showQuitConfirmationDialog();
+                quitDialog();
                 break;
             case 'q':
                 if (event.ctrlKey || event.metaKey) ipcRenderer.invoke('quit').catch(() => window.close());
@@ -585,6 +586,12 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         }
         break;
 
+    case '?':
+        if (!event.repeat) {
+            kbShortcutsDialog();
+        }
+        break;
+
     default:
         // 🔍 NEW FEATURE: letter key search with wrap-around
         if (!event.ctrlKey && !event.altKey && !event.metaKey && /^[a-z0-9]$/i.test(event.key)) {
@@ -761,50 +768,6 @@ export function initGamepad () {
 
 }
 
-function showQuitConfirmationDialog() {
-    LB.mode = 'quit';
-
-    const overlay = document.getElementById('quit-confirmation-overlay');
-    const okButton = document.getElementById('quit-ok-button');
-    const cancelButton = document.getElementById('quit-cancel-button');
-
-    function openDialog() {
-        overlay.style.display = 'flex';
-        okButton.blur();
-        cancelButton.focus();
-    }
-
-    function closeDialog() {
-        overlay.style.display = 'none';
-        initSlideShow(LB.currentPlatform);
-    }
-
-    window.onQuitKeyDown = function onQuitKeyDown(event) {
-        event.stopPropagation();
-        event.stopImmediatePropagation();
-        const buttons = [okButton, cancelButton];
-        const currentIndex = buttons.indexOf(document.activeElement);
-
-        switch (event.key) {
-        case 'ArrowLeft':
-        case 'ArrowRight':
-            const dir = event.key === 'ArrowRight' ? 1 : -1;
-            const nextIndex = (currentIndex + dir + buttons.length) % buttons.length;
-            buttons[nextIndex].focus();
-            break;
-        case 'Escape':
-            closeDialog();
-            break;
-        }
-    };
-
-    okButton.addEventListener('click', () => { closeDialog(); ipcRenderer.invoke('quit'); });
-    cancelButton.addEventListener('click', closeDialog);
-    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeDialog(); });
-
-    openDialog();
-}
-
 export async function setGalleryViewMode(viewMode, save) {
 
     const viewToggleBtn = document.getElementById('view-mode-toggle-button');
@@ -919,9 +882,9 @@ function buildGamePane(params) {
 
         try {
             const metaData = await getMeta(params);
-            openEditMetaDialog(params, metaData);
+            editMetaDialog(params, metaData);
         } catch (err) {
-            openEditMetaDialog(params, {});
+            editMetaDialog(params, {});
         }
 
     });
@@ -1024,41 +987,6 @@ async function updateGamePane(selectedContainer) {
     await displayMetaData(params, gameMetaData);
 }
 
-function showConfirmationDialog(message) {
-    // Remove existing dialog if any
-    const existingDialog = document.getElementById('favorite-confirmation');
-    if (existingDialog) {
-        existingDialog.remove();
-    }
-
-    const dialog = document.createElement('div');
-    dialog.id = 'favorite-confirmation';
-    dialog.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: rgba(0, 0, 0, 0.9);
-        color: white;
-        padding: 20px 30px;
-        border-radius: 10px;
-        border: 2px solid #00ffae;
-        z-index: 10000;
-        font-family: Arial, sans-serif;
-        text-align: center;
-    `;
-    dialog.textContent = message;
-    document.body.appendChild(dialog);
-
-    // Auto-remove after 5 seconds
-    setTimeout(() => {
-        if (document.body.contains(dialog)) {
-            dialog.remove();
-            pendingAction = null;
-        }
-    }, 5000);
-}
-
 function checkIfFavorite(container) {
     const galleries = document.getElementById('galleries');
     const favPage = galleries.querySelector('.page[data-platform="favorites"] .page-content');
@@ -1097,7 +1025,7 @@ function handleFavoriteToggle(selectedContainer) {
             ? 'Press + again to remove from favorites'
             : 'Press + again to add to favorites';
 
-        showConfirmationDialog(message);
+        toggleFavDialog(message);
     }
 }
 
@@ -1110,4 +1038,5 @@ async function toggleFavorite(container) {
         await addFavorite(container);
     }
 }
+
 

@@ -117,6 +117,8 @@ async function initializeApp() {
                 window.onMetaEditKeyDown(event);
             } else if (LB.mode === 'gameMenu' && window.onGalleryKeyDown) {
                 window.onGalleryKeyDown(event);
+            } else if (LB.mode === 'kbHelp' && window.onKBHelpKeyDown) {
+                window.onKBHelpKeyDown(event);
             }
         });
 

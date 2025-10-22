@@ -398,12 +398,6 @@ dl.game-meta-data {
   height: auto;
 }
 
-/* Fallback for browsers that don't support overlay */
-@supports not (overflow: overlay) {
-  dl.game-meta-data {
-    overflow-y: scroll;
-  }
-}
 dt.meta-key {
   font-weight: bold;
 }

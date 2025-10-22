@@ -10,6 +10,7 @@
         <link rel="stylesheet" href="../css/home.css">
         <link rel="stylesheet" href="../css/gallery.css">
         <link rel="stylesheet" href="../css/footer.css">
+        <link rel="stylesheet" href="../css/dialog.css">
     </head>
     <body class="themed-background">
 
@@ -114,6 +115,40 @@
                 <div id="batch-confirmation-buttons" class="dialog-buttons">
                     <button id="batch-ok-button" class="batch-confirmation-btn button">Start</button>
                     <button id="batch-cancel-button" class="batch-confirmation-btn button">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="kb-shortcuts-overlay" class="overlay">
+            <div class="kb-shortcuts-dialog">
+                <h2>Keyboard Shortcuts</h2>
+                <div class="kb-grid">
+                    <div><kbd>←</kbd> / <kbd>→</kbd> / <kbd>↑</kbd> / <kbd>↓</kbd></div>
+                    <div>Navigate games</div>
+
+                    <div><kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd></div>
+                    <div>Switch pages</div>
+
+                    <div><kbd>Enter</kbd></div>
+                    <div>Launch selected game / Confirm</div>
+
+                    <div><kbd>Esc</kbd></div>
+                    <div>Exit game menu / Return to slideshow</div>
+
+                    <div><kbd>Ctrl</kbd> + <kbd>I</kbd></div>
+                    <div>Open game menu</div>
+
+                    <div><kbd>Ctrl</kbd> + <kbd>M</kbd></div>
+                    <div>Fetch game metadata (list mode)</div>
+
+                    <div><kbd>+</kbd></div>
+                    <div>Toggle favorite</div>
+
+                    <div><kbd>A–Z</kbd> / <kbd>0–9</kbd></div>
+                    <div>Jump to game by first letter (wrap-around)</div>
+                </div>
+                <div class="kb-buttons">
+                    <button id="kb-close-button">OK</button>
                 </div>
             </div>
         </div>

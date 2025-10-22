@@ -576,7 +576,13 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
             const selectedContainer = containers[GalleryState.selectedIndex];
             openGameMenu(selectedContainer);
         }
+        break;
 
+    case 'm':
+        if (event.ctrlKey && isListMode) {
+            const gamePane = document.querySelector('.game-pane');
+            gamePane.querySelector('.pane-fetch-meta-button').click();
+        }
         break;
 
     default:
@@ -929,31 +935,22 @@ function buildGamePane(params) {
             function: 'fetch-meta'
         };
 
-        const gameMetaData = await getMeta(params);
-
+        let gameMetaData;
 
         try {
-            const gameMetaData = await getMeta(params);
+            gameMetaData = await getMeta(params);
 
             console.log("gameMetaData: ", gameMetaData);
-            if (gameMetaData && !gameMetaData.error) {
-                const dl = createGameMetaDataDL(gameMetaData);
-                metaContainer.prepend(dl);
-                metaContainer.style.display = 'block';
-            } else {
-                if (params.function === 'fetch-meta') {
-                    metaContainer.appendChild(metaNotFoundDiv);
-                } else {
-                    metaContainer.style.display = 'none';
-                }
+            if (!gameMetaData || gameMetaData.error) {
+                params.error = true;
             }
 
         } catch (err) {
-            metaContainer.appendChild(metaNotFoundDiv);
+            params.error = true;
             console.warn("err: ", err);
         }
 
-        await displayMetaData(params);
+        await displayMetaData(params, gameMetaData);
 
         metaIcon.classList.remove('spin');
 
@@ -1008,7 +1005,23 @@ async function updateGamePane(selectedContainer) {
         paneText,
         function: 'read-meta'
     };
-    await displayMetaData(params);
+
+    let gameMetaData;
+
+    try {
+        gameMetaData = await getMeta(params);
+
+        console.log("gameMetaData: ", gameMetaData);
+        if (!gameMetaData || gameMetaData.error) {
+            params.error = true;
+        }
+
+    } catch (err) {
+        params.error = true;
+        console.warn("err: ", err);
+    }
+
+    await displayMetaData(params, gameMetaData);
 }
 
 function showConfirmationDialog(message) {

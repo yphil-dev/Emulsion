@@ -516,10 +516,7 @@ ipcMain.on('fetch-meta', (event, params) => {
         .then((data) => {
             console.log("data: ", data);
             const result = data ? saveMetaToFile(params, data) : null;
-            event.reply('game-meta-data', {
-                data: data,
-                success: result
-            });
+            event.reply('game-meta-data', data);
         })
         .catch((err) => {
             console.error('❌ Failed to fetch game meta data:', err);

@@ -4,13 +4,7 @@ import { fetchImages as giantbombFetch } from './backends/giantbomb.js';
 import { fetchGameMetaData } from './backends/wikipedia-text.js';
 
 export const getGameMetaData = async (params) => {
-
-    console.log("params: ", params);
-
-    const result = await fetchGameMetaData(params.cleanName, params.platformName);
-    // console.log("result: ", result);
-    return result;
-
+    return await fetchGameMetaData(params.cleanName, params.platformName);
 };
 
 export const getAllCoverImageUrls = async (gameName, platform, options = {}) => {

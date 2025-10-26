@@ -1,12 +1,15 @@
-/* ===========================
-   Container & Page Layout
-   =========================== */
-
 #galleries {
+  position: absolute;
   width: 100vw;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  perspective: 1000px;
+  -webkit-perspective: 1000px;
 }
 
 .page {
@@ -21,28 +24,38 @@
   left: 0;
   top: 0;
   z-index: 1;
-  transition: transform 0.5s ease, opacity 0.5s ease, box-shadow 0.5s ease;
+  will-change: transform, opacity;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 
-.page.disabled { opacity: 0; }
 .page.active {
   opacity: 1;
-  transform: translateX(0);
+  transform: translate3d(0, 0, 0);
   z-index: 2;
 }
-.page.prev {
-  transform: translateX(-50vw);
-  opacity: 0;
-}
-.page.next {
-  transform: translateX(50vw);
-  opacity: 0;
-}
-.page.adjacent { opacity: 0; }
 
-/* ===========================
-   Page Content & Grid
-   =========================== */
+.page.disabled {
+  opacity: 0;
+  transform: translate3d(0, 0, 0);
+}
+
+.page.prev {
+  transform: translate3d(-100vw, 0, 0);
+  opacity: 0;
+}
+
+.page.next {
+  transform: translate3d(100vw, 0, 0);
+  opacity: 0;
+}
+
+.page.adjacent {
+  opacity: 0;
+  transform: translate3d(0, 0, 0);
+}
 
 .page-content {
   width: 100%;
@@ -63,7 +76,6 @@
 
 .page-content.list .game-container {
   display: flex;
-  /* display: block; */
   flex-direction: row;
   border-left: none;
   border-right: none;
@@ -83,6 +95,7 @@
 }
 
 /* Grid view */
+.page-content:not(.list) .game-container img:hover,
 .page-content:not(.list) .game-container-image:hover,
 .page-content:not(.list) .selected .game-container-image,
 .page-content:not(.list) .selected .platform-image,
@@ -90,14 +103,12 @@
   border-color: var(--color-outline-selected);
 }
 
-/* example: 3:4 portrait box-art (width / height = 3/4) */
 .page-content:not(.list) div.game-container-image {
-  aspect-ratio: 3 / 4;   /* <-- fixed ratio: change to your desired ratio */
+  aspect-ratio: 3 / 4;
   height: auto;
-  width: 100%;           /* let the grid or parent determine width */
+  width: 100%;
 }
 
-/* Target each child specifically to find the bullet source */
 .page-content.list .game-container-image {
   display: none;
 }
@@ -126,22 +137,17 @@
   pointer-events: auto;
 }
 
-/* ===========================
-   Game Container & Images
-   =========================== */
-
 div.game-container,
 div.empty-platform-game-container,
 div.menu-game-container {
   display: flex;
   flex-direction: column;
-  /* align-items: center; */
   text-align: center;
   justify-content: flex-start;
   font-size: 20px;
   font-weight: bold;
   overflow: hidden;
-  position: relative; /* needed for badges */
+  position: relative; /* badges */
 }
 
 div.menu-game-container {
@@ -159,20 +165,16 @@ div.menu-game-container {
 .game-image {
   display: block;
   height: 100%;
-  transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+  /* transition: transform 0.2s ease-out, opacity 0.2s ease-out; */
   flex-basis: content;
 }
 
 .missing-image { object-fit: cover; }
 
-/* ===========================
-   Game Labels & Badges
-   =========================== */
-
 .game-label {
   width: 100%;
 
-  font-size: 1.2vw; /* pure vw scaling, no clamp */
+  font-size: 1.2vw;
 
   flex-direction: column;
   justify-content: space-between;
@@ -182,18 +184,17 @@ div.menu-game-container {
   pointer-events: none;
 
   display: -webkit-box;
-  -webkit-line-clamp: 3; /* number of lines to show */
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 
-  /* Hyphenation and word breaking */
-  word-break: break-word;        /* fallback for very long words */
-  overflow-wrap: anywhere;       /* modern universal behavior */
-  hyphens: auto;                 /* enable automatic hyphenation */
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  hyphens: auto;
 
   -webkit-hyphens: auto;
   -ms-hyphens: auto;
-  text-align: center;            /* optional, looks better with hyphens */
+  text-align: center;
 }
 
 .label-text {
@@ -229,10 +230,6 @@ div.menu-game-container {
   max-width: 150px;
 }
 
-/* ===========================
-   Misc / Empty States / Animations
-   =========================== */
-
 div.empty-platform-game-container,
 div.dummy-game-container {
   justify-content: center;
@@ -258,7 +255,6 @@ div.platform-container {
   padding: 0.5em;
 }
 
-/* Explosion particles */
 .explosion-particle {
   position: absolute;
   pointer-events: none;
@@ -275,18 +271,14 @@ div.platform-container {
   100% { transform: translate(var(--x), var(--y)) scale(var(--scale)) rotate(var(--rotation)); opacity:0; }
 }
 
-/* ===========================
-   Platform Info / Headers
-   =========================== */
-
 div.platform-info .vendor {
   font-size: clamp(14px, 1.4vw, 24px);
   color: var(--color-platform-text-header);
   text-shadow:
     -1px -1px 0 var(--color-platform-outline-header),
-     1px -1px 0 var(--color-platform-outline-header),
+    1px -1px 0 var(--color-platform-outline-header),
     -1px  1px 0 var(--color-platform-outline-header),
-     1px  1px 0 var(--color-platform-outline-header);
+    1px  1px 0 var(--color-platform-outline-header);
 }
 
 div.platform-info .name {
@@ -310,31 +302,22 @@ i.disabled { pointer-events: none; opacity: 0.5; }
   -ms-overflow-style: none;
 }
 
-/* ===========================
-   Game Pane / Side Panel
-   =========================== */
-
-/* Sidebar */
-/* Sidebar game pane */
 .game-pane {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 1px;
-    width: 20vw;
-    min-width: 240px;
-    max-width: 480px;
-    display: flex;
-    flex-direction: column;
-    /* background: #222; */
-    z-index: 2;
-    overflow: hidden;
-    align-items: stretch;
-    /* align-content: stretch; */
-    justify-content: flex-start;
+  width: 20vw;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 1px;
+  min-width: 240px;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  z-index: 2;
+  overflow: hidden;
+  align-items: stretch;
+  justify-content: flex-start;
 }
 
-/* image pane: flex 0, keeps natural aspect ratio */
 .pane-image {
   width: 100%;
   flex: 0 0 auto;            /* don't grow/shrink */
@@ -343,7 +326,6 @@ i.disabled { pointer-events: none; opacity: 0.5; }
   border-bottom: 1px solid var(--color-border-off);
 }
 
-/* image inside */
 .pane-image img {
   width: 100%;
   height: 100%;
@@ -354,18 +336,16 @@ i.disabled { pointer-events: none; opacity: 0.5; }
 .pane-text {
   display: flex;
   flex-direction: column;
-  flex: 1 1 auto;             /* grow to fill remaining .game-pane */
-  overflow: hidden;            /* meta-container scrolls inside */
+  flex: 1 1 auto;
+  overflow: hidden;
 }
 
 .pane-text .game-title {
-  /* min-height: 2.6em; */
   min-height: 25px;
   max-height: 25px;
   display: -webkit-box;
-  -webkit-line-clamp: 2; /* number of lines to show */
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
-  /* overflow: hidden; */
   font-weight: bold;
   padding: 0 0.5em;
 }
@@ -385,12 +365,11 @@ i.disabled { pointer-events: none; opacity: 0.5; }
 .meta-container {
   flex: 1 1 auto;
   overflow-x: hidden;
-  overflow-y: auto;            /* always scrollable if needed */
-  min-height: 0;               /* important for flex scroll to work */
+  overflow-y: auto;
+  min-height: 0;
   padding-bottom: 1em;
 }
 
-/* dl just expands naturally inside meta-container */
 dl.game-meta-data {
   margin: 0;
   padding: 0 0.5em;

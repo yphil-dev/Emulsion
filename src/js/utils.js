@@ -1,5 +1,6 @@
 import { PLATFORMS } from './platforms.js';
 import { buildEmptyPageGameContainer } from './gallery.js';
+import { batchDialog } from './dialog.js';
 
 export function initFooterControls() {
     updateFooterControls('dpad', 'button-dpad-ew', 'Platforms', 'on');
@@ -160,8 +161,6 @@ export function simulateTabNavigation(shiftKey = false) {
         'button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
 
-    console.log("focusableElements found: ", focusableElements.length);
-
     // Filter to only elements that are visible and not disabled
     const visibleFocusableElements = Array.from(focusableElements).filter(el => {
         return el.offsetWidth > 0 &&
@@ -170,8 +169,6 @@ export function simulateTabNavigation(shiftKey = false) {
                getComputedStyle(el).visibility !== 'hidden' &&
                getComputedStyle(el).display !== 'none';
     });
-
-    console.log("visibleFocusableElements: ", visibleFocusableElements);
 
     if (visibleFocusableElements.length === 0) {
         console.warn("No focusable elements found");
@@ -190,7 +187,6 @@ export function simulateTabNavigation(shiftKey = false) {
     }
 
     const nextElement = visibleFocusableElements[nextIndex];
-    console.log(`Moving focus from index ${currentIndex} to ${nextIndex}`, nextElement);
 
     if (nextElement) {
         // Ensure the element is focusable
@@ -200,10 +196,22 @@ export function simulateTabNavigation(shiftKey = false) {
 
         nextElement.focus({ preventScroll: false });
 
-        nextElement.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center',
-            inline: 'center'
+        // Manual scroll to replace scrollIntoView
+        const elementRect = nextElement.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        const windowWidth = window.innerWidth;
+        const scrollTop = window.pageYOffset;
+        const scrollLeft = window.pageXOffset;
+        const elementTop = elementRect.top + scrollTop;
+        const elementLeft = elementRect.left + scrollLeft;
+        const elementHeight = elementRect.height;
+        const elementWidth = elementRect.width;
+        const newScrollTop = elementTop - (windowHeight / 2) + (elementHeight / 2);
+        const newScrollLeft = elementLeft - (windowWidth / 2) + (elementWidth / 2);
+        window.scrollTo({
+            top: Math.max(0, newScrollTop),
+            left: Math.max(0, newScrollLeft),
+            behavior: 'smooth'
         });
     }
 }
@@ -415,7 +423,7 @@ export function notify(text) {
     }, 3000);
 }
 
-function getPlatformByName(platformName) {
+export function getPlatformByName(platformName) {
     return PLATFORMS.find(p => p.name === platformName);
 }
 
@@ -539,22 +547,123 @@ export function findImageFile(basePath, fileNameWithoutExt) {
     return newestImage;
 }
 
+let progressAnimationId = null;
+let currentProgressValue = 0;
+let targetProgressValue = 0;
+const CIRCUMFERENCE = 283; // 2 * π * 45 (radius)
+
+// Function to smoothly show the progress indicator
+export function showProgress() {
+    const pie = document.getElementById('footer-progress');
+    const notifications = document.getElementById('notifications');
+
+    if (pie) {
+        pie.style.opacity = 1;
+        pie.style.transform = 'scale(1)';
+    }
+
+    if (notifications) {
+        notifications.style.opacity = 1;
+    }
+}
+
+// Function to smoothly hide the progress indicator
+export function hideProgress() {
+    const pie = document.getElementById('footer-progress');
+    const notifications = document.getElementById('notifications');
+
+    if (pie) {
+        pie.style.opacity = 0;
+        pie.style.transform = 'scale(0.9)';
+    }
+
+    if (notifications) {
+        notifications.style.opacity = 0;
+    }
+}
+
+// Function to reset progress to 0
+export function resetProgress() {
+    targetProgressValue = 0;
+    currentProgressValue = 0;
+
+    const pie = document.getElementById('footer-progress');
+    if (pie) {
+        const progressFill = pie.querySelector('.progress-fill');
+        if (progressFill) {
+            // Reset to empty circle (full dash offset) - accounting for 12 o'clock start
+            progressFill.style.strokeDashoffset = CIRCUMFERENCE;
+        }
+    }
+}
+
+// Function to set progress directly (for immediate updates)
+export function setProgressDirect(percent) {
+    targetProgressValue = percent;
+    currentProgressValue = percent;
+
+    const pie = document.getElementById('footer-progress');
+    if (pie) {
+        const progressFill = pie.querySelector('.progress-fill');
+        if (progressFill) {
+            const progressOffset = CIRCUMFERENCE - (percent / 100) * CIRCUMFERENCE;
+            progressFill.style.strokeDashoffset = progressOffset;
+        }
+    }
+}
+
 function setProgress(current, total) {
     const fill = document.getElementById('menu-progress-fill');
     const pie = document.getElementById('footer-progress');
 
     if (total > 0) {
-        const percent = Math.round((current / total) * 100);
-        if (fill) fill.style.width = `${percent}%`;
-        pie.style.setProperty('--p', percent);
-        // pie.textContent = `${percent}%`;
+        const targetPercent = (current / total) * 100;
+        targetProgressValue = targetPercent;
+
+        // Cancel any existing animation
+        if (progressAnimationId) {
+            cancelAnimationFrame(progressAnimationId);
+        }
+
+        // Start smooth animation towards target
+        animateProgress();
+
+        if (fill) fill.style.width = `${Math.round(targetPercent)}%`;
+    }
+}
+
+function animateProgress() {
+    const pie = document.getElementById('footer-progress');
+    if (!pie) return;
+
+    const progressFill = pie.querySelector('.progress-fill');
+    if (!progressFill) return;
+
+    // Smooth interpolation towards target with adaptive easing
+    const diff = targetProgressValue - currentProgressValue;
+    const step = diff * 0.15; // Slightly faster interpolation
+
+    if (Math.abs(diff) < 0.05) {
+        currentProgressValue = targetProgressValue;
+    } else {
+        currentProgressValue += step;
     }
 
+    // Calculate stroke-dashoffset for SVG (inverted: 0% = full circle, 100% = empty circle)
+    const progressOffset = CIRCUMFERENCE - (currentProgressValue / 100) * CIRCUMFERENCE;
+    progressFill.style.strokeDashoffset = progressOffset;
+
+    // Continue animation if not at target
+    if (Math.abs(targetProgressValue - currentProgressValue) > 0.05) {
+        progressAnimationId = requestAnimationFrame(animateProgress);
+    } else {
+        progressAnimationId = null;
+    }
 }
 
 export async function executeBatchDownload(games, platformName) {
-    const pie = document.getElementById("footer-progress");
-    pie.style.opacity = 1;
+    // Smooth show animation
+    showProgress();
 
     function setProgressText(newText, colorCode) {
         const text = document.getElementById('menu-progress-text');
@@ -566,7 +675,8 @@ export async function executeBatchDownload(games, platformName) {
     }
 
     for (let i = 0; i < games.length; i++) {
-        setProgress(i + 1, games.length);
+        // Use direct progress update for immediate visual feedback
+        setProgressDirect((i / games.length) * 100);
 
         const gameContainer = games[i];
         const gameName = gameContainer.dataset.gameName;
@@ -609,8 +719,14 @@ export async function executeBatchDownload(games, platformName) {
         }
     }
 
+    // Set final progress to 100%
+    setProgressDirect(100);
     setProgressText(`Batch download complete!`, 'success');
-    pie.style.opacity = 0;
+
+    // Smooth hide animation after a delay
+    setTimeout(() => {
+        hideProgress();
+    }, 1500);
 }
 
 export async function addFavorite(container) {
@@ -749,67 +865,13 @@ export async function batchDownload() {
     console.info(`Found ${games.length} games with missing images`);
 
     // Show confirmation dialog
-    const confirmed = await showBatchConfirmationDialog(games.length);
+    const confirmed = await batchDialog(games.length);
     if (!confirmed) {
         console.info("Batch download cancelled by user");
         return;
     }
 
     await executeBatchDownload(games, LB.currentPlatform);
-}
-
-function showBatchConfirmationDialog(gameCount) {
-    return new Promise((resolve) => {
-        const overlay = document.getElementById('batch-confirmation-overlay');
-
-        overlay.dataset.status = 'open';
-
-        const dialogTitle = document.getElementById('batch-dialog-title');
-        const dialogText = document.getElementById('batch-dialog-text');
-
-        const okButton = document.getElementById('batch-ok-button');
-        const cancelButton = document.getElementById('batch-cancel-button');
-
-        dialogTitle.textContent = 'Batch Download';
-
-        dialogText.innerHTML = `Found <strong>${gameCount}</strong> missing <strong>${getPlatformByName(LB.currentPlatform).displayName}</strong> game cover images`;
-
-        if (!gameCount) {
-            dialogText.innerHTML = `Found no missing <strong>${getPlatformByName(LB.currentPlatform).displayName}</strong> game cover images`;
-            okButton.style.display = 'none';
-            cancelButton.textContent = 'Close';
-        } else {
-            okButton.style.display = 'block';
-            cancelButton.textContent = 'Cancel';
-        }
-
-        overlay.style.display = 'flex';
-        document.getElementById('batch-cancel-button').focus();
-
-        const onOk = () => {
-            cleanup();
-            resolve(true);
-        };
-
-        const onCancel = () => {
-            cleanup();
-            resolve(false);
-        };
-
-        const onKeyDown = (event) => {
-            if (event.key === 'Escape') onCancel();
-        };
-
-        const cleanup = () => {
-            overlay.style.display = 'none';
-            document.removeEventListener('keydown', onKeyDown);
-        };
-
-        okButton.onclick = onOk;
-        cancelButton.onclick = onCancel;
-        document.addEventListener('keydown', onKeyDown);
-        overlay.onclick = (e) => { if (e.target === overlay) onCancel(); };
-    });
 }
 
 export async function getPs3GameName(filePath) {

@@ -666,13 +666,13 @@ const defaultPreferences = {
         index: 0,
         numberOfColumns: 6,
         footerSize: "medium",
-        homeMenuTheme: "flat",
+        homeMenuTheme: "3D",
         disabledPlatformsPolicy: "show",
         recentlyPlayedPolicy: "hide",
         recentlyPlayedViewMode: "grid",
         favoritesPolicy: "hide",
         favoritesViewMode: "grid",
-        theme: "default",
+        theme: "night",
         steamGridAPIKey: "",
         giantBombAPIKey: ""
     }

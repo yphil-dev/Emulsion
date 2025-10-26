@@ -6,6 +6,7 @@ const axios = require('axios');
 
 import * as preferences from './preferences.js';
 import * as theme from './theme.js';
+import { systemDialog, kbShortcutsDialog } from './dialog.js';
 
 // Make Node.js modules globally available
 window.ipcRenderer = ipcRenderer;
@@ -71,18 +72,21 @@ async function initializeApp() {
     try {
         const appData = await preferences.loadAppData();
 
-        LB.userDataPath = appData.userDataPath;
-        LB.baseDir = appData.baseDir;
-        LB.versionNumber = appData.versionNumber;
-        LB.kioskMode = appData.kioskMode;
-        LB.autoSelect = appData.autoSelect;
-        LB.recents = appData.recents;
-        LB.favorites = appData.favorites;
-        LB.favoritesViewMode = appData.favoritesViewMode;
-        LB.recentlyPlayedViewMode = appData.recentlyPlayedViewMode;
-        LB.preferences = appData.preferences;
-        LB.galleryNumOfCols = appData.preferences.settings.numberOfColumns;
-        LB.homeMenuTheme = appData.preferences.settings.homeMenuTheme;
+        // Batch assign all LB properties at once to avoid multiple property assignments
+        Object.assign(LB, {
+            userDataPath: appData.userDataPath,
+            baseDir: appData.baseDir,
+            versionNumber: appData.versionNumber,
+            kioskMode: appData.kioskMode,
+            autoSelect: appData.autoSelect,
+            recents: appData.recents,
+            favorites: appData.favorites,
+            favoritesViewMode: appData.favoritesViewMode,
+            recentlyPlayedViewMode: appData.recentlyPlayedViewMode,
+            preferences: appData.preferences,
+            galleryNumOfCols: appData.preferences.settings.numberOfColumns,
+            homeMenuTheme: appData.preferences.settings.homeMenuTheme
+        });
 
         console.log("LB.favoritesViewMode: ", LB.favoritesViewMode);
 
@@ -97,12 +101,20 @@ async function initializeApp() {
 
         document.addEventListener('keydown', (event) => {
 
-            if (event.key === 'F11') {
-                // toggleFullScreen();
-            }
+            // if (event.key === 'F11') {
+            //     // toggleFullScreen();
+            // }
 
             if (event.key === 'F5') {
                 window.location.reload();
+            }
+
+            if (event.key === '/') {
+                systemDialog();
+            }
+
+            if (event.key === '?') {
+                kbShortcutsDialog();
             }
 
             if (LB.mode === 'gallery' && window.onGalleryKeyDown) {
@@ -119,6 +131,8 @@ async function initializeApp() {
                 window.onGalleryKeyDown(event);
             } else if (LB.mode === 'kbHelp' && window.onKBHelpKeyDown) {
                 window.onKBHelpKeyDown(event);
+            } else if (LB.mode === 'systemDialog' && window.onSystemDialogKeyDown) {
+                window.onSystemDialogKeyDown(event);
             }
         });
 
@@ -129,5 +143,47 @@ async function initializeApp() {
     }
 }
 
-// Auto-initialize when module loads
-initializeApp();
+// Font loading check and initialization
+function ensureFontsLoaded() {
+    return new Promise((resolve) => {
+        // Check if ForkAwesome font is loaded
+        const testElement = document.createElement('i');
+        testElement.className = 'fa fa-check';
+        testElement.style.position = 'absolute';
+        testElement.style.left = '-9999px';
+        testElement.style.fontFamily = 'ForkAwesome';
+        document.body.appendChild(testElement);
+
+        // Check font loading status
+        const computedStyle = window.getComputedStyle(testElement);
+        const fontFamily = computedStyle.getPropertyValue('font-family');
+
+        if (fontFamily.includes('ForkAwesome') || fontFamily.includes('forkawesome')) {
+            // Font is loaded
+            document.body.removeChild(testElement);
+            resolve();
+        } else {
+            // Wait for font to load
+            const checkFont = () => {
+                const style = window.getComputedStyle(testElement);
+                const family = style.getPropertyValue('font-family');
+                if (family.includes('ForkAwesome') || family.includes('forkawesome')) {
+                    document.body.removeChild(testElement);
+                    resolve();
+                } else {
+                    setTimeout(checkFont, 50);
+                }
+            };
+            checkFont();
+        }
+    });
+}
+
+// Auto-initialize when module loads with font check
+ensureFontsLoaded().then(() => {
+    console.log('ForkAwesome icons are ready');
+    initializeApp();
+}).catch((error) => {
+    console.warn('Font loading check failed, initializing anyway:', error);
+    initializeApp();
+});

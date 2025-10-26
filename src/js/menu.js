@@ -11,7 +11,6 @@ import { getSelectedGameContainer,
          batchDownload,
          simulateTabNavigation,
          setFooterSize,
-         toggleFullScreen,
          toggleHeaderNavLinks } from './utils.js';
 
 let menuState = {
@@ -115,10 +114,17 @@ window.onGameMenuKeyDown = function onGameMenuKeyDown(event) {
     if (event.key.startsWith('Arrow')) {
         const selectedContainer = menuGameContainers.find((container, index) => index === menuState.selectedIndex);
 
-        selectedContainer.scrollIntoView({
-            behavior: "smooth",
-            block: "center"
-        });
+        // Manual scroll to replace scrollIntoView
+        if (selectedContainer) {
+            const containerRect = menu.getBoundingClientRect();
+            const itemRect = selectedContainer.getBoundingClientRect();
+            const scrollTop = menu.scrollTop;
+            const itemTop = itemRect.top - containerRect.top + scrollTop;
+            const itemHeight = itemRect.height;
+            const containerHeight = containerRect.height;
+            const newScrollTop = itemTop - (containerHeight / 2) + (itemHeight / 2);
+            menu.scrollTop = Math.max(0, newScrollTop);
+        }
     }
 
 }
@@ -1222,10 +1228,19 @@ export async function closeGameMenu(imgSrc) {
                 }
             }
 
-            selectedGame.scrollIntoView({
-                behavior: "smooth",
-                block: "center"
-            });
+            // Manual scroll to replace scrollIntoView
+            const isListMode = activePage.querySelector('.page-content').classList.contains('list');
+            const scrollContainer = isListMode ? activePage.querySelector('.page-content') : activePage;
+            if (scrollContainer && selectedGame) {
+                const containerRect = scrollContainer.getBoundingClientRect();
+                const itemRect = selectedGame.getBoundingClientRect();
+                const scrollTop = scrollContainer.scrollTop;
+                const itemTop = itemRect.top - containerRect.top + scrollTop;
+                const itemHeight = itemRect.height;
+                const containerHeight = containerRect.height;
+                const newScrollTop = itemTop - (containerHeight / 2) + (itemHeight / 2);
+                scrollContainer.scrollTop = Math.max(0, newScrollTop);
+            }
         }
     }
 

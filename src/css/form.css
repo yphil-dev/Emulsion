@@ -1,12 +1,10 @@
 /* Form container */
 #platform-form,
 .platform-menu-container {
-  /* padding: 20px; */
-  margin-top: 1em;
 
   display: flex;
   flex-direction: column;
-  gap: 1em;
+  gap: 0.3em;
   justify-content: flex-start;
 
   width: 50vw;
@@ -25,6 +23,7 @@
   text-align: center;
   height: 300px;
   min-height: 300px;
+  margin-top: -20px;
 }
 
 
@@ -397,16 +396,4 @@ div.form-icon {
 
 #menu-progress-text.error {
   color: red;
-}
-
-.edit-metadata-dialog {
-  background:#222;
-  color:#fff;
-  padding:20px;
-  border-radius:8px;
-  width:600px;
-  height:90vh;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
 }

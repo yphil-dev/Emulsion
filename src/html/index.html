@@ -2,6 +2,11 @@
 <html>
     <head>
         <title>Emulsion</title>
+
+        <!-- Preload Fork-Awesome fonts for immediate availability -->
+        <link rel="preload" href="../font/Fork-Awesome-1.2.0/fonts/forkawesome-webfont.woff2" as="font" type="font/woff2" crossorigin>
+        <link rel="preload" href="../font/Fork-Awesome-1.2.0/fonts/forkawesome-webfont.woff" as="font" type="font/woff" crossorigin>
+
         <link rel="stylesheet" href="../font/Fork-Awesome-1.2.0/css/fork-awesome.css">
         <link rel="stylesheet" href="../css/init.css">
         <link rel="stylesheet" href="../css/spinner.css">
@@ -56,8 +61,8 @@
         </header>
 
         <main id="main">
-            <div id="slideshow" tabindex="0"></div>
-            <div id="galleries" tabindex="-1"></div>
+            <div id="slideshow"></div>
+            <div id="galleries"></div>
         </main>
 
         <div id="menu" class="themed-background"></div>
@@ -91,7 +96,10 @@
             </div>
 
             <div id="notifications" class="right">
-                <div id="footer-progress" class="pie-progress" data-value="0"></div>
+                <svg id="footer-progress" class="pie-progress" viewBox="0 0 100 100" data-value="0">
+                    <circle cx="50" cy="50" r="45" class="progress-track" />
+                    <circle cx="50" cy="50" r="45" class="progress-fill" />
+                </svg>
                 <div id="notification">
                 </div>
             </div>
@@ -99,7 +107,7 @@
         </footer>
 
         <div id="quit-confirmation-overlay" class="overlay">
-            <div id="quit-confirmation-dialog" class="dialog">
+            <div id="quit-confirmation-dialog" class="dialog quit-dialog">
                 <h2 id="quit-confirmation-title" class="title">Really, quit?</h2>
                 <div id="quit-confirmation-buttons" class="dialog-buttons">
                     <button id="quit-ok-button" class="quit-confirmation-btn button">OK</button>
@@ -109,9 +117,9 @@
         </div>
 
         <div id="batch-confirmation-overlay" class="overlay">
-            <div id="batch-confirmation-dialog" class="dialog">
-                <h2 id="batch-dialog-title" class="title"></h2>
-                <p id="batch-dialog-text"></p>
+            <div id="batch-confirmation-dialog" class="dialog batch-dialog">
+                <h3 id="batch-dialog-title" class="title"></h3>
+                <div id="batch-dialog-text"></div>
                 <div id="batch-confirmation-buttons" class="dialog-buttons">
                     <button id="batch-ok-button" class="batch-confirmation-btn button">Start</button>
                     <button id="batch-cancel-button" class="batch-confirmation-btn button">Cancel</button>
@@ -120,8 +128,8 @@
         </div>
 
         <div id="kb-shortcuts-overlay" class="overlay">
-            <div class="kb-shortcuts-dialog">
-                <h2>Keyboard Shortcuts</h2>
+            <div class="dialog kb-shortcuts-dialog">
+                <h3>Keyboard Shortcuts</h3>
                 <div class="kb-grid">
                     <div><kbd>←</kbd> / <kbd>→</kbd> / <kbd>↑</kbd> / <kbd>↓</kbd></div>
                     <div>Navigate games</div>
@@ -147,8 +155,20 @@
                     <div><kbd>A–Z</kbd> / <kbd>0–9</kbd></div>
                     <div>Jump to game by first letter (wrap-around)</div>
                 </div>
-                <div class="kb-buttons">
-                    <button id="kb-close-button">OK</button>
+                <div class="dialog-buttons">
+                    <button class="button" id="kb-close-button">OK</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="system-dialog-overlay" class="overlay">
+            <div class="dialog system-dialog">
+                <h3>Emulsion</h3>
+                <div class="system-dialog-buttons">
+                    <button class="button" id="system-dialog-restart-button">Restart</button>
+                    <button class="button" id="system-dialog-conf-button">Configure</button>
+                    <button class="button" id="system-dialog-quit-button">Quit</button>
+                    <button class="button" id="system-dialog-cancel-button">Cancel</button>
                 </div>
             </div>
         </div>

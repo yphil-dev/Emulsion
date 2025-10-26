@@ -170,12 +170,13 @@ export async function buildGallery(params) {
         return page;
     }
 
-    for (const [i, originalGameFilePath] of gameFiles.entries()) {
+    // Process all games in parallel using Promise.all
+    const gameContainerPromises = gameFiles.map(async (originalGameFilePath, i) => {
         let gameFilePath = originalGameFilePath;
         let fileName = path.basename(gameFilePath);
         let fileNameWithoutExt = stripExtensions(fileName, extensions);
 
-        // PS3 special handling
+        // PS3 special handling - fetch PS3 titles in parallel
         if (platform === 'ps3') {
             const ps3Title = await getPs3GameName(gameFilePath);
             if (ps3Title) {
@@ -196,8 +197,20 @@ export async function buildGallery(params) {
         });
 
         incrementNbGames(platform);
-        pageContent.appendChild(gameContainer);
-    }
+        return gameContainer;
+    });
+
+    // Wait for all game containers to be created in parallel
+    const gameContainers = await Promise.all(gameContainerPromises);
+
+    // Batch DOM operations - create a document fragment and append all at once
+    const fragment = document.createDocumentFragment();
+    gameContainers.forEach(container => {
+        fragment.appendChild(container);
+    });
+
+    // Single DOM operation to append all game containers
+    pageContent.appendChild(fragment);
 
     page.appendChild(pageContent);
     return page;
@@ -448,4 +461,3 @@ export function buildEmptyPageGameContainer(platform, gamesDir) {
 
     return container;
 }
-

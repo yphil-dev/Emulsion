@@ -102,6 +102,12 @@
 
 }
 
+/* Font loading optimizations for better icon availability */
+.fa {
+  font-display: swap;
+  font-family: 'ForkAwesome', sans-serif;
+}
+
 * {
   box-sizing: border-box; /* Include padding and border in element dimensions */
   /* max-width: 100%; /\* Prevent elements from exceeding the viewport width *\/ */

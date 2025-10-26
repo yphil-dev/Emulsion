@@ -54,15 +54,15 @@ footer {
 }
 
 .pie-progress {
-  --p: 0;              /* progress: 0–100 */
-  --c: #00ffae;        /* ring color */
-  --track: #222;       /* background ring */
+  --progress: 0;        /* progress: 0–100 */
+  --color: #00ffae;    /* ring color */
+  --track: #333;       /* background ring */
   --text: #fff;        /* text color */
 
   position: relative;
   width: 100%;
+  max-width: var(--icon-size, 60px);
   aspect-ratio: 1;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -75,16 +75,25 @@ footer {
   transition: opacity 0.8s ease, transform 0.4s ease;
 }
 
-/* circular ring — no fill */
-.pie-progress::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background:
-    conic-gradient(var(--c) calc(var(--p) * 1%), var(--track) 0);
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 6px), black 0);
-          mask: radial-gradient(farthest-side, transparent calc(100% - 6px), black 0);
+.pie-progress circle.progress-track {
+  fill: none;
+  stroke: var(--track);
+  stroke-width: 8;
+  stroke-linecap: round;
+  transform: rotate(-90deg); /* Match the fill circle rotation */
+  transform-origin: 50% 50%;
+}
+
+.pie-progress circle.progress-fill {
+  fill: none;
+  stroke: var(--color);
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-dasharray: 283; /* 2 * π * 45 (radius) */
+  stroke-dashoffset: 283;
+  transform-origin: 50% 50%;
+  transform: rotate(-90deg); /* Start from 12 o'clock instead of 3 o'clock */
+  transition: stroke-dashoffset 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 
 @keyframes fadeIn {

@@ -1,4 +1,4 @@
-import { getPlatformInfo, PLATFORMS } from './platforms.js';
+import { getPlatformInfo } from './platforms.js';
 import { openPlatformMenu, openGameMenu, closeGameMenu } from './menu.js';
 import { updateFooterControlsFor,
          addFavorite,
@@ -9,13 +9,12 @@ import { updateFooterControlsFor,
          toggleHeaderNavLinks } from './utils.js';
 import { updatePreference } from './preferences.js';
 import { getMeta, displayMetaData } from './metadata.js';
-import { quitDialog, editMetaDialog, toggleFavDialog, kbShortcutsDialog } from './dialog.js';
+import { quitDialog, editMetaDialog, toggleFavDialog } from './dialog.js';
 
 const main = document.querySelector('main');
 const slideshow = document.getElementById("slideshow");
 const galleries = document.getElementById("galleries");
 
-let pendingAction = null;
 let confirmationTimeout = null;
 
 export function initSlideShow(platformToDisplay) {
@@ -102,40 +101,39 @@ export function initSlideShow(platformToDisplay) {
         event.stopImmediatePropagation();
 
         switch (event.key) {
-            case 'ArrowRight':
-                nextSlide();
-                break;
-            case 'ArrowLeft':
-                prevSlide();
-                break;
-            case 'Enter': {
-                const activeSlide = slides[currentIndex];
-                const platformName = activeSlide.dataset.platform;
+        case 'ArrowRight':
+            nextSlide();
+            break;
+        case 'ArrowLeft':
+            prevSlide();
+            break;
+        case 'Enter': {
+            const activeSlide = slides[currentIndex];
+            const platformName = activeSlide.dataset.platform;
 
-                if (platformName === 'settings' && LB.kioskMode) return;
+            if (platformName === 'settings' && LB.kioskMode) return;
 
-                if (platformName === 'recents' || platformName === 'settings' || platformName === 'favorites') {
-                    initGallery(platformName);
-                } else if (LB.enabledPlatforms.includes(platformName)) {
-                    initGallery(platformName);
-                } else {
-                    openPlatformMenu(platformName, 'slideshow');
-                }
-
-                galleries.style.display = 'flex';
-                slideshow.style.display = 'none';
-                break;
+            if (platformName === 'recents' || platformName === 'settings' || platformName === 'favorites') {
+                initGallery(platformName);
+            } else if (LB.enabledPlatforms.includes(platformName)) {
+                initGallery(platformName);
+            } else {
+                openPlatformMenu(platformName, 'slideshow');
             }
-            case 'Home':
-            case 'End':
-                initSlideShow('settings');
-                break;
-            case 'Escape':
-                quitDialog();
-                break;
-            case 'q':
-                if (event.ctrlKey || event.metaKey) ipcRenderer.invoke('quit').catch(() => window.close());
-                break;
+
+            galleries.style.display = 'flex';
+            slideshow.style.display = 'none';
+            break;
+        }
+        case 'Home':
+        case 'End':
+            initSlideShow('settings');
+            break;
+
+        case 'Escape':
+            quitDialog();
+            break;
+
         }
     };
 
@@ -299,25 +297,23 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
     GalleryState.enabledPages = pages.filter(p => p.dataset.status !== 'disabled');
 
     function initCurrentGallery(page) {
+
+        console.log("page: ", page);
+
         GalleryState.gameContainers = Array.from(page.querySelectorAll('.game-container'));
         GalleryState.gameContainers.forEach(c => c.classList.remove('selected'));
 
         toggleHeaderNavLinks('show');
 
-        if (focusIndex !== null && GalleryState.gameContainers[focusIndex]) {
-            GalleryState.selectedIndex = focusIndex;
-            GalleryState.gameContainers[focusIndex].classList.add('selected');
-            GalleryState.gameContainers[focusIndex].scrollIntoView({
-                behavior: 'instant',
-                block: 'center'
-            });
-            focusIndex = null;
-        } else {
-            // GalleryState.selectedIndex = 0;
-            // if (GalleryState.gameContainers[0]) {
-            //     GalleryState.gameContainers[0].classList.add('selected');
-            // }
-        }
+        // if (focusIndex !== null && GalleryState.gameContainers[focusIndex]) {
+        //     GalleryState.selectedIndex = focusIndex;
+        //     GalleryState.gameContainers[focusIndex].classList.add('selected');
+        //     GalleryState.gameContainers[focusIndex].scrollIntoView({
+        //         behavior: 'instant',
+        //         block: 'center'
+        //     });
+        //     focusIndex = null;
+        // }
 
         if (!page.dataset.listenersAttached) {
             GalleryState.gameContainers.forEach(container => {
@@ -345,13 +341,6 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
         }
 
         updateHeader(page.dataset.platform);
-
-        const isEmpty = page.dataset.empty;
-
-        if (page.dataset.empty) {
-
-        }
-
         setGalleryFooterControls(page.dataset);
 
     }
@@ -359,15 +348,28 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
     function updateGallery() {
         const activePos = GalleryState.enabledPages.findIndex(p => Number(p.dataset.index) === GalleryState.currentPageIndex);
 
-        GalleryState.enabledPages.forEach((page, index) => {
-            page.classList.remove('active', 'prev', 'next', 'adjacent');
+        console.log("GalleryState.enabledPages.length: ", GalleryState.enabledPages.length);
 
-            const isEmpty = page.dataset.empty;
+        GalleryState.enabledPages.forEach((page, index) => {
+            // Use a more efficient class management approach
+            const currentClasses = page.className.split(' ').filter(cls =>
+                !['active', 'prev', 'next', 'adjacent'].includes(cls)
+            );
+            page.className = currentClasses.join(' ');
 
             if (index === activePos) {
                 initCurrentGallery(page);
                 LB.currentPlatform = page.dataset.platform;
                 page.classList.add('active');
+
+                const pageContent = page.querySelector('.page-content');
+                // Reset scroll position when switching pages
+                if (pageContent) {
+                    pageContent.scrollTop = 0;
+                }
+                // Ensure the page is scrollable for grid mode
+                page.style.overflowY = 'auto';
+                page.style.overflowX = 'hidden';
 
                 if (page.dataset.platform === 'recents' || page.dataset.platform === 'favorites') {
                     const platformBadges = page.querySelectorAll('.platform-badge');
@@ -381,30 +383,35 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
                 }
 
                 updateHeaderControls(page.dataset);
-            } else if (index === activePos - 1) page.classList.add('prev');
-            else if (index === activePos + 1) page.classList.add('next');
-            else page.classList.add('adjacent');
+            } else if (index === activePos - 1) {
+                page.classList.add('prev');
+            } else if (index === activePos + 1) {
+                page.classList.add('next');
+            } else {
+                page.classList.add('adjacent');
+            }
         });
     }
 
     function updateHeaderControls(pageDataset) {
 
         const toggleViewModeButton = document.getElementById('view-mode-toggle-button');
-        const platformCoversButton = document.getElementById('platform-covers-button');
+        const metaDataButton = document.getElementById('platform-covers-button');
         const configPlatformButton = document.getElementById('config-platform-button');
 
         configPlatformButton.classList.remove('disabled');
 
-        if (pageDataset.platform === 'recents' || pageDataset.platform === 'favorites') {
-            configPlatformButton.classList.add('disabled');
-        }
-
         if (pageDataset.empty) {
             toggleViewModeButton.classList.add('disabled');
-            platformCoversButton.classList.add('disabled');
+            metaDataButton.classList.add('disabled');
         } else {
             toggleViewModeButton.classList.remove('disabled');
-            platformCoversButton.classList.remove('disabled');
+            metaDataButton.classList.remove('disabled');
+        }
+
+        if (pageDataset.platform === 'recents' || pageDataset.platform === 'favorites') {
+            configPlatformButton.classList.add('disabled');
+            metaDataButton.classList.add('disabled');
         }
     }
 
@@ -490,13 +497,13 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         return;
     }
 
+    console.log("GalleryState.selectedIndex: ", GalleryState.selectedIndex);
+
     switch (event.key) {
     case 'ArrowLeft':
         if (event.shiftKey) {
-            const prevPage = GalleryState.goToPrevPage();
-            if (prevPage) {
-                GalleryState.selectedIndex = prevPage;
-            }
+            GalleryState.goToPrevPage();
+            GalleryState.selectedIndex = 1;
         } else {
             if (isListMode && LB.mode === 'gallery') {
                 GalleryState.selectedIndex = Math.max(GalleryState.selectedIndex - 1, 0);
@@ -543,6 +550,30 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         }
         break;
 
+    case 'PageUp':
+        if (isListMode && LB.mode === 'gallery') {
+            GalleryState.selectedIndex = Math.max(GalleryState.selectedIndex - 10, 0);
+        } else {
+            GalleryState.selectedIndex = _moveRows(GalleryState.selectedIndex, -Math.ceil(10 / LB.galleryNumOfCols));
+        }
+        break;
+
+    case 'PageDown':
+        if (isListMode && LB.mode === 'gallery') {
+            GalleryState.selectedIndex = Math.min(GalleryState.selectedIndex + 10, containers.length - 1);
+        } else {
+            GalleryState.selectedIndex = _moveRows(GalleryState.selectedIndex, Math.ceil(10 / LB.galleryNumOfCols));
+        }
+        break;
+
+    case 'Home':
+        GalleryState.selectedIndex = 0;
+        break;
+
+    case 'End':
+        GalleryState.selectedIndex = containers.length - 1;
+        break;
+
     case 'Escape':
         if (isGameMenu) {
             closeGameMenu();
@@ -572,6 +603,13 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         handleFavoriteToggle(containers[GalleryState.selectedIndex]);
         break;
 
+
+    case 'l':
+        if (event.ctrlKey) {
+            document.getElementById('view-mode-toggle-button').click();
+        }
+        break;
+
     case 'i':
         if (event.ctrlKey) {
             const selectedContainer = containers[GalleryState.selectedIndex];
@@ -583,12 +621,6 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         if (event.ctrlKey && isListMode) {
             const gamePane = document.querySelector('.game-pane');
             gamePane.querySelector('.pane-fetch-meta-button').click();
-        }
-        break;
-
-    case '?':
-        if (!event.repeat) {
-            kbShortcutsDialog();
         }
         break;
 
@@ -635,18 +667,45 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
     );
 
     if (!isEmptyPage && !event.shiftKey && selectedContainer) {
-        if (isListMode && event.key.startsWith('Arrow')) {
+        console.log("yo!: ");
+        if (isListMode && (event.key.startsWith('Arrow') || event.key.startsWith('Page') || event.key === 'Home' || event.key === 'End')) {
             updateGamePane(selectedContainer);
         }
-        selectedContainer.scrollIntoView({
-            behavior: isListMode ? 'instant' : 'smooth',
-            block: isListMode ? 'end' : 'center'
-        });
+        // Manual scroll to replace scrollIntoView
+        const scrollContainer = isListMode ? activePage.querySelector('.page-content') : activePage;
+        if (scrollContainer) {
+            const containerRect = scrollContainer.getBoundingClientRect();
+            const itemRect = selectedContainer.getBoundingClientRect();
+            const scrollTop = scrollContainer.scrollTop;
+            const itemTop = itemRect.top - containerRect.top + scrollTop;
+            const itemHeight = itemRect.height;
+            const containerHeight = containerRect.height;
+            let newScrollTop;
+            if (isListMode) {
+                // For list mode, scroll to end
+                newScrollTop = itemTop - containerHeight + itemHeight;
+            } else {
+                // For grid mode, center
+                newScrollTop = itemTop - (containerHeight / 2) + (itemHeight / 2);
+            }
+            // Temporarily remove transform for accurate calculation
+            const originalTransform = scrollContainer.style.transform;
+            scrollContainer.style.transform = 'none';
+            if (isListMode) {
+                scrollContainer.scrollTop = Math.max(0, newScrollTop);
+            } else {
+                scrollContainer.scrollTo({
+                    top: Math.max(0, newScrollTop),
+                    behavior: 'smooth'
+                });
+            }
+            scrollContainer.style.transform = originalTransform;
+        }
     }
 };
 
 
-export function initGamepad () {
+export function initGamepad() {
     const gamepads = navigator.getGamepads();
     const connected = Array.from(gamepads).some(gamepad => gamepad !== null);
 
@@ -720,7 +779,7 @@ export function initGamepad () {
                     }
 
                     // Otherwise handle normally
-                    handleButtonPress(buttonIndex);
+                    handleGameControllerButtonPress(buttonIndex);
                 }
             });
         }
@@ -729,7 +788,7 @@ export function initGamepad () {
         animationFrameId = requestAnimationFrame(pollGamepad);
     }
 
-    function handleButtonPress(buttonIndex) {
+    function handleGameControllerButtonPress(buttonIndex) {
 
         switch (buttonIndex) {
         case 0:
@@ -750,6 +809,9 @@ export function initGamepad () {
             break;
         case 5:
             simulateKeyDown('ArrowRight', { shift: true });
+            break;
+        case 8:
+            simulateKeyDown('/');
             break;
         case 12:
             simulateKeyDown('ArrowUp');
@@ -974,7 +1036,6 @@ async function updateGamePane(selectedContainer) {
     try {
         gameMetaData = await getMeta(params);
 
-        console.log("gameMetaData: ", gameMetaData);
         if (!gameMetaData || gameMetaData.error) {
             params.error = true;
         }
@@ -1008,16 +1069,16 @@ function checkIfFavorite(container) {
 }
 
 function handleFavoriteToggle(selectedContainer) {
-    if (pendingAction === 'toggle-favorite') {
+    if (LB.favoritePendingAction === 'toggle-favorite') {
         // Second press - execute action
         const existingDialog = document.getElementById('favorite-confirmation');
         if (existingDialog) existingDialog.remove();
-        pendingAction = null;
+        LB.favoritePendingAction = null;
         clearTimeout(confirmationTimeout);
         toggleFavorite(selectedContainer);
     } else {
         // First press - show confirmation
-        pendingAction = 'toggle-favorite';
+        LB.favoritePendingAction = 'toggle-favorite';
 
         // Check if it's already a favorite to show appropriate message
         const isFavorite = checkIfFavorite(selectedContainer);
@@ -1038,5 +1099,3 @@ async function toggleFavorite(container) {
         await addFavorite(container);
     }
 }
-
-

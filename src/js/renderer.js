@@ -12,17 +12,21 @@ initFooterControls();
 loadPreferences()
     .then((preferences) => {
 
-        LB.galleryNumOfCols = preferences.settings.numberOfColumns;
-        LB.steamGridAPIKey = preferences.settings.steamGridAPIKey;
-        LB.giantBombAPIKey = preferences.settings.giantBombAPIKey;
-        LB.footerSize = preferences.settings.footerSize;
-        LB.homeMenuTheme = preferences.settings.homeMenuTheme;
-        LB.theme = preferences.settings.theme;
-        LB.disabledPlatformsPolicy = preferences.settings.disabledPlatformsPolicy;
-        LB.recentlyPlayedPolicy = preferences.settings.recentlyPlayedPolicy;
-        LB.recentlyPlayedViewMode = preferences.settings.recentlyPlayedViewMode;
-        LB.favoritesPolicy = preferences.settings.favoritesPolicy;
-        LB.favoritesViewMode = preferences.settings.favoritesViewMode;
+        // Batch assign all LB properties at once to avoid multiple property assignments
+        Object.assign(LB, {
+            galleryNumOfCols: preferences.settings.numberOfColumns,
+            steamGridAPIKey: preferences.settings.steamGridAPIKey,
+            giantBombAPIKey: preferences.settings.giantBombAPIKey,
+            footerSize: preferences.settings.footerSize,
+            homeMenuTheme: preferences.settings.homeMenuTheme,
+            theme: preferences.settings.theme,
+            disabledPlatformsPolicy: preferences.settings.disabledPlatformsPolicy,
+            recentlyPlayedPolicy: preferences.settings.recentlyPlayedPolicy,
+            recentlyPlayedViewMode: preferences.settings.recentlyPlayedViewMode,
+            favoritesPolicy: preferences.settings.favoritesPolicy,
+            favoritesViewMode: preferences.settings.favoritesViewMode,
+            favoritePendingAction: null
+        });
 
         console.log("LB.favoritesPolicy: ", LB.favoritesPolicy);
 
@@ -39,27 +43,38 @@ loadPreferences()
                 return { platforms, preferences };
             });
     })
-    .then(({ platforms, preferences }) => {
+    .then(async ({ platforms, preferences }) => {
 
         LB.totalNumberOfPlatforms = platforms.length - 1;
 
-        platforms.forEach((platform) => {
-            const homeSlide = buildHomeSlide(platform, preferences);
-            if (homeSlide) {
-                slideshow.appendChild(homeSlide);
-            }
+        // Build home slides in parallel for better performance
+        const homeSlidePromises = platforms.map((platform) => {
+            return new Promise((resolve) => {
+                const homeSlide = buildHomeSlide(platform, preferences);
+                if (homeSlide) {
+                    slideshow.appendChild(homeSlide);
+                }
+                resolve();
+            });
         });
 
+        await Promise.all(homeSlidePromises);
+
+        // Batch DOM operations for final UI setup
         const galleriesContainer = document.getElementById('galleries');
+        const main = document.getElementById("main");
+        const splash = document.getElementById("splash");
+        const footer = document.getElementById("footer");
+
+        // Single style update for all elements
+        galleriesContainer.style.display = 'none';
+        main.style.display = 'flex';
+        splash.style.display = 'none';
+        footer.style.display = 'flex';
 
         const autoSelectIndex = PLATFORMS.findIndex(p => p.name === LB.autoSelect);
 
         initSlideShow(autoSelectIndex || 0);
-
-        galleriesContainer.style.display = 'none';
-        document.getElementById("main").style.display = 'flex';
-        document.getElementById("splash").style.display = 'none';
-        document.getElementById("footer").style.display = 'flex';
 
         if (LB.autoSelect && !LB.enabledPlatforms.some(platform => platform === LB.autoSelect)) {
             if (!LB.kioskMode) {

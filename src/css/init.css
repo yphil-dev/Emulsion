@@ -71,6 +71,10 @@
   --color-text-game-label: #29f1ea;
 
   --color-outline-selected: #ff6b00; /* Electric orange for high contrast against blue header */
+
+  /* BADGE COLORS */
+  --color-text-badge: 255, 255, 255; /* White text for contrast */
+  --color-bg-badge: 255, 107, 0; /* Electric orange to match the glow and selection */
 }
 
 .theme-night {
@@ -86,6 +90,9 @@
 
   --color-outline-selected: #00ffae;
 
+  /* BADGE COLORS */
+  --color-text-badge: 255, 230, 0; /* BRIGHT electric yellow */
+  --color-bg-badge: 0, 30, 80; /* Richer deep space blue */
 }
 
 .theme-default {
@@ -100,6 +107,9 @@
 
   --color-outline-selected: #00ffcc; /* Cyberpunk teal that matches the text-1 accent */
 
+  /* BADGE COLORS */
+  --color-text-badge: 0, 0, 0; /* Black text for cyberpunk feel */
+  --color-bg-badge: 41, 241, 234; /* Cyberpunk teal to match the primary accent */
 }
 
 /* Font loading optimizations for better icon availability */

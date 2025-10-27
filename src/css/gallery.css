@@ -129,14 +129,6 @@
   border-bottom: 1px solid #334;
 }
 
-.page-content.list .platform-badge {
-  position: absolute;
-  display: none;
-  top: 0.1em;
-  right: 0;
-  pointer-events: auto;
-}
-
 div.game-container,
 div.empty-platform-game-container,
 div.menu-game-container {
@@ -174,7 +166,7 @@ div.menu-game-container {
 .game-label {
   width: 100%;
 
-  font-size: 1.2vw;
+  font-size: 0.95vw;
 
   flex-direction: column;
   justify-content: space-between;
@@ -213,17 +205,24 @@ div.menu-game-container {
 .platform-badge {
   position: absolute;
   display: none;
-  top: 0.1em;
+  top: 0;
   pointer-events: auto;
   align-self: flex-end;
   padding: 4px 10px;
   font-family: sans-serif;
-  font-size: 12px;
+  font-size: 1.2vw;
   font-weight: 600;
-  color: white;
-  background-color: rgba(52, 152, 219, 0.8);
+  color: rgb(var(--color-text-1), 0.9);
+  background-color: rgb(var(--color-bg-badge), 0.9);
+  border: 1px solid var(--color-border-header);
+  /* box-shadow: 0 2px 4px rgba(0,0,0,0.2); */
   border-radius: 5px;
   margin: 0.4em;
+}
+
+.page-content.list .platform-badge {
+  font-size: 0.8rem;
+  right: 0.5em;
 }
 
 .prefs-platform-img {

@@ -84,7 +84,6 @@ function updateFooterControls(section, newIcon, newText, display) {
     }
 }
 
-
 const path = require('path');
 
 export function applyTheme(theme) {
@@ -289,7 +288,17 @@ const PREDEFINED_TITLES = {
     NHL94:          'NHL 94',
 };
 
+const TAGS_TO_KEEP = ['CD32'];
+
 export function cleanFileName(fileName) {
+    // JUST check for tags and store them
+    const foundTags = [];
+    TAGS_TO_KEEP.forEach(tag => {
+        if (fileName.includes(tag)) {
+            foundTags.push(tag);
+        }
+    });
+
     // 1) Base part before underscore
     const raw = fileName.split('_')[0];
 
@@ -304,9 +313,12 @@ export function cleanFileName(fileName) {
 
     // 5) If exception exists, return it + suffix (if any)
     if (PREDEFINED_TITLES[key]) {
-        return subtitlePart
+        const result = subtitlePart
             ? `${PREDEFINED_TITLES[key]} - ${subtitlePart}`   // preserve subtitle
             : PREDEFINED_TITLES[key];
+
+        // Add tags if any were found
+        return foundTags.length > 0 ? `${result} (${foundTags.join(', ')})` : result;
     }
 
     // 6) Fallback to your original pipeline on the full raw filename
@@ -318,7 +330,10 @@ export function cleanFileName(fileName) {
     s = _removeBrackets(s);
     s = _moveTrailingArticleToFront(s);
 
-    return _titleCase(s);
+    const result = _titleCase(s);
+
+    // Add tags if any were found
+    return foundTags.length > 0 ? `${result} (${foundTags.join(', ')})` : result;
 }
 
 function _removeAfterUnderscore(s) {
@@ -881,8 +896,4 @@ export async function getPs3GameName(filePath) {
         console.error('Failed to parse SFO:', err);
         return null;
     }
-}
-
-export function getEbootPath(gameFile) {
-    path.join(path.dirname(gameFile), 'USRDIR', 'EBOOT.BIN');
 }

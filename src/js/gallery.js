@@ -4,7 +4,6 @@ import { safeFileName,
          stripExtensions,
          scanDirectory,
          getPs3GameName,
-         getEbootPath,
          findImageFile } from './utils.js';
 import { getPreference, incrementNbGames } from './preferences.js';
 import { openPlatformMenu } from './menu.js';
@@ -172,8 +171,7 @@ export async function buildGallery(params) {
     }
 
     // Process all games in parallel using Promise.all
-    const gameContainerPromises = gameFiles.map(async (originalGameFilePath, i) => {
-        let gameFilePath = originalGameFilePath;
+    const gameContainerPromises = gameFiles.map(async (gameFilePath, i) => {
         let fileName = path.basename(gameFilePath);
         let fileNameWithoutExt = stripExtensions(fileName, extensions);
 
@@ -185,7 +183,6 @@ export async function buildGallery(params) {
             } else {
                 fileNameWithoutExt = stripExtensions(fileName);
             }
-            gameFilePath = getEbootPath(originalGameFilePath);
         }
 
         const gameContainer = buildGameContainer({

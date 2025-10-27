@@ -298,8 +298,6 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
 
     function initCurrentGallery(page) {
 
-        console.log("page: ", page);
-
         GalleryState.gameContainers = Array.from(page.querySelectorAll('.game-container'));
         GalleryState.gameContainers.forEach(c => c.classList.remove('selected'));
 
@@ -347,8 +345,6 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
 
     function updateGallery() {
         const activePos = GalleryState.enabledPages.findIndex(p => Number(p.dataset.index) === GalleryState.currentPageIndex);
-
-        console.log("GalleryState.enabledPages.length: ", GalleryState.enabledPages.length);
 
         GalleryState.enabledPages.forEach((page, index) => {
             // Use a more efficient class management approach
@@ -496,8 +492,6 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
     if (getComputedStyle(document.getElementById('batch-confirmation-overlay')).display !== 'none') {
         return;
     }
-
-    console.log("GalleryState.selectedIndex: ", GalleryState.selectedIndex);
 
     switch (event.key) {
     case 'ArrowLeft':
@@ -667,7 +661,6 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
     );
 
     if (!isEmptyPage && !event.shiftKey && selectedContainer) {
-        console.log("yo!: ");
         if (isListMode && (event.key.startsWith('Arrow') || event.key.startsWith('Page') || event.key === 'Home' || event.key === 'End')) {
             updateGamePane(selectedContainer);
         }

@@ -21,11 +21,9 @@
 
 .platform-menu-image-ctn {
   text-align: center;
-  height: 300px;
-  min-height: 300px;
-  margin-top: -20px;
+  height: 40vh;
+  /* min-height: 300px; */
 }
-
 
 /* Details text div */
 #details-text-div {
@@ -357,7 +355,6 @@ div.form-icon {
 .menu-game-container {
     position: relative;
 }
-
 
 #menu-progress-container {
   position: relative; /* Ensure this is set */

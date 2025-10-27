@@ -529,41 +529,41 @@ function buildPlatformMenuForm(platformName) {
     emulatorGroup.appendChild(emulatorInputLabel);
     emulatorGroup.appendChild(emulatorCtn);
 
-    // ======== BATCH DOWNLOAD SECTION ========
-    const batchGroup = document.createElement('div');
-    batchGroup.classList.add('form-menu-input-group');
+    // // ======== BATCH DOWNLOAD SECTION ========
+    // const batchGroup = document.createElement('div');
+    // batchGroup.classList.add('form-menu-input-group');
 
-    const batchIcon = document.createElement('div');
-    batchIcon.classList.add('form-icon');
-    batchIcon.innerHTML = '<i class="form-icon fa fa-2x fa-file-image-o" aria-hidden="true"></i>';
+    // const batchIcon = document.createElement('div');
+    // batchIcon.classList.add('form-icon');
+    // batchIcon.innerHTML = '<i class="form-icon fa fa-2x fa-file-image-o" aria-hidden="true"></i>';
 
-    const batchInputLabel = document.createElement('label');
-    batchInputLabel.textContent = "Get all cover images";
-    batchInputLabel.classList.add('form-label');
+    // const batchInputLabel = document.createElement('label');
+    // batchInputLabel.textContent = "Get all cover images";
+    // batchInputLabel.classList.add('form-label');
 
-    const batchSubLabel = document.createElement('span');
-    batchSubLabel.id = 'batch-sub-label';
-    batchSubLabel.classList.add('sub-label');
+    // const batchSubLabel = document.createElement('span');
+    // batchSubLabel.id = 'batch-sub-label';
+    // batchSubLabel.classList.add('sub-label');
 
-    const batchInput = createProgressBar();
-    batchInput.classList.add('input');
+    // const batchInput = createProgressBar();
+    // batchInput.classList.add('input');
 
-    const batchCtn = document.createElement('div');
-    batchCtn.classList.add('dual-ctn');
+    // const batchCtn = document.createElement('div');
+    // batchCtn.classList.add('dual-ctn');
 
-    const batchButton = document.createElement('button');
-    batchButton.classList.add('button', 'button-browse');
-    batchButton.textContent = 'Go';
+    // const batchButton = document.createElement('button');
+    // batchButton.classList.add('button', 'button-browse');
+    // batchButton.textContent = 'Go';
 
-    batchButton.addEventListener('click', batchDownload);
+    // batchButton.addEventListener('click', batchDownload);
 
-    batchCtn.appendChild(batchIcon);
-    batchCtn.appendChild(batchInput);
-    batchCtn.appendChild(batchButton);
+    // batchCtn.appendChild(batchIcon);
+    // batchCtn.appendChild(batchInput);
+    // batchCtn.appendChild(batchButton);
 
-    batchInputLabel.appendChild(batchSubLabel);
-    batchGroup.appendChild(batchInputLabel);
-    batchGroup.appendChild(batchCtn);
+    // batchInputLabel.appendChild(batchSubLabel);
+    // batchGroup.appendChild(batchInputLabel);
+    // batchGroup.appendChild(batchCtn);
 
     // ======== NEW EXTENSIONS SECTION ========
     const extensionsGroup = document.createElement('div');
@@ -717,9 +717,9 @@ function buildPlatformMenuForm(platformName) {
     formContainer.appendChild(statusLabel);
     formContainer.appendChild(gamesDirGroup);
     formContainer.appendChild(emulatorGroup);
-    formContainer.appendChild(batchGroup);
-    formContainer.appendChild(extensionsGroup);
+    // formContainer.appendChild(batchGroup);
     formContainer.appendChild(emulatorArgsGroup);
+    formContainer.appendChild(extensionsGroup);
 
     const formContainerButtons = document.createElement('div');
     formContainerButtons.classList.add('bottom-buttons-menu', 'bottom-buttons');

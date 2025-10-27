@@ -87,9 +87,8 @@ export async function buildGalleries (preferences, userDataPath) {
                 platforms.push("recents");
             }
 
-
             if (LB.favoritesPolicy === 'show') {
-                const favGallery = await buildFavoritesGallery({ userDataPath, index: platforms.length });
+                const favGallery = await buildFavoritesGallery({ userDataPath, index: LB.recentlyPlayedPolicy === 'hide' ? platforms.length : platforms.length + 1 });
                 if (favGallery) {
                     galleriesContainer.appendChild(favGallery);
                 }

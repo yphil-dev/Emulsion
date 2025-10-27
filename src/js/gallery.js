@@ -54,8 +54,10 @@ export async function buildGalleries (preferences, userDataPath) {
                         galleriesContainer.appendChild(container);
                     }
 
-                    if (platformName !== 'settings' && prefs.isEnabled) {
-                        LB.enabledPlatforms.push(platformName);
+                    if (platformName !== 'settings') {
+                        if (prefs.isEnabled) {
+                            LB.enabledPlatforms.push(platformName);
+                        }
                         i++;
                     }
                 } else if (platformName === 'settings') {

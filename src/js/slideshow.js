@@ -907,9 +907,15 @@ function buildGamePane(params) {
     fetchMetaButton.classList.add('pane-fetch-meta-button', 'button');
 
     const metaIcon = document.createElement('i');
-    metaIcon.className = 'fa fa-refresh';
+    metaIcon.className = 'fa fa-wikidata';
     fetchMetaButton.appendChild(metaIcon);
-    // fetchMetaButton.appendChild(document.createTextNode(' Meta'));
+
+    const fetchCoverArtButton = document.createElement('button');
+    fetchCoverArtButton.classList.add('pane-edit-cover-art-button', 'button');
+
+    const coverArtIcon = document.createElement('i');
+    coverArtIcon.className = 'fa fa-image';
+    fetchCoverArtButton.appendChild(coverArtIcon);
 
     const webLinkButton = document.createElement('button');
     webLinkButton.classList.add('pane-web-link-button', 'button');
@@ -917,15 +923,13 @@ function buildGamePane(params) {
     const webLinkIcon = document.createElement('i');
     webLinkIcon.className = 'fa fa-external-link';
     webLinkButton.appendChild(webLinkIcon);
-    // webLinkButton.appendChild(document.createTextNode(' WebLink'));
 
     const editMetaButton = document.createElement('button');
     editMetaButton.classList.add('pane-edit-meta-button', 'button');
 
     const editMetaIcon = document.createElement('i');
-    editMetaIcon.className = 'fa fa-edit';
+    editMetaIcon.className = 'fa fa-pencil';
     editMetaButton.appendChild(editMetaIcon);
-    // editMetaButton.appendChild(document.createTextNode(' WebLink'));
 
     editMetaButton.addEventListener('click', async () => {
         // fetch current meta
@@ -983,7 +987,7 @@ function buildGamePane(params) {
         ipcRenderer.invoke('go-to-url', googleUrl);
     });
 
-    paneControls.append(fetchMetaButton, webLinkButton, editMetaButton);
+    paneControls.append(fetchMetaButton, fetchCoverArtButton, webLinkButton, editMetaButton);
 
     imagePane.appendChild(paneImage);
     paneText.appendChild(gameTitle);
@@ -1010,6 +1014,9 @@ export async function updateGamePane(selectedContainer) {
 
     const editMetaButton = gamePane.querySelector('.pane-edit-meta-button');
     editMetaButton.title = `Edit meta data for "${selectedContainer.dataset.cleanName}"`;
+
+    const editCoverArtButton = gamePane.querySelector('.pane-edit-cover-art-button');
+    editCoverArtButton.title = `Edit coverArt data for "${selectedContainer.dataset.cleanName}"`;
 
     const fetchMetaButton = gamePane.querySelector('.pane-fetch-meta-button');
     fetchMetaButton.title = `Fetch meta data from WikiData for "${selectedContainer.dataset.cleanName}"`;

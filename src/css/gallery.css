@@ -237,7 +237,14 @@ div.dummy-game-container {
   padding: 1em;
 }
 
-.loading { animation: pulse-glow 0.5s infinite ease-in-out; }
+.page-content.grid .loading {
+  border: 3px solid var(--color-border-on);
+  animation: pulse-glow 1s infinite ease-in-out;
+}
+
+.page-content.list .loading .game-label {
+  animation: pulse-glow-list 1s infinite ease-in-out;
+}
 
 .dummy-game-container { animation: pulse-glow 2s infinite ease-in-out; }
 
@@ -247,6 +254,11 @@ div.dummy-game-container i { color: var(--color-border-on); }
 @keyframes pulse-glow {
   0%, 100% { border-color: var(--color-border-off); }
   50% { border-color: var(--color-border-on); }
+}
+
+@keyframes pulse-glow-list {
+  0%, 100% { background: none; }
+  50% { background: var(--color-border-on); }
 }
 
 div.platform-container {

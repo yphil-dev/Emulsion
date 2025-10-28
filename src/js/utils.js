@@ -696,7 +696,24 @@ export async function executeBatchDownload(games, platformName) {
 
         const gameContainer = games[i];
         const gameName = gameContainer.dataset.gameName;
-        gameContainer.classList.add('loading');
+
+        const activePageContent = gameContainer.parentElement;
+
+        const currentPage = document.querySelector(`div.page[data-platform="${platformName}"]`);
+
+        console.log("currentPage.dataset.viewMode: ", currentPage.dataset.viewMode);
+
+        let elementToPulse;
+
+        if (currentPage.dataset.viewMode === 'grid') {
+            elementToPulse = gameContainerImage;
+        } else {
+            elementToPulse = gameContainer;
+        }
+
+        const gameContainerImage = gameContainer.querySelector('.game-container-image');
+
+        elementToPulse.classList.add('loading');
 
         setProgressText(`${gameName}`, 'none');
 
@@ -728,7 +745,7 @@ export async function executeBatchDownload(games, platformName) {
                 if (imgEl) {
                     imgEl.src = result + '?t=' + Date.now();
                     gameContainer.removeAttribute('data-missing-image');
-                    gameContainer.classList.remove('loading');
+                    elementToPulse.classList.remove('loading');
                 }
             }
 
@@ -867,27 +884,22 @@ export async function batchDownload() {
     console.log("LB.preferences: ", LB.preferences[LB.currentPlatform]);
 
     if (!LB.preferences[LB.currentPlatform].gamesDir) {
-        console.log("wopop: ");
         document.getElementById('games-dir-sub-label').textContent = 'This field cannot be empty';
         return;
     }
 
     const gamesMissingImage = currentPlatformPage.querySelectorAll(".game-container[data-missing-image]");
 
-    // if (!games.length) {
-    //     console.warn("No games with missing images found");
-    //     batchSubLabel.textContent = 'No missing images found';
-    //     return;
-    // }
-
-    console.info(`Found ${gamesMissingImage.length} games with missing images`);
-
     const nbOfMissingMeta = await countMissingMetaGames(currentPlatformPage);
 
-    console.log("nbOfMissingMeta: ", nbOfMissingMeta);
-
     // Show confirmation dialog
-    const confirmed = await batchDialog(gamesMissingImage.length, nbOfMissingMeta);
+    let confirmed;
+    try {
+        confirmed = await batchDialog(gamesMissingImage.length, nbOfMissingMeta);
+    } catch (err) {
+        // Silently catch cancel error
+        return;
+    }
     if (!confirmed) {
         console.info("Batch download cancelled by user");
         return;
@@ -910,7 +922,7 @@ export async function countMissingMetaGames(currentPlatformPage) {
         };
 
         try {
-            const metaData = await getMeta(params);
+            await getMeta(params);
         } catch (err) {
             nbOfMissingMeta++;
         }

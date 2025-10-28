@@ -122,7 +122,6 @@ export async function buildGallery(params) {
 
     const page = document.createElement('div');
     page.classList.add('page');
-    page.dataset.index = index;
     page.dataset.platform = platform;
     page.dataset.viewMode = viewMode;
 
@@ -278,7 +277,6 @@ async function buildFavoritesGallery({ index }) {
 
     const page = document.createElement('div');
     page.classList.add('page');
-    page.dataset.index = index;
     page.dataset.platform = 'favorites';
     page.dataset.viewMode = LB.favoritesViewMode;
 
@@ -326,7 +324,6 @@ async function buildRecentGallery({ index }) {
 
     const page = document.createElement('div');
     page.classList.add('page');
-    page.dataset.index = index;
     page.dataset.platform = 'recents';
     page.dataset.viewMode = LB.recentlyPlayedViewMode;
 

@@ -288,7 +288,7 @@ const PREDEFINED_TITLES = {
     NHL94:          'NHL 94',
 };
 
-const TAGS_TO_KEEP = ['CD32'];
+const TAGS_TO_KEEP = ['CD32', 'AGA'];
 
 export function cleanFileName(fileName) {
     // JUST check for tags and store them

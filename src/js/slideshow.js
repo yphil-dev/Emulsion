@@ -169,23 +169,12 @@ export function buildHomeSlide(platformName, preferences) {
 
     slide.appendChild(slideContent);
 
-    if (platformName === 'recents') {
-        slide.setAttribute('data-index', LB.totalNumberOfPlatforms);
-        return slide;
-    }
-
-    if (platformName === 'favorites') {
-        slide.setAttribute('data-index', Number(LB.totalNumberOfPlatforms) +1);
-        return slide;
-    }
-
     if (platformName !== 'settings' &&
         ((LB.kioskMode || LB.disabledPlatformsPolicy === 'hide') && !preferences[platformName]?.isEnabled)) {
         return null;
     }
 
-    slide.setAttribute('data-index', preferences[platformName].index);
-    slide.setAttribute('data-is-enabled', preferences[platformName].isEnabled);
+    slide.setAttribute('data-is-enabled', preferences[platformName]?.isEnabled);
 
     return slide;
 }
@@ -285,16 +274,25 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
 
     const pages = Array.from(galleries.querySelectorAll('.page'));
 
+    GalleryState.enabledPages = pages.filter(p => p.dataset.status !== 'disabled');
+
     // --- Find target page
     const targetPage = typeof platformNameOrIndex === 'string'
         ? pages.find(p => p.dataset.platform === platformNameOrIndex)
-        : pages.find(p => Number(p.dataset.index) === platformNameOrIndex);
+        : (typeof platformNameOrIndex === 'number' && platformNameOrIndex >= 0 && platformNameOrIndex < GalleryState.enabledPages.length)
+            ? GalleryState.enabledPages[platformNameOrIndex]
+            : null;
 
-    if (!targetPage) return console.error('Could not find page for:', platformNameOrIndex);
+    if (!targetPage) {
+        console.error('Could not find page for:', platformNameOrIndex, 'falling back to first enabled page');
+        targetPage = GalleryState.enabledPages[0];
+        if (!targetPage) {
+            console.error('No enabled pages found, cannot initialize gallery');
+            return;
+        }
+    }
 
-    GalleryState.currentPageIndex = Number(targetPage.dataset.index);
-
-    GalleryState.enabledPages = pages.filter(p => p.dataset.status !== 'disabled');
+    GalleryState.currentPageIndex = GalleryState.enabledPages.indexOf(targetPage);
 
     function initCurrentGallery(page) {
 
@@ -344,7 +342,7 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
     }
 
     function updateGallery() {
-        const activePos = GalleryState.enabledPages.findIndex(p => Number(p.dataset.index) === GalleryState.currentPageIndex);
+        const activePos = GalleryState.currentPageIndex;
 
         GalleryState.enabledPages.forEach((page, index) => {
             // Use a more efficient class management approach
@@ -412,9 +410,8 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
     }
 
     function goToPage(direction = 1) {
-        const current = GalleryState.enabledPages.findIndex(p => +p.dataset.index === GalleryState.currentPageIndex);
-        const next = (current + direction + GalleryState.enabledPages.length) % GalleryState.enabledPages.length;
-        GalleryState.currentPageIndex = +GalleryState.enabledPages[next].dataset.index;
+        const next = (GalleryState.currentPageIndex + direction + GalleryState.enabledPages.length) % GalleryState.enabledPages.length;
+        GalleryState.currentPageIndex = next;
         updateGallery();
     }
 
@@ -481,7 +478,7 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
           : Array.from(menu.querySelectorAll('.menu-game-container'));
 
     const activePage = document.querySelector('.page.active');
-    const isListMode = activePage.querySelector('.page-content').classList.contains('list');
+    const isListMode = activePage && activePage.querySelector('.page-content') ? activePage.querySelector('.page-content').classList.contains('list') : false;
 
     const _moveRows = (idx, rows) => {
         const col = idx % LB.galleryNumOfCols;

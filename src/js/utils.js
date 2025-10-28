@@ -707,6 +707,7 @@ export async function executeBatchDownload(games, platformName) {
         let elementToPulse;
 
         const isListMode = currentPage.dataset.viewMode === 'list';
+        const gameContainerImage = gameContainer.querySelector('.game-container-image');
 
         if (isListMode) {
             elementToPulse = gameContainer;
@@ -714,7 +715,6 @@ export async function executeBatchDownload(games, platformName) {
             elementToPulse = gameContainerImage;
         }
 
-        const gameContainerImage = gameContainer.querySelector('.game-container-image');
 
         elementToPulse.classList.add('loading');
 

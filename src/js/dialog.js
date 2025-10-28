@@ -218,7 +218,9 @@ export function kbShortcutsDialog() {
     const closeButton = document.getElementById('kb-close-button');
 
     function openDialog() {
+        console.log("yoo: ");
         overlay.style.display = 'flex';
+        console.log("overlay: ", overlay);
         closeButton.focus();
     }
 
@@ -232,7 +234,7 @@ export function kbShortcutsDialog() {
         event.stopImmediatePropagation();
 
         switch (event.key) {
-        case '?':
+        // case '?':
         case 'Escape':
         case 'Enter':
             closeDialog();

@@ -393,6 +393,9 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
         const metaDataButton = document.getElementById('platform-covers-button');
         const configPlatformButton = document.getElementById('config-platform-button');
 
+        metaDataButton.title = `Get meta data for ${pageDataset.platform} games`;
+        configPlatformButton.title = `Configure ${pageDataset.platform}`;
+
         configPlatformButton.classList.remove('disabled');
 
         if (pageDataset.empty) {
@@ -445,10 +448,6 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
 
     document.getElementById('next-link').addEventListener('click', function() {
         GalleryState.goToNextPage();
-    });
-
-    document.getElementById('view-mode-toggle-button').addEventListener('click', function() {
-        setGalleryViewMode(this.classList.contains('fa-th') ? 'grid' : 'list', true);
     });
 
     document.getElementById('view-mode-toggle-button').addEventListener('click', function() {
@@ -849,6 +848,7 @@ export async function setGalleryViewMode(viewMode, save) {
     if (viewMode === 'list') {
         pageContent.classList.add('list');
         viewToggleBtn.classList.add('fa-th');
+        viewToggleBtn.title = 'Grid mode';
         if (gamePane) {
             gamePane.style.display = 'flex';
         }
@@ -861,6 +861,7 @@ export async function setGalleryViewMode(viewMode, save) {
     } else {
         pageContent.classList.remove('list');
         pageContent.classList.add('grid');
+        viewToggleBtn.title = 'List mode';
         viewToggleBtn.classList.add('fa-list');
         if (gamePane) {
             gamePane.style.display = 'none';

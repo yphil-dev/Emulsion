@@ -648,7 +648,6 @@ ipcMain.on('run-command', (event, data) => {
 
     try {
         fs.writeFileSync(recentFilePath, JSON.stringify(recents, null, 4), 'utf8');
-        console.log("Updated recently_played.json with new/updated entry.");
     } catch (writeErr) {
         console.error("Error writing recently_played.json:", writeErr);
     }
@@ -683,7 +682,6 @@ const defaultPreferences = {
     }
 };
 
-// Import PLATFORMS from single source of truth (SSOT)
 import { PLATFORMS } from './src/js/platforms.js';
 
 PLATFORMS.forEach((platform, index) => {

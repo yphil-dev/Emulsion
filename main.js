@@ -317,6 +317,10 @@ const downloadAndSaveImage = async (imgSrc, platform, gameName, gamesDir) => {
             url: imgSrc,
             method: 'GET',
             responseType: 'stream',
+            timeout: 30000,
+            httpsAgent: new (await import('https')).Agent({
+                rejectUnauthorized: false, // Allow invalid certs
+            }),
         });
 
         const writer = fs.createWriteStream(savePath);

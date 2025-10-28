@@ -1223,6 +1223,7 @@ export async function closeGameMenu(imgSrc) {
                 if (savedImagePath) {
                     selectedGameImg.src = savedImagePath + '?t=' + new Date().getTime();
                     selectedGameImg.onload = () => {
+                        selectedGame.removeAttribute('data-missing-image');
                         selectedGame.classList.remove('loading');
                     };
                 }

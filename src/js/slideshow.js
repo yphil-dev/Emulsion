@@ -657,6 +657,10 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         container.classList.toggle('selected', index === GalleryState.selectedIndex)
     );
 
+    if (LB.mode === 'gameMenu') {
+        selectedContainer.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+    }
+
     if (!isEmptyPage && !event.shiftKey && selectedContainer) {
         if (isListMode && (event.key.startsWith('Arrow') || event.key.startsWith('Page') || event.key === 'Home' || event.key === 'End')) {
             updateGamePane(selectedContainer);

@@ -322,37 +322,33 @@ export function systemDialog() {
 }
 
 export function batchDialog(imagesCount) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         const overlay = document.getElementById('batch-confirmation-overlay');
 
         overlay.dataset.status = 'open';
 
         const dialogTitle = document.getElementById('batch-dialog-title');
         const dialogText = document.getElementById('batch-dialog-text');
-
-        dialogText.innerHTML = '';
-
         const okButton = document.getElementById('batch-ok-button');
         const cancelButton = document.getElementById('batch-cancel-button');
 
-        // Create form with checkboxes
-        const formHtml = `
-            <div class="batch-options">
-                <label class="batch-option">
-                    <input type="checkbox" id="batch-images" checked>
-                    Download ${imagesCount} missing images
-                </label>
-                <label class="batch-option">
-                    <input type="checkbox" id="batch-metadata">
-                    Update game metadata
-                </label>
-            </div>
-        `;
+        dialogText.innerHTML = '';
 
-
-        if (!imagesCount) {
-            // Update form for no missing images case
-            const noImagesForm = `
+        const hasImages = !!imagesCount;
+        const formHtml = hasImages
+            ? `
+                <div class="batch-options">
+                    <label class="batch-option">
+                        <input type="checkbox" id="batch-images" checked>
+                        Download ${imagesCount} missing images
+                    </label>
+                    <label class="batch-option">
+                        <input type="checkbox" id="batch-metadata">
+                        Update game metadata
+                    </label>
+                </div>
+            `
+            : `
                 <div class="batch-options">
                     <label class="batch-option">
                         <input type="checkbox" id="batch-images" disabled>
@@ -365,17 +361,24 @@ export function batchDialog(imagesCount) {
                 </div>
             `;
 
-            dialogText.innerHTML += noImagesForm;
-            okButton.style.display = 'none';
-            cancelButton.textContent = 'Close';
-        } else {
-            dialogText.innerHTML += formHtml;
+        dialogText.innerHTML = formHtml;
+
+        if (hasImages) {
             okButton.style.display = 'block';
             cancelButton.textContent = 'Cancel';
+        } else {
+            okButton.style.display = 'none';
+            cancelButton.textContent = 'Close';
         }
 
         overlay.style.display = 'flex';
-        document.getElementById('batch-cancel-button').focus();
+        cancelButton.focus();
+
+        const cleanup = () => {
+            overlay.style.display = 'none';
+            document.removeEventListener('keydown', onKeyDown);
+            dialogTitle.textContent = 'Game meta data';
+        };
 
         const onOk = () => {
             const imagesChecked = document.getElementById('batch-images')?.checked || false;
@@ -390,24 +393,14 @@ export function batchDialog(imagesCount) {
 
         const onCancel = () => {
             cleanup();
-            resolve({
-                images: false,
-                metadata: false
-            });
+            reject(new Error('User cancelled batch dialog'));
         };
 
         const onKeyDown = (event) => {
             if (event.key === 'Escape') onCancel();
-            // Allow navigation between form elements with Tab
             if (event.key === 'Enter' && document.activeElement.type === 'checkbox') {
                 document.activeElement.checked = !document.activeElement.checked;
             }
-        };
-
-        const cleanup = () => {
-            overlay.style.display = 'none';
-            document.removeEventListener('keydown', onKeyDown);
-            dialogTitle.textContent = 'Game meta data';
         };
 
         okButton.onclick = onOk;
@@ -415,7 +408,7 @@ export function batchDialog(imagesCount) {
         document.addEventListener('keydown', onKeyDown);
         overlay.onclick = (e) => { if (e.target === overlay) onCancel(); };
 
-        // Focus management for form elements
+        // Optional: focus loop between checkboxes and buttons
         setTimeout(() => {
             const imagesCheckbox = document.getElementById('batch-images');
             const metadataCheckbox = document.getElementById('batch-metadata');
@@ -441,3 +434,4 @@ export function batchDialog(imagesCount) {
         }, 0);
     });
 }
+

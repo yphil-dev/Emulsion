@@ -695,6 +695,7 @@ export async function executeBatchDownload(games, platformName) {
 
         const gameContainer = games[i];
         const gameName = gameContainer.dataset.gameName;
+        gameContainer.classList.add('loading');
 
         setProgressText(`${gameName}`, 'none');
 
@@ -726,6 +727,7 @@ export async function executeBatchDownload(games, platformName) {
                 if (imgEl) {
                     imgEl.src = result + '?t=' + Date.now();
                     gameContainer.removeAttribute('data-missing-image');
+                    gameContainer.classList.remove('loading');
                 }
             }
 

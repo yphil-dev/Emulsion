@@ -55,7 +55,7 @@ footer {
 
 .pie-progress {
   --progress: 0;        /* progress: 0–100 */
-  --color: #00ffae;    /* ring color */
+  --spinner-ring-color: #00ffae;    /* ring color */
   --track: #333;       /* background ring */
   --text: #fff;        /* text color */
 
@@ -75,6 +75,14 @@ footer {
   transition: opacity 0.8s ease, transform 0.4s ease;
 }
 
+.pie-progress.error {
+  --spinner-ring-color: #FF0000;
+}
+
+.pie-progress.success {
+  --spinner-ring-color: #00ffae;
+}
+
 .pie-progress circle.progress-track {
   fill: none;
   stroke: var(--track);
@@ -86,7 +94,7 @@ footer {
 
 .pie-progress circle.progress-fill {
   fill: none;
-  stroke: var(--color);
+  stroke: var(--spinner-ring-color);
   stroke-width: 8;
   stroke-linecap: round;
   stroke-dasharray: 283; /* 2 * π * 45 (radius) */

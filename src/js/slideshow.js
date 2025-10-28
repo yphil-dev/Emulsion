@@ -995,7 +995,7 @@ function buildGamePane(params) {
     return gamePane;
 }
 
-async function updateGamePane(selectedContainer) {
+export async function updateGamePane(selectedContainer) {
 
     const gamePane = ensureGamePane({
         platformName: selectedContainer.dataset.platform,

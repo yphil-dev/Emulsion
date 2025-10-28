@@ -2,6 +2,7 @@ import { PLATFORMS } from './platforms.js';
 import { buildEmptyPageGameContainer } from './gallery.js';
 import { batchDialog } from './dialog.js';
 import { getMeta } from './metadata.js';
+import { updateGamePane } from './slideshow.js';
 
 export function initFooterControls() {
     updateFooterControls('dpad', 'button-dpad-ew', 'Platforms', 'on');
@@ -681,12 +682,12 @@ export async function executeBatchDownload(games, platformName) {
     // Smooth show animation
     showProgress();
 
-    function setProgressText(newText, colorCode) {
-        const text = document.getElementById('menu-progress-text');
-        if (text) {
-            text.classList.remove('success', 'error');
-            text.classList.add(colorCode);
-            text.textContent = newText;
+    function setProgressColor(newText, colorCode) {
+        const pie = document.getElementById('footer-progress');
+        if (pie) {
+            pie.classList.remove('success', 'error');
+            pie.classList.add(colorCode);
+            pie.title = newText;
         }
     }
 
@@ -705,17 +706,19 @@ export async function executeBatchDownload(games, platformName) {
 
         let elementToPulse;
 
-        if (currentPage.dataset.viewMode === 'grid') {
-            elementToPulse = gameContainerImage;
-        } else {
+        const isListMode = currentPage.dataset.viewMode === 'list';
+
+        if (isListMode) {
             elementToPulse = gameContainer;
+        } else {
+            elementToPulse = gameContainerImage;
         }
 
         const gameContainerImage = gameContainer.querySelector('.game-container-image');
 
         elementToPulse.classList.add('loading');
 
-        setProgressText(`${gameName}`, 'none');
+        setProgressColor(`${gameName}`, 'none');
 
         try {
             const urls = await new Promise((resolve) => {
@@ -724,12 +727,13 @@ export async function executeBatchDownload(games, platformName) {
             });
 
             if (!urls.length) {
-                setProgressText(`${gameName}`, 'error');
+                setProgressColor(`${gameName}`, 'error');
+                elementToPulse.classList.remove('loading');
                 await new Promise(r => setTimeout(r, 100));
                 continue;
             }
 
-            setProgressText(`${gameName}`, 'success');
+            setProgressColor(`${gameName}`, 'success');
 
             const url = typeof urls[0] === 'string' ? urls[0] : urls[0]?.url;
             if (!url) continue;
@@ -746,17 +750,23 @@ export async function executeBatchDownload(games, platformName) {
                     imgEl.src = result + '?t=' + Date.now();
                     gameContainer.removeAttribute('data-missing-image');
                     elementToPulse.classList.remove('loading');
+                    if (isListMode) {
+                        updateGamePane(gameContainer);
+                    }
                 }
+            } else {
+                elementToPulse.classList.remove('loading');
             }
 
         } catch (err) {
             console.error(`Failed batch Dload for ${gameName}:`, err);
+            elementToPulse.classList.remove('loading');
         }
     }
 
     // Set final progress to 100%
     setProgressDirect(100);
-    setProgressText(`Batch download complete!`, 'success');
+    setProgressColor(`Batch download complete!`, 'success');
 
     // Smooth hide animation after a delay
     setTimeout(() => {

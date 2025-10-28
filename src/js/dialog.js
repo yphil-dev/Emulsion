@@ -321,55 +321,64 @@ export function systemDialog() {
     openDialog();
 }
 
-export function batchDialog(imagesCount) {
+export function batchDialog(imagesCount, metaCount) {
     return new Promise((resolve, reject) => {
         const overlay = document.getElementById('batch-confirmation-overlay');
-
-        overlay.dataset.status = 'open';
-
         const dialogTitle = document.getElementById('batch-dialog-title');
         const dialogText = document.getElementById('batch-dialog-text');
         const okButton = document.getElementById('batch-ok-button');
         const cancelButton = document.getElementById('batch-cancel-button');
 
+        overlay.dataset.status = 'open';
         dialogText.innerHTML = '';
 
-        const hasImages = !!imagesCount;
-        const formHtml = hasImages
-            ? `
-                <div class="batch-options">
-                    <label class="batch-option">
-                        <input type="checkbox" id="batch-images" checked>
-                        Download ${imagesCount} missing images
-                    </label>
-                    <label class="batch-option">
-                        <input type="checkbox" id="batch-metadata">
-                        Update game metadata
-                    </label>
-                </div>
-            `
-            : `
-                <div class="batch-options">
-                    <label class="batch-option">
-                        <input type="checkbox" id="batch-images" disabled>
-                        No missing images
-                    </label>
-                    <label class="batch-option">
-                        <input type="checkbox" id="batch-metadata" checked>
-                        Update game metadata
-                    </label>
-                </div>
-            `;
+        // --- Build dialog options dynamically ---
+        const optionsContainer = document.createElement('div');
+        optionsContainer.className = 'batch-options';
 
-        dialogText.innerHTML = formHtml;
+        const makeOption = (id, label, count, checked, disabled) => {
+            const wrapper = document.createElement('label');
+            wrapper.className = 'batch-option';
 
-        if (hasImages) {
-            okButton.style.display = 'block';
-            cancelButton.textContent = 'Cancel';
-        } else {
-            okButton.style.display = 'none';
-            cancelButton.textContent = 'Close';
-        }
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = id;
+            checkbox.checked = checked;
+            checkbox.disabled = disabled;
+
+            const countText = count ? ` (${count})` : '';
+            const text = document.createTextNode(` ${label}${countText}`);
+
+            wrapper.appendChild(checkbox);
+            wrapper.appendChild(text);
+
+            return wrapper;
+        };
+
+        const hasImages = imagesCount > 0;
+        const hasMeta = metaCount > 0;
+
+        // Build options
+        const imgLabel = hasImages
+            ? `Download missing images`
+            : `No missing images`;
+        const metaLabel = hasMeta
+            ? `Update missing metadata`
+            : `No metadata missing`;
+
+        optionsContainer.appendChild(
+            makeOption('batch-images', imgLabel, hasImages ? imagesCount : 0, hasImages, !hasImages)
+        );
+        optionsContainer.appendChild(
+            makeOption('batch-metadata', metaLabel, hasMeta ? metaCount : 0, hasMeta, !hasMeta)
+        );
+
+        dialogText.appendChild(optionsContainer);
+
+        // --- Buttons behavior ---
+        const showOk = hasImages || hasMeta;
+        okButton.style.display = showOk ? 'block' : 'none';
+        cancelButton.textContent = showOk ? 'Cancel' : 'Close';
 
         overlay.style.display = 'flex';
         cancelButton.focus();
@@ -383,12 +392,8 @@ export function batchDialog(imagesCount) {
         const onOk = () => {
             const imagesChecked = document.getElementById('batch-images')?.checked || false;
             const metadataChecked = document.getElementById('batch-metadata')?.checked || false;
-
             cleanup();
-            resolve({
-                images: imagesChecked,
-                metadata: metadataChecked
-            });
+            resolve({ images: imagesChecked, metadata: metadataChecked });
         };
 
         const onCancel = () => {
@@ -408,30 +413,23 @@ export function batchDialog(imagesCount) {
         document.addEventListener('keydown', onKeyDown);
         overlay.onclick = (e) => { if (e.target === overlay) onCancel(); };
 
-        // Optional: focus loop between checkboxes and buttons
+        // --- Optional: basic focus loop ---
         setTimeout(() => {
-            const imagesCheckbox = document.getElementById('batch-images');
-            const metadataCheckbox = document.getElementById('batch-metadata');
+            const inputs = optionsContainer.querySelectorAll('input[type="checkbox"]');
+            const elements = [...inputs, okButton, cancelButton];
 
-            if (imagesCheckbox && metadataCheckbox) {
-                imagesCheckbox.addEventListener('keydown', (e) => {
-                    if (e.key === 'Tab' && !e.shiftKey) {
+            elements.forEach((el, i) => {
+                el.addEventListener('keydown', (e) => {
+                    if (e.key === 'Tab') {
                         e.preventDefault();
-                        metadataCheckbox.focus();
+                        const dir = e.shiftKey ? -1 : 1;
+                        const next = (i + dir + elements.length) % elements.length;
+                        elements[next].focus();
                     }
                 });
-
-                metadataCheckbox.addEventListener('keydown', (e) => {
-                    if (e.key === 'Tab' && e.shiftKey) {
-                        e.preventDefault();
-                        imagesCheckbox.focus();
-                    } else if (e.key === 'Tab' && !e.shiftKey) {
-                        e.preventDefault();
-                        okButton.focus();
-                    }
-                });
-            }
+            });
         }, 0);
     });
 }
+
 

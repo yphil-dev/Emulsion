@@ -1,6 +1,7 @@
 import { PLATFORMS } from './platforms.js';
 import { buildEmptyPageGameContainer } from './gallery.js';
 import { batchDialog } from './dialog.js';
+import { getMeta } from './metadata.js';
 
 export function initFooterControls() {
     updateFooterControls('dpad', 'button-dpad-ew', 'Platforms', 'on');
@@ -871,7 +872,7 @@ export async function batchDownload() {
         return;
     }
 
-    const games = currentPlatformPage.querySelectorAll(".game-container[data-missing-image]");
+    const gamesMissingImage = currentPlatformPage.querySelectorAll(".game-container[data-missing-image]");
 
     // if (!games.length) {
     //     console.warn("No games with missing images found");
@@ -879,16 +880,43 @@ export async function batchDownload() {
     //     return;
     // }
 
-    console.info(`Found ${games.length} games with missing images`);
+    console.info(`Found ${gamesMissingImage.length} games with missing images`);
+
+    const nbOfMissingMeta = await countMissingMetaGames(currentPlatformPage);
+
+    console.log("nbOfMissingMeta: ", nbOfMissingMeta);
 
     // Show confirmation dialog
-    const confirmed = await batchDialog(games.length);
+    const confirmed = await batchDialog(gamesMissingImage.length, nbOfMissingMeta);
     if (!confirmed) {
         console.info("Batch download cancelled by user");
         return;
     }
 
-    await executeBatchDownload(games, LB.currentPlatform);
+    await executeBatchDownload(gamesMissingImage, LB.currentPlatform);
+}
+
+export async function countMissingMetaGames(currentPlatformPage) {
+    const gameContainers = currentPlatformPage.querySelectorAll(".game-container");
+
+    let nbOfMissingMeta = 0;
+
+    for (const gameContainer of gameContainers) {
+        const params = {
+            cleanName: gameContainer.dataset.cleanName,
+            platformName: gameContainer.dataset.platform,
+            gameFileName: gameContainer.dataset.gameName,
+            function: 'read-meta'
+        };
+
+        try {
+            const metaData = await getMeta(params);
+        } catch (err) {
+            nbOfMissingMeta++;
+        }
+    }
+
+    return nbOfMissingMeta;
 }
 
 export async function getPs3GameName(filePath) {

@@ -30,6 +30,8 @@ loadPreferences()
 
         console.log("LB.favoritesPolicy: ", LB.favoritesPolicy);
 
+        LB.batchRunning = false;
+
         setFooterSize(LB.footerSize);
         applyTheme(LB.theme);
 

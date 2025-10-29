@@ -678,7 +678,9 @@ function animateProgress() {
     }
 }
 
-export async function executeBatchDownload(gamesMissingImage, gamesMissingMeta, platformName) {
+export async function executeBatchDownload(games, type, platformName) {
+    if (type !== 'image' && type !== 'meta') return;
+
     // Smooth show animation
     showProgress();
 
@@ -691,87 +693,110 @@ export async function executeBatchDownload(gamesMissingImage, gamesMissingMeta, 
         }
     }
 
-    for (let i = 0; i < gamesMissingMeta.length; i++) {
-        const gameContainer = gamesMissingMeta[i];
-        const gameName = gameContainer.dataset.gameName;
-        console.log("gameName: ", gameName);
-    }
+    for (let i = 0; i < games.length; i++) {
+        setProgressDirect((i / games.length) * 100);
 
-    for (let i = 0; i < gamesMissingImage.length; i++) {
-        // Use direct progress update for immediate visual feedback
-        setProgressDirect((i / gamesMissingImage.length) * 100);
-
-        const gameContainer = gamesMissingImage[i];
+        const gameContainer = games[i];
         const gameName = gameContainer.dataset.gameName;
 
-        const activePageContent = gameContainer.parentElement;
+        if (type === 'image') {
+            const activePageContent = gameContainer.parentElement;
 
-        const currentPage = document.querySelector(`div.page[data-platform="${platformName}"]`);
+            const currentPage = document.querySelector(`div.page[data-platform="${platformName}"]`);
 
-        console.log("currentPage.dataset.viewMode: ", currentPage.dataset.viewMode);
+            console.log("currentPage.dataset.viewMode: ", currentPage.dataset.viewMode);
 
-        let elementToPulse;
+            let elementToPulse;
 
-        const isListMode = currentPage.dataset.viewMode === 'list';
-        const gameContainerImage = gameContainer.querySelector('.game-container-image');
+            const isListMode = currentPage.dataset.viewMode === 'list';
+            const gameContainerImage = gameContainer.querySelector('.game-container-image');
 
-        if (isListMode) {
-            elementToPulse = gameContainer;
-        } else {
-            elementToPulse = gameContainerImage;
-        }
-
-        elementToPulse.classList.add('loading');
-
-        setProgressColor(`${gameName}`, 'none');
-
-        try {
-            const urls = await new Promise((resolve) => {
-                ipcRenderer.send('fetch-images', gameName, platformName, LB.steamGridAPIKey, LB.giantBombAPIKey);
-                ipcRenderer.once('image-urls', (event, urls) => resolve(urls));
-            });
-
-            if (!urls.length) {
-                setProgressColor(`${gameName}`, 'error');
-                elementToPulse.classList.remove('loading');
-                await new Promise(r => setTimeout(r, 100));
-                continue;
-            }
-
-            setProgressColor(`${gameName}`, 'success');
-
-            const url = typeof urls[0] === 'string' ? urls[0] : urls[0]?.url;
-            if (!url) continue;
-
-            const result = await downloadImage(
-                url,
-                platformName,
-                gameName
-            );
-
-            if (result) {
-                const imgEl = gameContainer.querySelector("img");
-                if (imgEl) {
-                    imgEl.src = result + '?t=' + Date.now();
-                    gameContainer.removeAttribute('data-missing-image');
-                    elementToPulse.classList.remove('loading');
-                    if (isListMode) {
-                        updateGamePane(gameContainer);
-                    }
-                }
+            if (isListMode) {
+                elementToPulse = gameContainer;
             } else {
-                elementToPulse.classList.remove('loading');
+                elementToPulse = gameContainerImage;
             }
 
-        } catch (err) {
-            console.error(`Failed batch Dload for ${gameName}:`, err);
-            elementToPulse.classList.remove('loading');
+            elementToPulse.classList.add('loading');
+
+            setProgressColor(`${gameName}`, 'none');
+
+            try {
+                const urls = await new Promise((resolve) => {
+                    ipcRenderer.send('fetch-images', gameName, platformName, LB.steamGridAPIKey, LB.giantBombAPIKey);
+                    ipcRenderer.once('image-urls', (event, urls) => resolve(urls));
+                });
+
+                if (!urls.length) {
+                    setProgressColor(`${gameName}`, 'error');
+                    elementToPulse.classList.remove('loading');
+                    await new Promise(r => setTimeout(r, 100));
+                    continue;
+                }
+
+                setProgressColor(`${gameName}`, 'success');
+
+                const url = typeof urls[0] === 'string' ? urls[0] : urls[0]?.url;
+                if (!url) continue;
+
+                const result = await downloadImage(
+                    url,
+                    platformName,
+                    gameName
+                );
+
+                if (result) {
+                    const imgEl = gameContainer.querySelector("img");
+                    if (imgEl) {
+                        imgEl.src = result + '?t=' + Date.now();
+                        gameContainer.removeAttribute('data-missing-image');
+                        elementToPulse.classList.remove('loading');
+                        if (isListMode) {
+                            updateGamePane(gameContainer);
+                        }
+                    }
+                } else {
+                    elementToPulse.classList.remove('loading');
+                }
+
+            } catch (err) {
+                console.error(`Failed batch Dload for ${gameName}:`, err);
+                elementToPulse.classList.remove('loading');
+            }
+        } else if (type === 'meta') {
+            setProgressColor(`${gameName}`, 'none');
+
+            try {
+                const params = {
+                    cleanName: gameContainer.dataset.cleanName,
+                    platformName: platformName,
+                    gameFileName: gameName,
+                    function: 'fetch-meta'
+                };
+
+                await getMeta(params);
+
+                setProgressColor(`${gameName}`, 'success');
+
+                // Update pane if this is the selected game in list mode
+                const activePage = document.querySelector('.page.active');
+                const selectedContainer = activePage.querySelector('.game-container.selected');
+                if (selectedContainer && selectedContainer.dataset.gameName === gameName && activePage.dataset.viewMode === 'list') {
+                    updateGamePane(selectedContainer);
+                }
+
+            } catch (err) {
+                console.error(`Failed to fetch meta for ${gameName}:`, err);
+                setProgressColor(`${gameName}`, 'error');
+                await new Promise(r => setTimeout(r, 100));
+            }
         }
     }
 
     // Set final progress to 100%
     setProgressDirect(100);
-    setProgressColor(`Batch download complete!`, 'success');
+    const typeLabel = type === 'image' ? 'images' : 'metadata';
+    setProgressColor(`Batch download complete for ${typeLabel}!`, 'success');
 
     // Smooth hide animation after a delay
     setTimeout(() => {
@@ -889,6 +914,10 @@ export async function downloadImage(imgSrc, platform, gameName) {
 }
 
 export async function batchDownload() {
+    if (LB.batchRunning) {
+        console.info("Batch download already running");
+        return;
+    }
 
     // Find games with missing images in the current platform
     const pages = document.querySelectorAll('#galleries .page');
@@ -920,7 +949,17 @@ export async function batchDownload() {
         return;
     }
 
-    await executeBatchDownload(gamesMissingImage, gamesMissingMeta, LB.currentPlatform);
+    LB.batchRunning = true;
+    try {
+        if (confirmed.imageBatch) {
+            await executeBatchDownload(gamesMissingImage, 'image', LB.currentPlatform);
+        }
+        if (confirmed.metaBatch) {
+            await executeBatchDownload(gamesMissingMeta, 'meta', LB.currentPlatform);
+        }
+    } finally {
+        LB.batchRunning = false;
+    }
 }
 
 export async function getMissingMetaGames(currentPlatformPage) {

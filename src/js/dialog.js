@@ -338,20 +338,21 @@ export function batchDialog(imagesCount, metaCount) {
         const optionsContainer = document.createElement('div');
         optionsContainer.className = 'batch-options';
 
-        const makeOption = (id, label, count, checked, disabled) => {
+        const makeRadioOption = (id, label, count, checked, disabled, name) => {
             const wrapper = document.createElement('label');
             wrapper.className = 'batch-option';
 
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.id = id;
-            checkbox.checked = checked;
-            checkbox.disabled = disabled;
+            const radio = document.createElement('input');
+            radio.type = 'radio';
+            radio.id = id;
+            radio.name = name;
+            radio.checked = checked;
+            radio.disabled = disabled;
 
             const countText = count ? ` (${count})` : '';
             const text = document.createTextNode(` ${label}${countText}`);
 
-            wrapper.appendChild(checkbox);
+            wrapper.appendChild(radio);
             wrapper.appendChild(text);
 
             return wrapper;
@@ -360,19 +361,15 @@ export function batchDialog(imagesCount, metaCount) {
         const hasImages = imagesCount > 0;
         const hasMeta = metaCount > 0;
 
-        // Build options
-        const imgLabel = hasImages
-            ? `Download missing images`
-            : `No missing images`;
-        const metaLabel = hasMeta
-            ? `Download missing metadata`
-            : `No metadata missing`;
+        // Build radio options for singly selected type
+        const imgLabel = hasImages ? `Download missing images (${imagesCount})` : `No missing images`;
+        const metaLabel = hasMeta ? `Download missing metadata (${metaCount})` : `No metadata missing`;
 
         optionsContainer.appendChild(
-            makeOption('batch-images', imgLabel, hasImages ? imagesCount : 0, hasImages, !hasImages)
+            makeRadioOption('batch-images', imgLabel, hasImages ? imagesCount : 0, hasImages, !hasImages, 'batch-type')
         );
         optionsContainer.appendChild(
-            makeOption('batch-metadata', metaLabel, hasMeta ? metaCount : 0, hasMeta, !hasMeta)
+            makeRadioOption('batch-metadata', metaLabel, hasMeta ? metaCount : 0, hasImages && !hasMeta, !hasMeta, 'batch-type')
         );
 
         dialogText.appendChild(optionsContainer);
@@ -395,7 +392,7 @@ export function batchDialog(imagesCount, metaCount) {
             const imagesChecked = document.getElementById('batch-images')?.checked || false;
             const metadataChecked = document.getElementById('batch-metadata')?.checked || false;
             cleanup();
-            resolve({ images: imagesChecked, metadata: metadataChecked });
+            resolve({ imageBatch: imagesChecked, metaBatch: metadataChecked });
         };
 
         const onCancel = () => {
@@ -405,7 +402,7 @@ export function batchDialog(imagesCount, metaCount) {
 
         const onKeyDown = (event) => {
             if (event.key === 'Escape') onCancel();
-            if (event.key === 'Enter' && document.activeElement.type === 'checkbox') {
+            if (event.key === 'Enter' && document.activeElement.type === 'radio') {
                 document.activeElement.checked = !document.activeElement.checked;
             }
         };
@@ -417,7 +414,7 @@ export function batchDialog(imagesCount, metaCount) {
 
         // --- Optional: basic focus loop ---
         setTimeout(() => {
-            const inputs = optionsContainer.querySelectorAll('input[type="checkbox"]');
+            const inputs = optionsContainer.querySelectorAll('input[type="radio"]');
             const elements = [...inputs, okButton, cancelButton];
 
             elements.forEach((el, i) => {
@@ -433,5 +430,3 @@ export function batchDialog(imagesCount, metaCount) {
         }, 0);
     });
 }
-
-

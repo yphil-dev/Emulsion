@@ -13,7 +13,9 @@ export async function buildGalleries (preferences, userDataPath) {
         try {
             const galleriesContainer = document.getElementById('galleries');
             let i = 0;
-            const platforms = Object.keys(preferences);
+            // Ensure consistent order: settings, platforms in PLATFORMS order, recents, favorites
+            const platformNames = PLATFORMS.map(p => p.name).filter(name => preferences[name]);
+            const platforms = ['settings', ...platformNames];
 
             for (const platformName of platforms) {
                 let prefs = preferences[platformName];

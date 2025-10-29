@@ -10,7 +10,7 @@ export function initFooterControls() {
     updateFooterControls('west', 'same', 'same', 'off');
     updateFooterControls('north', 'same', 'same', 'off');
     updateFooterControls('east', 'same', 'Exit', 'on');
-    updateFooterControls('south', 'same', 'same', 'on'); // Make sure south is on
+    updateFooterControls('south', 'same', 'same', 'on');
 }
 
 export function updateFooterControlsFor(context) {
@@ -18,9 +18,11 @@ export function updateFooterControlsFor(context) {
     switch (context) {
     case 'gallery':
         updateFooterControls('dpad', 'nsew', 'Games', 'on');
-        updateFooterControls('west', 'west', 'Cover', 'on');
-        updateFooterControls('north', 'north', 'Favorite', 'on');
+        updateFooterControls('west', 'same', 'Cover', 'on');
+        updateFooterControls('north', 'same', 'Favorite', 'on');
         updateFooterControls('shoulders', 'same', 'Platforms', 'on');
+        updateFooterControls('south', 'same', 'Launch', 'on');
+        updateFooterControls('east', 'same', 'Exit', 'on');
         break;
 
     case 'settings':

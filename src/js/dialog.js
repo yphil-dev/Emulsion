@@ -222,6 +222,26 @@ export function kbShortcutsDialog() {
         overlay.style.display = 'flex';
         console.log("overlay: ", overlay);
         closeButton.focus();
+
+        // Tab switching functionality
+        const tabButtons = overlay.querySelectorAll('.tab-button');
+        const tabContents = overlay.querySelectorAll('.tab-content');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all tabs and contents
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+
+                // Add active class to clicked tab and corresponding content
+                button.classList.add('active');
+                const tabId = button.getAttribute('data-tab');
+                const content = overlay.querySelector(`#${tabId}`);
+                if (content) {
+                    content.classList.add('active');
+                }
+            });
+        });
     }
 
     function closeDialog() {

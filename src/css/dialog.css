@@ -85,6 +85,34 @@
   align-items: center;
 }
 
+.kb-shortcuts-dialog .tabs {
+  display: flex;
+  margin-bottom: 1em;
+}
+
+.kb-shortcuts-dialog .tab-button {
+  flex: 1;
+  padding: 0.5em;
+  background: #333;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.kb-shortcuts-dialog .tab-button.active {
+  background: var(--color-text-1);
+  color: black;
+}
+
+.kb-shortcuts-dialog .tab-content {
+  display: none;
+}
+
+.kb-shortcuts-dialog .tab-content.active {
+  display: block;
+}
+
 .kb-shortcuts-dialog table {
   border-collapse: collapse;
   border-spacing: 0;

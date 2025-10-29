@@ -68,8 +68,9 @@ async function sdlInit() {
         });
 
         gamecontroller.on('controller-button-down', (event) => {
+            console.log("event: ", event);
             buttonStates[event.button] = true;
-            if (buttonStates.back && buttonStates.dpdown) {
+            if (buttonStates.start && buttonStates.dpdown) {
                 console.log('Triggering process kill combo');
                 killChildProcesses(childProcesses);
             }

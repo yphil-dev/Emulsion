@@ -120,34 +120,56 @@
         </svg>
 
         <svg style="display:none">
-            <symbol id="select" viewBox="0 0 64 20">
-                <rect x="0" y="0" width="64" height="22"
-                      fill="var(--fill, #fff)"
+            <symbol id="shoulders" viewBox="0 0 64 64">
+                <!-- Left button -->
+                <path id="outline_l" d="M15 3h34a13 13 0 0 1 13 13 13 13 0 0 1-13 13h-34a13 13 0 0 1-13-13 13 13 0 0 1 13-13z"
+                      fill="var(--fill, none)"
                       stroke="var(--stroke, #f00)"
-                      stroke-width="3"
-                      rx="6" ry="6"/>
+                      stroke-width="2"
+                      stroke-linejoin="round"/>
+                <text x="32" y="19" dy="-1"
+                      font-family="Orbitron"
+                      font-size="18.667px"
+                      fill="var(--fill-text, #f00)"
+                      text-anchor="middle"
+                      dominant-baseline="middle">L</text>
+
+                <!-- Right button -->
+                <path id="outline_r" d="M15 35h34a13 13 0 0 1 13 13 13 13 0 0 1-13 13h-34a13 13 0 0 1-13-13 13 13 0 0 1 13-13z"
+                      fill="var(--fill, none)"
+                      stroke="var(--stroke, #f00)"
+                      stroke-width="2"
+                      stroke-linejoin="round"/>
+                <text x="32" y="51" dy="-1"
+                      font-family="Orbitron"
+                      font-size="18.667px"
+                      fill="var(--fill-text, #f00)"
+                      text-anchor="middle"
+                      dominant-baseline="middle">R</text>
             </symbol>
         </svg>
 
         <svg style="display:none">
-            <symbol id="shoulders" viewBox="0 0 64 64">
-                <!-- Left button -->
-                <path id="outline_l" d="M15 3h34a13 13 0 0 1 13 13 13 13 0 0 1-13 13h-34a13 13 0 0 1-13-13 13 13 0 0 1 13-13z"
-                      fill="var(--fill-l, none)"
+            <symbol id="select" viewBox="0 0 64 64">
+                <!-- Full-width, taller button -->
+                <rect x="1.5" y="14" width="61" height="36" ry="8"
+                      fill="var(--fill, none)"
                       stroke="var(--stroke, #f00)"
                       stroke-width="2"
-                      stroke-linejoin="round"/>
-                <text x="32" y="19" dy="-1" fill="var(--stroke, #f00)" font-family="Orbitron" font-size="18.667px"
-                      text-anchor="middle" dominant-baseline="middle">L</text>
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      style="paint-order:stroke markers fill"/>
 
-                <!-- Right button -->
-                <path id="outline_r" d="M15 35h34a13 13 0 0 1 13 13 13 13 0 0 1-13 13h-34a13 13 0 0 1-13-13 13 13 0 0 1 13-13z"
-                      fill="var(--fill-r, none)"
-                      stroke="var(--stroke, #f00)"
-                      stroke-width="2"
-                      stroke-linejoin="round"/>
-                <text x="32" y="51" dy="-1" fill="var(--stroke, #f00)" font-family="Orbitron" font-size="18.667px"
-                      text-anchor="middle" dominant-baseline="middle">R</text>
+                <!-- Larger centered text -->
+                <text x="32" y="32"
+                      font-family="Orbitron"
+                      font-size="11.4px"
+                      letter-spacing="1.4px"
+                      text-anchor="middle"
+                      dominant-baseline="middle"
+                      fill="var(--fill-text, #f00)">
+                    SELECT
+                </text>
             </symbol>
         </svg>
 
@@ -168,19 +190,20 @@
                      </div>
                 -->
                 <div id="select" class="control-item">
-                    <div class="control-item column">
-                        <svg class="control-icon" style="--fill: var(--color-text-1); --stroke: var(--color-outline-control-button);">
-                            <use href="#select"/>
-                        </svg>
-                        <span>Select</span>
-                    </div>
+
+                    <svg class="control-icon"
+                         style="--fill: black; --fill-text: var(--color-text-1); --stroke: var(--color-outline-control-button);">
+                        <use href="#select"></use>
+                    </svg>
+
 
                     <span class="control-item-label">Menu</span>
                 </div>
 
                 <div id="shoulders" class="control-item">
                     <!-- <img id="shoulders-icon" class="icon" src="../../img/controls/button-shoulders.png" alt="Shoulders"> -->
-                    <svg class="control-icon" style="--fill-l:blue; --fill-r:green; --text-l:white; --text-r:white;">
+                    <svg class="control-icon"
+                         style="--fill: black; --fill-text: var(--color-text-1); --stroke: var(--color-outline-control-button);">
                         <use href="#shoulders"></use>
                     </svg>
 

@@ -180,11 +180,13 @@ export function buildHomeSlide(platformName, preferences) {
 }
 
 function setGalleryFooterControls(pageDataset) {
-    if (pageDataset.platformName === 'settings') {
-        console.log("yep: ");
+    console.log("pageDataset: ", pageDataset);
+    if (pageDataset.platform === 'settings') {
         updateFooterControlsFor('settings');
     } else if (pageDataset.empty) {
         updateFooterControlsFor('empty-page');
+    } else if (pageDataset.viewMode === 'list') {
+        updateFooterControlsFor('gallery-list');
     } else {
         updateFooterControlsFor('gallery');
     }

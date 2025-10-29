@@ -25,8 +25,17 @@ export function updateFooterControlsFor(context) {
         updateFooterControls('east', 'same', 'Exit', 'on');
         break;
 
+    case 'gallery-list':
+        updateFooterControls('dpad', 'ns', 'Games', 'on');
+        updateFooterControls('west', 'same', 'Cover', 'on');
+        updateFooterControls('north', 'same', 'Favorite', 'on');
+        updateFooterControls('shoulders', 'same', 'Platforms', 'on');
+        updateFooterControls('south', 'same', 'Launch', 'on');
+        updateFooterControls('east', 'same', 'Exit', 'on');
+        break;
+
     case 'settings':
-        updateFooterControls('dpad', 'same', 'Platforms', 'on');
+        updateFooterControls('dpad', 'nsew', 'Platforms', 'on');
         updateFooterControls('shoulders', 'same', 'Platforms', 'on');
         updateFooterControls('west', 'same', 'Cover', 'off');
         updateFooterControls('north', 'same', 'same', 'off');
@@ -47,9 +56,10 @@ export function updateFooterControlsFor(context) {
         break;
 
     case 'empty-page':
-        updateFooterControls('dpad', 'same', 'Platforms', 'off');
+        updateFooterControls('dpad', 'same', 'Buttons', 'on');
         updateFooterControls('shoulders', 'same', 'Platforms', 'on');
         updateFooterControls('west', 'same', 'Cover', 'off');
+        updateFooterControls('south', 'same', 'Select', 'on');
         updateFooterControls('north', 'same', 'same', 'off');
         break;
 
@@ -62,49 +72,52 @@ export function updateFooterControlsFor(context) {
 
 function updateFooterControls(section, cardinals, newText, display) {
 
-    const colorsEW = {
-        '--fill-east': 'var(--color-text-1)',
-        '--fill-south': 'var(--color-text-2)',
-        '--fill-north': 'var(--color-text-2)',
-        '--fill-west': 'var(--color-text-1)',
+    const colorSets = {
+        ew: {
+            '--fill-east': 'var(--color-text-1)',
+            '--fill-south': 'var(--color-text-2)',
+            '--fill-north': 'var(--color-text-2)',
+            '--fill-west': 'var(--color-text-1)',
+        },
+        ns: {
+            '--fill-east': 'var(--color-text-2)',
+            '--fill-south': 'var(--color-text-1)',
+            '--fill-north': 'var(--color-text-1)',
+            '--fill-west': 'var(--color-text-2)',
+        },
+        nsew: {
+            '--fill-east': 'var(--color-text-1)',
+            '--fill-south': 'var(--color-text-1)',
+            '--fill-north': 'var(--color-text-1)',
+            '--fill-west': 'var(--color-text-1)',
+        },
     };
 
-    const colorsNSEW = {
-        '--fill-east': 'var(--color-text-1)',
-        '--fill-south': 'var(--color-text-1)',
-        '--fill-north': 'var(--color-text-1)',
-        '--fill-west': 'var(--color-text-1)',
-    };
-
-    console.log("cardinals: ", cardinals);
-
-    const colors = cardinals === 'ew' ? colorsEW : colorsNSEW;
-
-    console.log("colors: ", colors);
+    const dpadColors = colorSets[cardinals] || colorSets.nsew;
 
     const sectionDiv = document.querySelector(`div#${section}`);
+    if (!sectionDiv) return;
 
-    const icon = sectionDiv.querySelector("img.icon");
     const label = sectionDiv.querySelector("span.control-item-label");
-
     const svg = sectionDiv.querySelector('svg.control-icon');
 
+    // --- fade only ---
     if (display === 'off') {
         sectionDiv.style.display = 'none';
         return;
     }
-
     if (display === 'on') {
         sectionDiv.style.display = 'flex';
     }
 
+    // --- color updates ---
     if (cardinals && cardinals !== 'same') {
-        console.log("section, cardinals, newText, display: ", section, cardinals, newText, display);
-        Object.entries(colors).forEach(([key, value]) => {
+        Object.entries(dpadColors).forEach(([key, value]) => {
             svg.style.setProperty(key, value);
         });
     }
 
+    // --- text update with mini-fade ---
     if (label && newText !== 'same') {
         label.textContent = newText;
     }

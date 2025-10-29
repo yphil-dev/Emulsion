@@ -158,3 +158,12 @@ footer.footer-big {
   flex-direction: column;
   font-size: x-small;
 }
+
+.control-section {
+  opacity: 1;
+  transition: opacity 1s ease;
+}
+
+.control-section.hidden {
+  opacity: 0;
+}

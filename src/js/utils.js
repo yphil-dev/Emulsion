@@ -61,17 +61,17 @@ export function updateFooterControlsFor(context) {
 function updateFooterControls(section, cardinals, newText, display) {
 
     const colorsEW = {
-        '--fill-east': 'white',
-        '--fill-south': 'blue',
-        '--fill-north': 'blue',
-        '--fill-west': 'white',
+        '--fill-east': 'var(--color-text-1)',
+        '--fill-south': 'var(--color-text-2)',
+        '--fill-north': 'var(--color-text-2)',
+        '--fill-west': 'var(--color-text-1)',
     };
 
     const colorsNSEW = {
-        '--fill-east': 'white',
-        '--fill-south': 'white',
-        '--fill-north': 'white',
-        '--fill-west': 'white',
+        '--fill-east': 'var(--color-text-1)',
+        '--fill-south': 'var(--color-text-1)',
+        '--fill-north': 'var(--color-text-1)',
+        '--fill-west': 'var(--color-text-1)',
     };
 
     console.log("cardinals: ", cardinals);

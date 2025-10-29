@@ -139,3 +139,22 @@ footer.footer-big {
   --footer-gap: 10px;
   --icon-size: 80px;
 }
+
+.control-icon {
+  height: calc(var(--footer-height) - 14px);
+  width: calc(var(--footer-height) - 14px);
+}
+
+.control-item.column {
+  display: flex;
+  flex-direction: column;
+  font-size: x-small;
+  color: var(--color-outline-control-button);
+}
+
+.control-item.column .control-icon {
+  display: flex;
+  height: calc(var(--footer-height) - 34px);
+  flex-direction: column;
+  font-size: x-small;
+}

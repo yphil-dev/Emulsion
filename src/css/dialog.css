@@ -44,14 +44,26 @@
   margin-top: 20px;
 }
 
-.kb-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  font-size: 0.95em;
+.kb-shortcuts-dialog {
+  /* width: 100%; */
+  border-collapse: collapse;  /* fixes the gaps */
+  border-spacing: 0;
 }
 
-.kb-grid kbd {
+.kb-shortcuts-dialog td {
+  /* border-bottom: 1px solid whitesmoke; */
+  padding: 0.4em 0.6em;
+  height: 2em;                /* fixed row height */
+  vertical-align: middle;
+  text-align: left;
+}
+
+.kb-shortcuts-dialog img {
+  vertical-align: middle;
+  height: 1.8em;              /* keep icons small */
+}
+
+.kb-shortcuts-dialog kbd {
   background: #444;
   border-radius: 4px;
   padding: 2px 6px;

@@ -13,9 +13,11 @@ export const fetchGameMetaData = async (gameName, platform = null) => {
         wikiSearchUrl.searchParams.set('list', 'search');
 
         // If platform provided, include it to bias search results
-        const srsearch = platform
-            ? `"${gameName}" video game ${platform}`
-            : `"${gameName}" video game`;
+        // const srsearch = platform
+        //     ? `"${gameName}" video game ${platform}`
+        //     : `"${gameName}" video game`;
+
+        const srsearch = `"${gameName}" video game`;
 
         wikiSearchUrl.searchParams.set('srsearch', srsearch);
         wikiSearchUrl.searchParams.set('srlimit', '10');
@@ -259,16 +261,16 @@ const testGame = async (gameName, platform = null) => {
     return result;
 };
 
-// (async () => {
-//     // await testGame('nitro');
-//     // await testGame('nitro', 'amiga');
+(async () => {
+    // await testGame('nitro');
+    // await testGame('nitro', 'amiga');
 
-//     await testGame('Aero Blasters (video game)');
+    await testGame('Aero Blasters');
 
-//     // await testGame('Super Spike V ball');
-//     // await testGame('outrun 2006', 'sony playstation');
-//     // await testGame('Army Men - World War', 'playstation');
-//     // await testGame('banshee');
+    // await testGame('Super Spike V ball');
+    // await testGame('outrun 2006', 'sony playstation');
+    // await testGame('Army Men - World War', 'playstation');
+    // await testGame('banshee');
 
-//     console.log('\n✅ === All tests completed ===');
-// })();
+    console.log('\n✅ === All tests completed ===');
+})();

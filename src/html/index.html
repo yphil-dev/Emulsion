@@ -66,31 +66,131 @@
 
         <div id="menu" class="themed-background"></div>
 
+        <svg style="display:none">
+            <symbol id="dpad" viewBox="0 0 64 64">
+                <!-- OUTLINE -->
+                <path id="outline" fill="var(--outline, #222)"
+                      d="M26 2a4 4 0 0 0-4 4v16h-16a4 4 0 0 0-4 4v12a4 4 0 0 0 4 4h16v16a4 4 0 0 0 4 4h12a4 4 0 0 0 4-4v-16h16a4 4 0 0 0 4-4v-12a4 4 0 0 0-4-4h-16v-16a4 4 0 0 0-4-4h-12z"/>
+                <!-- UP -->
+                <path id="up" fill="var(--fill-north, red)"
+                      d="m32 5.2012c0.32252 0 0.64503 0.15223 0.8418 0.45898l5 7.8008c0.42572 0.66544-0.051797 1.5385-0.8418 1.5391h-10
+                          c-0.36526-4.4e-5 -0.70144-0.19921-0.87695-0.51953-0.08635-0.1571-0.12905-0.33452-0.12305-0.51367
+                          6e-3 -0.17978 0.060903-0.35454 0.1582-0.50586l5-7.8008c0.19677-0.30675 0.51928-0.45898 0.8418-0.45898z"/>
+                <!-- LEFT -->
+                <path id="left" fill="var(--fill-west, green)"
+                      d="m13.967 26.201a1.0001 1.0001 0 0 1 0.51367 0.12305 1.0001 1.0001 0 0 1 0.51953 0.87695v10
+                          a1.0001 1.0001 0 0 1-1.5391 0.8418l-7.8008-5a1.0001 1.0001 0 0 1 0-1.6836l7.8008-5
+                          a1.0001 1.0001 0 0 1 0.50586-0.1582z"/>
+                <!-- RIGHT -->
+                <path id="right" fill="var(--fill-east, blue)"
+                      d="m50.033 26.201a1.0001 1.0001 0 0 1 0.50586 0.1582l7.8008 5a1.0001 1.0001 0 0 1 0 1.6836l-7.8008 5
+                          a1.0001 1.0001 0 0 1-1.5391-0.8418v-10
+                          a1.0001 1.0001 0 0 1 0.51953-0.87695 1.0001 1.0001 0 0 1 0.51367-0.12305z"/>
+                <!-- DOWN -->
+                <path id="down" fill="var(--fill-south, yellow)"
+                      d="m26.967 49.201h10c0.79 5.12e-4 1.2675 0.87363 0.8418 1.5391l-5 7.8008
+                          c-0.39353 0.6135-1.2901 0.6135-1.6836 0l-5-7.8008
+                          c-0.0973-0.15132-0.1522-0.32608-0.1582-0.50586-6e-3 -0.17916 0.036647-0.35657 0.12305-0.51367
+                          0.17551-0.32032 0.51169-0.51949 0.87695-0.51953z"/>
+            </symbol>
+        </svg>
+
+        <svg style="display:none">
+            <symbol id="buttons-simple" viewBox="0 0 64 64">
+                <!-- EAST -->
+                <circle id="button-east" cx="50" cy="32" r="10" fill="var(--fill-east)" stroke="var(--stroke, #000)" stroke-width="2"/>
+                <!-- SOUTH -->
+                <circle id="button-south" cx="32" cy="50" r="10" fill="var(--fill-south)" stroke="var(--stroke, #000)" stroke-width="2"/>
+                <!-- NORTH -->
+                <circle id="button-north" cx="32" cy="14" r="10" fill="var(--fill-north)" stroke="var(--stroke, #000)" stroke-width="2"/>
+                <!-- WEST -->
+                <circle id="button-west" cx="14" cy="32" r="10" fill="var(--fill-west)" stroke="var(--stroke, #000)" stroke-width="2"/>
+            </symbol>
+        </svg>
+
+        <svg style="display:none">
+            <symbol id="start" viewBox="0 0 64 64">
+                <path d="M16.385 18.914v26.915l33.547-13.458z"
+                      fill="var(--fill, #fff)"
+                      stroke="var(--stroke, #f00)"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="3"/>
+            </symbol>
+        </svg>
+
+        <svg style="display:none">
+            <symbol id="select" viewBox="0 0 64 20">
+                <rect x="0" y="0" width="64" height="22"
+                      fill="var(--fill, #fff)"
+                      stroke="var(--stroke, #f00)"
+                      stroke-width="3"
+                      rx="6" ry="6"/>
+            </symbol>
+        </svg>
+
         <footer id="footer">
             <div id="controls" class="left">
                 <div id="dpad" class="control-item">
-                    <img id="dpad-icon" class="icon" src="../../img/controls/button-dpad-ew.png" alt="Dpad">
-                    <span>Platforms</span>
+                    <svg class="control-icon" style="--fill-north:black; --fill-south:black; --fill-west:var(--color-text-1); --fill-east:var(--color-text-1); --outline:var(--color-outline-control-button);">
+                        <use href="#dpad"/>
+                    </svg>
+                    <span class="control-item-label">Platforms</span>
                 </div>
+                <!--
+                     <div id="start" class="control-item">
+                     <svg class="control-icon" style="--fill: var(--color-text-1); --stroke: #333;">
+                     <use href="#start"/>
+                     </svg>
+                     <span>Go</span>
+                     </div>
+                -->
+                <div id="select" class="control-item">
+                    <div class="control-item column">
+                        <svg class="control-icon" style="--fill: var(--color-text-1); --stroke: var(--color-outline-control-button);">
+                            <use href="#select"/>
+                        </svg>
+                        <span>Select</span>
+                    </div>
+
+                    <span class="control-item-label">Menu</span>
+                </div>
+
                 <div id="shoulders" class="control-item">
                     <img id="shoulders-icon" class="icon" src="../../img/controls/button-shoulders.png" alt="Shoulders">
-                    <span>Browse</span>
+                    <span class="control-item-label">Browse</span>
                 </div>
+
                 <div id="south" class="control-item">
-                    <img id="south-icon" class="icon" src="../../img/controls/button-south.png" alt="Button - South">
-                    <span>Select</span>
+                    <!-- <img id="south-icon" class="icon" src="../../img/controls/button-south.png" alt="Button - South"> -->
+                    <svg class="control-icon" style=" --fill-east: black; --fill-south: var(--color-text-1); --fill-north: black; --fill-west: black; --stroke: var(--color-outline-control-button);">
+                        <use href="#buttons-simple"/>
+                    </svg>
+                    <span class="control-item-label">Open</span>
                 </div>
+
                 <div id="west" class="control-item">
-                    <img id="west-icon" class="icon" src="../../img/controls/button-west.png" alt="Button - West">
-                    <span id="west-span">Config</span>
+                    <!-- <img id="west-icon" class="icon" src="../../img/controls/button-west.png" alt="Button - West"> -->
+                    <svg class="control-icon" style=" --fill-east: black; --fill-south:black; --fill-north: black; --fill-west: var(--color-text-1); --stroke: var(--color-outline-control-button);">
+                        <use href="#buttons-simple"/>
+                    </svg>
+                    <span class="control-item-label" id="west-span">Config</span>
                 </div>
+
                 <div id="north" class="control-item">
-                    <img id="west-icon" class="icon" src="../../img/controls/button-north.png" alt="Button - North">
-                    <span id="west-span">Favorite</span>
+                    <!-- <img id="west-icon" class="icon" src="../../img/controls/button-north.png" alt="Button - North"> -->
+                    <svg class="control-icon" style=" --fill-east: black; --fill-south:black; --fill-north: var(--color-text-1); --fill-west: black; --stroke: var(--color-outline-control-button);">
+                        <use href="#buttons-simple"/>
+                    </svg>
+                    <span class="control-item-label" id="west-span">Favorite</span>
                 </div>
+
                 <div id="east" class="control-item back hover" title="Back">
-                    <img id="east-icon" class="icon" src="../../img/controls/button-east.png" alt="Button - East">
-                    <span id="east-span">Exit</span>
+                    <!-- <img id="east-icon" class="icon" src="../../img/controls/button-east.png" alt="Button - East"> -->
+                    <svg class="control-icon" style=" --fill-east: var(--color-text-1); --fill-south: black; --fill-north: black; --fill-west: black; --stroke: var(--color-outline-control-button);">
+                        <use href="#buttons-simple"/>
+                    </svg>
+                    <span class="control-item-label" id="east-span">Exit</span>
                 </div>
             </div>
 
@@ -129,31 +229,69 @@
         <div id="kb-shortcuts-overlay" class="overlay">
             <div class="dialog kb-shortcuts-dialog">
                 <h3>Keyboard Shortcuts</h3>
-                <div class="kb-grid">
-                    <div><kbd>←</kbd> / <kbd>→</kbd> / <kbd>↑</kbd> / <kbd>↓</kbd></div>
-                    <div>Navigate games</div>
-
-                    <div><kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd></div>
-                    <div>Switch pages</div>
-
-                    <div><kbd>Enter</kbd></div>
-                    <div>Launch selected game / Confirm</div>
-
-                    <div><kbd>Esc</kbd></div>
-                    <div>Exit game menu / Return to slideshow</div>
-
-                    <div><kbd>Ctrl</kbd> + <kbd>I</kbd></div>
-                    <div>Open game menu</div>
-
-                    <div><kbd>Ctrl</kbd> + <kbd>M</kbd></div>
-                    <div>Fetch game metadata (list mode)</div>
-
-                    <div><kbd>+</kbd></div>
-                    <div>Toggle favorite</div>
-
-                    <div><kbd>A–Z</kbd> / <kbd>0–9</kbd></div>
-                    <div>Jump to game by first letter (wrap-around)</div>
-                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Keyboard</th>
+                            <th>Action</th>
+                            <th>Game Controller</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><kbd>←</kbd> / <kbd>→</kbd> / <kbd>↑</kbd> / <kbd>↓</kbd></td>
+                            <td>Navigate games</td>
+                            <td>
+                                <img class="icon" src="../../img/controls/button-dpad-nesw.png" alt="Dpad">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd></td>
+                            <td>Switch pages</td>
+                            <td>
+                                <img class="icon" src="../../img/controls/button-shoulders.png" alt="Dpad">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Enter</kbd></td>
+                            <td>Launch selected game / Confirm</td>
+                            <td>
+                                <img class="icon" src="../../img/controls/button-south.png" alt="Dpad">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Esc</kbd></td>
+                            <td>Exit game menu / Return to slideshow</td>
+                            <td>
+                                <img class="icon" src="../../img/controls/button-east.png" alt="Dpad">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd> + <kbd>I</kbd></td>
+                            <td>Open game menu</td>
+                            <td>X</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd> + <kbd>M</kbd></td>
+                            <td>Fetch game metadata (list mode)</td>
+                            <td>
+                                <img class="icon" src="../../img/controls/button-west.png" alt="Dpad">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><kbd>+</kbd></td>
+                            <td>Toggle favorite</td>
+                            <td>
+                                <img class="icon" src="../../img/controls/button-north.png" alt="Dpad">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><kbd>A–Z</kbd> / <kbd>0–9</kbd></td>
+                            <td>Jump to game by first letter (wrap-around)</td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
                 <div class="dialog-buttons">
                     <button class="button" id="kb-close-button">OK</button>
                 </div>

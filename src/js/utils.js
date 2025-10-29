@@ -5,7 +5,7 @@ import { getMeta } from './metadata.js';
 import { updateGamePane } from './slideshow.js';
 
 export function initFooterControls() {
-    updateFooterControls('dpad', 'button-dpad-ew', 'Platforms', 'on');
+    updateFooterControls('dpad', 'ew', 'Platforms', 'on');
     updateFooterControls('shoulders', 'same', 'same', 'off');
     updateFooterControls('west', 'same', 'same', 'off');
     updateFooterControls('north', 'same', 'same', 'off');
@@ -17,36 +17,35 @@ export function updateFooterControlsFor(context) {
 
     switch (context) {
     case 'gallery':
-        updateFooterControls('dpad', 'button-dpad-nesw', 'Games', 'on');
-        updateFooterControls('west', 'same', 'Cover', 'on');
-        updateFooterControls('west', 'button-west', 'Cover', 'on');
-        updateFooterControls('north', 'button-north', 'Favorite', 'on');
+        updateFooterControls('dpad', 'nsew', 'Games', 'on');
+        updateFooterControls('west', 'west', 'Cover', 'on');
+        updateFooterControls('north', 'north', 'Favorite', 'on');
         updateFooterControls('shoulders', 'same', 'Platforms', 'on');
         break;
 
     case 'settings':
-        updateFooterControls('dpad', 'button-dpad-nesw', 'Platforms', 'on');
+        updateFooterControls('dpad', 'same', 'Platforms', 'on');
         updateFooterControls('shoulders', 'same', 'Platforms', 'on');
         updateFooterControls('west', 'same', 'Cover', 'off');
         updateFooterControls('north', 'same', 'same', 'off');
         break;
 
     case 'game-menu':
-        updateFooterControls('dpad', 'button-dpad-nesw', 'Platforms', 'on');
+        updateFooterControls('dpad', 'same', 'Platforms', 'on');
         updateFooterControls('shoulders', 'same', 'Platforms', 'on');
         updateFooterControls('west', 'same', 'Cover', 'off');
         updateFooterControls('north', 'same', 'same', 'off');
         break;
 
     case 'platform-menu':
-        updateFooterControls('dpad', 'button-dpad-nesw', 'Inputs', 'on');
+        updateFooterControls('dpad', 'same', 'Inputs', 'on');
         updateFooterControls('west', 'same', '', 'off');
         updateFooterControls('shoulders', 'same', '', 'off');
         updateFooterControls('north', 'same', 'same', 'off');
         break;
 
     case 'empty-page':
-        updateFooterControls('dpad', 'button-dpad-nesw', 'Platforms', 'off');
+        updateFooterControls('dpad', 'same', 'Platforms', 'off');
         updateFooterControls('shoulders', 'same', 'Platforms', 'on');
         updateFooterControls('west', 'same', 'Cover', 'off');
         updateFooterControls('north', 'same', 'same', 'off');
@@ -59,30 +58,53 @@ export function updateFooterControlsFor(context) {
     }
 }
 
-function updateFooterControls(section, newIcon, newText, display) {
-    const sectionDiv = document.getElementById(section);
-    if (!sectionDiv) {
-        console.warn(`Section '${section}' not found!`);
-        return;
-    }
+function updateFooterControls(section, cardinals, newText, display) {
+
+    const colorsEW = {
+        '--fill-east': 'white',
+        '--fill-south': 'blue',
+        '--fill-north': 'blue',
+        '--fill-west': 'white',
+    };
+
+    const colorsNSEW = {
+        '--fill-east': 'white',
+        '--fill-south': 'white',
+        '--fill-north': 'white',
+        '--fill-west': 'white',
+    };
+
+    console.log("cardinals: ", cardinals);
+
+    const colors = cardinals === 'ew' ? colorsEW : colorsNSEW;
+
+    console.log("colors: ", colors);
+
+    const sectionDiv = document.querySelector(`div#${section}`);
 
     const icon = sectionDiv.querySelector("img.icon");
-    const textSpan = sectionDiv.querySelector("span");
+    const label = sectionDiv.querySelector("span.control-item-label");
+
+    const svg = sectionDiv.querySelector('svg.control-icon');
 
     if (display === 'off') {
         sectionDiv.style.display = 'none';
+        return;
     }
 
     if (display === 'on') {
         sectionDiv.style.display = 'flex';
     }
 
-    if (icon && newIcon !== 'same') {
-        icon.src = `../../img/controls/${newIcon}.png`;
+    if (cardinals && cardinals !== 'same') {
+        console.log("section, cardinals, newText, display: ", section, cardinals, newText, display);
+        Object.entries(colors).forEach(([key, value]) => {
+            svg.style.setProperty(key, value);
+        });
     }
 
-    if (textSpan && newText !== 'same') {
-        textSpan.innerHTML = newText;
+    if (label && newText !== 'same') {
+        label.textContent = newText;
     }
 }
 

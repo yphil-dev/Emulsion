@@ -278,7 +278,7 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
 
     // --- Find target page
     const targetPage = typeof platformNameOrIndex === 'string'
-        ? pages.find(p => p.dataset.platform === platformNameOrIndex)
+        ? GalleryState.enabledPages.find(p => p.dataset.platform === platformNameOrIndex)
         : (typeof platformNameOrIndex === 'number' && platformNameOrIndex >= 0 && platformNameOrIndex < GalleryState.enabledPages.length)
             ? GalleryState.enabledPages[platformNameOrIndex]
             : null;

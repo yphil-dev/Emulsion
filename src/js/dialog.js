@@ -365,7 +365,7 @@ export function batchDialog(imagesCount, metaCount) {
             ? `Download missing images`
             : `No missing images`;
         const metaLabel = hasMeta
-            ? `Update missing metadata`
+            ? `Download missing metadata`
             : `No metadata missing`;
 
         optionsContainer.appendChild(

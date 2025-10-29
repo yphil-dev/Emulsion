@@ -678,7 +678,7 @@ function animateProgress() {
     }
 }
 
-export async function executeBatchDownload(games, platformName) {
+export async function executeBatchDownload(gamesMissingImage, gamesMissingMeta, platformName) {
     // Smooth show animation
     showProgress();
 
@@ -691,11 +691,17 @@ export async function executeBatchDownload(games, platformName) {
         }
     }
 
-    for (let i = 0; i < games.length; i++) {
-        // Use direct progress update for immediate visual feedback
-        setProgressDirect((i / games.length) * 100);
+    for (let i = 0; i < gamesMissingMeta.length; i++) {
+        const gameContainer = gamesMissingMeta[i];
+        const gameName = gameContainer.dataset.gameName;
+        console.log("gameName: ", gameName);
+    }
 
-        const gameContainer = games[i];
+    for (let i = 0; i < gamesMissingImage.length; i++) {
+        // Use direct progress update for immediate visual feedback
+        setProgressDirect((i / gamesMissingImage.length) * 100);
+
+        const gameContainer = gamesMissingImage[i];
         const gameName = gameContainer.dataset.gameName;
 
         const activePageContent = gameContainer.parentElement;
@@ -714,7 +720,6 @@ export async function executeBatchDownload(games, platformName) {
         } else {
             elementToPulse = gameContainerImage;
         }
-
 
         elementToPulse.classList.add('loading');
 
@@ -900,12 +905,12 @@ export async function batchDownload() {
 
     const gamesMissingImage = currentPlatformPage.querySelectorAll(".game-container[data-missing-image]");
 
-    const nbOfMissingMeta = await countMissingMetaGames(currentPlatformPage);
+    const gamesMissingMeta = await getMissingMetaGames(currentPlatformPage);
 
     // Show confirmation dialog
     let confirmed;
     try {
-        confirmed = await batchDialog(gamesMissingImage.length, nbOfMissingMeta);
+        confirmed = await batchDialog(gamesMissingImage.length, gamesMissingMeta.length);
     } catch (err) {
         // Silently catch cancel error
         return;
@@ -915,13 +920,13 @@ export async function batchDownload() {
         return;
     }
 
-    await executeBatchDownload(gamesMissingImage, LB.currentPlatform);
+    await executeBatchDownload(gamesMissingImage, gamesMissingMeta, LB.currentPlatform);
 }
 
-export async function countMissingMetaGames(currentPlatformPage) {
+export async function getMissingMetaGames(currentPlatformPage) {
     const gameContainers = currentPlatformPage.querySelectorAll(".game-container");
 
-    let nbOfMissingMeta = 0;
+    const gamesMissingMeta = [];
 
     for (const gameContainer of gameContainers) {
         const params = {
@@ -934,11 +939,11 @@ export async function countMissingMetaGames(currentPlatformPage) {
         try {
             await getMeta(params);
         } catch (err) {
-            nbOfMissingMeta++;
+            gamesMissingMeta.push(gameContainer);
         }
     }
 
-    return nbOfMissingMeta;
+    return gamesMissingMeta;
 }
 
 export async function getPs3GameName(filePath) {

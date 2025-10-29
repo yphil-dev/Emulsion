@@ -821,6 +821,25 @@ function buildPlatformMenuForm(platformName) {
             await updatePreference(platformName, 'extensions', nextExtensions);
             await updatePreference(platformName, 'emulatorArgs', nextArgs);
 
+            // Update DOM status for immediate feedback
+            const page = document.querySelector(`.page[data-platform="${platformName}"]`);
+            if (page) page.dataset.status = nextEnabled ? '' : 'disabled';
+            const slide = document.querySelector(`.slide[data-platform="${platformName}"]`);
+            if (slide) {
+                if (!nextEnabled && LB.disabledPlatformsPolicy === 'hide') {
+                    slide.style.display = 'none';
+                } else {
+                    slide.style.display = 'block';
+                }
+            }
+
+            // Update memory for LB.enabledPlatforms
+            if (nextEnabled) {
+                if (!LB.enabledPlatforms.includes(platformName)) LB.enabledPlatforms.push(platformName);
+            } else {
+                LB.enabledPlatforms = LB.enabledPlatforms.filter(p => p !== platformName);
+            }
+
             window.location.reload();
         } catch (error) {
             console.error('Failed to save preferences:', error);

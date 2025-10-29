@@ -608,9 +608,8 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         break;
 
     case 'm':
-        if (event.ctrlKey && isListMode) {
-            const gamePane = document.querySelector('.game-pane');
-            gamePane.querySelector('.pane-fetch-meta-button').click();
+        if (event.ctrlKey) {
+            batchDownload();
         }
         break;
 

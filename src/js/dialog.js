@@ -346,6 +346,7 @@ export function batchDialog(imagesCount, metaCount) {
             radio.type = 'radio';
             radio.id = id;
             radio.name = name;
+            radio.classList.add('input');
             radio.checked = checked;
             radio.disabled = disabled;
 
@@ -362,8 +363,8 @@ export function batchDialog(imagesCount, metaCount) {
         const hasMeta = metaCount > 0;
 
         // Build radio options for singly selected type
-        const imgLabel = hasImages ? `Download missing images (${imagesCount})` : `No missing images`;
-        const metaLabel = hasMeta ? `Download missing metadata (${metaCount})` : `No metadata missing`;
+        const imgLabel = hasImages ? `Download missing images` : `No missing images`;
+        const metaLabel = hasMeta ? `Download missing metadata` : `No missing metadata`;
 
         optionsContainer.appendChild(
             makeRadioOption('batch-images', imgLabel, hasImages ? imagesCount : 0, hasImages, !hasImages, 'batch-type')

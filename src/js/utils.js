@@ -764,6 +764,13 @@ export async function executeBatchDownload(games, type, platformName) {
                 elementToPulse.classList.remove('loading');
             }
         } else if (type === 'meta') {
+            const currentPage = document.querySelector(`div.page[data-platform="${platformName}"]`);
+            const isListMode = currentPage.dataset.viewMode === 'list';
+            const gameContainerImage = gameContainer.querySelector('.game-container-image');
+
+            let elementToPulse = isListMode ? gameContainer : gameContainerImage;
+            elementToPulse.classList.add('loading');
+
             setProgressColor(`${gameName}`, 'none');
 
             try {
@@ -781,13 +788,18 @@ export async function executeBatchDownload(games, type, platformName) {
                 // Update pane if this is the selected game in list mode
                 const activePage = document.querySelector('.page.active');
                 const selectedContainer = activePage.querySelector('.game-container.selected');
-                if (selectedContainer && selectedContainer.dataset.gameName === gameName && activePage.dataset.viewMode === 'list') {
-                    updateGamePane(selectedContainer);
+                // if (selectedContainer && selectedContainer.dataset.gameName === gameName && activePage.dataset.viewMode === 'list') {
+                //     updateGamePane(selectedContainer);
+                // }
+                if (isListMode) {
+                    updateGamePane(gameContainer);
                 }
+                elementToPulse.classList.remove('loading');
 
             } catch (err) {
                 console.error(`Failed to fetch meta for ${gameName}:`, err);
                 setProgressColor(`${gameName}`, 'error');
+                elementToPulse.classList.remove('loading');
                 await new Promise(r => setTimeout(r, 100));
             }
         }

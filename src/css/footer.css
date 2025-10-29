@@ -145,25 +145,7 @@ footer.footer-big {
   width: calc(var(--footer-height) - 14px);
 }
 
-.control-item.column {
-  display: flex;
-  flex-direction: column;
-  font-size: x-small;
-  color: var(--color-outline-control-button);
-}
-
-.control-item.column .control-icon {
-  display: flex;
-  height: calc(var(--footer-height) - 34px);
-  flex-direction: column;
-  font-size: x-small;
-}
-
-.control-section {
+footer .control-section {
   opacity: 1;
   transition: opacity 1s ease;
-}
-
-.control-section.hidden {
-  opacity: 0;
 }

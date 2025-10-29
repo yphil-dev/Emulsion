@@ -281,59 +281,111 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Keyboard</th>
-                            <th>Action</th>
-                            <th>Game Controller</th>
+                            <th class="icon">
+                                <div class="th-content">
+                                    <img class="th" src="../../img/platforms/keyboard.png" alt="Keyboard">
+                                    <span>
+                                        Keyboard
+                                    </span>
+                                </div>
+                            </th>
+                            <th class="icon">
+                                <div class="th-content">
+                                    <img class="th" src="../../img/platforms/settings.png" alt="Action">
+                                    <span>
+                                        Action
+                                    </span>
+                                </div>
+
+                            </th>
+                            <th class="icon">
+                                <div class="th-content">
+                                    <img class="th" src="../../img/platforms/ps2.png" alt="Game Controller">
+                                    <span>
+                                        Game Controller
+                                    </span>
+                                </div>
+                            </th>
                         </tr>
                     </thead>
+
                     <tbody>
                         <tr>
                             <td><kbd>←</kbd> / <kbd>→</kbd> / <kbd>↑</kbd> / <kbd>↓</kbd></td>
-                            <td>Navigate games</td>
-                            <td>
-                                <img class="icon" src="../../img/controls/button-dpad-nesw.png" alt="Dpad">
+                            <td>Navigate games / platforms / menu items</td>
+                            <td class="game-controller-icon">
+                                <svg class="control-icon" style="--fill-north:var(--color-text-1); --fill-south:var(--color-text-1); --fill-west:var(--color-text-1); --fill-east:var(--color-text-1); --outline:var(--color-outline-control-button);">
+                                    <use href="#dpad"/>
+                                </svg>
                             </td>
                         </tr>
+
                         <tr>
                             <td><kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd></td>
-                            <td>Switch pages</td>
-                            <td>
-                                <img class="icon" src="../../img/controls/button-shoulders.png" alt="Dpad">
+                            <td>Navigate platforms</td>
+                            <td class="game-controller-icon">
+                                <svg class="control-icon"
+                                     style="--fill: black; --fill-text: var(--color-text-1); --stroke: var(--color-outline-control-button);">
+                                    <use href="#shoulders"></use>
+                                </svg>
                             </td>
                         </tr>
+
                         <tr>
                             <td><kbd>Enter</kbd></td>
-                            <td>Launch selected game / Confirm</td>
-                            <td>
-                                <img class="icon" src="../../img/controls/button-south.png" alt="Dpad">
+                            <td>Select game / platform / menu item</td>
+                            <td class="game-controller-icon">
+                                <svg class="control-icon" style=" --fill-east: black; --fill-south: var(--color-text-1); --fill-north: black; --fill-west: black; --stroke: var(--color-outline-control-button);">
+                                    <use href="#buttons-simple"/>
+                                </svg>
                             </td>
                         </tr>
+
                         <tr>
                             <td><kbd>Esc</kbd></td>
-                            <td>Exit game menu / Return to slideshow</td>
-                            <td>
-                                <img class="icon" src="../../img/controls/button-east.png" alt="Dpad">
+                            <td>Back / Exit</td>
+                            <td class="game-controller-icon">
+                                <svg class="control-icon" style=" --fill-east: var(--color-text-1); --fill-south: black; --fill-north: black; --fill-west: black; --stroke: var(--color-outline-control-button);">
+                                    <use href="#buttons-simple"/>
+                                </svg>
                             </td>
                         </tr>
-                        <tr>
-                            <td><kbd>Ctrl</kbd> + <kbd>I</kbd></td>
-                            <td>Open game menu</td>
-                            <td>X</td>
-                        </tr>
+
                         <tr>
                             <td><kbd>Ctrl</kbd> + <kbd>M</kbd></td>
-                            <td>Fetch game metadata (list mode)</td>
-                            <td>
-                                <img class="icon" src="../../img/controls/button-west.png" alt="Dpad">
+                            <td>Fetch game metadata</td>
+                            <td class="game-controller-icon">
+                                <svg class="control-icon" style=" --fill-east: black; --fill-south:black; --fill-north: black; --fill-west: var(--color-text-1); --stroke: var(--color-outline-control-button);">
+                                    <use href="#buttons-simple"/>
+                                </svg>
                             </td>
                         </tr>
+
                         <tr>
                             <td><kbd>+</kbd></td>
                             <td>Toggle favorite</td>
-                            <td>
-                                <img class="icon" src="../../img/controls/button-north.png" alt="Dpad">
+                            <td class="game-controller-icon">
+                                <svg class="control-icon" style=" --fill-east: black; --fill-south:black; --fill-north: var(--color-text-1); --fill-west: black; --stroke: var(--color-outline-control-button);">
+                                    <use href="#buttons-simple"/>
+                                </svg>
                             </td>
                         </tr>
+
+                        <tr>
+                            <td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>K</kbd></td>
+                            <td>Exit emulator and return to Emulsion</td>
+                            <td class="game-controller-icon">
+                                <svg class="control-icon"
+                                     style="--fill: black; --fill-text: var(--color-text-1); --stroke: var(--color-outline-control-button);">
+                                    <use href="#select"></use>
+                                </svg>
+                                                    +
+                                <svg class="control-icon" style="--fill-north:black; --fill-south:var(--color-text-1); --fill-west:black; --fill-east:black; --outline:var(--color-outline-control-button);">
+                                    <use href="#dpad"/>
+                                </svg>
+                            </td>
+                        </tr>
+
                         <tr>
                             <td><kbd>A–Z</kbd> / <kbd>0–9</kbd></td>
                             <td>Jump to game by first letter (wrap-around)</td>

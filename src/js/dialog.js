@@ -1,6 +1,6 @@
 import { initSlideShow, initGallery } from './slideshow.js';
 import { displayMetaData } from './metadata.js';
-import { getPlatformByName } from './utils.js';
+import { PLATFORMS } from './platforms.js';
 
 export function quitDialog() {
     LB.mode = 'quit';
@@ -208,7 +208,7 @@ export function toggleFavDialog(message) {
     }, 5000);
 }
 
-export function kbShortcutsDialog() {
+export function helpDialog() {
 
     const prevMode = LB.mode;
 
@@ -216,15 +216,21 @@ export function kbShortcutsDialog() {
 
     const overlay = document.getElementById('kb-shortcuts-overlay');
     const closeButton = document.getElementById('kb-close-button');
+    const platformNames = document.getElementById('platform-names');
+
+    platformNames.textContent = PLATFORMS.map(platform => platform.name).join(', ');
 
     function openDialog() {
         console.log("yoo: ");
         overlay.style.display = 'flex';
+        overlay.style.alignItems = 'flex-start';
+        overlay.style.paddingTop = '50px';
         console.log("overlay: ", overlay);
         closeButton.focus();
 
+
         // Tab switching functionality
-        const tabButtons = overlay.querySelectorAll('.tab-button');
+        let tabButtons = overlay.querySelectorAll('.tab-button');
         const tabContents = overlay.querySelectorAll('.tab-content');
 
         tabButtons.forEach(button => {
@@ -253,14 +259,39 @@ export function kbShortcutsDialog() {
         event.stopPropagation();
         event.stopImmediatePropagation();
 
-        switch (event.key) {
-        // case '?':
-        case 'Escape':
-        case 'Enter':
+        const kbOverlay = document.getElementById('kb-shortcuts-overlay');
+        if (kbOverlay && kbOverlay.style.display === 'flex') {
+            const tabButtons = kbOverlay.querySelectorAll('.tab-button');
+            if (tabButtons.length > 0) {
+                switch (event.key) {
+                case 'ArrowLeft':
+                    const activeLeft = kbOverlay.querySelector('.tab-button.active');
+                    let currentIndexLeft = Array.from(tabButtons).indexOf(activeLeft);
+                    currentIndexLeft = (currentIndexLeft - 1 + tabButtons.length) % tabButtons.length;
+                    tabButtons[currentIndexLeft].click();
+                    break;
+                case 'ArrowRight':
+                    const activeRight = kbOverlay.querySelector('.tab-button.active');
+                    let currentIndexRight = Array.from(tabButtons).indexOf(activeRight);
+                    currentIndexRight = (currentIndexRight + 1) % tabButtons.length;
+                    tabButtons[currentIndexRight].click();
+                    break;
+                case 'Escape':
+                case 'Enter':
+                    closeDialog();
+                    break;
+                default:
+                    break;
+                }
+            } else if (event.key === 'Escape' || event.key === 'Enter') {
+                closeDialog();
+            }
+        } else if (event.key === 'Escape' || event.key === 'Enter') {
             closeDialog();
-            break;
         }
     };
+
+
 
     closeButton.addEventListener('click', closeDialog);
     overlay.addEventListener('click', (e) => { if (e.target === overlay) closeDialog(); });

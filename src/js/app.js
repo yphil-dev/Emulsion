@@ -6,7 +6,7 @@ const axios = require('axios');
 
 import * as preferences from './preferences.js';
 import * as theme from './theme.js';
-import { systemDialog, kbShortcutsDialog } from './dialog.js';
+import { systemDialog, helpDialog } from './dialog.js';
 
 // Make Node.js modules globally available
 window.ipcRenderer = ipcRenderer;
@@ -114,7 +114,7 @@ async function initializeApp() {
             }
 
             if (event.key === '?') {
-                kbShortcutsDialog();
+                helpDialog();
             }
 
             if (LB.mode === 'gallery' && window.onGalleryKeyDown) {

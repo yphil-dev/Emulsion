@@ -276,7 +276,7 @@
         </div>
 
         <div id="kb-shortcuts-overlay" class="overlay">
-            <div class="dialog kb-shortcuts-dialog">
+            <div class="dialog help-dialog">
                 <div class="tabs">
                     <button class="tab-button active" data-tab="quickstart">Quickstart</button>
                     <button class="tab-button" data-tab="shortcuts">Keyboard Shortcuts</button>
@@ -284,7 +284,7 @@
                 </div>
                 <div class="tab-content active" id="quickstart">
                     <h3>Welcome to Emulsion!</h3>
-                    <p>Emulsion is a game launcher that helps you organize and launch your games.</p>
+                    <p class="first">Emulsion is a game launcher that helps you organize and launch your games.</p>
                     <h4>Setup</h4>
                     <ul>
                         <li>Select a platform on the home screen</li>
@@ -423,25 +423,62 @@
                     </tbody>
                 </table>
                 </div>
-                <div class="tab-content active" id="cli-args">
-                    <h3>Welcome to Emulsion!</h3>
-                    <p>Emulsion is a game launcher that helps you organize and launch your games.</p>
-                    <h4>Setup</h4>
-                    <ul>
-                        <li>Select a platform on the home screen</li>
-                        <li>Browse to your games directory</li>
-                        <li>Enter your emulator for that platform</li>
-                        <li>Enter your optional launch arguments for that emulator</li>
-                    </ul>
-                    <h4>Usage</h4>
-                    <ul>
-                        <li>Select a platform on the home screen</li>
-                        <li>Browse your games and select one to launch</li>
-                        <li>Use your keyboard or game controller to navigate</li>
-                    </ul>
-                    <p>For more details, see the Keyboard Shortcuts tab or press any key to close.</p>
+                <div class="tab-content" id="cli-args">
+                    <h3>Command line arguments</h3>
+                    <table>
+                    <thead>
+                        <tr>
+                            <th class="icon">
+                                <div class="th-content">
+                                    <img class="th" src="../../img/platforms/keyboard.png" alt="Keyboard">
+                                    <span>
+                                        Argument / flag
+                                    </span>
+                                </div>
+                            </th>
+                            <th class="icon">
+                                <div class="th-content">
+                                    <img class="th" src="../../img/platforms/settings.png" alt="Action">
+                                    <span>
+                                        Action
+                                    </span>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td><code>--kiosk</code></td>
+                            <td>Read-only / kids mode: No config / settings, disabled platforms hidden</td>
+                        </tr>
+                        <tr>
+                            <td><code>--full-screen</code></td>
+                            <td>Start Emulsion in full screen mode</td>
+                        </tr>
+                        <tr>
+                            <td><code>--auto-select=[platform_name]</code></td>
+                            <td>Auto-select [platform_name]</td>
+                        </tr>
+                        <tr>
+                            <td><code>--help</code></td>
+                            <td>Show this help message</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <p>
+                                    Platform names
+                                </p>
+                                <p id="platform-names">
+                                    Platform names
+                                </p>
+
+                            </td>
+                        </tr>
+                    </tbody>
+                    </table>
                 </div>
-                                <div class="dialog-buttons">
+                <div class="dialog-buttons">
                     <button class="button" id="kb-close-button">OK</button>
                 </div>
             </div>

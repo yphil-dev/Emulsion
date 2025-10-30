@@ -6,6 +6,8 @@ import { dirname, join } from 'path';
 import { spawn, exec } from 'child_process';
 import { getAllCoverImageUrls, getGameMetaData } from './src/js/backends.js';
 
+import { PLATFORMS } from './src/js/platforms.js';
+
 import axios from 'axios';
 import os from 'os';
 
@@ -132,13 +134,11 @@ Usage: ${pjson.name.toLowerCase()} [options]
 
 Options:
   --kiosk                        Read-only / kids mode: No config / settings, disabled platforms hidden.
-  --full-screen                  Start in full screen mode.
+  --full-screen                  Start Emulsion in full screen mode.
   --auto-select=[platform_name]  Auto-select [platform_name].
   --help                         Show this help message.
 
-Platform names:
-atari spectrum c64 nes sms pcengine amiga megadrive gameboy lynx gamegear snes jaguar saturn psx n64 dreamcast ps2 gamecube xbox psp ps3 3ds xbox360 ps4 recents settings
-
+Platform names: ${PLATFORMS.map(platform => platform.name).join(', ')}
     `);
     app.quit();
 }
@@ -682,8 +682,6 @@ const defaultPreferences = {
         giantBombAPIKey: ""
     }
 };
-
-import { PLATFORMS } from './src/js/platforms.js';
 
 PLATFORMS.forEach((platform, index) => {
     defaultPreferences[platform.name] = {

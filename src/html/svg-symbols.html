@@ -1,0 +1,106 @@
+<svg style="display:none">
+    <symbol id="dpad" viewBox="0 0 64 64">
+        <!-- OUTLINE -->
+        <path id="outline" fill="var(--outline, #222)"
+              d="M26 2a4 4 0 0 0-4 4v16h-16a4 4 0 0 0-4 4v12a4 4 0 0 0 4 4h16v16a4 4 0 0 0 4 4h12a4 4 0 0 0 4-4v-16h16a4 4 0 0 0 4-4v-12a4 4 0 0 0-4-4h-16v-16a4 4 0 0 0-4-4h-12z"/>
+        <!-- UP -->
+        <path id="up" fill="var(--fill-north, red)"
+              d="m32 5.2012c0.32252 0 0.64503 0.15223 0.8418 0.45898l5 7.8008c0.42572 0.66544-0.051797 1.5385-0.8418 1.5391h-10
+                  c-0.36526-4.4e-5 -0.70144-0.19921-0.87695-0.51953-0.08635-0.1571-0.12905-0.33452-0.12305-0.51367
+                  6e-3 -0.17978 0.060903-0.35454 0.1582-0.50586l5-7.8008c0.19677-0.30675 0.51928-0.45898 0.8418-0.45898z"/>
+        <!-- LEFT -->
+        <path id="left" fill="var(--fill-west, green)"
+              d="m13.967 26.201a1.0001 1.0001 0 0 1 0.51367 0.12305 1.0001 1.0001 0 0 1 0.51953 0.87695v10
+                  a1.0001 1.0001 0 0 1-1.5391 0.8418l-7.8008-5a1.0001 1.0001 0 0 1 0-1.6836l7.8008-5
+                  a1.0001 1.0001 0 0 1 0.50586-0.1582z"/>
+        <!-- RIGHT -->
+        <path id="right" fill="var(--fill-east, blue)"
+              d="m50.033 26.201a1.0001 1.0001 0 0 1 0.50586 0.1582l7.8008 5a1.0001 1.0001 0 0 1 0 1.6836l-7.8008 5
+                  a1.0001 1.0001 0 0 1-1.5391-0.8418v-10
+                  a1.0001 1.0001 0 0 1 0.51953-0.87695 1.0001 1.0001 0 0 1 0.51367-0.12305z"/>
+        <!-- DOWN -->
+        <path id="down" fill="var(--fill-south, yellow)"
+              d="m26.967 49.201h10c0.79 5.12e-4 1.2675 0.87363 0.8418 1.5391l-5 7.8008
+                  c-0.39353 0.6135-1.2901 0.6135-1.6836 0l-5-7.8008
+                  c-0.0973-0.15132-0.1522-0.32608-0.1582-0.50586-6e-3 -0.17916 0.036647-0.35657 0.12305-0.51367
+                  0.17551-0.32032 0.51169-0.51949 0.87695-0.51953z"/>
+    </symbol>
+</svg>
+
+<svg style="display:none">
+    <symbol id="buttons-simple" viewBox="0 0 64 64">
+        <!-- EAST -->
+        <circle id="button-east" cx="50" cy="32" r="10" fill="var(--fill-east)" stroke="var(--stroke, #000)" stroke-width="2"/>
+        <!-- SOUTH -->
+        <circle id="button-south" cx="32" cy="50" r="10" fill="var(--fill-south)" stroke="var(--stroke, #000)" stroke-width="2"/>
+        <!-- NORTH -->
+        <circle id="button-north" cx="32" cy="14" r="10" fill="var(--fill-north)" stroke="var(--stroke, #000)" stroke-width="2"/>
+        <!-- WEST -->
+        <circle id="button-west" cx="14" cy="32" r="10" fill="var(--fill-west)" stroke="var(--stroke, #000)" stroke-width="2"/>
+    </symbol>
+</svg>
+
+<svg style="display:none">
+    <symbol id="start" viewBox="0 0 64 64">
+        <path d="M16.385 18.914v26.915l33.547-13.458z"
+              fill="var(--fill, #fff)"
+              stroke="var(--stroke, #f00)"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="3"/>
+    </symbol>
+</svg>
+
+<svg style="display:none">
+    <symbol id="shoulders" viewBox="0 0 64 64">
+        <!-- Left button -->
+        <path id="outline_l" d="M15 3h34a13 13 0 0 1 13 13 13 13 0 0 1-13 13h-34a13 13 0 0 1-13-13 13 13 0 0 1 13-13z"
+              fill="var(--fill, none)"
+              stroke="var(--stroke, #f00)"
+              stroke-width="2"
+              stroke-linejoin="round"/>
+        <text x="32" y="19" dy="-1"
+              font-family="Orbitron"
+              font-size="18.667px"
+              fill="var(--fill-text, #f00)"
+              text-anchor="middle"
+              dominant-baseline="middle">L</text>
+
+        <!-- Right button -->
+        <path id="outline_r" d="M15 35h34a13 13 0 0 1 13 13 13 13 0 0 1-13 13h-34a13 13 0 0 1-13-13 13 13 0 0 1 13-13z"
+              fill="var(--fill, none)"
+              stroke="var(--stroke, #f00)"
+              stroke-width="2"
+              stroke-linejoin="round"/>
+        <text x="32" y="51" dy="-1"
+              font-family="Orbitron"
+              font-size="18.667px"
+              fill="var(--fill-text, #f00)"
+              text-anchor="middle"
+              dominant-baseline="middle">R</text>
+    </symbol>
+</svg>
+
+<svg style="display:none">
+    <symbol id="select" viewBox="0 0 64 64">
+        <!-- Full-width, taller button -->
+        <rect x="1.5" y="14" width="61" height="36" ry="8"
+              fill="var(--fill, none)"
+              stroke="var(--stroke, #f00)"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              style="paint-order:stroke markers fill"/>
+
+        <!-- Larger centered text -->
+        <text x="32" y="32"
+              font-family="Orbitron"
+              font-size="11.4px"
+              letter-spacing="1.4px"
+              text-anchor="middle"
+              dominant-baseline="middle"
+              fill="var(--fill-text, #f00)">
+            SELECT
+        </text>
+    </symbol>
+</svg>

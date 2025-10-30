@@ -37,11 +37,12 @@
 
   --color-bg-header: #050c16;
   --color-border-header: #1E3E62;
-  --color-text-header: #ffffff;
+  --color-text-header: whitesmoke;
 
   --color-outline-header: #050c16;
 
   --color-outline-control-button: #555;
+  --color-bg-control-button: #222;
 
   --color-outline-game-label: #050c16;
 
@@ -67,6 +68,7 @@
   --color-platform-outline-header: #a3ffff;
 
   --color-bg-header: #3974b8;
+  --color-bg: #5a8fd8; /* Lighter, brighter blue */
   --color-border-header: #3974b8;
   --color-text-header: #ffffff;
 
@@ -81,7 +83,7 @@
   --color-text-badge: rgba(0, 20, 10, 0.9); /* Very dark green text */
   --color-bg-badge: rgba(100, 200, 150, 0.5); /* Light cool green background */
 
-    /* BUTTON COLORS - Day Theme */
+  /* BUTTON COLORS - Day Theme */
   --color-button-on: #ff6b00; /* Vibrant orange */
   --color-button-off: #c7e0ff; /* Light blue */
   --color-border-on: #ff6b00;
@@ -90,7 +92,7 @@
 
 .theme-night {
   --color-text-1: #e8f5e8;
-  --color-text-2: #dddddd;
+  --color-text-2: #ffbc00;
 
   --glow-color-rgb: 255, 0, 247;
 
@@ -98,7 +100,7 @@
   --color-platform-outline-header: #0a0a0f;
 
   --color-bg-header: #050c16;
-
+  --color-bg: #0a1425; /* Slightly lighter than header but still dark */
   --color-selected: #29f1ea;
   --color-bg-selected: #0f2b4d;
 
@@ -123,7 +125,7 @@
   --color-platform-text-header: #1a1e2a;
   --color-platform-outline-header: #29f1ea;
   --color-bg-header: #050c16;
-
+  --color-bg: #0f1729; /* Dark blue-gray - lighter than header */
   --color-selected: #00ffcc; /* Cyberpunk teal that matches the text-1 accent */
   --color-bg-selected: #050c16;
 
@@ -210,6 +212,10 @@ header, footer  {
 
 .hover:hover {
   color: var(--color-selected);
+}
+
+p {
+  color: var(--color-text-1);
 }
 
 /* Universal WebKit scrollbar styling */

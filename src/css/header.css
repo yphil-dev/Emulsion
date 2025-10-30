@@ -12,12 +12,13 @@ header {
 
   background-color: var(--color-bg-header);
   border-bottom: 1px solid var(--color-border-header);
-  color: var(--color-text-header);
+  color: var(--color-text-2);
   overflow: hidden;
 }
 
 /* outer nav arrows */
 .pages-nav-links {
+  color: var(--color-text-header);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -111,6 +112,7 @@ header .platform-image {
   display: flex;
   justify-content: space-evenly;
   align-items: center;
+  color: var(--color-selected);
   border: 1px solid var(--color-border-header);
   border-top-right-radius: 15px;
   border-top-left-radius: 15px;

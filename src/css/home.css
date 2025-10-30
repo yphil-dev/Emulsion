@@ -35,7 +35,7 @@ p.vendor {
 }
 
 p.name {
-  color: var(--color-text-2);
+  color: var(--color-selected);
 }
 
 #top-menu:focus,

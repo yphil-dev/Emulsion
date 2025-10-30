@@ -171,6 +171,10 @@ div.menu-game-container {
   width: 100%;
 
   font-size: 0.95vw;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+  text-align: center;
+  color: var(--color-selected);
 
   flex-direction: column;
   justify-content: space-between;
@@ -188,9 +192,6 @@ div.menu-game-container {
   overflow-wrap: anywhere;
   hyphens: auto;
 
-  -webkit-hyphens: auto;
-  -ms-hyphens: auto;
-  text-align: center;
 }
 
 .label-text {
@@ -286,19 +287,14 @@ div.platform-container {
   100% { transform: translate(var(--x), var(--y)) scale(var(--scale)) rotate(var(--rotation)); opacity:0; }
 }
 
-div.platform-info .vendor {
+div.platform-info .name {
   font-size: clamp(14px, 1.4vw, 24px);
-  color: var(--color-platform-text-header);
-  text-shadow:
-    -1px -1px 0 var(--color-platform-outline-header),
-    1px -1px 0 var(--color-platform-outline-header),
-    -1px  1px 0 var(--color-platform-outline-header),
-    1px  1px 0 var(--color-platform-outline-header);
+  color: var(--color-selected);
 }
 
-div.platform-info .name {
+div.platform-info .vendor {
   font-size: clamp(10px, 1vw, 20px);
-  color: whitesmoke;
+  color: var(--color-text-2);
 }
 
 p { margin-top: 0; }
@@ -364,11 +360,6 @@ i.disabled { pointer-events: none; opacity: 0.5; }
 .pane-text .game-title {
   color: var(--color-selected);
   font-size: larger;
-  min-height: 25px;
-  max-height: 30px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
   font-weight: bold;
   padding: 0 0.5em;
 }
@@ -402,7 +393,7 @@ dl.game-meta-data {
 
 dt.meta-key {
   font-weight: bold;
-  color: var(--color-platform-text-header);
+  color: var(--color-text-2);
 }
 
 dd.meta-value {
@@ -410,7 +401,7 @@ dd.meta-value {
   font-family: var(--font-fourth);
   font-size: 0.8em;
   font-weight: bold;
-  color: var(--color-text-2);
+  color: var(--color-text-1);
 }
 
 div.menu-current-image-container {

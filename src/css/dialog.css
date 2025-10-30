@@ -17,8 +17,8 @@
   flex-direction: column;
   /* align-items: center; */
 
-  background:#222;
-  color:#fff;
+  background:var(--color-bg);
+  color:var(--color-text-1);
   padding:20px;
   border-radius:8px;
   display:flex;
@@ -93,15 +93,15 @@
 .help-dialog .tab-button {
   flex: 1;
   padding: 0.5em;
-  background: var(--color-text-1);
-  color: white;
+  background: var(--color-bg);
+  color: var(--color-text-1);
   border: none;
   cursor: pointer;
   transition: background 0.3s ease;
 }
 
 .help-dialog .tab-button.active {
-  background: var(--color-selected);
+  background: var(--color-button-off);
   color: black;
 }
 
@@ -141,11 +141,11 @@
 }
 
 .help-dialog tbody tr:nth-child(even) {
-    background-color: #222;
+  background:var(--color-bg-header);
 }
 
 .help-dialog tbody tr:nth-child(odd) {
-    background-color: #2a2a2a; /* lighter than #222 */
+  background:var(--color-bg);
 }
 
 .help-dialog tbody tr {

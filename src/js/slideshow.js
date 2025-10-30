@@ -902,7 +902,7 @@ function buildGamePane(params) {
     const paneControls = document.createElement('div');
     paneControls.classList.add('pane-controls');
 
-    const gameTitle = document.createElement('p');
+    const gameTitle = document.createElement('div');
     gameTitle.classList.add('game-title');
 
     const fetchMetaButton = document.createElement('button');
@@ -992,8 +992,8 @@ function buildGamePane(params) {
     paneControls.append(fetchMetaButton, fetchCoverArtButton, webLinkButton, editMetaButton);
 
     imagePane.appendChild(paneImage);
-    paneText.appendChild(gameTitle);
     paneText.appendChild(paneControls);
+    paneText.appendChild(gameTitle);
 
     gamePane.appendChild(imagePane);
     gamePane.appendChild(paneText);

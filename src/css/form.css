@@ -125,6 +125,7 @@ label.checkbox {
 /* Change color when selected */
 .radio-container input[type="radio"]:checked + .radio-box {
     background-color: var(--color-button-off);
+    color: var(--color-text-1);
     font-weight: bold;
 }
 
@@ -220,7 +221,8 @@ button {
 }
 
 .button {
-  border: 1px solid var(--color-border-on);
+  border: 2px solid var(--color-border-off);
+  color: var(--color-text-1);
   border-radius: 6px;
   font-size: 16px;
   font-weight: 800;
@@ -232,12 +234,12 @@ button {
 }
 
 .button:focus {
-  border-color: var(--color-selected);
+  border-color: var(--color-border-on);
   color: var(--color-selected);
-  box-shadow:
-    0 0 4px var(--color-selected),
-    0 0 10px color-mix(in srgb, var(--color-selected) 40%, transparent);
-  transform: scale(1.02);
+  /* box-shadow: */
+  /*   0 0 4px var(--color-bg-selected), */
+  /*   0 0 10px color-mix(in srgb, var(--color-bg-selected) 40%, transparent) */;
+  /* transform: scale(1.02); */
 }
 
 .button:hover::after,
@@ -246,7 +248,7 @@ button {
   position: absolute;
   inset: 0;
   border: 1px solid #00ffae;
-  filter: blur(3px);
+  /* filter: blur(3px); */
   opacity: 0.25;
   pointer-events: none;
 }

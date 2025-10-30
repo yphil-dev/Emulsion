@@ -80,6 +80,12 @@
   /* BADGE COLORS */
   --color-text-badge: rgba(0, 20, 10, 0.9); /* Very dark green text */
   --color-bg-badge: rgba(100, 200, 150, 0.5); /* Light cool green background */
+
+    /* BUTTON COLORS - Day Theme */
+  --color-button-on: #ff6b00; /* Vibrant orange */
+  --color-button-off: #c7e0ff; /* Light blue */
+  --color-border-on: #ff6b00;
+  --color-border-off: #3974b8;
 }
 
 .theme-night {
@@ -101,6 +107,11 @@
   /* BADGE COLORS */
   --color-text-badge: 255, 230, 0; /* BRIGHT electric yellow */
   --color-bg-badge: 0, 30, 80; /* Richer deep space blue */
+  /* BUTTON COLORS - Night Theme */
+  --color-button-on: #29f1ea; /* Cyber teal */
+  --color-button-off: #ff6b00; /* Deep space blue */
+  --color-border-on: #29f1ea;
+  --color-border-off: #0f2b4d;
 }
 
 .theme-default {
@@ -121,6 +132,11 @@
   /* BADGE COLORS */
   --color-text-badge: 0, 0, 0; /* Black text for cyberpunk feel */
   --color-bg-badge: 41, 241, 234; /* Cyberpunk teal to match the primary accent */
+  /* BUTTON COLORS - Default Theme */
+  --color-button-on: #00ffcc; /* Cyberpunk teal */
+  --color-button-off: #1a1e2a; /* Dark charcoal */
+  --color-border-on: #00ffcc;
+  --color-border-off: #334;
 }
 
 /* Font loading optimizations for better icon availability */

@@ -228,6 +228,12 @@ export function helpDialog() {
         console.log("overlay: ", overlay);
         closeButton.focus();
 
+        // Populate platform names in CLI tab
+        const platformNames = document.querySelector('#kb-shortcuts-dialog .dialog #platform-names');
+        if (platformNames) {
+            platformNames.textContent = PLATFORMS.map(platform => platform.name).join(', ');
+        }
+
 
         // Tab switching functionality
         let tabButtons = overlay.querySelectorAll('.tab-button');

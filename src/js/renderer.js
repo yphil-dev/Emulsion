@@ -9,6 +9,8 @@ const slideshow = document.getElementById("slideshow");
 initGamepad();
 initFooterControls();
 
+fetch('../html/svg-symbols.html').then(res => res.text()).then(html => document.body.insertAdjacentHTML('afterbegin', html)).catch(console.error);
+
 loadPreferences()
     .then((preferences) => {
 
@@ -27,8 +29,6 @@ loadPreferences()
             favoritesViewMode: preferences.settings.favoritesViewMode,
             favoritePendingAction: null
         });
-
-        console.log("LB.favoritesPolicy: ", LB.favoritesPolicy);
 
         LB.batchRunning = false;
 

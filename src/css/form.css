@@ -218,15 +218,15 @@ button {
 }
 
 .button:hover {
-  outline: 1px solid var(--color-outline-selected);
+  outline: 1px solid var(--color-selected);
 }
 
 .button:focus {
-  border-color: var(--color-outline-selected);
-  color: var(--color-outline-selected);
+  border-color: var(--color-selected);
+  color: var(--color-selected);
   box-shadow:
-    0 0 4px var(--color-outline-selected),
-    0 0 10px color-mix(in srgb, var(--color-outline-selected) 40%, transparent);
+    0 0 4px var(--color-selected),
+    0 0 10px color-mix(in srgb, var(--color-selected) 40%, transparent);
   transform: scale(1.02);
 }
 

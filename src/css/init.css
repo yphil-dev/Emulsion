@@ -60,7 +60,7 @@
 }
 
 .theme-day {
-  --color-text-1: #333333;
+  --color-text-1: #003366;
   --color-text-2: #666666;
 
   --glow-color-rgb: 255, 107, 0;
@@ -72,15 +72,16 @@
 
   --color-text-game-label: #29f1ea;
 
-  --color-outline-selected: #ff6b00; /* Electric orange for high contrast against blue header */
+  --color-selected: #ff6b00; /* Electric orange for high contrast against blue header */
+  --color-bg-selected: #e8f4f8;
 
   /* BADGE COLORS */
-  --color-text-badge: 255, 255, 255; /* White text for contrast */
-  --color-bg-badge: 255, 107, 0; /* Electric orange to match the glow and selection */
+  --color-text-badge: rgba(0, 20, 10, 0.9); /* Very dark green text */
+  --color-bg-badge: rgba(100, 200, 150, 0.5); /* Light cool green background */
 }
 
 .theme-night {
-  --color-text-1: #29f1a6;
+  --color-text-1: #e8f5e8;
   --color-text-2: #dddddd;
 
   --glow-color-rgb: 255, 0, 247;
@@ -90,7 +91,8 @@
 
   --color-bg-header: #050c16;
 
-  --color-outline-selected: #00ffae;
+  --color-selected: #29f1ea;
+  --color-bg-selected: #0f2b4d;
 
   /* BADGE COLORS */
   --color-text-badge: 255, 230, 0; /* BRIGHT electric yellow */
@@ -107,7 +109,8 @@
   --color-platform-outline-header: #29f1ea;
   --color-bg-header: #050c16;
 
-  --color-outline-selected: #00ffcc; /* Cyberpunk teal that matches the text-1 accent */
+  --color-selected: #00ffcc; /* Cyberpunk teal that matches the text-1 accent */
+  --color-bg-selected: #050c16;
 
   /* BADGE COLORS */
   --color-text-badge: 0, 0, 0; /* Black text for cyberpunk feel */
@@ -130,9 +133,6 @@
 }
 
 body {
-  background-color: var(--color-bg1);
-  /* background-image: url('../../img/sky2.jpg'); */
-  color: var(--color-text-1);
   font-family: var(--font-main);
   letter-spacing: 1px;
   margin: 0;
@@ -187,7 +187,7 @@ header, footer  {
 }
 
 .hover:hover {
-  color: var(--color-outline-selected);
+  color: var(--color-selected);
 }
 
 /* Universal WebKit scrollbar styling */

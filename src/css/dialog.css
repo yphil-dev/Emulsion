@@ -93,7 +93,7 @@
 .help-dialog .tab-button {
   flex: 1;
   padding: 0.5em;
-  background: #333;
+  background: var(--color-text-1);
   color: white;
   border: none;
   cursor: pointer;
@@ -101,7 +101,7 @@
 }
 
 .help-dialog .tab-button.active {
-  background: var(--color-text-1);
+  background: var(--color-selected);
   color: black;
 }
 
@@ -114,7 +114,7 @@
 }
 
 .help-dialog {
-  width: 60vw;
+  width: 68vw;
   max-width: 70vw;
 }
 
@@ -122,6 +122,10 @@
   border-collapse: collapse;
   border-spacing: 0;
   width: 100%;
+}
+
+.help-dialog #cli-args table td {
+  width: 50%;
 }
 
 .help-dialog h3 {

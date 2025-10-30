@@ -74,22 +74,22 @@ function updateFooterControls(section, cardinals, newText, display) {
 
     const colorSets = {
         ew: {
-            '--fill-east': 'var(--color-text-1)',
+            '--fill-east': 'var(--color-selected)',
             '--fill-south': 'var(--color-text-2)',
             '--fill-north': 'var(--color-text-2)',
-            '--fill-west': 'var(--color-text-1)',
+            '--fill-west': 'var(--color-selected)',
         },
         ns: {
             '--fill-east': 'var(--color-text-2)',
-            '--fill-south': 'var(--color-text-1)',
-            '--fill-north': 'var(--color-text-1)',
+            '--fill-south': 'var(--color-selected)',
+            '--fill-north': 'var(--color-selected)',
             '--fill-west': 'var(--color-text-2)',
         },
         nsew: {
-            '--fill-east': 'var(--color-text-1)',
-            '--fill-south': 'var(--color-text-1)',
-            '--fill-north': 'var(--color-text-1)',
-            '--fill-west': 'var(--color-text-1)',
+            '--fill-east': 'var(--color-selected)',
+            '--fill-south': 'var(--color-selected)',
+            '--fill-north': 'var(--color-selected)',
+            '--fill-west': 'var(--color-selected)',
         },
     };
 

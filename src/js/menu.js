@@ -38,9 +38,9 @@ window.onMenuKeyDown = function onMenuKeyDown(event) {
         closeSettingsOrPlatformMenu();
         break;
 
-    case 'Enter':
-        document.querySelector('.save-button').click();
-        break;
+    // case 'Enter':
+    //     document.querySelector('.save-button').click();
+    //     break;
     }
 
 }
@@ -165,16 +165,16 @@ function buildPrefsFormItem(name, iconName, type, description, shortDescription,
         radiosContainer.classList.add('radio-container');
 
         types.forEach((type, index) => {
-
             const label = document.createElement('label');
-
             label.classList.add('form-label');
+            label.tabIndex = 0;  // Make the LABEL focusable
 
             const radio = document.createElement('input');
             radio.type = 'radio';
             radio.name = name;
             radio.value = type;
             radio.checked = type === value;
+            // radio stays display: none - no tabindex needed
 
             const radioBox = document.createElement('div');
             radioBox.classList.add('radio-box');
@@ -184,18 +184,26 @@ function buildPrefsFormItem(name, iconName, type, description, shortDescription,
                 radioBox.classList.add('last');
             }
 
-            radios.push(radio);
-
-            const text = document.createTextNode(type.charAt(0).toUpperCase() + type.slice(1));
-
-            radio.addEventListener('change', () => {
-                if (radio.checked && onChangeFct) onChangeFct(type);
+            // Handle keyboard on the label
+            label.addEventListener('keydown', (e) => {
+                if (e.key === ' ' || e.key === 'Enter') {
+                    e.preventDefault();
+                    radio.checked = true;
+                    if (onChangeFct) onChangeFct(type);
+                }
             });
+
+            // Click still works naturally
+            label.addEventListener('click', () => {
+                radio.checked = true;
+                if (onChangeFct) onChangeFct(type);
+            });
+
+            radios.push(radio);
 
             label.appendChild(radio);
             label.appendChild(radioBox);
             radiosContainer.appendChild(label);
-
         });
 
         inputCtn.appendChild(radiosContainer);
@@ -213,7 +221,7 @@ function buildPrefsFormItem(name, iconName, type, description, shortDescription,
         input.min = '2';
         input.max = '12';
         input.placeholder = description;
-
+        input.tabIndex = 0;
         input.classList.add('input');
         input.value = value;
 

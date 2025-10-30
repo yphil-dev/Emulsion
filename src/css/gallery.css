@@ -84,9 +84,9 @@
 }
 
 /* List view */
-.page-content.list .game-container,
 .page-content.list .game-container {
   color: var(--color-text-1);
+  border-bottom: 1px solid var(--color-hr);
 }
 
 .page-content.list .game-container.selected,
@@ -131,7 +131,6 @@
   text-overflow: ellipsis;
   text-align: left;
   display: block;
-  border-bottom: 1px solid #334;
 }
 
 div.game-container,

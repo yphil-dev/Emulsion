@@ -194,63 +194,34 @@ export function getSelectedGameContainer(gameContainers, selectedIndex) {
 }
 
 export function simulateTabNavigation(shiftKey = false) {
-    // Get all potentially focusable elements
-    const focusableElements = document.querySelectorAll(
+    const menu = document.getElementById('menu');
+    const focusableElements = menu.querySelectorAll(
         'button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
 
-    // Filter to only elements that are visible and not disabled
-    const visibleFocusableElements = Array.from(focusableElements).filter(el => {
-        return el.offsetWidth > 0 &&
-               el.offsetHeight > 0 &&
-               !el.disabled &&
-               getComputedStyle(el).visibility !== 'hidden' &&
-               getComputedStyle(el).display !== 'none';
-    });
+    // Filter to only elements that are not disabled
+    const focusableElementsArray = Array.from(focusableElements).filter(el => !el.disabled);
 
-    if (visibleFocusableElements.length === 0) {
+    if (focusableElementsArray.length === 0) {
         console.warn("No focusable elements found");
         return;
     }
 
-    const currentIndex = visibleFocusableElements.indexOf(document.activeElement);
+    const currentIndex = focusableElementsArray.indexOf(document.activeElement);
     let nextIndex;
 
     if (shiftKey) {
         // Shift+Tab - move backward
-        nextIndex = currentIndex <= 0 ? visibleFocusableElements.length - 1 : currentIndex - 1;
+        nextIndex = currentIndex <= 0 ? focusableElementsArray.length - 1 : currentIndex - 1;
     } else {
         // Tab - move forward
-        nextIndex = currentIndex >= visibleFocusableElements.length - 1 ? 0 : currentIndex + 1;
+        nextIndex = currentIndex >= focusableElementsArray.length - 1 ? 0 : currentIndex + 1;
     }
 
-    const nextElement = visibleFocusableElements[nextIndex];
+    const nextElement = focusableElementsArray[nextIndex];
 
     if (nextElement) {
-        // Ensure the element is focusable
-        if (!nextElement.hasAttribute('tabindex')) {
-            nextElement.setAttribute('tabindex', '0');
-        }
-
         nextElement.focus({ preventScroll: false });
-
-        // Manual scroll to replace scrollIntoView
-        const elementRect = nextElement.getBoundingClientRect();
-        const windowHeight = window.innerHeight;
-        const windowWidth = window.innerWidth;
-        const scrollTop = window.pageYOffset;
-        const scrollLeft = window.pageXOffset;
-        const elementTop = elementRect.top + scrollTop;
-        const elementLeft = elementRect.left + scrollLeft;
-        const elementHeight = elementRect.height;
-        const elementWidth = elementRect.width;
-        const newScrollTop = elementTop - (windowHeight / 2) + (elementHeight / 2);
-        const newScrollLeft = elementLeft - (windowWidth / 2) + (elementWidth / 2);
-        window.scrollTo({
-            top: Math.max(0, newScrollTop),
-            left: Math.max(0, newScrollLeft),
-            behavior: 'smooth'
-        });
     }
 }
 

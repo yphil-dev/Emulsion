@@ -34,12 +34,10 @@
   --color-text-1: #93FFD8;
   --color-text-2: #FFFFFF;
   --color-text-3: rgb(234,0,0); /* big platform names */
-  --color-text-footer: #ffffff;
 
   --color-bg-header: #050c16;
   --color-border-header: #1E3E62;
-  --color-bg-footer: #050c16;
-  --color-border-footer: #1E3E62;
+  --color-text-header: #ffffff;
 
   --color-outline-header: #050c16;
 
@@ -67,13 +65,17 @@
 
   --color-platform-text-header: #0a3f4a;
   --color-platform-outline-header: #a3ffff;
+
   --color-bg-header: #3974b8;
   --color-border-header: #3974b8;
+  --color-text-header: #ffffff;
 
   --color-text-game-label: #29f1ea;
 
   --color-selected: #ff6b00; /* Electric orange for high contrast against blue header */
-  --color-bg-selected: #e8f4f8;
+  --color-bg-selected: #c7e0ff;
+
+  --color-hr: #9a9aad;
 
   /* BADGE COLORS */
   --color-text-badge: rgba(0, 20, 10, 0.9); /* Very dark green text */
@@ -94,6 +96,8 @@
   --color-selected: #29f1ea;
   --color-bg-selected: #0f2b4d;
 
+  --color-hr: #0f2b4d;
+
   /* BADGE COLORS */
   --color-text-badge: 255, 230, 0; /* BRIGHT electric yellow */
   --color-bg-badge: 0, 30, 80; /* Richer deep space blue */
@@ -111,6 +115,8 @@
 
   --color-selected: #00ffcc; /* Cyberpunk teal that matches the text-1 accent */
   --color-bg-selected: #050c16;
+
+  --color-hr: #334;
 
   /* BADGE COLORS */
   --color-text-badge: 0, 0, 0; /* Black text for cyberpunk feel */

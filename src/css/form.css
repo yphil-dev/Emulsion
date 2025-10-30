@@ -90,11 +90,21 @@ label.checkbox {
     display: none;
 }
 
+/* .form-label:focus { */
+/*     outline: 4px solid var(--color-selected); */
+/*     /\* outline-offset: 2px; *\/ */
+/* } */
+
+/* When label has focus-within, style the radio-box inside it */
+.form-label:focus-within .radio-box {
+    color: var(--color-selected);
+    background-color: var(--color-bg-selected);
+}
+
 /* Style the radio buttons as rectangles */
 .radio-box {
   display: flex;
   flex: 1; /* Make the box fill the available space */
-  background-color: var(--color-button-on);
   font-weight: normal;
   height: 100%;
   color: white;

@@ -12,7 +12,7 @@ header {
 
   background-color: var(--color-bg-header);
   border-bottom: 1px solid var(--color-border-header);
-  color: var(--color-text-footer);
+  color: var(--color-text-header);
   overflow: hidden;
 }
 

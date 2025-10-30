@@ -8,9 +8,9 @@ footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: var(--color-bg-footer);
-  color: var(--color-text-footer);
-  border-top: 1px solid var(--color-border-footer);
+  background-color: var(--color-bg-header);
+  color: var(--color-text-header);
+  border-top: 1px solid var(--color-border-header);
   font-size: var(--footer-font, 18px);
   font-weight: bold;
   z-index: 3;

@@ -30,6 +30,11 @@
   text-align: center;
 }
 
+.dialog h3,
+.dialog h4 {
+  color:var(--color-selected);
+}
+
 .dialog .title {
   color: #ecf0f1;
   margin: 0 0 20px 0;
@@ -85,6 +90,11 @@
   align-items: center;
 }
 
+.help-dialog {
+  width: 68vw;
+  max-width: 70vw;
+}
+
 .help-dialog .tabs {
   display: flex;
   margin-bottom: 1em;
@@ -96,13 +106,13 @@
   background: var(--color-bg);
   color: var(--color-text-1);
   border: none;
-  cursor: pointer;
+  font-weight: bold;
   transition: background 0.3s ease;
 }
 
 .help-dialog .tab-button.active {
   background: var(--color-button-off);
-  color: black;
+  color: var(--color-selected);
 }
 
 .help-dialog .tab-content {
@@ -111,11 +121,6 @@
 
 .help-dialog .tab-content.active {
   display: block;
-}
-
-.help-dialog {
-  width: 68vw;
-  max-width: 70vw;
 }
 
 .help-dialog table {

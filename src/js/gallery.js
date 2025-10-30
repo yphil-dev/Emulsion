@@ -437,7 +437,7 @@ export function buildEmptyPageGameContainer(platform, gamesDir) {
         titleP.textContent = 'No game files found in ';
         titleP.appendChild(textCode);
 
-        icon.className = 'fa fa-heartbeat fa-5x';
+        icon.className = 'fa fa-folder-open-o fa-5x';
         icon.setAttribute('aria-hidden', 'true');
         iconP.appendChild(icon);
 

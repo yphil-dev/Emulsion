@@ -316,8 +316,9 @@ export function systemDialog() {
     const configButton = document.getElementById('system-dialog-conf-button');
     const quitButton = document.getElementById('system-dialog-quit-button');
     const cancelButton = document.getElementById('system-dialog-cancel-button');
+    const helpButton = document.getElementById('system-dialog-help-button');
 
-    const buttons = [restartButton, configButton, quitButton, cancelButton];
+    const buttons = [helpButton, restartButton, configButton, quitButton, cancelButton];
     let currentFocusIndex = 0;
 
     function openDialog() {
@@ -374,6 +375,11 @@ export function systemDialog() {
     });
     quitButton.addEventListener('click', () => ipcRenderer.invoke('quit'));
     cancelButton.addEventListener('click', closeDialog);
+    helpButton.addEventListener('click', helpDialog);
+    helpButton.addEventListener('click', (e) => {
+        closeDialog();
+        helpDialog();
+    });
 
     overlay.addEventListener('click', (e) => { if (e.target === overlay) closeDialog(); });
 

@@ -112,12 +112,16 @@ header .platform-image {
   display: flex;
   justify-content: space-evenly;
   align-items: center;
-  color: var(--color-selected);
+  color: var(--color-text-1);
   border: 1px solid var(--color-border-header);
   border-top-right-radius: 15px;
   border-top-left-radius: 15px;
   border-bottom: none;
   z-index: 101;
+}
+
+.controls i:hover {
+  color: var(--color-selected);
 }
 
 .platform-name-container {

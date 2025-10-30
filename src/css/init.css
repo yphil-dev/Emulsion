@@ -60,21 +60,21 @@
 
 .theme-day {
   --color-text-1: #003366;
-  --color-text-2: #666666;
+  --color-text-2: #c7e0ff;
 
   --glow-color-rgb: 255, 107, 0;
 
   --color-platform-text-header: #0a3f4a;
   --color-platform-outline-header: #a3ffff;
 
-  --color-bg-header: #3974b8;
-  --color-bg: #5a8fd8; /* Lighter, brighter blue */
+  --color-bg-header: #99c1ef;
+  --color-bg: #bdd9ff;
   --color-border-header: #3974b8;
   --color-text-header: #ffffff;
 
   --color-text-game-label: #29f1ea;
 
-  --color-selected: #ff6b00; /* Electric orange for high contrast against blue header */
+  --color-selected: #ff6b00;
   --color-bg-selected: #c7e0ff;
 
   --color-hr: #9a9aad;
@@ -85,7 +85,7 @@
 
   /* BUTTON COLORS - Day Theme */
   --color-button-on: #ff6b00; /* Vibrant orange */
-  --color-button-off: #c7e0ff; /* Light blue */
+  --color-button-off: #3974b8; /* Light blue */
   --color-border-on: #ff6b00;
   --color-border-off: #3974b8;
 }
@@ -117,7 +117,7 @@
 }
 
 .theme-default {
-  --color-text-1: #29F1EA;
+  --color-text-1: whitesmoke;
   --color-text-2: #fff3d8;
 
   --glow-color-rgb: 255, 243, 216;
@@ -135,8 +135,8 @@
   --color-text-badge: 0, 0, 0; /* Black text for cyberpunk feel */
   --color-bg-badge: 41, 241, 234; /* Cyberpunk teal to match the primary accent */
   /* BUTTON COLORS - Default Theme */
-  --color-button-on: #00ffcc; /* Cyberpunk teal */
-  --color-button-off: #1a1e2a; /* Dark charcoal */
+  --color-button-on: #29f1ea;
+  --color-button-off: #334;
   --color-border-on: #00ffcc;
   --color-border-off: #334;
 }

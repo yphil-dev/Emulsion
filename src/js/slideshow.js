@@ -952,7 +952,7 @@ function buildGamePane(params) {
     });
 
     fetchMetaButton.addEventListener('click', async () => {
-        metaIcon.classList.add('spin');
+        fetchMetaButton.classList.add('loading');
         const params = {
             cleanName: gamePane.dataset.cleanName,
             platformName: gamePane.dataset.platformName,
@@ -977,7 +977,7 @@ function buildGamePane(params) {
 
         await displayMetaData(params, gameMetaData);
 
-        metaIcon.classList.remove('spin');
+        fetchMetaButton.classList.remove('loading');
 
     });
 

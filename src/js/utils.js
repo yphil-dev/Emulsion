@@ -199,8 +199,9 @@ export function simulateTabNavigation(shiftKey = false) {
         'button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
 
-    // Filter to only elements that are not disabled
-    const focusableElementsArray = Array.from(focusableElements).filter(el => !el.disabled);
+    // Filter to only elements that are not disabled and not hidden (display: none)
+    const focusableElementsArray = Array.from(focusableElements)
+        .filter(el => !el.disabled && window.getComputedStyle(el).display !== 'none');
 
     if (focusableElementsArray.length === 0) {
         console.warn("No focusable elements found");

@@ -133,6 +133,8 @@ async function initializeApp() {
                 window.onKBHelpKeyDown(event);
             } else if (LB.mode === 'systemDialog' && window.onSystemDialogKeyDown) {
                 window.onSystemDialogKeyDown(event);
+            } else if (LB.mode === 'launchGame' && window.onLaunchGameKeyDown) {
+                window.onLaunchGameKeyDown(event);
             }
         });
 

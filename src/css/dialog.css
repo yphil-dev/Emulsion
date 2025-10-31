@@ -192,3 +192,7 @@
 .help-dialog p.first {
   margin-top: 1em;
 }
+
+.launch-game-dialog {
+   width:800px;
+}

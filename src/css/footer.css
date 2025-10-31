@@ -145,6 +145,11 @@ footer.footer-big {
   width: calc(var(--footer-height) - 14px);
 }
 
+.control-icon-big {
+  height: 100px;
+  width: 100px;
+}
+
 footer .control-section {
   opacity: 1;
   transition: opacity 1s ease;

@@ -522,6 +522,7 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
     case 'Enter':
         event.stopPropagation();
         event.stopImmediatePropagation();
+        event.preventDefault();
 
         const selectedContainer = containers[GalleryState.selectedIndex];
 
@@ -562,6 +563,9 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         break;
 
     case 'm':
+        if (activePage.dataset.platform === 'recents' || activePage.dataset.platform === 'favorites') {
+            return;
+        }
         if (!LB.kioskMode) {
             if (event.ctrlKey) {
                 batchDownload();

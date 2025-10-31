@@ -155,17 +155,6 @@
             </div>
         </div>
 
-        <div id="launch-game-overlay" class="overlay">
-            <div id="launch-game-dialog" class="dialog">
-                <h3></h3>
-                <div class="text"></div>
-                <div id="launch-game-dialog-buttons" class="dialog-buttons">
-                    <button id="launch-ok-button" class="button">Start</button>
-                    <button id="launch-cancel-button" class="button">Cancel</button>
-                </div>
-            </div>
-        </div>
-
         <div id="kb-shortcuts-overlay" class="overlay">
             <div class="dialog help-dialog">
                 <div class="tabs">
@@ -375,15 +364,38 @@
             </div>
         </div>
 
+        <div id="launch-game-overlay" class="overlay">
+            <div class="dialog launch-game-dialog">
+                <h3></h3>
+                <div class="launch-game-shortcut">
+                    <svg class="control-icon-big" style="--fill: var(--color-bg-control-button); --fill-text: var(--color-selected); --stroke: var(--color-outline-control-button);">
+                        <use href="#select"></use>
+                    </svg>
+
+                    <div class="launch-game-shortcut-plus">
+                        <i class="fa fa-plus fa-5x"></i>
+                    </div>
+
+                    <svg class="control-icon-big" style="--fill-north:black; --fill-south:var(--color-selected); --fill-west:black; --fill-east:black; --outline:var(--color-outline-control-button);">
+                        <use href="#dpad"/>
+                    </svg>
+                </div>
+                <div id="launch-game-dialog-buttons" class="dialog-buttons">
+                    <button class="ok button">Start</button>
+                    <button class="cancel button">Cancel</button>
+                </div>
+            </div>
+        </div>
+
         <div id="system-dialog-overlay" class="overlay">
             <div class="dialog system-dialog">
                 <h3>Emulsion</h3>
                 <div class="system-dialog-buttons">
-                    <button class="button" id="system-dialog-help-button">Help</button>
-                    <button class="button" id="system-dialog-conf-button">Configure</button>
-                    <button class="button" id="system-dialog-restart-button">Restart</button>
-                    <button class="button" id="system-dialog-quit-button">Quit</button>
-                    <button class="button" id="system-dialog-cancel-button">Cancel</button>
+                    <button class="button help">Help</button>
+                    <button class="button config">Configure</button>
+                    <button class="button restart">Restart</button>
+                    <button class="button quit">Quit</button>
+                    <button class="button cancel">Cancel</button>
                 </div>
             </div>
         </div>

@@ -301,90 +301,6 @@ export function helpDialog() {
     openDialog();
 }
 
-export function systemDialog() {
-    const prevMode = LB.mode;
-    LB.mode = 'systemDialog';
-
-    const overlay = document.getElementById('system-dialog-overlay');
-    const restartButton = document.getElementById('system-dialog-restart-button');
-    const configButton = document.getElementById('system-dialog-conf-button');
-    const quitButton = document.getElementById('system-dialog-quit-button');
-    const cancelButton = document.getElementById('system-dialog-cancel-button');
-    const helpButton = document.getElementById('system-dialog-help-button');
-
-    const buttons = [helpButton];
-    if (!LB.kioskMode) buttons.push(configButton);
-    buttons.push(restartButton, quitButton, cancelButton);
-
-    let currentFocusIndex = 0;
-
-    function openDialog() {
-        overlay.style.display = 'flex';
-        buttons[currentFocusIndex].focus();
-    }
-
-    function closeDialog() {
-        overlay.style.display = 'none';
-        LB.mode = prevMode;
-    }
-
-    function navigateButtons(direction) {
-        currentFocusIndex = (currentFocusIndex + direction + buttons.length) % buttons.length;
-        buttons[currentFocusIndex].focus();
-    }
-
-    window.onSystemDialogKeyDown = function onSystemDialogKeyDown(event) {
-        event.stopPropagation();
-        event.stopImmediatePropagation();
-
-        switch (event.key) {
-            case 'ArrowUp':
-                navigateButtons(-1);
-                break;
-            case 'ArrowDown':
-                navigateButtons(1);
-                break;
-            case '?':
-            case 'Enter':
-                const focusedButton = document.activeElement;
-                if (focusedButton === quitButton) {
-                    ipcRenderer.invoke('quit');
-                } else if (focusedButton === cancelButton) {
-                    closeDialog();
-                } else if (focusedButton === restartButton) {
-                    window.location.reload();
-                } else if (focusedButton === configButton && !LB.kioskMode) {
-                    initGallery('settings');
-                    closeDialog();
-                }
-                break;
-            case 'Escape':
-                closeDialog();
-                break;
-        }
-    };
-
-    restartButton.addEventListener('click', () => window.location.reload());
-    if (!LB.kioskMode) {
-        configButton.addEventListener('click', () => {
-            initGallery('settings');
-            closeDialog();
-        });
-    } else {
-        configButton.style.display = 'none';
-    }
-
-    quitButton.addEventListener('click', () => ipcRenderer.invoke('quit'));
-    cancelButton.addEventListener('click', closeDialog);
-    helpButton.addEventListener('click', (e) => {
-        closeDialog();
-        helpDialog();
-    });
-
-    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeDialog(); });
-
-    openDialog();
-}
 
 export function batchDialog(imagesCount, metaCount) {
     return new Promise((resolve, reject) => {
@@ -477,57 +393,165 @@ export function batchDialog(imagesCount, metaCount) {
         overlay.onclick = (e) => { if (e.target === overlay) onCancel(); };
 
         // --- Optional: basic focus loop ---
-        setTimeout(() => {
-            const inputs = optionsContainer.querySelectorAll('input[type="radio"]');
-            const elements = [...inputs, okButton, cancelButton];
+        // setTimeout(() => {
+        //     const inputs = optionsContainer.querySelectorAll('input[type="radio"]');
+        //     const elements = [...inputs, okButton, cancelButton];
 
-            elements.forEach((el, i) => {
-                el.addEventListener('keydown', (e) => {
-                    if (e.key === 'Tab') {
-                        e.preventDefault();
-                        const dir = e.shiftKey ? -1 : 1;
-                        const next = (i + dir + elements.length) % elements.length;
-                        elements[next].focus();
-                    }
-                });
-            });
-        }, 0);
+        //     elements.forEach((el, i) => {
+        //         el.addEventListener('keydown', (e) => {
+        //             if (e.key === 'Tab') {
+        //                 e.preventDefault();
+        //                 const dir = e.shiftKey ? -1 : 1;
+        //                 const next = (i + dir + elements.length) % elements.length;
+        //                 elements[next].focus();
+        //             }
+        //         });
+        //     });
+        // }, 0);
+
     });
 }
 
-export function launchGameDialog(gameContainer) {
-    const overlay = document.getElementById('launch-game-overlay');
-    const dialog = document.getElementById('launch-game-dialog');
-    const okButton = document.getElementById('launch-ok-button');
-    const cancelButton = document.getElementById('launch-cancel-button');
+export function systemDialog() {
+    const prevMode = LB.mode;
+    LB.mode = 'systemDialog';
 
-    // Fill in dialog info
-    dialog.querySelector('h3').textContent = gameContainer.dataset.cleanName || gameContainer.dataset.gameName;
-    dialog.querySelector('.text').textContent = `Launch ${gameContainer.dataset.cleanName || gameContainer.dataset.gameName}?`;
+    const overlay = document.getElementById('system-dialog-overlay');
+    const dialog = overlay.querySelector('.dialog');
+    const restartButton = dialog.querySelector('.restart');
+    const configButton = dialog.querySelector('.config');
+    const quitButton = dialog.querySelector('.quit');
+    const cancelButton = dialog.querySelector('.cancel');
+    const helpButton = dialog.querySelector('.help');
 
-    // Show overlay/dialog
-    overlay.style.display = 'flex';
+    const buttons = [helpButton];
+    if (!LB.kioskMode) buttons.push(configButton);
+    buttons.push(restartButton, quitButton, cancelButton);
 
-    // Cleanup previous listeners if any
-    okButton.replaceWith(okButton.cloneNode(true));
-    cancelButton.replaceWith(cancelButton.cloneNode(true));
+    let currentFocusIndex = 0;
 
-    const newOkButton = document.getElementById('launch-ok-button');
-    const newCancelButton = document.getElementById('launch-cancel-button');
+    function openDialog() {
+        overlay.style.display = 'flex';
+        buttons[currentFocusIndex].focus();
+    }
 
-    // Start game if OK is clicked
-    newOkButton.addEventListener('click', () => {
+    function closeDialog() {
         overlay.style.display = 'none';
+        LB.mode = prevMode;
+    }
+
+    function navigateButtons(direction) {
+        currentFocusIndex = (currentFocusIndex + direction + buttons.length) % buttons.length;
+        buttons[currentFocusIndex].focus();
+    }
+
+    window.onSystemDialogKeyDown = function onSystemDialogKeyDown(event) {
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+
+        switch (event.key) {
+            case 'ArrowUp':
+                navigateButtons(-1);
+                break;
+            case 'ArrowDown':
+                navigateButtons(1);
+                break;
+            case '?':
+            case 'Enter':
+                const focusedButton = document.activeElement;
+                if (focusedButton === quitButton) {
+                    ipcRenderer.invoke('quit');
+                } else if (focusedButton === cancelButton) {
+                    closeDialog();
+                } else if (focusedButton === restartButton) {
+                    window.location.reload();
+                } else if (focusedButton === configButton && !LB.kioskMode) {
+                    initGallery('settings');
+                    closeDialog();
+                }
+                break;
+            case 'Escape':
+                closeDialog();
+                break;
+        }
+    };
+
+    restartButton.addEventListener('click', () => window.location.reload());
+    if (!LB.kioskMode) {
+        configButton.addEventListener('click', () => {
+            initGallery('settings');
+            closeDialog();
+        });
+    } else {
+        configButton.style.display = 'none';
+    }
+
+    quitButton.addEventListener('click', () => ipcRenderer.invoke('quit'));
+    cancelButton.addEventListener('click', closeDialog);
+    helpButton.addEventListener('click', (e) => {
+        closeDialog();
+        helpDialog();
+    });
+
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeDialog(); });
+
+    openDialog();
+}
+
+export function launchGameDialog(gameContainer) {
+    LB.mode = 'launchGame';
+
+    const overlay = document.getElementById('launch-game-overlay');
+    const dialog = overlay.querySelector('div.dialog');
+    const okButton = dialog.querySelector('.ok');
+    const cancelButton = dialog.querySelector('.cancel');
+
+    dialog.querySelector('h3').textContent = gameContainer.dataset.cleanName || gameContainer.dataset.gameName;
+
+    const buttons = [okButton, cancelButton];
+    let currentFocusIndex = 0;
+
+    function openDialog() {
+        overlay.style.display = 'flex';
+        buttons[currentFocusIndex].focus();
+    }
+
+    function closeDialog() {
+        overlay.style.display = 'none';
+        LB.mode = 'gallery';
+    }
+
+    function navigateButtons(direction) {
+        currentFocusIndex = (currentFocusIndex + direction + buttons.length) % buttons.length;
+        buttons[currentFocusIndex].focus();
+    }
+
+    window.onLaunchGameKeyDown = function onLaunchGameKeyDown(event) {
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+
+        switch (event.key) {
+        case 'ArrowLeft':
+            navigateButtons(-1);
+            break;
+        case 'ArrowRight':
+            navigateButtons(1);
+            break;
+        case 'Escape':
+            closeDialog();
+            break;
+        }
+    };
+
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeDialog();
+    });
+
+    cancelButton.addEventListener('click', closeDialog);
+    okButton.addEventListener('click', () => {
+        closeDialog();
         launchGame(gameContainer);
     });
 
-    // Just close dialog if Cancel is clicked
-    newCancelButton.addEventListener('click', () => {
-        overlay.style.display = 'none';
-    });
-
-    // Optional: close if user clicks outside the dialog
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) overlay.style.display = 'none';
-    }, { once: true });
+    openDialog();
 }

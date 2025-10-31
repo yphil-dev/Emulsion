@@ -15,15 +15,18 @@
 .dialog {
   display: flex;
   flex-direction: column;
-  /* align-items: center; */
+  background: var(--color-bg);
+  color: var(--color-text-1);
+  padding: 20px;
+  border-radius: 8px;
+  gap: 10px;
 
-  background:var(--color-bg);
-  color:var(--color-text-1);
-  padding:20px;
-  border-radius:8px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
+  /* subtle separation from the page */
+  border: 1px solid rgba(255, 255, 255, 0.08); /* or rgba(0,0,0,0.15) depending on theme */
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.25),  /* soft outer shadow */
+    0 0 12px rgba(255, 255, 255, 0.05) inset; /* faint inner glow for depth */
+  backdrop-filter: blur(3px); /* optional if you want a translucent feel */
 }
 
 .dialog h3 {

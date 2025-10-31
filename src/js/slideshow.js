@@ -391,6 +391,13 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
 
     function updateHeaderControls(pageDataset) {
 
+        const headerControls = document.getElementById('header-controls');
+
+        if (LB.kioskMode) {
+            headerControls.style.display = 'none';
+            return;
+        }
+
         const toggleViewModeButton = document.getElementById('view-mode-toggle-button');
         const metaDataButton = document.getElementById('platform-covers-button');
         const configPlatformButton = document.getElementById('config-platform-button');
@@ -592,37 +599,44 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         break;
 
     case '+':
-        handleFavoriteToggle(containers[GalleryState.selectedIndex]);
+        if (!LB.kioskMode) {
+            handleFavoriteToggle(containers[GalleryState.selectedIndex]);
+        }
+
         break;
 
 
     case 'l':
-        if (event.ctrlKey) {
-            document.getElementById('view-mode-toggle-button').click();
+        if (!LB.kioskMode) {
+            if (event.ctrlKey) {
+                document.getElementById('view-mode-toggle-button').click();
+            }
         }
         break;
 
     case 'i':
-        if (event.ctrlKey) {
-            const selectedContainer = containers[GalleryState.selectedIndex];
-            openGameMenu(selectedContainer);
+        if (!LB.kioskMode) {
+            if (event.ctrlKey) {
+                const selectedContainer = containers[GalleryState.selectedIndex];
+                openGameMenu(selectedContainer);
+            }
         }
         break;
 
     case 'm':
-        if (event.ctrlKey) {
-            batchDownload();
+        if (!LB.kioskMode) {
+            if (event.ctrlKey) {
+                batchDownload();
+            }
         }
         break;
 
     default:
-        // 🔍 NEW FEATURE: letter key search with wrap-around
         if (!event.ctrlKey && !event.altKey && !event.metaKey && /^[a-z0-9]$/i.test(event.key)) {
             const key = event.key.toLowerCase();
             const startIndex = GalleryState.selectedIndex + 1;
             let matchIndex = -1;
 
-            // Search from next item to end
             for (let i = startIndex; i < containers.length; i++) {
                 const name = (containers[i].dataset.cleanName || containers[i].dataset.gameName || '').toLowerCase();
                 if (name.startsWith(key)) {
@@ -631,7 +645,7 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
                 }
             }
 
-            // Wrap-around: search from start to current index
+            // Wrap-around
             if (matchIndex === -1) {
                 for (let i = 0; i < startIndex; i++) {
                     const name = (containers[i].dataset.cleanName || containers[i].dataset.gameName || '').toLowerCase();
@@ -992,7 +1006,11 @@ function buildGamePane(params) {
     paneControls.append(fetchMetaButton, fetchCoverArtButton, webLinkButton, editMetaButton);
 
     imagePane.appendChild(paneImage);
-    paneText.appendChild(paneControls);
+
+    if (!LB.kioskMode) {
+        paneText.appendChild(paneControls);
+    }
+
     paneText.appendChild(gameTitle);
 
     gamePane.appendChild(imagePane);
@@ -1011,17 +1029,19 @@ export async function updateGamePane(selectedContainer) {
     const paneText = gamePane.querySelector('.pane-text');
     const imagePane = gamePane.querySelector('.pane-image');
 
-    const webLinkButton = gamePane.querySelector('.pane-web-link-button');
-    webLinkButton.title = `Search the web for "${selectedContainer.dataset.cleanName}"`;
+    if (!LB.kioskMode) {
+        const webLinkButton = gamePane.querySelector('.pane-web-link-button');
+        webLinkButton.title = `Search the web for "${selectedContainer.dataset.cleanName}"`;
 
-    const editMetaButton = gamePane.querySelector('.pane-edit-meta-button');
-    editMetaButton.title = `Edit meta data for "${selectedContainer.dataset.cleanName}"`;
+        const editMetaButton = gamePane.querySelector('.pane-edit-meta-button');
+        editMetaButton.title = `Edit meta data for "${selectedContainer.dataset.cleanName}"`;
 
-    const editCoverArtButton = gamePane.querySelector('.pane-edit-cover-art-button');
-    editCoverArtButton.title = `Edit coverArt data for "${selectedContainer.dataset.cleanName}"`;
+        const editCoverArtButton = gamePane.querySelector('.pane-edit-cover-art-button');
+        editCoverArtButton.title = `Edit coverArt data for "${selectedContainer.dataset.cleanName}"`;
 
-    const fetchMetaButton = gamePane.querySelector('.pane-fetch-meta-button');
-    fetchMetaButton.title = `Fetch meta data from WikiData for "${selectedContainer.dataset.cleanName}"`;
+        const fetchMetaButton = gamePane.querySelector('.pane-fetch-meta-button');
+        fetchMetaButton.title = `Fetch meta data from WikiData for "${selectedContainer.dataset.cleanName}"`;
+    }
 
     const imgSrc = selectedContainer.querySelector('img').src;
     imagePane.querySelector('img').src = imgSrc;

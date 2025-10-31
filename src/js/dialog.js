@@ -180,23 +180,18 @@ export function toggleFavDialog(message) {
     }
 
     const dialog = document.createElement('div');
+
+    const dialogTitle = document.createElement('h3');
+    dialogTitle.textContent = 'Favorites';
+
+    const dialogText = document.createElement('div');
+    dialogText.textContent = message;
+
     dialog.id = 'favorite-confirmation';
     dialog.className = 'dialog';
-    // dialog.style.cssText = `
-    //     position: fixed;
-    //     top: 50%;
-    //     left: 50%;
-    //     transform: translate(-50%, -50%);
-    //     background: rgba(0, 0, 0, 0.9);
-    //     color: white;
-    //     padding: 20px 30px;
-    //     border-radius: 10px;
-    //     border: 2px solid #00ffae;
-    //     z-index: 10000;
-    //     font-family: Arial, sans-serif;
-    //     text-align: center;
-    // `;
-    dialog.textContent = message;
+
+    dialog.appendChild(dialogTitle);
+    dialog.appendChild(dialogText);
     document.body.appendChild(dialog);
 
     // Auto-remove after 5 seconds
@@ -306,9 +301,7 @@ export function helpDialog() {
 }
 
 export function systemDialog() {
-
     const prevMode = LB.mode;
-
     LB.mode = 'systemDialog';
 
     const overlay = document.getElementById('system-dialog-overlay');
@@ -318,12 +311,14 @@ export function systemDialog() {
     const cancelButton = document.getElementById('system-dialog-cancel-button');
     const helpButton = document.getElementById('system-dialog-help-button');
 
-    const buttons = [helpButton, restartButton, configButton, quitButton, cancelButton];
+    const buttons = [helpButton, restartButton];
+    if (!LB.kioskMode) buttons.push(configButton);
+    buttons.push(quitButton, cancelButton);
+
     let currentFocusIndex = 0;
 
     function openDialog() {
         overlay.style.display = 'flex';
-        // Set initial focus
         buttons[currentFocusIndex].focus();
     }
 
@@ -342,40 +337,44 @@ export function systemDialog() {
         event.stopImmediatePropagation();
 
         switch (event.key) {
-        case 'ArrowUp':
-            navigateButtons(-1); // Move to previous button
-            break;
-        case 'ArrowDown':
-            navigateButtons(1); // Move to next button
-            break;
-        case '?':
-        case 'Enter':
-            const focusedButton = document.activeElement;
-            if (focusedButton === quitButton) {
-                ipcRenderer.invoke('quit');
-            } else if (focusedButton === cancelButton) {
+            case 'ArrowUp':
+                navigateButtons(-1);
+                break;
+            case 'ArrowDown':
+                navigateButtons(1);
+                break;
+            case '?':
+            case 'Enter':
+                const focusedButton = document.activeElement;
+                if (focusedButton === quitButton) {
+                    ipcRenderer.invoke('quit');
+                } else if (focusedButton === cancelButton) {
+                    closeDialog();
+                } else if (focusedButton === restartButton) {
+                    window.location.reload();
+                } else if (focusedButton === configButton && !LB.kioskMode) {
+                    initGallery('settings');
+                    closeDialog();
+                }
+                break;
+            case 'Escape':
                 closeDialog();
-            } else if (focusedButton === restartButton) {
-                window.location.reload();
-            } else if (focusedButton === configButton) {
-                initGallery('settings');
-                closeDialog();
-            }
-            break;
-        case 'Escape':
-            closeDialog();
-            break;
+                break;
         }
     };
 
     restartButton.addEventListener('click', () => window.location.reload());
-    configButton.addEventListener('click', (event) => {
-        initGallery('settings');
-        closeDialog();
-    });
+    if (!LB.kioskMode) {
+        configButton.addEventListener('click', () => {
+            initGallery('settings');
+            closeDialog();
+        });
+    } else {
+        configButton.style.display = 'none';
+    }
+
     quitButton.addEventListener('click', () => ipcRenderer.invoke('quit'));
     cancelButton.addEventListener('click', closeDialog);
-    helpButton.addEventListener('click', helpDialog);
     helpButton.addEventListener('click', (e) => {
         closeDialog();
         helpDialog();

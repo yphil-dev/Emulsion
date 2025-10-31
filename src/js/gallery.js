@@ -1,6 +1,5 @@
 import { getPlatformInfo, PLATFORMS } from './platforms.js';
-import { safeFileName,
-         cleanFileName,
+import { cleanFileName,
          stripExtensions,
          scanDirectory,
          getPs3GameName,
@@ -180,9 +179,8 @@ export async function buildGallery(params) {
         if (platform === 'ps3') {
             const ps3Title = await getPs3GameName(gameFilePath);
             if (ps3Title) {
-                fileNameWithoutExt = safeFileName(ps3Title);
-            } else {
-                fileNameWithoutExt = stripExtensions(fileName);
+                console.log("ps3Title: ", ps3Title);
+                fileNameWithoutExt = stripExtensions(ps3Title);
             }
         }
 

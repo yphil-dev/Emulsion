@@ -998,3 +998,67 @@ export async function getPs3GameName(filePath) {
         return null;
     }
 }
+
+
+function explodeGameContainer(gameContainer) {
+    const numParticles = 12;
+    const container = document.body;
+    const rect = gameContainer.getBoundingClientRect();
+    const colors = ['#FF3B3B', '#FF8C00', '#FFD700', '#32CD32', '#1E90FF', '#8A2BE2'];
+
+    const fragment = document.createDocumentFragment();
+
+    for (let i = 0; i < numParticles; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'explosion-particle';
+
+        // Random size
+        const size = 15 + Math.random() * 25;
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+        particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+
+        // Random starting offset
+        const offsetXStart = (Math.random() - 0.5) * 30; // spread at spawn
+        const offsetYStart = (Math.random() - 0.5) * 30;
+        particle.style.setProperty('--x-start', offsetXStart + 'px');
+        particle.style.setProperty('--y-start', offsetYStart + 'px');
+        particle.style.setProperty('--rotation', `${-360 + Math.random() * 720}deg`);
+
+        // Position relative to viewport
+        particle.style.left = (rect.left + rect.width / 2 - size / 2) + 'px';
+        particle.style.top = (rect.top + rect.height / 2 - size / 2) + 'px';
+
+        // Random direction/distance
+        const angle = Math.random() * 2 * Math.PI;
+        const distance = 120 + Math.random() * 80; // was 80 + Math.random() * 100
+
+        particle.style.setProperty('--x', Math.cos(angle) * distance + 'px');
+        particle.style.setProperty('--y', Math.sin(angle) * distance + 'px');
+
+        // Random scale
+        particle.style.setProperty('--scale', 1.5 + Math.random() * 1.5);
+
+        // Faster particles
+        particle.style.animationDuration = (0.8 + Math.random() * 0.4) + 's';
+
+        particle.addEventListener('animationend', () => particle.remove());
+
+        fragment.appendChild(particle);
+    }
+
+    container.appendChild(fragment);
+}
+
+export function launchGame(gameContainer) {
+    explodeGameContainer(gameContainer);
+
+    ipcRenderer.send('run-command', {
+        fileName: gameContainer.dataset.gameName,
+        filePath: gameContainer.dataset.gamePath,
+        gameName: gameContainer.dataset.gameName,
+        emulator: gameContainer.dataset.emulator,
+        emulatorArgs: gameContainer.dataset.emulatorArgs,
+        platform: gameContainer.dataset.platform
+    });
+}

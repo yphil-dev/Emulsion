@@ -62,16 +62,6 @@
   height:80vh;
 }
 
-.batch-dialog {
-  /* width:600px; */
-  /* height:90vh; */
-}
-
-.quit-dialog {
-  /* width:600px; */
-  /* height:90vh; */
-}
-
 .system-dialog-buttons {
   display: flex;
   flex-direction: column;

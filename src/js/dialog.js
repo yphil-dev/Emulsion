@@ -1,6 +1,7 @@
 import { initSlideShow, initGallery } from './slideshow.js';
 import { displayMetaData } from './metadata.js';
 import { PLATFORMS } from './platforms.js';
+import { launchGame } from './utils.js';
 
 export function quitDialog() {
     LB.mode = 'quit';
@@ -311,9 +312,9 @@ export function systemDialog() {
     const cancelButton = document.getElementById('system-dialog-cancel-button');
     const helpButton = document.getElementById('system-dialog-help-button');
 
-    const buttons = [helpButton, restartButton];
+    const buttons = [helpButton];
     if (!LB.kioskMode) buttons.push(configButton);
-    buttons.push(quitButton, cancelButton);
+    buttons.push(restartButton, quitButton, cancelButton);
 
     let currentFocusIndex = 0;
 
@@ -492,4 +493,41 @@ export function batchDialog(imagesCount, metaCount) {
             });
         }, 0);
     });
+}
+
+export function launchGameDialog(gameContainer) {
+    const overlay = document.getElementById('launch-game-overlay');
+    const dialog = document.getElementById('launch-game-dialog');
+    const okButton = document.getElementById('launch-ok-button');
+    const cancelButton = document.getElementById('launch-cancel-button');
+
+    // Fill in dialog info
+    dialog.querySelector('h3').textContent = gameContainer.dataset.cleanName || gameContainer.dataset.gameName;
+    dialog.querySelector('.text').textContent = `Launch ${gameContainer.dataset.cleanName || gameContainer.dataset.gameName}?`;
+
+    // Show overlay/dialog
+    overlay.style.display = 'flex';
+
+    // Cleanup previous listeners if any
+    okButton.replaceWith(okButton.cloneNode(true));
+    cancelButton.replaceWith(cancelButton.cloneNode(true));
+
+    const newOkButton = document.getElementById('launch-ok-button');
+    const newCancelButton = document.getElementById('launch-cancel-button');
+
+    // Start game if OK is clicked
+    newOkButton.addEventListener('click', () => {
+        overlay.style.display = 'none';
+        launchGame(gameContainer);
+    });
+
+    // Just close dialog if Cancel is clicked
+    newCancelButton.addEventListener('click', () => {
+        overlay.style.display = 'none';
+    });
+
+    // Optional: close if user clicks outside the dialog
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) overlay.style.display = 'none';
+    }, { once: true });
 }

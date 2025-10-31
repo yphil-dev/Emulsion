@@ -9,7 +9,7 @@ import { updateFooterControlsFor,
          toggleHeaderNavLinks } from './utils.js';
 import { updatePreference } from './preferences.js';
 import { getMeta, displayMetaData } from './metadata.js';
-import { quitDialog, editMetaDialog, toggleFavDialog } from './dialog.js';
+import { quitDialog, editMetaDialog, toggleFavDialog, launchGameDialog } from './dialog.js';
 
 const main = document.querySelector('main');
 const slideshow = document.getElementById("slideshow");
@@ -192,68 +192,6 @@ function setGalleryFooterControls(pageDataset) {
     }
 }
 
-function explodeGameContainer(gameContainer) {
-    const numParticles = 12;
-    const container = document.body;
-    const rect = gameContainer.getBoundingClientRect();
-    const colors = ['#FF3B3B', '#FF8C00', '#FFD700', '#32CD32', '#1E90FF', '#8A2BE2'];
-
-    const fragment = document.createDocumentFragment();
-
-    for (let i = 0; i < numParticles; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'explosion-particle';
-
-        // Random size
-        const size = 15 + Math.random() * 25;
-        particle.style.width = size + 'px';
-        particle.style.height = size + 'px';
-        particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-
-        // Random starting offset
-        const offsetXStart = (Math.random() - 0.5) * 30; // spread at spawn
-        const offsetYStart = (Math.random() - 0.5) * 30;
-        particle.style.setProperty('--x-start', offsetXStart + 'px');
-        particle.style.setProperty('--y-start', offsetYStart + 'px');
-        particle.style.setProperty('--rotation', `${-360 + Math.random() * 720}deg`);
-
-        // Position relative to viewport
-        particle.style.left = (rect.left + rect.width / 2 - size / 2) + 'px';
-        particle.style.top = (rect.top + rect.height / 2 - size / 2) + 'px';
-
-        // Random direction/distance
-        const angle = Math.random() * 2 * Math.PI;
-        const distance = 120 + Math.random() * 80; // was 80 + Math.random() * 100
-
-        particle.style.setProperty('--x', Math.cos(angle) * distance + 'px');
-        particle.style.setProperty('--y', Math.sin(angle) * distance + 'px');
-
-        // Random scale
-        particle.style.setProperty('--scale', 1.5 + Math.random() * 1.5);
-
-        // Faster particles
-        particle.style.animationDuration = (0.8 + Math.random() * 0.4) + 's';
-
-        particle.addEventListener('animationend', () => particle.remove());
-
-        fragment.appendChild(particle);
-    }
-
-    container.appendChild(fragment);
-}
-
-function launchGame(gameContainer) {
-    explodeGameContainer(gameContainer);
-
-    ipcRenderer.send('run-command', {
-        fileName: gameContainer.dataset.gameName,
-        filePath: gameContainer.dataset.gamePath,
-        gameName: gameContainer.dataset.gameName,
-        emulator: gameContainer.dataset.emulator,
-        emulatorArgs: gameContainer.dataset.emulatorArgs,
-        platform: gameContainer.dataset.platform
-    });
-}
 // galleryState.js
 export const GalleryState = {
     selectedIndex: 0,
@@ -309,18 +247,6 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
             GalleryState.selectedIndex = GalleryState.gameContainers.indexOf(selected);
         }
 
-        toggleHeaderNavLinks('show');
-
-        // if (focusIndex !== null && GalleryState.gameContainers[focusIndex]) {
-        //     GalleryState.selectedIndex = focusIndex;
-        //     GalleryState.gameContainers[focusIndex].classList.add('selected');
-        //     GalleryState.gameContainers[focusIndex].scrollIntoView({
-        //         behavior: 'instant',
-        //         block: 'center'
-        //     });
-        //     focusIndex = null;
-        // }
-
         if (!page.dataset.listenersAttached) {
             GalleryState.gameContainers.forEach(container => {
                 container.addEventListener('click', (event) => {
@@ -330,7 +256,7 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
                     if (container.classList.contains('settings')) {
                         openPlatformMenu(container.dataset.platform, 'settings');
                     } else if (!container.classList.contains('empty-platform-game-container')) {
-                        launchGame(container);
+                        launchGameDialog(container);
                     }
 
                     GalleryState.gameContainers.forEach(c => c.classList.remove('selected'));
@@ -349,6 +275,7 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
             page.dataset.listenersAttached = true;
         }
 
+        toggleHeaderNavLinks('show');
         updateHeader(page.dataset.platform);
         setGalleryFooterControls(page.dataset);
 
@@ -602,7 +529,7 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
             if (activePage.dataset.platform === 'settings') {
                 openPlatformMenu(selectedContainer.dataset.platform, 'settings');
             } else if (!selectedContainer.classList.contains('empty-platform-game-container')) {
-                launchGame(selectedContainer);
+                launchGameDialog(selectedContainer);
             }
         } else {
             closeGameMenu(selectedContainer.querySelector('img').src);

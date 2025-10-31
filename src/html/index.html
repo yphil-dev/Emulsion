@@ -136,7 +136,7 @@
 
         <div id="quit-confirmation-overlay" class="overlay">
             <div id="quit-confirmation-dialog" class="dialog">
-                <h3>Really, quit?</h3>
+                <h3 class="dialog-title">Really, quit?</h3>
                 <div id="quit-confirmation-buttons" class="dialog-buttons">
                     <button id="quit-ok-button" class="button">OK</button>
                     <button id="quit-cancel-button" class="button">Cancel</button>
@@ -146,11 +146,11 @@
 
         <div id="batch-confirmation-overlay" class="overlay">
             <div id="batch-confirmation-dialog" class="dialog">
-                <h3 id="batch-dialog-title" class="title"></h3>
-                <div id="batch-dialog-text"></div>
-                <div id="batch-confirmation-buttons" class="dialog-buttons">
-                    <button id="batch-ok-button" class="button">Start</button>
-                    <button id="batch-cancel-button" class="button">Cancel</button>
+                <h3 class="dialog-title"></h3>
+                <div class="dialog-text"></div>
+                <div class="dialog-buttons">
+                    <button class="ok button">Start</button>
+                    <button class="cancel button">Cancel</button>
                 </div>
             </div>
         </div>
@@ -163,7 +163,7 @@
                     <button class="tab-button" data-tab="cli-args">Command line arguments</button>
                 </div>
                 <div class="tab-content active" id="quickstart">
-                    <h3>Welcome to Emulsion!</h3>
+                    <h3 class="dialog-title">Welcome to Emulsion!</h3>
                     <p class="first">Emulsion is a game launcher that helps you organize and launch your games.</p>
                     <h4>Setup</h4>
                     <ul>
@@ -181,7 +181,7 @@
                     <p>For more details, see the Keyboard Shortcuts tab or press any key to close.</p>
                 </div>
                 <div class="tab-content" id="shortcuts">
-                    <h3>Keyboard Shortcuts</h3>
+                    <h3 class="dialog-title">Keyboard Shortcuts</h3>
                     <table>
                     <thead>
                         <tr>
@@ -289,7 +289,7 @@
                                     <use href="#select"></use>
                                 </svg>
                                                     +
-                                <svg class="control-icon" style="--fill-north:black; --fill-south:var(--color-selected); --fill-west:black; --fill-east:black; --outline:var(--color-outline-control-button);">
+                                <svg class="control-icon" style="--fill-north:black; --fill-south:var(--color-selected); --fill-west:black; --fill-east:black; --stroke:var(--color-outline-control-button);">
                                     <use href="#dpad"/>
                                 </svg>
                             </td>
@@ -304,7 +304,7 @@
                 </table>
                 </div>
                 <div class="tab-content" id="cli-args">
-                    <h3>Command line arguments</h3>
+                    <h3 class="dialog-title">Command line arguments</h3>
                     <table>
                     <thead>
                         <tr>
@@ -366,22 +366,42 @@
 
         <div id="launch-game-overlay" class="overlay">
             <div class="dialog launch-game-dialog">
-                <h3></h3>
-                <div class="launch-game-shortcut">
-                    <svg class="control-icon-big" style="--fill: var(--color-bg-control-button); --fill-text: var(--color-selected); --stroke: var(--color-outline-control-button);">
-                        <use href="#select"></use>
-                    </svg>
+                <h2 class="dialog-title"></h2>
+                <h4 class="dialog-title text">Emulator: <span class="emulator-name"></span></h4>
 
-                    <div class="launch-game-shortcut-plus">
-                        <i class="fa fa-plus fa-5x"></i>
+                <div class="launch-game-dialog-body">
+                    <div class="launch-game-dialog-left">
+                        <img class="game-image" src="../../img/missing.png" alt="Game Image">
+                    </div>
+                    <div class="launch-game-dialog-right">
+                        <h4>
+                            To exit the game and return to emulsion
+                        </h4>
+                        <div class="launch-game-shortcut">
+                            <svg class="control-icon-big" style="--fill: var(--color-bg-control-button); --fill-text: var(--color-selected); --stroke: var(--color-outline-control-button);">
+                                <use href="#select"></use>
+                            </svg>
+
+                            <div class="launch-game-shortcut-plus">
+                                <i class="fa fa-plus fa-3x"></i>
+                            </div>
+
+                            <svg class="control-icon-big" style="--fill:var(--color-bg-control-button); --fill-north:black; --fill-south:var(--color-selected); --fill-west:black; --fill-east:black; --stroke:var(--color-outline-control-button);">
+                                <use href="#dpad"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="launch-game-dialog-buttons" class="dialog-buttons">
+                    <div class="always-open">
+                        <input type="checkbox" name="always-open" class="always-open" />
+                        <label class="text" for="always-open">
+                            Open this window each time
+                        </label>
                     </div>
 
-                    <svg class="control-icon-big" style="--fill-north:black; --fill-south:var(--color-selected); --fill-west:black; --fill-east:black; --outline:var(--color-outline-control-button);">
-                        <use href="#dpad"/>
-                    </svg>
-                </div>
-                <div id="launch-game-dialog-buttons" class="dialog-buttons">
-                    <button class="ok button">Start</button>
+                    <button class="ok button">Launch</button>
                     <button class="cancel button">Cancel</button>
                 </div>
             </div>
@@ -389,7 +409,7 @@
 
         <div id="system-dialog-overlay" class="overlay">
             <div class="dialog system-dialog">
-                <h3>Emulsion</h3>
+                <h3 class="dialog-title">Emulsion</h3>
                 <div class="system-dialog-buttons">
                     <button class="button help">Help</button>
                     <button class="button config">Configure</button>

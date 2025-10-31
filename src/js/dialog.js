@@ -1,7 +1,7 @@
 import { initSlideShow, initGallery } from './slideshow.js';
 import { displayMetaData } from './metadata.js';
 import { PLATFORMS } from './platforms.js';
-import { launchGame } from './utils.js';
+import { launchGame, simulateTabNavigation, } from './utils.js';
 
 export function quitDialog() {
     LB.mode = 'quit';
@@ -305,10 +305,10 @@ export function helpDialog() {
 export function batchDialog(imagesCount, metaCount) {
     return new Promise((resolve, reject) => {
         const overlay = document.getElementById('batch-confirmation-overlay');
-        const dialogTitle = document.getElementById('batch-dialog-title');
-        const dialogText = document.getElementById('batch-dialog-text');
-        const okButton = document.getElementById('batch-ok-button');
-        const cancelButton = document.getElementById('batch-cancel-button');
+        const dialogTitle = overlay.querySelector('.title');
+        const dialogText = overlay.querySelector('.dialog-text');
+        const okButton = overlay.querySelector('button.ok');
+        const cancelButton = overlay.querySelector('button.cancel');
 
         overlay.dataset.status = 'open';
         dialogText.innerHTML = '';
@@ -499,21 +499,26 @@ export function systemDialog() {
 }
 
 export function launchGameDialog(gameContainer) {
+
     LB.mode = 'launchGame';
 
     const overlay = document.getElementById('launch-game-overlay');
     const dialog = overlay.querySelector('div.dialog');
     const okButton = dialog.querySelector('.ok');
     const cancelButton = dialog.querySelector('.cancel');
+    const checkBox = dialog.querySelector('.always-open');
 
-    dialog.querySelector('h3').textContent = gameContainer.dataset.cleanName || gameContainer.dataset.gameName;
+    dialog.querySelector('img').src = gameContainer.querySelector('img').src;
 
-    const buttons = [okButton, cancelButton];
+    dialog.querySelector('.dialog-title').textContent = gameContainer.dataset.cleanName || gameContainer.dataset.gameName;
+    dialog.querySelector('.emulator-name').textContent = gameContainer.dataset.emulator;
+
+    const inputs = [checkBox, okButton, cancelButton];
     let currentFocusIndex = 0;
 
     function openDialog() {
         overlay.style.display = 'flex';
-        buttons[currentFocusIndex].focus();
+        inputs[currentFocusIndex].focus();
     }
 
     function closeDialog() {
@@ -522,8 +527,8 @@ export function launchGameDialog(gameContainer) {
     }
 
     function navigateButtons(direction) {
-        currentFocusIndex = (currentFocusIndex + direction + buttons.length) % buttons.length;
-        buttons[currentFocusIndex].focus();
+        currentFocusIndex = (currentFocusIndex + direction + inputs.length) % inputs.length;
+        inputs[currentFocusIndex].focus();
     }
 
     window.onLaunchGameKeyDown = function onLaunchGameKeyDown(event) {
@@ -531,11 +536,14 @@ export function launchGameDialog(gameContainer) {
         event.stopImmediatePropagation();
 
         switch (event.key) {
-        case 'ArrowLeft':
-            navigateButtons(-1);
-            break;
         case 'ArrowRight':
-            navigateButtons(1);
+        case 'ArrowDown':
+            simulateTabNavigation(dialog);
+            break;
+
+        case 'ArrowLeft':
+        case 'ArrowUp':
+            simulateTabNavigation(dialog, true);
             break;
         case 'Escape':
             closeDialog();

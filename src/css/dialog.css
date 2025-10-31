@@ -16,7 +16,6 @@
   display: flex;
   flex-direction: column;
   background: var(--color-bg);
-  color: var(--color-text-1);
   padding: 20px;
   border-radius: 8px;
   gap: 10px;
@@ -29,20 +28,19 @@
   backdrop-filter: blur(3px); /* optional if you want a translucent feel */
 }
 
-.dialog h3 {
-  text-align: center;
-}
-
+.dialog h1,
+.dialog h2,
 .dialog h3,
 .dialog h4 {
   color:var(--color-selected);
 }
 
-.dialog .title {
-  color: #ecf0f1;
-  margin: 0 0 20px 0;
-  font-size: 24px;
-  font-weight: bold;
+.dialog .dialog-title {
+  text-align: center;
+}
+
+.dialog .text {
+  color: var(--color-text-1);
 }
 
 .dialog .dialog-buttons {
@@ -194,5 +192,54 @@
 }
 
 .launch-game-dialog {
-   width:800px;
+   width:40vw;
+}
+
+.launch-game-dialog .game-image {
+  width: 300px;
+  max-width: 35vw;
+}
+
+.launch-game-dialog-body {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: center;
+  text-align: center;
+  /* justify-content: space-evenly; */
+}
+
+.launch-game-dialog h4 {
+  margin: 1em 0 0.5em 0;
+}
+
+.launch-game-shortcut {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+
+  text-align: center;
+  width: 100%;
+  padding: 1em;
+  border: 1px solid var(--color-border-header);
+  border-radius: 4px;
+  background-color: var(--color-bg-header);
+}
+
+.launch-game-dialog div.always-open {
+  display: flex;
+  flex-direction: row;
+}
+
+.launch-game-dialog h2.dialog-title {
+  margin-bottom: 0;
+}
+
+.launch-game-dialog h4.dialog-title {
+  margin-top: 0;
+}
+
+.launch-game-dialog .emulator-name {
+  color: var(--color-selected);
 }

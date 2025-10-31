@@ -193,9 +193,9 @@ export function getSelectedGameContainer(gameContainers, selectedIndex) {
     return null;
 }
 
-export function simulateTabNavigation(shiftKey = false) {
-    const menu = document.getElementById('menu');
-    const focusableElements = menu.querySelectorAll(
+export function simulateTabNavigation(container, shiftKey = false) {
+
+    const focusableElements = container.querySelectorAll(
         'button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
 

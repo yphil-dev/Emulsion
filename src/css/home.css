@@ -153,10 +153,3 @@ p.name {
 :fullscreen .footer-small { max-height: calc(100vh - 200px) !important; }
 :fullscreen .footer-medium { max-height: calc(100vh - 250px) !important; }
 :fullscreen .footer-big { max-height: calc(100vh - 300px) !important; }
-
-.launch-game-shortcut {
-  text-align: center;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}

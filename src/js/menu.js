@@ -18,20 +18,20 @@ let menuState = {
 };
 
 window.onMenuKeyDown = function onMenuKeyDown(event) {
-
-    // console.log("event: ", event);
     event.stopPropagation();
     event.stopImmediatePropagation();
+
+    const menu = document.getElementById('menu');
 
     switch (event.key) {
     case 'ArrowRight':
     case 'ArrowDown':
-        simulateTabNavigation();
+        simulateTabNavigation(menu);
         break;
 
     case 'ArrowLeft':
     case 'ArrowUp':
-        simulateTabNavigation(true);
+        simulateTabNavigation(menu, true);
         break;
 
     case 'Escape':

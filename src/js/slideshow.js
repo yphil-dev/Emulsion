@@ -299,7 +299,15 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
     function initCurrentGallery(page) {
 
         GalleryState.gameContainers = Array.from(page.querySelectorAll('.game-container'));
-        GalleryState.gameContainers.forEach(c => c.classList.remove('selected'));
+
+        const selected = page.querySelector('.game-container.selected');
+
+        if (!selected) {
+            GalleryState.gameContainers[0].classList.add('selected');
+            GalleryState.selectedIndex = 0;
+        } else {
+            GalleryState.selectedIndex = GalleryState.gameContainers.indexOf(selected);
+        }
 
         toggleHeaderNavLinks('show');
 
@@ -319,8 +327,11 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
                     event.stopPropagation();
                     event.stopImmediatePropagation();
 
-                    if (container.classList.contains('settings')) openPlatformMenu(container.dataset.platform, 'settings');
-                    else if (!container.classList.contains('empty-platform-game-container')) launchGame(container);
+                    if (container.classList.contains('settings')) {
+                        openPlatformMenu(container.dataset.platform, 'settings');
+                    } else if (!container.classList.contains('empty-platform-game-container')) {
+                        launchGame(container);
+                    }
 
                     GalleryState.gameContainers.forEach(c => c.classList.remove('selected'));
                 });

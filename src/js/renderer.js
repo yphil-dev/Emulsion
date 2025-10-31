@@ -74,17 +74,10 @@ loadPreferences()
         splash.style.display = 'none';
         footer.style.display = 'flex';
 
-        const autoSelectIndex = PLATFORMS.findIndex(p => p.name === LB.autoSelect);
-
-        initSlideShow(autoSelectIndex || 0);
-
-        if (LB.autoSelect && !LB.enabledPlatforms.some(platform => platform === LB.autoSelect)) {
-            if (!LB.kioskMode) {
-                initGallery(0, LB.autoSelect);
-            }
-            return;
-        } else if (LB.autoSelect) {
-            simulateKeyDown('Enter');
+        if (LB.autoSelect && LB.enabledPlatforms.some(platform => platform === LB.autoSelect)) {
+            initGallery(LB.autoSelect);
+        } else {
+            initSlideShow(0);
         }
 
     })

@@ -253,6 +253,7 @@ function loadPreferences() {
                     typeof platformPreferences.numberOfColumns !== 'number' ||
                     typeof platformPreferences.footerSize !== 'string' ||
                     typeof platformPreferences.homeMenuTheme !== 'string' ||
+                    typeof platformPreferences.launchDialogPolicy !== 'string' ||
                     typeof platformPreferences.disabledPlatformsPolicy !== 'string' ||
                     typeof platformPreferences.steamGridAPIKey !== 'string'
                 ) {

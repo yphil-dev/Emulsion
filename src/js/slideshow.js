@@ -5,9 +5,10 @@ import { updateFooterControlsFor,
          removeFavorite,
          updateHeader,
          batchDownload,
+         launchGame,
          simulateKeyDown,
          toggleHeaderNavLinks } from './utils.js';
-import { updatePreference } from './preferences.js';
+import { getPreference, updatePreference } from './preferences.js';
 import { getMeta, displayMetaData } from './metadata.js';
 import { quitDialog, editMetaDialog, toggleFavDialog, launchGameDialog } from './dialog.js';
 
@@ -180,7 +181,6 @@ export function buildHomeSlide(platformName, preferences) {
 }
 
 function setGalleryFooterControls(pageDataset) {
-    console.log("pageDataset: ", pageDataset);
     if (pageDataset.platform === 'settings') {
         updateFooterControlsFor('settings');
     } else if (pageDataset.empty) {
@@ -530,7 +530,17 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
             if (activePage.dataset.platform === 'settings') {
                 openPlatformMenu(selectedContainer.dataset.platform, 'settings');
             } else if (!selectedContainer.classList.contains('empty-platform-game-container')) {
-                launchGameDialog(selectedContainer);
+                getPreference('settings', 'launchDialogPolicy')
+                    .then((value) => {
+                        if (value === 'show') {
+                            launchGameDialog(selectedContainer);
+                        } else {
+                            launchGame(selectedContainer);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Failed to get settings preference:', error);
+                    });
             }
         } else {
             closeGameMenu(selectedContainer.querySelector('img').src);

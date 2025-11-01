@@ -997,9 +997,16 @@ export async function getPs3GameName(filePath) {
 
 
 function explodeGameContainer(gameContainer) {
+
     const numParticles = 12;
     const container = document.body;
-    const rect = gameContainer.getBoundingClientRect();
+    let rect;
+    try {
+        rect = gameContainer.getBoundingClientRect();
+    } catch (err) {
+        console.log("err: ", err);
+    }
+
     const colors = ['#FF3B3B', '#FF8C00', '#FFD700', '#32CD32', '#1E90FF', '#8A2BE2'];
 
     const fragment = document.createDocumentFragment();
@@ -1022,8 +1029,10 @@ function explodeGameContainer(gameContainer) {
         particle.style.setProperty('--rotation', `${-360 + Math.random() * 720}deg`);
 
         // Position relative to viewport
-        particle.style.left = (rect.left + rect.width / 2 - size / 2) + 'px';
-        particle.style.top = (rect.top + rect.height / 2 - size / 2) + 'px';
+        if (rect) {
+            particle.style.left = (rect.left + rect.width / 2 - size / 2) + 'px';
+            particle.style.top = (rect.top + rect.height / 2 - size / 2) + 'px';
+        }
 
         // Random direction/distance
         const angle = Math.random() * 2 * Math.PI;

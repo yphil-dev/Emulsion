@@ -1,7 +1,8 @@
 import { initSlideShow, initGallery } from './slideshow.js';
 import { displayMetaData } from './metadata.js';
 import { PLATFORMS } from './platforms.js';
-import { launchGame, simulateTabNavigation, } from './utils.js';
+import { simulateTabNavigation, launchGame } from './utils.js';
+import { updatePreference } from './preferences.js';
 
 export function quitDialog() {
     LB.mode = 'quit';
@@ -498,22 +499,18 @@ export function systemDialog() {
 
 export function launchGameDialog(gameContainer) {
 
-    LB.mode = 'launchGame';
-
     const overlay = document.getElementById('launch-game-overlay');
     const dialog = overlay.querySelector('div.dialog');
     const okButton = dialog.querySelector('.ok');
     const cancelButton = dialog.querySelector('.cancel');
-    const checkBox = dialog.querySelector('#open-dialog-at-launch');
-    checkBox.checked = true;
 
     dialog.querySelector('img').src = gameContainer.querySelector('img').src;
-
     dialog.querySelector('.dialog-title').textContent = gameContainer.dataset.cleanName || gameContainer.dataset.gameName;
     dialog.querySelector('.emulator-name').textContent = gameContainer.dataset.emulator;
 
     function openDialog() {
         closeAllDialogs();
+        LB.mode = 'launchGame';
         overlay.style.display = 'flex';
         okButton.focus();
     }
@@ -549,10 +546,12 @@ export function launchGameDialog(gameContainer) {
     });
 
     cancelButton.addEventListener('click', closeDialog);
-    okButton.addEventListener('click', () => {
+    okButton.addEventListener('click', async () => {
+        launchGame(gameContainer);
+        if (!document.getElementById('open-dialog-at-launch').checked) {
+            await updatePreference('settings', 'launchDialogPolicy', 'hide');
+        }
         closeDialog();
-        console.log("gameContainer: ", gameContainer);
-        // launchGame(gameContainer);
     });
 
     openDialog();

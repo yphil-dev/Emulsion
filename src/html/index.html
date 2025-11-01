@@ -138,8 +138,8 @@
             <div class="dialog">
                 <h3 class="dialog-title">Really, quit?</h3>
                 <div class="dialog-buttons">
-                    <button class="ok button">OK</button>
                     <button class="cancel button">Cancel</button>
+                    <button class="ok button">OK</button>
                 </div>
             </div>
         </div>
@@ -149,24 +149,24 @@
                 <h3 class="dialog-title"></h3>
                 <div class="dialog-text"></div>
                 <div class="dialog-buttons">
-                    <button class="ok button">Start</button>
                     <button class="cancel button">Cancel</button>
+                    <button class="ok button">Start</button>
                 </div>
             </div>
         </div>
 
         <div id="edit-meta-overlay" class="overlay">
-            <div id="edit-meta-dialog" class="dialog">
+            <div id="edit-meta-dialog" class="form dialog">
                 <h3 class="dialog-title"></h3>
-                <div class="dialog-text"></div>
+                <div class="dialog-body"></div>
                 <div class="dialog-buttons">
-                    <button class="ok button">Start</button>
                     <button class="cancel button">Cancel</button>
+                    <button class="ok button">OK</button>
                 </div>
             </div>
         </div>
 
-        <div id="kb-shortcuts-overlay" class="overlay">
+        <div id="help-overlay" class="overlay">
             <div class="dialog help-dialog">
                 <div class="tabs">
                     <button class="tab-button active" data-tab="quickstart">Quickstart</button>
@@ -191,186 +191,194 @@
                     </ul>
                     <p>For more details, see the Keyboard Shortcuts tab or press any key to close.</p>
                 </div>
-                <div class="tab-content" id="shortcuts">
+                <div class="tab-content shortcuts" id="shortcuts">
                     <h3 class="dialog-title">Controls</h3>
-                    <table>
-                    <thead>
-                        <tr>
-                            <th class="icon">
-                                <div class="th-content">
-                                    <img class="th" src="../../img/platforms/keyboard.png" alt="Keyboard">
-                                    <span class="text">
-                                        Keyboard
-                                    </span>
-                                </div>
-                            </th>
-                            <th class="icon">
-                                <div class="th-content">
-                                    <img class="th" src="../../img/platforms/settings.png" alt="Action">
-                                    <span class="text">
-                                        Action
-                                    </span>
-                                </div>
+                    <table class="shortcuts">
+                        <thead class="text">
+                            <tr>
+                                <th class="icon">
+                                    <div class="th-content">
+                                        <img class="th" src="../../img/platforms/keyboard.png" alt="Keyboard">
+                                        <span>
+                                            Keyboard
+                                        </span>
+                                    </div>
+                                </th>
+                                <th class="icon">
+                                    <div class="th-content">
+                                        <img class="th" src="../../img/platforms/settings.png" alt="Action">
+                                        <span>
+                                            Action
+                                        </span>
+                                    </div>
 
-                            </th>
-                            <th class="icon">
-                                <div class="th-content">
-                                    <img class="th" src="../../img/platforms/ps2.png" alt="Game Controller">
-                                    <span class="text">
-                                        Game Controller
-                                    </span>
-                                </div>
-                            </th>
-                        </tr>
-                    </thead>
+                                </th>
+                                <th class="icon">
+                                    <div class="th-content">
+                                        <img class="th" src="../../img/platforms/ps2.png" alt="Game Controller">
+                                        <span>
+                                            Game Controller
+                                        </span>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
 
-                    <tbody>
-                        <tr>
-                            <td><kbd>?</kbd></td>
-                            <td class="text">Display this window</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><kbd>←</kbd> / <kbd>→</kbd> / <kbd>↑</kbd> / <kbd>↓</kbd></td>
-                            <td class="text">Navigate games / platforms / menu items</td>
-                            <td class="game-controller-icon">
-                                <svg class="control-icon" style="--fill:var(--color-bg-control-button); --stroke:var(--color-outline-control-button); --fill-north:black; --fill-south:black; --fill-west:var(--color-selected); --fill-east:var(--color-selected);">
-                                    <use href="#dpad"/>
-                                </svg>
-                            </td>
-                        </tr>
+                        <tbody class="text">
+                            <tr>
+                                <td><kbd>?</kbd></td>
+                                <td class="text">Display this window</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><kbd>←</kbd> / <kbd>→</kbd> / <kbd>↑</kbd> / <kbd>↓</kbd></td>
+                                <td>Navigate games / platforms / menu items</td>
+                                <td class="game-controller-icon">
+                                    <svg class="control-icon" style="--fill:var(--color-bg-control-button); --stroke:var(--color-outline-control-button); --fill-north:black; --fill-south:black; --fill-west:var(--color-selected); --fill-east:var(--color-selected);">
+                                        <use href="#dpad"/>
+                                    </svg>
+                                </td>
+                            </tr>
 
-                        <tr>
-                            <td><kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd></td>
-                            <td class="text">Navigate platforms</td>
-                            <td class="game-controller-icon">
-                                <svg class="control-icon"
-                                     style="--fill: var(--color-bg-control-button); --fill-text: var(--color-selected); --stroke: var(--color-outline-control-button);">
-                                    <use href="#shoulders"></use>
-                                </svg>
-                            </td>
-                        </tr>
+                            <tr>
+                                <td><kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd></td>
+                                <td>Navigate platforms</td>
+                                <td class="game-controller-icon">
+                                    <svg class="control-icon"
+                                         style="--fill: var(--color-bg-control-button); --fill-text: var(--color-selected); --stroke: var(--color-outline-control-button);">
+                                        <use href="#shoulders"></use>
+                                    </svg>
+                                </td>
+                            </tr>
 
-                        <tr>
-                            <td><kbd>Enter</kbd></td>
-                            <td class="text">Select game / platform / menu item</td>
-                            <td class="game-controller-icon">
-                                <svg class="control-icon" style=" --fill-east: black; --fill-south: var(--color-selected); --fill-north: black; --fill-west: black; --stroke: var(--color-outline-control-button);">
-                                    <use href="#buttons-simple"/>
-                                </svg>
-                            </td>
-                        </tr>
+                            <tr>
+                                <td><kbd>Enter</kbd></td>
+                                <td>Select game / platform / menu item</td>
+                                <td class="game-controller-icon">
+                                    <svg class="control-icon" style=" --fill-east: black; --fill-south: var(--color-selected); --fill-north: black; --fill-west: black; --stroke: var(--color-outline-control-button);">
+                                        <use href="#buttons-simple"/>
+                                    </svg>
+                                </td>
+                            </tr>
 
-                        <tr>
-                            <td><kbd>Esc</kbd></td>
-                            <td class="text">Back / Exit</td>
-                            <td class="game-controller-icon">
-                                <svg class="control-icon" style=" --fill-east: var(--color-selected); --fill-south: black; --fill-north: black; --fill-west: black; --stroke: var(--color-outline-control-button);">
-                                    <use href="#buttons-simple"/>
-                                </svg>
-                            </td>
-                        </tr>
+                            <tr>
+                                <td><kbd>Esc</kbd></td>
+                                <td>Back / Exit</td>
+                                <td class="game-controller-icon">
+                                    <svg class="control-icon" style=" --fill-east: var(--color-selected); --fill-south: black; --fill-north: black; --fill-west: black; --stroke: var(--color-outline-control-button);">
+                                        <use href="#buttons-simple"/>
+                                    </svg>
+                                </td>
+                            </tr>
 
-                        <tr>
-                            <td><kbd>Ctrl</kbd> + <kbd>M</kbd></td>
-                            <td class="text">Fetch game metadata</td>
-                            <td class="game-controller-icon">
-                                <svg class="control-icon" style=" --fill-east: black; --fill-south:black; --fill-north: black; --fill-west: var(--color-selected); --stroke: var(--color-outline-control-button);">
-                                    <use href="#buttons-simple"/>
-                                </svg>
-                            </td>
-                        </tr>
+                            <tr>
+                                <td><kbd>Ctrl</kbd> + <kbd>M</kbd></td>
+                                <td>Fetch game metadata</td>
+                                <td class="game-controller-icon">
+                                    <svg class="control-icon" style=" --fill-east: black; --fill-south:black; --fill-north: black; --fill-west: var(--color-selected); --stroke: var(--color-outline-control-button);">
+                                        <use href="#buttons-simple"/>
+                                    </svg>
+                                </td>
+                            </tr>
 
-                        <tr>
-                            <td><kbd>+</kbd></td>
-                            <td class="text">Toggle favorite</td>
-                            <td class="game-controller-icon">
-                                <svg class="control-icon" style=" --fill-east: black; --fill-south:black; --fill-north: var(--color-selected); --fill-west: black; --stroke: var(--color-outline-control-button);">
-                                    <use href="#buttons-simple"/>
-                                </svg>
-                            </td>
-                        </tr>
+                            <tr>
+                                <td><kbd>+</kbd></td>
+                                <td>Toggle favorite</td>
+                                <td class="game-controller-icon">
+                                    <svg class="control-icon" style=" --fill-east: black; --fill-south:black; --fill-north: var(--color-selected); --fill-west: black; --stroke: var(--color-outline-control-button);">
+                                        <use href="#buttons-simple"/>
+                                    </svg>
+                                </td>
+                            </tr>
 
-                        <tr>
-                            <td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>K</kbd></td>
-                            <td class="text">Exit emulator and return to Emulsion</td>
-                            <td class="game-controller-icon">
-                                <svg class="control-icon"
-                                     style="--fill: var(--color-bg-control-button); --fill-text: var(--color-selected); --stroke: var(--color-outline-control-button);">
-                                    <use href="#select"></use>
-                                </svg>
-                                                    +
-                                <svg class="control-icon" style="--fill-north:black; --fill-south:var(--color-selected); --fill-west:black; --fill-east:black; --stroke:var(--color-outline-control-button);">
-                                    <use href="#dpad"/>
-                                </svg>
-                            </td>
-                        </tr>
+                            <tr>
+                                <td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>K</kbd></td>
+                                <td>Exit emulator and return to Emulsion</td>
+                                <td class="game-controller-icon">
+                                    <svg class="control-icon"
+                                         style="--fill: var(--color-bg-control-button); --fill-text: var(--color-selected); --stroke: var(--color-outline-control-button);">
+                                        <use href="#select"></use>
+                                    </svg>
+                                    +
+                                    <svg class="control-icon" style="--fill-north:black; --fill-south:var(--color-selected); --fill-west:black; --fill-east:black; --stroke:var(--color-outline-control-button);">
+                                        <use href="#dpad"/>
+                                    </svg>
+                                </td>
+                            </tr>
 
-                        <tr>
-                            <td><kbd>A–Z</kbd> / <kbd>0–9</kbd></td>
-                            <td class="text">Jump to game by first letter (wrap-around)</td>
-                            <td></td>
-                        </tr>
-                    </tbody>
-                </table>
+                            <tr>
+                                <td><kbd>A–Z</kbd> / <kbd>0–9</kbd></td>
+                                <td>Jump to game by first letter (wrap-around)</td>
+                                <td></td>
+                            </tr>
+
+                            <tr>
+                                <td><kbd>Ctrl</kbd> + <kbd>L</kbd></td>
+                                <td>Toggle gallery page view mode</td>
+                                <td></td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+
                 </div>
                 <div class="tab-content" id="cli-args">
                     <h3 class="dialog-title">Command Line Arguments</h3>
                     <table class="text">
-                    <thead>
-                        <tr>
-                            <th class="icon">
-                                <div class="th-content">
-                                    <img class="th" src="../../img/platforms/keyboard.png" alt="Keyboard">
-                                    <span>
-                                        Argument / flag
-                                    </span>
-                                </div>
-                            </th>
-                            <th class="icon">
-                                <div class="th-content">
-                                    <img class="th" src="../../img/platforms/settings.png" alt="Action">
-                                    <span>
-                                        Action
-                                    </span>
-                                </div>
-                            </th>
-                        </tr>
-                    </thead>
+                        <thead>
+                            <tr>
+                                <th class="icon">
+                                    <div class="th-content">
+                                        <img class="th" src="../../img/platforms/keyboard.png" alt="Keyboard">
+                                        <span>
+                                            Argument / flag
+                                        </span>
+                                    </div>
+                                </th>
+                                <th class="icon">
+                                    <div class="th-content">
+                                        <img class="th" src="../../img/platforms/settings.png" alt="Action">
+                                        <span>
+                                            Action
+                                        </span>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
 
-                    <tbody>
-                        <tr>
-                            <td><code>--kiosk</code></td>
-                            <td>Read-only / kids mode: No config / settings, disabled platforms hidden</td>
-                        </tr>
-                        <tr>
-                            <td><code>--full-screen</code></td>
-                            <td>Start Emulsion in full screen mode</td>
-                        </tr>
-                        <tr>
-                            <td><code>--auto-select=[platform_name]</code></td>
-                            <td>Auto-select [platform_name]</td>
-                        </tr>
-                        <tr>
-                            <td><code>--help</code></td>
-                            <td>Show this help message</td>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <h4>
-                                    Platform names
-                                </h4>
-                                <p id="platform-names">
-                                    Platform names
-                                </p>
+                        <tbody>
+                            <tr>
+                                <td><code>--kiosk</code></td>
+                                <td>Read-only / kids mode: No config / settings, disabled platforms hidden</td>
+                            </tr>
+                            <tr>
+                                <td><code>--full-screen</code></td>
+                                <td>Start Emulsion in full screen mode</td>
+                            </tr>
+                            <tr>
+                                <td><code>--auto-select=[platform_name]</code></td>
+                                <td>Auto-select [platform_name]</td>
+                            </tr>
+                            <tr>
+                                <td><code>--help</code></td>
+                                <td>Show this help message</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <h4>
+                                        Platform names
+                                    </h4>
+                                    <p id="platform-names">
+                                        Platform names
+                                    </p>
 
-                            </td>
-                        </tr>
-                    </tbody>
+                                </td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
                 <div class="dialog-buttons">
-                    <button class="button" id="kb-close-button">OK</button>
+                    <button class="ok button">OK</button>
                 </div>
             </div>
         </div>
@@ -416,8 +424,8 @@
                         </label>
                     </div>
 
-                    <button class="ok button">Launch</button>
                     <button class="cancel button">Cancel</button>
+                    <button class="ok button">Launch</button>
                 </div>
             </div>
         </div>

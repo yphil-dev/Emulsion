@@ -39,7 +39,9 @@
   flex-direction: row;
   align-items: baseline;
 
-  font-family: var(--font-second);
+  /* font-family: var(--font-second); */
+  color: var(--color-selected);
+
   font-weight: normal;
   font-style: normal;
   font-size: 1em;

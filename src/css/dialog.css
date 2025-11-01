@@ -18,8 +18,8 @@
   background: var(--color-bg);
   padding: 20px;
   border-radius: 8px;
-  gap: 10px;
-  max-width: 70vw;
+  /* gap: 10px; */
+  max-width: 90vw;
   /* subtle separation from the page */
   border: 1px solid rgba(255, 255, 255, 0.08); /* or rgba(0,0,0,0.15) depending on theme */
   box-shadow:
@@ -41,6 +41,7 @@
 
 .dialog .text {
   color: var(--color-text-1);
+  font-family: var(--font-second);
 }
 
 .dialog .dialog-buttons {
@@ -50,14 +51,13 @@
   margin-top: 20px;
 }
 
-.edit-metadata-dialog {
-  width:600px;
+.dialog.form {
+  width: 60vh;
   height:80vh;
 }
 
-.edit-metadata-dialog {
-  width:600px;
-  height:80vh;
+.dialog.form input {
+  margin-bottom: 0.5em;
 }
 
 .system-dialog-buttons {
@@ -81,10 +81,9 @@
   align-items: center;
 }
 
-.help-dialog {
-  width: 68vw;
-  max-width: 70vw;
-}
+/* .help-dialog { */
+/*   width: 68vw; */
+/* } */
 
 .help-dialog .tabs {
   display: flex;
@@ -120,6 +119,32 @@
   width: 100%;
 }
 
+.help-dialog th {
+  position: sticky;
+  top: 100px;
+}
+
+.help-dialog .dialog-title {
+  margin: 0;
+}
+
+.help-dialog table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.help-dialog table tbody {
+  display: block;
+  max-height: 90vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.help-dialog table thead {
+  display: table;
+  width: 100%;
+}
+
 .help-dialog #cli-args table td {
   width: 50%;
 }
@@ -142,10 +167,6 @@
 
 .help-dialog tbody tr:nth-child(odd) {
   background:var(--color-bg);
-}
-
-.help-dialog tbody tr {
-  height: 50px;
 }
 
 .help-dialog td {

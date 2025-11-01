@@ -135,11 +135,11 @@
         </footer>
 
         <div id="quit-confirmation-overlay" class="overlay">
-            <div id="quit-confirmation-dialog" class="dialog">
+            <div class="dialog">
                 <h3 class="dialog-title">Really, quit?</h3>
-                <div id="quit-confirmation-buttons" class="dialog-buttons">
-                    <button id="quit-ok-button" class="button">OK</button>
-                    <button id="quit-cancel-button" class="button">Cancel</button>
+                <div class="dialog-buttons">
+                    <button class="ok button">OK</button>
+                    <button class="cancel button">Cancel</button>
                 </div>
             </div>
         </div>
@@ -155,25 +155,36 @@
             </div>
         </div>
 
+        <div id="edit-meta-overlay" class="overlay">
+            <div id="edit-meta-dialog" class="dialog">
+                <h3 class="dialog-title"></h3>
+                <div class="dialog-text"></div>
+                <div class="dialog-buttons">
+                    <button class="ok button">Start</button>
+                    <button class="cancel button">Cancel</button>
+                </div>
+            </div>
+        </div>
+
         <div id="kb-shortcuts-overlay" class="overlay">
             <div class="dialog help-dialog">
                 <div class="tabs">
                     <button class="tab-button active" data-tab="quickstart">Quickstart</button>
-                    <button class="tab-button" data-tab="shortcuts">Keyboard Shortcuts</button>
-                    <button class="tab-button" data-tab="cli-args">Command line arguments</button>
+                    <button class="tab-button" data-tab="shortcuts">Controls</button>
+                    <button class="tab-button" data-tab="cli-args">Command Line Arguments</button>
                 </div>
                 <div class="tab-content active" id="quickstart">
                     <h3 class="dialog-title">Welcome to Emulsion!</h3>
                     <p class="first">Emulsion is a game launcher that helps you organize and launch your games.</p>
                     <h4>Setup</h4>
-                    <ul>
+                    <ul class="text">
                         <li>Select a platform on the home screen</li>
                         <li>Browse to your games directory</li>
                         <li>Enter your emulator for that platform</li>
                         <li>Enter your optional launch arguments for that emulator</li>
                     </ul>
                     <h4>Usage</h4>
-                    <ul>
+                    <ul class="text">
                         <li>Select a platform on the home screen</li>
                         <li>Browse your games and select one to launch</li>
                         <li>Use your keyboard or game controller to navigate</li>
@@ -181,14 +192,14 @@
                     <p>For more details, see the Keyboard Shortcuts tab or press any key to close.</p>
                 </div>
                 <div class="tab-content" id="shortcuts">
-                    <h3 class="dialog-title">Keyboard Shortcuts</h3>
+                    <h3 class="dialog-title">Controls</h3>
                     <table>
                     <thead>
                         <tr>
                             <th class="icon">
                                 <div class="th-content">
                                     <img class="th" src="../../img/platforms/keyboard.png" alt="Keyboard">
-                                    <span>
+                                    <span class="text">
                                         Keyboard
                                     </span>
                                 </div>
@@ -196,7 +207,7 @@
                             <th class="icon">
                                 <div class="th-content">
                                     <img class="th" src="../../img/platforms/settings.png" alt="Action">
-                                    <span>
+                                    <span class="text">
                                         Action
                                     </span>
                                 </div>
@@ -205,7 +216,7 @@
                             <th class="icon">
                                 <div class="th-content">
                                     <img class="th" src="../../img/platforms/ps2.png" alt="Game Controller">
-                                    <span>
+                                    <span class="text">
                                         Game Controller
                                     </span>
                                 </div>
@@ -216,12 +227,12 @@
                     <tbody>
                         <tr>
                             <td><kbd>?</kbd></td>
-                            <td>Display this window</td>
+                            <td class="text">Display this window</td>
                             <td></td>
                         </tr>
                         <tr>
                             <td><kbd>←</kbd> / <kbd>→</kbd> / <kbd>↑</kbd> / <kbd>↓</kbd></td>
-                            <td>Navigate games / platforms / menu items</td>
+                            <td class="text">Navigate games / platforms / menu items</td>
                             <td class="game-controller-icon">
                                 <svg class="control-icon" style="--fill:var(--color-bg-control-button); --stroke:var(--color-outline-control-button); --fill-north:black; --fill-south:black; --fill-west:var(--color-selected); --fill-east:var(--color-selected);">
                                     <use href="#dpad"/>
@@ -231,7 +242,7 @@
 
                         <tr>
                             <td><kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd></td>
-                            <td>Navigate platforms</td>
+                            <td class="text">Navigate platforms</td>
                             <td class="game-controller-icon">
                                 <svg class="control-icon"
                                      style="--fill: var(--color-bg-control-button); --fill-text: var(--color-selected); --stroke: var(--color-outline-control-button);">
@@ -242,7 +253,7 @@
 
                         <tr>
                             <td><kbd>Enter</kbd></td>
-                            <td>Select game / platform / menu item</td>
+                            <td class="text">Select game / platform / menu item</td>
                             <td class="game-controller-icon">
                                 <svg class="control-icon" style=" --fill-east: black; --fill-south: var(--color-selected); --fill-north: black; --fill-west: black; --stroke: var(--color-outline-control-button);">
                                     <use href="#buttons-simple"/>
@@ -252,7 +263,7 @@
 
                         <tr>
                             <td><kbd>Esc</kbd></td>
-                            <td>Back / Exit</td>
+                            <td class="text">Back / Exit</td>
                             <td class="game-controller-icon">
                                 <svg class="control-icon" style=" --fill-east: var(--color-selected); --fill-south: black; --fill-north: black; --fill-west: black; --stroke: var(--color-outline-control-button);">
                                     <use href="#buttons-simple"/>
@@ -262,7 +273,7 @@
 
                         <tr>
                             <td><kbd>Ctrl</kbd> + <kbd>M</kbd></td>
-                            <td>Fetch game metadata</td>
+                            <td class="text">Fetch game metadata</td>
                             <td class="game-controller-icon">
                                 <svg class="control-icon" style=" --fill-east: black; --fill-south:black; --fill-north: black; --fill-west: var(--color-selected); --stroke: var(--color-outline-control-button);">
                                     <use href="#buttons-simple"/>
@@ -272,7 +283,7 @@
 
                         <tr>
                             <td><kbd>+</kbd></td>
-                            <td>Toggle favorite</td>
+                            <td class="text">Toggle favorite</td>
                             <td class="game-controller-icon">
                                 <svg class="control-icon" style=" --fill-east: black; --fill-south:black; --fill-north: var(--color-selected); --fill-west: black; --stroke: var(--color-outline-control-button);">
                                     <use href="#buttons-simple"/>
@@ -282,7 +293,7 @@
 
                         <tr>
                             <td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>K</kbd></td>
-                            <td>Exit emulator and return to Emulsion</td>
+                            <td class="text">Exit emulator and return to Emulsion</td>
                             <td class="game-controller-icon">
                                 <svg class="control-icon"
                                      style="--fill: var(--color-bg-control-button); --fill-text: var(--color-selected); --stroke: var(--color-outline-control-button);">
@@ -297,15 +308,15 @@
 
                         <tr>
                             <td><kbd>A–Z</kbd> / <kbd>0–9</kbd></td>
-                            <td>Jump to game by first letter (wrap-around)</td>
+                            <td class="text">Jump to game by first letter (wrap-around)</td>
                             <td></td>
                         </tr>
                     </tbody>
                 </table>
                 </div>
                 <div class="tab-content" id="cli-args">
-                    <h3 class="dialog-title">Command line arguments</h3>
-                    <table>
+                    <h3 class="dialog-title">Command Line Arguments</h3>
+                    <table class="text">
                     <thead>
                         <tr>
                             <th class="icon">
@@ -346,9 +357,9 @@
                         </tr>
                         <tr>
                             <td colspan="2">
-                                <p>
+                                <h4>
                                     Platform names
-                                </p>
+                                </h4>
                                 <p id="platform-names">
                                     Platform names
                                 </p>
@@ -394,10 +405,14 @@
                 </div>
 
                 <div id="launch-game-dialog-buttons" class="dialog-buttons">
-                    <div class="always-open">
-                        <input type="checkbox" name="always-open" class="always-open" />
-                        <label class="text" for="always-open">
-                            Open this window each time
+                    <div class="open-dialog-at-launch">
+                        <input
+                            type="checkbox"
+                            id="open-dialog-at-launch"
+                            name="open-dialog-at-launch"
+                        />
+                        <label for="open-dialog-at-launch" class="text">
+                            Show this window
                         </label>
                     </div>
 

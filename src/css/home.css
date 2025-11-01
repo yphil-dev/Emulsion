@@ -87,6 +87,7 @@ p.name {
   transform: translateX(0) scale(1);
   animation: slide-pulse-glow 5s infinite ease-in-out;
   opacity: 1;
+  filter: brightness(150%);
 }
 
 .slide.active .slide-content {
@@ -95,14 +96,12 @@ p.name {
 
 .slide.prev-slide-3d {
   transform: translateX(-50vw) scale(0.9) rotateY(10deg);
-  filter: brightness(70%);
-  opacity: 0.9;
+  filter: brightness(60%);
 }
 
 .slide.next-slide-3d {
   transform: translateX(50vw) scale(0.9) rotateY(-10deg);
-  filter: brightness(70%);
-  opacity: 0.9;
+  filter: brightness(60%);
 }
 
 .slide.adjacent-3d {

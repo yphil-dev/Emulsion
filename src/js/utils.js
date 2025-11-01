@@ -199,12 +199,10 @@ export function simulateTabNavigation(container, shiftKey = false) {
         'button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
 
-    // Filter to only elements that are not disabled and not hidden (display: none)
     const focusableElementsArray = Array.from(focusableElements)
         .filter(el => !el.disabled && window.getComputedStyle(el).display !== 'none');
 
     if (focusableElementsArray.length === 0) {
-        console.warn("No focusable elements found");
         return;
     }
 
@@ -212,10 +210,8 @@ export function simulateTabNavigation(container, shiftKey = false) {
     let nextIndex;
 
     if (shiftKey) {
-        // Shift+Tab - move backward
         nextIndex = currentIndex <= 0 ? focusableElementsArray.length - 1 : currentIndex - 1;
     } else {
-        // Tab - move forward
         nextIndex = currentIndex >= focusableElementsArray.length - 1 ? 0 : currentIndex + 1;
     }
 

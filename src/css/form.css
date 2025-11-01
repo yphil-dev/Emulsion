@@ -109,10 +109,6 @@ label.checkbox {
   transition: background 0.3s;
 }
 
-.radio-box:hover {
-  font-weight: bold;
-}
-
 .radio-box.last {
   border-right: none;
 }
@@ -223,6 +219,18 @@ button {
   color: var(--color-selected);
 }
 
+/* .input:hover, */
+/* .input:focus, */
+/* .input:active { */
+/*   background-color: var(--color-button-on); */
+/*   background-position: 0 0; */
+/*   color: #ffffff; */
+/* } */
+
+/* .radio-box:hover { */
+/*   font-weight: bold; */
+/* } */
+
 .button-browse {
   margin-left: 1em;
 }
@@ -254,14 +262,6 @@ button {
 .footer-size-input-ctn {
   display: flex;
   flex-direction: row;
-}
-
-.input:hover,
-.input:focus,
-.input:active {
-  background-color: var(--color-button-on);
-  background-position: 0 0;
-  color: #ffffff;
 }
 
 input[type="checkbox"] {

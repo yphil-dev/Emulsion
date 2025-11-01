@@ -37,13 +37,8 @@ window.onMenuKeyDown = function onMenuKeyDown(event) {
     case 'Escape':
         closeSettingsOrPlatformMenu();
         break;
-
-    // case 'Enter':
-    //     document.querySelector('.save-button').click();
-    //     break;
     }
-
-}
+};
 
 window.onGameMenuKeyDown = function onGameMenuKeyDown(event) {
 
@@ -127,7 +122,7 @@ window.onGameMenuKeyDown = function onGameMenuKeyDown(event) {
         }
     }
 
-}
+};
 
 function onGameMenuClick(event) {
     console.log("event.target: ", event.target);

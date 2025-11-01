@@ -19,7 +19,7 @@
   padding: 20px;
   border-radius: 8px;
   gap: 10px;
-
+  min-width: 50vw;
   /* subtle separation from the page */
   border: 1px solid rgba(255, 255, 255, 0.08); /* or rgba(0,0,0,0.15) depending on theme */
   box-shadow:
@@ -227,9 +227,10 @@
   background-color: var(--color-bg-header);
 }
 
-.launch-game-dialog div.always-open {
+.launch-game-dialog div.open-dialog-at-launch {
   display: flex;
   flex-direction: row;
+  align-items: center;
 }
 
 .launch-game-dialog h2.dialog-title {

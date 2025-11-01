@@ -12,6 +12,7 @@ export function quitDialog() {
     const okButton = dialog.querySelector('button.ok');
 
     function openDialog() {
+        closeAllDialogs();
         overlay.style.display = 'flex';
         cancelButton.focus();
     }
@@ -56,6 +57,10 @@ export function quitDialog() {
     openDialog();
 }
 
+function closeAllDialogs() {
+    document.querySelectorAll('div.overlay').forEach(div => {div.style.display = 'none';});
+}
+
 export function editMetaDialog(params, gameMetaData) {
 
     LB.mode = 'metaEdit';
@@ -74,8 +79,10 @@ export function editMetaDialog(params, gameMetaData) {
     dialogBody.appendChild(form);
 
     function openDialog() {
+        closeAllDialogs();
         overlay.style.display = 'flex';
         cancelButton.focus();
+        document.querySelectorAll('div.overlay').forEach(div => {div.style.display = 'none';});
     }
 
     function closeDialog() {
@@ -91,6 +98,7 @@ export function editMetaDialog(params, gameMetaData) {
     okButton.addEventListener('click', () => {
         form.requestSubmit();
     });
+
     cancelButton.addEventListener('click', closeDialog);
     overlay.onclick = (e) => { if (e.target === overlay) closeDialog();};
 
@@ -200,11 +208,10 @@ export function helpDialog() {
     platformNames.textContent = PLATFORMS.map(platform => platform.name).join(', ');
 
     function openDialog() {
-        console.log("yoo: ");
+        closeAllDialogs();
         overlay.style.display = 'flex';
-        overlay.style.alignItems = 'flex-start';
-        overlay.style.paddingTop = '50px';
-        console.log("overlay: ", overlay);
+        // overlay.style.alignItems = 'flex-start';
+        // overlay.style.paddingTop = '50px';
         closeButton.focus();
 
         // Populate platform names in CLI tab
@@ -408,6 +415,7 @@ export function systemDialog() {
     const helpButton = dialog.querySelector('.help');
 
     function openDialog() {
+        closeAllDialogs();
         overlay.style.display = 'flex';
         cancelButton.focus();
     }
@@ -489,6 +497,7 @@ export function launchGameDialog(gameContainer) {
     dialog.querySelector('.emulator-name').textContent = gameContainer.dataset.emulator;
 
     function openDialog() {
+        closeAllDialogs();
         overlay.style.display = 'flex';
         okButton.focus();
     }

@@ -790,7 +790,7 @@ export function initGamepad() {
 
 }
 
-export async function setGalleryViewMode(viewMode, save) {
+async function setGalleryViewMode(viewMode, save) {
 
     const viewToggleBtn = document.getElementById('view-mode-toggle-button');
     const page = document.querySelector('.page.active');
@@ -799,7 +799,7 @@ export async function setGalleryViewMode(viewMode, save) {
     const selectedContainer = pageContent.querySelector('.game-container.selected') || pageContent.querySelector('.game-container');
 
     page.dataset.viewMode = viewMode;
-    pageContent.classList.remove('list');
+    // pageContent.classList.remove('list');
     viewToggleBtn.classList.remove('fa-list', 'fa-th');
 
     if (save) {

@@ -52,113 +52,8 @@ const DialogManager = {
     }
 };
 
-// Updated quitDialog using the manager
-export function quitDialog() {
-    const overlay = document.getElementById('quit-confirmation-overlay');
-    const cancelButton = overlay.querySelector('button.cancel');
-    const okButton = overlay.querySelector('button.ok');
-
-    DialogManager.open(overlay, 'quit');
-    cancelButton.focus();
-
-    function closeDialog() {
-        DialogManager.closeCurrent();
-        DialogManager.restoreMode();
-        initSlideShow(LB.currentPlatform);
-    }
-
-    // Remove the old closeAllDialogs calls from your functions
-    window.onQuitKeyDown = function onQuitKeyDown(event) {
-        event.stopPropagation();
-        event.stopImmediatePropagation();
-
-        switch (event.key) {
-        case 'ArrowRight':
-        case 'ArrowDown':
-            simulateTabNavigation(overlay);
-            break;
-        case 'ArrowLeft':
-        case 'ArrowUp':
-            simulateTabNavigation(overlay, true);
-            break;
-        case 'Enter':
-            const focusedButton = document.activeElement;
-            if (focusedButton === okButton) {
-                ipcRenderer.invoke('quit');
-            } else if (focusedButton === cancelButton) {
-                closeDialog();
-            }
-            break;
-        case 'Escape':
-            closeDialog();
-            break;
-        }
-    };
-
-    okButton.addEventListener('click', () => { ipcRenderer.invoke('quit'); });
-    cancelButton.addEventListener('click', closeDialog);
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) closeDialog();
-    });
-}
-
-export function editMetaDialog(params, gameMetaData) {
-
-    LB.mode = 'metaEdit';
-
-    const overlay = document.getElementById('edit-meta-overlay');
-    const dialog = overlay.querySelector('.dialog');
-    const dialogBody = dialog.querySelector('div.dialog-body');
-
-    const title = dialog.querySelector('.dialog-title');
-
-    console.log("params.cleanName: ", params.cleanName);
-
-    title.textContent = params.cleanName;
-
-    const cancelButton = dialog.querySelector('button.cancel');
-    const okButton = dialog.querySelector('button.ok');
-
-    const form = createEditMetaForm(params, gameMetaData);
-    dialogBody.innerHTML = '';
-    dialogBody.appendChild(form);
-
-    DialogManager.open(overlay, 'metaEdit');
-    cancelButton.focus();
-
-    function closeDialog() {
-        DialogManager.closeCurrent();
-        DialogManager.restoreMode();
-        initGallery(LB.currentPlatform);
-    }
-
-    // function openDialog() {
-    //     overlay.dataset.mode = LB.mode;
-    //     closeAllDialogs();
-    //     overlay.style.display = 'flex';
-    //     cancelButton.focus();
-    // }
-
-    // function closeDialog() {
-    //     overlay.style.display = 'none';
-    //     initGallery(LB.currentPlatform);
-    // }
-
-    window.onMetaEditKeyDown = function onMetaEditKeyDown(event) {
-        event.stopPropagation();
-        event.stopImmediatePropagation();
-    };
-
-    okButton.addEventListener('click', () => {
-        form.requestSubmit();
-    });
-
-    cancelButton.addEventListener('click', closeDialog);
-    overlay.onclick = (e) => { if (e.target === overlay) closeDialog();};
-
-}
-
 function createEditMetaForm(params, gameMetaData) {
+
     const form = document.createElement('form');
 
     const fields = [
@@ -191,12 +86,65 @@ function createEditMetaForm(params, gameMetaData) {
         else if (field.name === 'platforms') input.value = (gameMetaData.platforms || []).join(', ');
         else if (field.name === 'genre') input.value = gameMetaData.genre || '';
         else if (field.name === 'description') input.value = gameMetaData.description || '';
-        else if (field.name === 'releaseDate') input.value = gameMetaData.releaseDate?.slice(0, 10) || '';
+        else if (field.name === 'releaseDate') {
+            console.log("gameMetaData.releaseDate: ", gameMetaData.releaseDate);
+            // Format the date for HTML date input
+            if (gameMetaData.releaseDate) {
+                // If it's just a year like "2008", convert to "2008-01-01"
+                if (/^\d{4}$/.test(gameMetaData.releaseDate.toString())) {
+                    input.value = `${gameMetaData.releaseDate}-01-01`;
+                }
+                // If it's already in YYYY-MM-DD format, use as-is
+                else if (/^\d{4}-\d{2}-\d{2}$/.test(gameMetaData.releaseDate.toString())) {
+                    input.value = gameMetaData.releaseDate;
+                }
+                // If it's any other format, try to parse it
+                else {
+                    const date = new Date(gameMetaData.releaseDate);
+                    if (!isNaN(date)) {
+                        input.value = date.toISOString().split('T')[0];
+                    } else {
+                        input.value = '';
+                    }
+                }
+            } else {
+                input.value = '';
+            }
+        }
         else input.value = gameMetaData[field.name] || '';
 
         form.appendChild(input);
     });
 
+    return form;
+}
+
+export function editMetaDialog(params, gameMetaData) {
+
+    LB.mode = 'metaEdit';
+
+    const overlay = document.getElementById('edit-meta-overlay');
+    const dialog = overlay.querySelector('.dialog');
+    const dialogBody = dialog.querySelector('div.dialog-body');
+
+    const title = dialog.querySelector('.dialog-title');
+
+    title.textContent = params.cleanName;
+
+    const cancelButton = dialog.querySelector('button.cancel');
+    const okButton = dialog.querySelector('button.ok');
+
+    const form = createEditMetaForm(params, gameMetaData);
+    dialogBody.innerHTML = '';
+    dialogBody.appendChild(form);
+
+    function closeDialog() {
+        DialogManager.closeCurrent();
+        DialogManager.restoreMode();
+        initGallery(LB.currentPlatform);
+    }
+
+    // Add form submit handler that includes closeDialog
     form.addEventListener('submit', (e) => {
         e.preventDefault();
         const editedData = {
@@ -211,11 +159,24 @@ function createEditMetaForm(params, gameMetaData) {
         form.closest('.popup-overlay')?.remove();
         displayMetaData(params, editedData);
         LB.mode = 'gallery';
+        closeDialog(); // Close the dialog after submitting
     });
 
-    return form;
-}
+    DialogManager.open(overlay, 'metaEdit');
+    cancelButton.focus();
 
+    window.onMetaEditKeyDown = function onMetaEditKeyDown(event) {
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+    };
+
+    okButton.addEventListener('click', () => {
+        form.requestSubmit();
+    });
+
+    cancelButton.addEventListener('click', closeDialog);
+    overlay.onclick = (e) => { if (e.target === overlay) closeDialog();};
+}
 
 export function toggleFavDialog(message) {
 
@@ -252,28 +213,24 @@ export function helpDialog() {
     const dialog = overlay.querySelector('.dialog');
     const okButton = dialog.querySelector('button.ok');
 
-    // Apply help dialog specific styles
     overlay.style.alignItems = 'flex-start';
     overlay.style.paddingTop = '50px';
 
-    // Populate platform names
     const platformNames = dialog.querySelector('#platform-names');
     if (platformNames) {
         platformNames.textContent = PLATFORMS.map(platform => platform.name).join(', ');
     }
 
-    // Tab switching functionality
     function setupTabs() {
         const tabButtons = overlay.querySelectorAll('.tab-button');
         const tabContents = overlay.querySelectorAll('.tab-content');
 
         tabButtons.forEach(button => {
             button.addEventListener('click', () => {
-                // Remove active class from all tabs and contents
+
                 tabButtons.forEach(btn => btn.classList.remove('active'));
                 tabContents.forEach(content => content.classList.remove('active'));
 
-                // Add active class to clicked tab and corresponding content
                 button.classList.add('active');
                 const tabId = button.getAttribute('data-tab');
                 const content = overlay.querySelector(`#${tabId}`);
@@ -363,9 +320,11 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
 
             switch (event.key) {
             case 'ArrowLeft':
+            case 'ArrowUp':
                 simulateTabNavigation(dialog, true);
                 break;
             case 'ArrowRight':
+            case 'ArrowDown':
                 simulateTabNavigation(dialog);
                 break;
             case 'Escape':
@@ -373,6 +332,9 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
                 resolve(null); // Resolve with null on escape
                 break;
             case 'Enter':
+                if (!cancelButton.matches(':focus')) {
+                    onOk();
+                }
                 break;
             default:
                 break;
@@ -477,20 +439,18 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
         dialogBody.innerHTML = '';
         dialogBody.appendChild(optionsContainer);
 
-        // --- Buttons behavior ---
         const showOk = hasImages || hasMeta;
         okButton.style.display = showOk ? 'block' : 'none';
         cancelButton.textContent = showOk ? 'Cancel' : 'Close';
 
-        const handleOk = () => {
-            console.log("handleOk: ");
+        const onOk = () => {
             const imagesChecked = document.getElementById('batch-images')?.checked || false;
             const metadataChecked = document.getElementById('batch-metadata')?.checked || false;
             closeDialog();
             resolve({ imageBatch: imagesChecked, metaBatch: metadataChecked }); // Resolve with user's choice
         };
 
-        okButton.onclick = handleOk;
+        okButton.onclick = onOk;
 
         overlay.onclick = (e) => {
             if (e.target === overlay) {
@@ -499,13 +459,12 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
             }
         };
 
-        // Open the dialog using DialogManager
         DialogManager.open(overlay, 'downloadMetaDialog');
         cancelButton.focus();
     });
 }
 
-export function systemDialog() {
+export function systemDialog(focusButton = 'cancel') {
     const overlay = document.getElementById('system-dialog-overlay');
     const dialog = overlay.querySelector('.dialog');
     const restartButton = dialog.querySelector('.restart');
@@ -513,6 +472,15 @@ export function systemDialog() {
     const quitButton = dialog.querySelector('.quit');
     const cancelButton = dialog.querySelector('.cancel');
     const helpButton = dialog.querySelector('.help');
+
+    // Map button names to elements
+    const buttonMap = {
+        'cancel': cancelButton,
+        'restart': restartButton,
+        'config': configButton,
+        'quit': quitButton,
+        'help': helpButton
+    };
 
     function closeDialog() {
         DialogManager.closeCurrent();
@@ -577,7 +545,14 @@ export function systemDialog() {
 
     // Open the dialog using DialogManager
     DialogManager.open(overlay, 'systemDialog');
-    cancelButton.focus();
+
+    // Focus the specified button, fallback to cancel if invalid
+    const buttonToFocus = buttonMap[focusButton] || cancelButton;
+    if (buttonToFocus && buttonToFocus.style.display !== 'none') {
+        buttonToFocus.focus();
+    } else {
+        cancelButton.focus(); // Final fallback
+    }
 }
 
 export function launchGameDialog(gameContainer) {

@@ -179,7 +179,6 @@ export async function buildGallery(params) {
         if (platform === 'ps3') {
             const ps3Title = await getPs3GameName(gameFilePath);
             if (ps3Title) {
-                console.log("ps3Title: ", ps3Title);
                 fileNameWithoutExt = stripExtensions(ps3Title);
             }
         }

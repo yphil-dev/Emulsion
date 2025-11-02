@@ -10,7 +10,7 @@ import { updateFooterControlsFor,
          toggleHeaderNavLinks } from './utils.js';
 import { getPreference, updatePreference } from './preferences.js';
 import { getMeta, displayMetaData } from './metadata.js';
-import { quitDialog, editMetaDialog, toggleFavDialog, launchGameDialog } from './dialog.js';
+import { editMetaDialog, toggleFavDialog, launchGameDialog, systemDialog } from './dialog.js';
 
 const main = document.querySelector('main');
 const slideshow = document.getElementById("slideshow");
@@ -132,7 +132,7 @@ export function initSlideShow(platformToDisplay) {
             break;
 
         case 'Escape':
-            quitDialog();
+            systemDialog('quit');
             break;
 
         }

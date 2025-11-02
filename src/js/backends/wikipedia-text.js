@@ -3,7 +3,6 @@
 // src/js/backends/wikipedia-text.js
 
 export const fetchGameMetaData = async (gameName, platform = null) => {
-    console.log("gameName, platform: ", gameName);
     try {
         // Build Wikipedia search URL
         const wikiSearchUrl = new URL('https://en.wikipedia.org/w/api.php');

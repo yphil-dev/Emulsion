@@ -240,7 +240,7 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
 
         const selected = page.querySelector('.game-container.selected');
 
-        if (!selected) {
+        if (!selected && !page.dataset.empty) {
             GalleryState.gameContainers[0].classList.add('selected');
             GalleryState.selectedIndex = 0;
         } else {

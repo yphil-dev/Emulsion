@@ -254,8 +254,7 @@ div.dummy-game-container i { color: var(--color-border-on); }
 }
 
 div.platform-container {
-  justify-content: center;
-  padding: 0.5em;
+  justify-content: flex-start;
 }
 
 .explosion-particle {

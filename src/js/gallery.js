@@ -368,7 +368,6 @@ export function buildPlatformContainer({
     container.dataset.index = index;
 
     container.title = platformName;
-    container.style.height = `calc(120vw / ${galleryNumOfCols})`;
 
     const infoDiv = document.createElement('div');
     infoDiv.classList.add('platform-info');
@@ -388,6 +387,7 @@ export function buildPlatformContainer({
     const image = document.createElement('img');
     image.src = path.join(LB.baseDir, 'img', 'platforms', `${platformName}.png`);
     image.classList.add('platform-image', 'game-image');
+    image.style.height = `calc(120vw / ${galleryNumOfCols})`;
 
     container.appendChild(image);
     container.appendChild(infoDiv);

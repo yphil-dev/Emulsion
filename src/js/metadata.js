@@ -81,11 +81,11 @@ function createGameMetaDataDL(metadata) {
         ) return;
 
         const dt = document.createElement('dt');
-        dt.className = 'meta-key';
+        dt.className = 'dl-key';
         dt.textContent = title;
 
         const dd = document.createElement('dd');
-        dd.className = 'meta-value';
+        dd.className = 'dl-value';
         dd.textContent = value;
 
         dl.append(dt, dd);

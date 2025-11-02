@@ -139,5 +139,5 @@ const testGame = async (gameName) => {
   // await testGame("Flat Out Ultimate Carnage");
   await testGame("Outrun");
   // await testGame("Banshee (Amiga video game)");
-  await testGame("Kirby Air Ride");
+  // await testGame("Kirby Air Ride");
 })();

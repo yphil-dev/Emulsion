@@ -432,10 +432,6 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         return Math.min(Math.max((row + rows) * LB.galleryNumOfCols + col, 0), containers.length - 1);
     };
 
-    if (getComputedStyle(document.getElementById('batch-confirmation-overlay')).display !== 'none') {
-        return;
-    }
-
     switch (event.key) {
     case 'ArrowLeft':
         if (event.shiftKey) {

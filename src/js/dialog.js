@@ -296,32 +296,74 @@ export function helpDialog() {
         }
     };
 
-
-
     okButton.addEventListener('click', closeDialog);
     overlay.addEventListener('click', (e) => { if (e.target === overlay) closeDialog(); });
 
     openDialog();
 }
 
+export async function downloadMetaDialog(imagesCount, metaCount) {
+    console.log("downloadMetaDialog: ");
+    const overlay = document.getElementById('download-meta-overlay');
+    const dialog = overlay.querySelector('.dialog');
+    const dialogTitle = dialog.querySelector('.dialog-title');
+    const dialogBody = dialog.querySelector('.dialog-body');
 
-export function batchDialog(imagesCount, metaCount) {
-    return new Promise((resolve, reject) => {
-        const overlay = document.getElementById('batch-confirmation-overlay');
-        const dialogTitle = overlay.querySelector('.title');
-        const dialogText = overlay.querySelector('.dialog-text');
-        const okButton = overlay.querySelector('button.ok');
-        const cancelButton = overlay.querySelector('button.cancel');
+    const okButton = dialog.querySelector('button.ok');
+    const cancelButton = dialog.querySelector('button.cancel');
 
-        overlay.dataset.status = 'open';
-        dialogText.innerHTML = '';
+    // Return a Promise that resolves with the user's choice
+    return new Promise((resolve) => {
+        function openDialog() {
+            overlay.dataset.mode = LB.mode;
+            closeAllDialogs();
+            LB.mode = 'downloadMetaDialog';
+            overlay.style.display = 'flex';
+            cancelButton.focus();
+        }
+
+        function closeDialog() {
+            overlay.style.display = 'none';
+            LB.mode = 'gallery';
+        }
+
+        window.onDownloadMetaKeyDown = function onDownloadMetaKeyDown(event) {
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+
+            switch (event.key) {
+            case 'ArrowLeft':
+                simulateTabNavigation(dialog, true);
+                break;
+            case 'ArrowRight':
+                simulateTabNavigation(dialog);
+                break;
+            case 'Escape':
+                closeDialog();
+                resolve(null); // Resolve with null on escape
+                break;
+            case 'Enter':
+                break;
+            default:
+                break;
+            }
+        };
+
+        const handleCancel = () => {
+            closeDialog();
+            resolve(null); // Resolve with null on cancel
+        };
+
+        cancelButton.addEventListener('click', handleCancel);
+
+        dialogTitle.textContent = `Download ${LB.currentPlatform} games meta data`;
 
         // --- Build dialog options dynamically ---
         const optionsContainer = document.createElement('div');
         optionsContainer.className = 'batch-options';
 
         const makeRadioOption = (id, label, count, checked, disabled, name) => {
-            const wrapper = document.createElement('label');
+            const wrapper = document.createElement('div');
             wrapper.className = 'batch-option';
 
             const radio = document.createElement('input');
@@ -332,11 +374,15 @@ export function batchDialog(imagesCount, metaCount) {
             radio.checked = checked;
             radio.disabled = disabled;
 
+            const labelElement = document.createElement('label');
+            labelElement.htmlFor = id;
+            labelElement.className = 'form-label';
+
             const countText = count ? ` (${count})` : '';
-            const text = document.createTextNode(` ${label}${countText}`);
+            labelElement.textContent = `${label}${countText}`;
 
             wrapper.appendChild(radio);
-            wrapper.appendChild(text);
+            wrapper.appendChild(labelElement);
 
             return wrapper;
         };
@@ -348,72 +394,84 @@ export function batchDialog(imagesCount, metaCount) {
         const imgLabel = hasImages ? `Download missing images` : `No missing images`;
         const metaLabel = hasMeta ? `Download missing metadata` : `No missing metadata`;
 
+        const imgSources = document.createElement('dl');
+        imgSources.classList.add('meta-data-sources');
+
+        const imgSourcesDT = document.createElement('dt');
+        imgSourcesDT.textContent = 'Sources';
+
+        // Helper function to create icon-span pairs
+        function createSourceDd(iconClass, text) {
+
+            const dd = document.createElement('dd');
+
+            const icon = document.createElement('i');
+            icon.className = `form-icon fa fa-2x ${iconClass}`;
+            icon.setAttribute('aria-hidden', 'true');
+
+            const span = document.createElement('span');
+            span.textContent = text;
+
+            // return [icon, span];
+            dd.append(icon, span);
+            return dd;
+        }
+
+        imgSources.append(
+            imgSourcesDT,
+            createSourceDd('fa-square-o', 'Wikipedia'),
+            createSourceDd('fa-check-square-o', 'SteamGridDB'),
+            createSourceDd('fa-check-square-o', 'GiantBomb')
+        );
+
+        const textSources = document.createElement('dl');
+        textSources.classList.add('meta-data-sources');
+
+        const textSourcesDT = document.createElement('dt');
+        textSourcesDT.textContent = 'Sources';
+
+        textSources.append(textSourcesDT, createSourceDd('fa-square-o', 'Wikipedia'));
+
         optionsContainer.appendChild(
             makeRadioOption('batch-images', imgLabel, hasImages ? imagesCount : 0, hasImages, !hasImages, 'batch-type')
         );
+
+        optionsContainer.appendChild(imgSources);
+
         optionsContainer.appendChild(
             makeRadioOption('batch-metadata', metaLabel, hasMeta ? metaCount : 0, hasImages && !hasMeta, !hasMeta, 'batch-type')
         );
+        optionsContainer.appendChild(textSources);
 
-        dialogText.appendChild(optionsContainer);
+        dialogBody.innerHTML = '';
+        dialogBody.appendChild(optionsContainer);
 
         // --- Buttons behavior ---
         const showOk = hasImages || hasMeta;
         okButton.style.display = showOk ? 'block' : 'none';
         cancelButton.textContent = showOk ? 'Cancel' : 'Close';
 
-        overlay.style.display = 'flex';
-        cancelButton.focus();
-
-        const cleanup = () => {
-            overlay.style.display = 'none';
-            document.removeEventListener('keydown', onKeyDown);
-            dialogTitle.textContent = 'Game meta data';
-        };
-
-        const onOk = () => {
+        const handleOk = () => {
+            console.log("handleOk: ");
             const imagesChecked = document.getElementById('batch-images')?.checked || false;
             const metadataChecked = document.getElementById('batch-metadata')?.checked || false;
-            cleanup();
-            resolve({ imageBatch: imagesChecked, metaBatch: metadataChecked });
+            closeDialog();
+            resolve({ imageBatch: imagesChecked, metaBatch: metadataChecked }); // Resolve with user's choice
         };
 
-        const onCancel = () => {
-            cleanup();
-            reject(new Error('User cancelled batch dialog'));
-        };
+        okButton.onclick = handleOk;
 
-        const onKeyDown = (event) => {
-            if (event.key === 'Escape') onCancel();
-            if (event.key === 'Enter' && document.activeElement.type === 'radio') {
-                document.activeElement.checked = !document.activeElement.checked;
+        overlay.onclick = (e) => {
+            if (e.target === overlay) {
+                closeDialog();
+                resolve(null);
             }
         };
 
-        okButton.onclick = onOk;
-        cancelButton.onclick = onCancel;
-        document.addEventListener('keydown', onKeyDown);
-        overlay.onclick = (e) => { if (e.target === overlay) onCancel(); };
-
-        // --- Optional: basic focus loop ---
-        // setTimeout(() => {
-        //     const inputs = optionsContainer.querySelectorAll('input[type="radio"]');
-        //     const elements = [...inputs, okButton, cancelButton];
-
-        //     elements.forEach((el, i) => {
-        //         el.addEventListener('keydown', (e) => {
-        //             if (e.key === 'Tab') {
-        //                 e.preventDefault();
-        //                 const dir = e.shiftKey ? -1 : 1;
-        //                 const next = (i + dir + elements.length) % elements.length;
-        //                 elements[next].focus();
-        //             }
-        //         });
-        //     });
-        // }, 0);
-
+        openDialog();
     });
 }
+
 
 export function systemDialog() {
 

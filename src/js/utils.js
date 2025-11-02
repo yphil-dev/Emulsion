@@ -1,6 +1,6 @@
 import { PLATFORMS } from './platforms.js';
 import { buildEmptyPageGameContainer } from './gallery.js';
-import { batchDialog } from './dialog.js';
+import { downloadMetaDialog } from './dialog.js';
 import { getMeta } from './metadata.js';
 import { updateGamePane } from './slideshow.js';
 
@@ -930,8 +930,6 @@ export async function batchDownload() {
         page.dataset.platform === LB.currentPlatform
     );
 
-    console.log("LB.preferences: ", LB.preferences[LB.currentPlatform]);
-
     if (!LB.preferences[LB.currentPlatform].gamesDir) {
         document.getElementById('games-dir-sub-label').textContent = 'This field cannot be empty';
         return;
@@ -941,10 +939,9 @@ export async function batchDownload() {
 
     const gamesMissingMeta = await getMissingMetaGames(currentPlatformPage);
 
-    // Show confirmation dialog
     let confirmed;
     try {
-        confirmed = await batchDialog(gamesMissingImage.length, gamesMissingMeta.length);
+        confirmed = await downloadMetaDialog(gamesMissingImage.length, gamesMissingMeta.length);
     } catch (err) {
         // Silently catch cancel error
         return;
@@ -953,6 +950,8 @@ export async function batchDownload() {
         console.info("Batch download cancelled by user");
         return;
     }
+
+    console.log("confirmed: ", confirmed);
 
     LB.batchRunning = true;
     try {

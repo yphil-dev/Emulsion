@@ -878,12 +878,12 @@ function buildGamePane(params) {
     metaIcon.className = 'fa fa-wikidata';
     fetchMetaButton.appendChild(metaIcon);
 
-    const fetchCoverArtButton = document.createElement('button');
-    fetchCoverArtButton.classList.add('pane-edit-cover-art-button', 'button');
+    const coverArtButton = document.createElement('button');
+    coverArtButton.classList.add('pane-edit-cover-art-button', 'button');
 
     const coverArtIcon = document.createElement('i');
     coverArtIcon.className = 'fa fa-image';
-    fetchCoverArtButton.appendChild(coverArtIcon);
+    coverArtButton.appendChild(coverArtIcon);
 
     const webLinkButton = document.createElement('button');
     webLinkButton.classList.add('pane-web-link-button', 'button');
@@ -898,6 +898,12 @@ function buildGamePane(params) {
     const editMetaIcon = document.createElement('i');
     editMetaIcon.className = 'fa fa-pencil';
     editMetaButton.appendChild(editMetaIcon);
+
+    coverArtButton.addEventListener('click', () => {
+        const page = document.querySelector('.page.active');
+        const selectedContainer = page.querySelector('div.selected');
+        openGameMenu(selectedContainer);
+    });
 
     editMetaButton.addEventListener('click', async () => {
         // fetch current meta
@@ -955,7 +961,7 @@ function buildGamePane(params) {
         ipcRenderer.invoke('go-to-url', googleUrl);
     });
 
-    paneControls.append(fetchMetaButton, fetchCoverArtButton, webLinkButton, editMetaButton);
+    paneControls.append(fetchMetaButton, coverArtButton, webLinkButton, editMetaButton);
 
     imagePane.appendChild(paneImage);
 

@@ -200,7 +200,11 @@ export function simulateTabNavigation(container, shiftKey = false) {
     );
 
     const focusableElementsArray = Array.from(focusableElements)
-        .filter(el => !el.disabled && window.getComputedStyle(el).display !== 'none');
+          .filter(el =>
+              !el.disabled &&
+                  window.getComputedStyle(el).display !== 'none' &&
+                  !(el.tagName === 'INPUT' && el.type === 'range')
+          );
 
     if (focusableElementsArray.length === 0) {
         return;

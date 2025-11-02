@@ -378,3 +378,17 @@ div.form-icon {
 #menu-progress-text.error {
   color: red;
 }
+
+.range-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+
+  width: 100%;
+}
+
+.range-value {
+  min-width: 2ch;
+  font-family: monospace;
+  color: var(--color-selected);
+}

@@ -147,6 +147,7 @@ function onGameMenuWheel(event) {
 function buildPrefsFormItem(name, iconName, type, description, shortDescription, value, onChangeFct) {
 
     let input;
+    let inputValueDisplay;
     const group = document.createElement('div');
     const radios = [];
 
@@ -205,8 +206,6 @@ function buildPrefsFormItem(name, iconName, type, description, shortDescription,
 
         input = inputCtn;
 
-    } else if (type === 'menu') {
-
     } else {
 
         input = document.createElement('input');
@@ -214,11 +213,23 @@ function buildPrefsFormItem(name, iconName, type, description, shortDescription,
         input.id = name;
         input.name = name;
         input.min = '2';
-        input.max = '12';
+        input.max = '24';
         input.placeholder = description;
         input.tabIndex = 0;
         input.classList.add('input');
         input.value = value;
+
+        if (type === 'range') {
+
+            inputValueDisplay = document.createElement('span');
+            inputValueDisplay.classList.add('range-value');
+            inputValueDisplay.textContent = value;
+
+            input.addEventListener('input', () => {
+                inputValueDisplay.textContent = input.value;
+            });
+
+        }
 
     }
 
@@ -238,6 +249,9 @@ function buildPrefsFormItem(name, iconName, type, description, shortDescription,
     ctn.classList.add('dual-ctn');
 
     ctn.appendChild(icon);
+    if (type === 'range') {
+        ctn.appendChild(inputValueDisplay);
+    }
     ctn.appendChild(input);
 
     group.appendChild(label);
@@ -261,7 +275,7 @@ function buildSettingsMenu() {
     platformMenuImageCtn.appendChild(platformMenuImage);
 
     // Rows
-    const numberOfColumns = buildPrefsFormItem('numberOfColumns', 'th', 'number', 'The number of columns in each platform gallery', 'Number of columns', LB.galleryNumOfCols);
+    const numberOfColumns = buildPrefsFormItem('numberOfColumns', 'th', 'range', 'The number of columns in each platform gallery', 'Number of columns', LB.galleryNumOfCols);
     const numberOfColumnsGroup = numberOfColumns.group;
     const numberOfColumnsInput = numberOfColumns.input;
 
@@ -353,11 +367,7 @@ function buildSettingsMenu() {
         try {
             let numberOfColumns = parseInt(numberOfColumnsInput.value, 10);
 
-            if (numberOfColumns < 2) {
-                numberOfColumns = 2;
-            } else if (numberOfColumns > 12) {
-                numberOfColumns = 12;
-            }
+            console.log("numberOfColumns: ", numberOfColumns);
 
             // Collect new values
             const newPrefs = {

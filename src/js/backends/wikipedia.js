@@ -3,15 +3,12 @@ export const fetchImages = async (gameName) => {
     const results = [];
     const triedTitles = new Set();
 
-    const normalize = (str) => str.toLowerCase().replace(/[\s_]+/g, "");
-
     const tryTitle = async (title) => {
         if (triedTitles.has(title.toLowerCase())) return;
         triedTitles.add(title.toLowerCase());
 
         const pageUrl = `https://en.wikipedia.org/wiki/${encodeURIComponent(title.replace(/ /g, "_"))}`;
 
-        // Fetch page images + pageimage
         const url = new URL(API);
         url.searchParams.set("action", "query");
         url.searchParams.set("format", "json");
@@ -33,7 +30,7 @@ export const fetchImages = async (gameName) => {
             if (cats.some((c) => c.includes("disambiguation"))) return;
 
             // Infobox / main page image
-            if (page.original?.source) {
+            if (page.original?.source && !page.original.source.endsWith(".svg")) {
                 results.push({
                     url: page.original.source,
                     source: "wikipedia",
@@ -61,7 +58,7 @@ export const fetchImages = async (gameName) => {
                         const p = Object.values(infoData.query.pages || {})[0];
                         const url = p?.imageinfo?.[0]?.url;
 
-                        if (url) {
+                        if (url && !url.endsWith(".svg")) {
                             results.push({
                                 url,
                                 source: "wikipedia",
@@ -107,11 +104,11 @@ export const fetchImages = async (gameName) => {
         }
     }
 
-    // Deduplicate
+    // Deduplicate and remove svg again just in case
     const uniqueResults = [];
     const seen = new Set();
     for (const r of results) {
-        if (!seen.has(r.url)) {
+        if (!seen.has(r.url) && !r.url.endsWith(".svg")) {
             seen.add(r.url);
             uniqueResults.push(r);
         }
@@ -119,6 +116,7 @@ export const fetchImages = async (gameName) => {
 
     return uniqueResults;
 };
+
 
 // --- Test Runner ---
 const testGame = async (gameName) => {

@@ -390,25 +390,6 @@ dd {
   color: var(--color-text-1);
 }
 
-dl.meta-data-sources {
-  margin-top: 0;
-}
-
-dl.meta-data-sources dd {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-dl.meta-data-sources dt {
-  margin-bottom: 0.3em;
-}
-
-dl.meta-data-sources dd i {
-  margin-right: 0.3em;
-}
-
 div.menu-current-image-container {
   flex-direction: column-reverse;
 }

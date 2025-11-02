@@ -194,44 +194,25 @@ label.checkbox {
   min-height: 100px;;
 }
 
-.cancel-save-buttons .button {
-  /* min-width: 200px; */
-}
-
-
 button {
   font-family: var(--font-main);
   background: var(--color-button-off);
-  color: #FFFFFF;
+  color: var(--color-text-1);
 }
 
 .button {
   border: none;
-  color: var(--color-text-1);
   border-radius: 6px;
   font-size: 16px;
   font-weight: 800;
   padding: 12px 14px;
-  opacity: 0.9;
 }
 
 .button:hover,
 .button:focus {
-  opacity: 1;
   color: var(--color-selected);
+  outline: 2px solid var(--color-selected);
 }
-
-/* .input:hover, */
-/* .input:focus, */
-/* .input:active { */
-/*   background-color: var(--color-button-on); */
-/*   background-position: 0 0; */
-/*   color: #ffffff; */
-/* } */
-
-/* .radio-box:hover { */
-/*   font-weight: bold; */
-/* } */
 
 .button-browse {
   margin-left: 1em;

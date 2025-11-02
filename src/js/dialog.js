@@ -1,42 +1,85 @@
 import { initSlideShow, initGallery } from './slideshow.js';
 import { displayMetaData } from './metadata.js';
-import { PLATFORMS } from './platforms.js';
+import { PLATFORMS, getPlatformInfo } from './platforms.js';
 import { simulateTabNavigation, launchGame } from './utils.js';
 import { updatePreference } from './preferences.js';
 
-export function quitDialog() {
-    LB.mode = 'quit';
+const DialogManager = {
+    currentDialog: null,
+    previousMode: null,
+    mainMode: null, // Track the main non-dialog mode
 
-    const overlay = document.getElementById('quit-confirmation-overlay');
-    const dialog = overlay.querySelector('.dialog');
-    const cancelButton = dialog.querySelector('button.cancel');
-    const okButton = dialog.querySelector('button.ok');
+    open(dialogElement, mode) {
+        this.closeCurrent();
+        this.previousMode = LB.mode;
 
-    function openDialog() {
-        overlay.dataset.mode = LB.mode;
-        closeAllDialogs();
-        overlay.style.display = 'flex';
-        cancelButton.focus();
+        // If we're opening from a main mode, store it
+        if (this.isMainMode(LB.mode)) {
+            this.mainMode = LB.mode;
+        }
+
+        this.currentDialog = dialogElement;
+        LB.mode = mode;
+        dialogElement.style.display = 'flex';
+        return dialogElement;
+    },
+
+    closeCurrent() {
+        if (this.currentDialog) {
+            this.currentDialog.style.display = 'none';
+            this.currentDialog = null;
+        }
+    },
+
+    closeAll() {
+        document.querySelectorAll('div.overlay').forEach(div => {
+            div.style.display = 'none';
+        });
+        this.currentDialog = null;
+    },
+
+    restoreMode() {
+        // Always restore to the main mode, not the previous mode
+        if (this.mainMode) {
+            LB.mode = this.mainMode;
+            console.log("Restored to main mode: ", LB.mode);
+        }
+    },
+
+    isMainMode(mode) {
+        const mainModes = ['slideshow', 'gallery', 'menu', 'gameMenu'];
+        return mainModes.includes(mode);
     }
+};
+
+// Updated quitDialog using the manager
+export function quitDialog() {
+    const overlay = document.getElementById('quit-confirmation-overlay');
+    const cancelButton = overlay.querySelector('button.cancel');
+    const okButton = overlay.querySelector('button.ok');
+
+    DialogManager.open(overlay, 'quit');
+    cancelButton.focus();
 
     function closeDialog() {
-        overlay.style.display = 'none';
+        DialogManager.closeCurrent();
+        DialogManager.restoreMode();
         initSlideShow(LB.currentPlatform);
     }
 
+    // Remove the old closeAllDialogs calls from your functions
     window.onQuitKeyDown = function onQuitKeyDown(event) {
         event.stopPropagation();
         event.stopImmediatePropagation();
 
         switch (event.key) {
-
         case 'ArrowRight':
         case 'ArrowDown':
-            simulateTabNavigation(dialog);
+            simulateTabNavigation(overlay);
             break;
         case 'ArrowLeft':
         case 'ArrowUp':
-            simulateTabNavigation(dialog, true);
+            simulateTabNavigation(overlay, true);
             break;
         case 'Enter':
             const focusedButton = document.activeElement;
@@ -54,16 +97,8 @@ export function quitDialog() {
 
     okButton.addEventListener('click', () => { ipcRenderer.invoke('quit'); });
     cancelButton.addEventListener('click', closeDialog);
-    overlay.addEventListener('click', closeDialog);
-
-    openDialog();
-}
-
-function closeAllDialogs() {
-    document.querySelectorAll('div.overlay').forEach(div => {
-        console.log("div.dataset.mode: ", div.dataset.mode);
-        LB.mode = div.dataset.mode;
-        div.style.display = 'none';
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeDialog();
     });
 }
 
@@ -88,17 +123,26 @@ export function editMetaDialog(params, gameMetaData) {
     dialogBody.innerHTML = '';
     dialogBody.appendChild(form);
 
-    function openDialog() {
-        overlay.dataset.mode = LB.mode;
-        closeAllDialogs();
-        overlay.style.display = 'flex';
-        cancelButton.focus();
-    }
+    DialogManager.open(overlay, 'metaEdit');
+    cancelButton.focus();
 
     function closeDialog() {
-        overlay.style.display = 'none';
+        DialogManager.closeCurrent();
+        DialogManager.restoreMode();
         initGallery(LB.currentPlatform);
     }
+
+    // function openDialog() {
+    //     overlay.dataset.mode = LB.mode;
+    //     closeAllDialogs();
+    //     overlay.style.display = 'flex';
+    //     cancelButton.focus();
+    // }
+
+    // function closeDialog() {
+    //     overlay.style.display = 'none';
+    //     initGallery(LB.currentPlatform);
+    // }
 
     window.onMetaEditKeyDown = function onMetaEditKeyDown(event) {
         event.stopPropagation();
@@ -111,8 +155,6 @@ export function editMetaDialog(params, gameMetaData) {
 
     cancelButton.addEventListener('click', closeDialog);
     overlay.onclick = (e) => { if (e.target === overlay) closeDialog();};
-
-    openDialog();
 
 }
 
@@ -206,35 +248,23 @@ export function toggleFavDialog(message) {
 }
 
 export function helpDialog() {
-
     const overlay = document.getElementById('help-overlay');
     const dialog = overlay.querySelector('.dialog');
     const okButton = dialog.querySelector('button.ok');
 
+    // Apply help dialog specific styles
+    overlay.style.alignItems = 'flex-start';
+    overlay.style.paddingTop = '50px';
+
+    // Populate platform names
     const platformNames = dialog.querySelector('#platform-names');
+    if (platformNames) {
+        platformNames.textContent = PLATFORMS.map(platform => platform.name).join(', ');
+    }
 
-    platformNames.textContent = PLATFORMS.map(platform => platform.name).join(', ');
-
-    let prevMode;
-
-    function openDialog() {
-        overlay.dataset.mode = LB.mode;
-        closeAllDialogs();
-        prevMode = LB.mode;
-        LB.mode = 'kbHelp';
-        overlay.style.display = 'flex';
-        overlay.style.alignItems = 'flex-start';
-        overlay.style.paddingTop = '50px';
-        okButton.focus();
-
-        // Populate platform names in CLI tab
-        const platformNames = document.querySelector('#kb-shortcuts-dialog .dialog #platform-names');
-        if (platformNames) {
-            platformNames.textContent = PLATFORMS.map(platform => platform.name).join(', ');
-        }
-
-        // Tab switching functionality
-        let tabButtons = overlay.querySelectorAll('.tab-button');
+    // Tab switching functionality
+    function setupTabs() {
+        const tabButtons = overlay.querySelectorAll('.tab-button');
         const tabContents = overlay.querySelectorAll('.tab-content');
 
         tabButtons.forEach(button => {
@@ -255,9 +285,12 @@ export function helpDialog() {
     }
 
     function closeDialog() {
-        overlay.style.display = 'none';
-        LB.mode = prevMode;
-        console.log("LB.mode: ", LB.mode);
+        DialogManager.closeCurrent();
+        DialogManager.restoreMode();
+
+        // Reset styles
+        overlay.style.alignItems = '';
+        overlay.style.paddingTop = '';
     }
 
     window.onKBHelpKeyDown = function onKBHelpKeyDown(event) {
@@ -296,14 +329,19 @@ export function helpDialog() {
         }
     };
 
+    // Set up event listeners
     okButton.addEventListener('click', closeDialog);
-    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeDialog(); });
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeDialog();
+    });
 
-    openDialog();
+    // Open the dialog using DialogManager
+    DialogManager.open(overlay, 'kbHelp');
+    setupTabs();
+    okButton.focus();
 }
 
 export async function downloadMetaDialog(imagesCount, metaCount) {
-    console.log("downloadMetaDialog: ");
     const overlay = document.getElementById('download-meta-overlay');
     const dialog = overlay.querySelector('.dialog');
     const dialogTitle = dialog.querySelector('.dialog-title');
@@ -314,17 +352,9 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
 
     // Return a Promise that resolves with the user's choice
     return new Promise((resolve) => {
-        function openDialog() {
-            overlay.dataset.mode = LB.mode;
-            closeAllDialogs();
-            LB.mode = 'downloadMetaDialog';
-            overlay.style.display = 'flex';
-            cancelButton.focus();
-        }
-
         function closeDialog() {
-            overlay.style.display = 'none';
-            LB.mode = 'gallery';
+            DialogManager.closeCurrent();
+            DialogManager.restoreMode(); // Use the proper restore
         }
 
         window.onDownloadMetaKeyDown = function onDownloadMetaKeyDown(event) {
@@ -356,7 +386,7 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
 
         cancelButton.addEventListener('click', handleCancel);
 
-        dialogTitle.textContent = `Download ${LB.currentPlatform} games meta data`;
+        dialogTitle.innerHTML = `Download <span>${getPlatformInfo(LB.currentPlatform).name}</span> games meta data`;
 
         // --- Build dialog options dynamically ---
         const optionsContainer = document.createElement('div');
@@ -395,14 +425,12 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
         const metaLabel = hasMeta ? `Download missing metadata` : `No missing metadata`;
 
         const imgSources = document.createElement('dl');
-        imgSources.classList.add('meta-data-sources');
 
         const imgSourcesDT = document.createElement('dt');
         imgSourcesDT.textContent = 'Sources';
 
         // Helper function to create icon-span pairs
         function createSourceDd(iconClass, text) {
-
             const dd = document.createElement('dd');
 
             const icon = document.createElement('i');
@@ -412,7 +440,6 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
             const span = document.createElement('span');
             span.textContent = text;
 
-            // return [icon, span];
             dd.append(icon, span);
             return dd;
         }
@@ -425,7 +452,6 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
         );
 
         const textSources = document.createElement('dl');
-        textSources.classList.add('meta-data-sources');
 
         const textSourcesDT = document.createElement('dt');
         textSourcesDT.textContent = 'Sources';
@@ -436,12 +462,17 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
             makeRadioOption('batch-images', imgLabel, hasImages ? imagesCount : 0, hasImages, !hasImages, 'batch-type')
         );
 
-        optionsContainer.appendChild(imgSources);
+        if (hasImages) {
+            optionsContainer.appendChild(imgSources);
+        }
 
         optionsContainer.appendChild(
             makeRadioOption('batch-metadata', metaLabel, hasMeta ? metaCount : 0, hasImages && !hasMeta, !hasMeta, 'batch-type')
         );
-        optionsContainer.appendChild(textSources);
+
+        if (hasMeta) {
+            optionsContainer.appendChild(textSources);
+        }
 
         dialogBody.innerHTML = '';
         dialogBody.appendChild(optionsContainer);
@@ -468,15 +499,13 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
             }
         };
 
-        openDialog();
+        // Open the dialog using DialogManager
+        DialogManager.open(overlay, 'downloadMetaDialog');
+        cancelButton.focus();
     });
 }
 
-
 export function systemDialog() {
-
-    let prevMode;
-
     const overlay = document.getElementById('system-dialog-overlay');
     const dialog = overlay.querySelector('.dialog');
     const restartButton = dialog.querySelector('.restart');
@@ -485,19 +514,9 @@ export function systemDialog() {
     const cancelButton = dialog.querySelector('.cancel');
     const helpButton = dialog.querySelector('.help');
 
-    function openDialog() {
-        overlay.dataset.mode = LB.mode;
-        closeAllDialogs();
-        prevMode = LB.mode;
-        LB.mode = 'systemDialog';
-        overlay.style.display = 'flex';
-        cancelButton.focus();
-    }
-
     function closeDialog() {
-        overlay.style.display = 'none';
-        LB.mode = prevMode;
-        console.log("Sys close LB.mode: ", LB.mode);
+        DialogManager.closeCurrent();
+        DialogManager.restoreMode();
     }
 
     window.onSystemDialogKeyDown = function onSystemDialogKeyDown(event) {
@@ -513,27 +532,28 @@ export function systemDialog() {
         case 'ArrowUp':
             simulateTabNavigation(dialog, true);
             break;
-            case '?':
-            case 'Enter':
-                const focusedButton = document.activeElement;
-                if (focusedButton === quitButton) {
-                    ipcRenderer.invoke('quit');
-                } else if (focusedButton === cancelButton) {
-                    closeDialog();
-                } else if (focusedButton === restartButton) {
-                    window.location.reload();
-                } else if (focusedButton === configButton && !LB.kioskMode) {
-                    initGallery('settings');
-                    closeDialog();
-                }
-                break;
-            case 'Escape':
+        case '?':
+        case 'Enter':
+            const focusedButton = document.activeElement;
+            if (focusedButton === quitButton) {
+                ipcRenderer.invoke('quit');
+            } else if (focusedButton === cancelButton) {
                 closeDialog();
-                break;
+            } else if (focusedButton === restartButton) {
+                window.location.reload();
+            } else if (focusedButton === configButton && !LB.kioskMode) {
+                initGallery('settings');
+                closeDialog();
+            }
+            break;
+        case 'Escape':
+            closeDialog();
+            break;
         }
     };
 
     restartButton.addEventListener('click', () => window.location.reload());
+
     if (!LB.kioskMode) {
         configButton.addEventListener('click', () => {
             initGallery('settings');
@@ -545,38 +565,36 @@ export function systemDialog() {
 
     quitButton.addEventListener('click', () => ipcRenderer.invoke('quit'));
     cancelButton.addEventListener('click', closeDialog);
+
     helpButton.addEventListener('click', (e) => {
         closeDialog();
         helpDialog();
     });
 
-    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeDialog(); });
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeDialog();
+    });
 
-    openDialog();
+    // Open the dialog using DialogManager
+    DialogManager.open(overlay, 'systemDialog');
+    cancelButton.focus();
 }
 
 export function launchGameDialog(gameContainer) {
-
     const overlay = document.getElementById('launch-game-overlay');
     const dialog = overlay.querySelector('div.dialog');
     const okButton = dialog.querySelector('.ok');
     const cancelButton = dialog.querySelector('.cancel');
 
+    // Set dialog content
     dialog.querySelector('img').src = gameContainer.querySelector('img').src;
     dialog.querySelector('.dialog-title').textContent = gameContainer.dataset.cleanName || gameContainer.dataset.gameName;
     dialog.querySelector('.emulator-name').textContent = gameContainer.dataset.emulator;
 
-    function openDialog() {
-        closeAllDialogs();
-        LB.mode = 'launchGame';
-        overlay.style.display = 'flex';
-        okButton.focus();
-    }
-
     function closeDialog() {
-        overlay.style.display = 'none';
+        DialogManager.closeCurrent();
+        DialogManager.restoreMode();
         gameContainer = null;
-        LB.mode = 'gallery';
     }
 
     window.onLaunchGameKeyDown = function onLaunchGameKeyDown(event) {
@@ -588,7 +606,6 @@ export function launchGameDialog(gameContainer) {
         case 'ArrowDown':
             simulateTabNavigation(dialog);
             break;
-
         case 'ArrowLeft':
         case 'ArrowUp':
             simulateTabNavigation(dialog, true);
@@ -604,6 +621,7 @@ export function launchGameDialog(gameContainer) {
     });
 
     cancelButton.addEventListener('click', closeDialog);
+
     okButton.addEventListener('click', async () => {
         launchGame(gameContainer);
         if (!document.getElementById('open-dialog-at-launch').checked) {
@@ -612,5 +630,7 @@ export function launchGameDialog(gameContainer) {
         closeDialog();
     });
 
-    openDialog();
+    // Open the dialog using DialogManager
+    DialogManager.open(overlay, 'launchGame');
+    okButton.focus();
 }

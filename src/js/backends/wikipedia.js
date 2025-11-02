@@ -1,81 +1,145 @@
-// Wikipedia API-based image fetcher (no more scraping)
-
 export const fetchImages = async (gameName) => {
-    try {
+    const API = "https://en.wikipedia.org/w/api.php";
+    const results = [];
+    const triedTitles = new Set();
 
-        // Search pages containing the game name
-        const searchUrl = new URL('https://en.wikipedia.org/w/api.php');
-        searchUrl.searchParams.set('action', 'query');
-        searchUrl.searchParams.set('format', 'json');
-        searchUrl.searchParams.set('origin', '*');
-        searchUrl.searchParams.set('list', 'search');
-        searchUrl.searchParams.set('srsearch', gameName);
-        searchUrl.searchParams.set('srlimit', '10');
+    const normalize = (str) => str.toLowerCase().replace(/[\s_]+/g, "");
 
-        const searchResp = await fetch(searchUrl.toString());
-        if (!searchResp.ok) return [];
-        const searchData = await searchResp.json();
+    const tryTitle = async (title) => {
+        if (triedTitles.has(title.toLowerCase())) return;
+        triedTitles.add(title.toLowerCase());
 
-        const pageTitles = (searchData.query?.search || []).map(p => p.title);
-        if (!pageTitles.length) return [];
+        const pageUrl = `https://en.wikipedia.org/wiki/${encodeURIComponent(title.replace(/ /g, "_"))}`;
 
-        const fileTitles = [];
+        // Fetch page images + pageimage
+        const url = new URL(API);
+        url.searchParams.set("action", "query");
+        url.searchParams.set("format", "json");
+        url.searchParams.set("origin", "*");
+        url.searchParams.set("titles", title);
+        url.searchParams.set("prop", "images|pageimages|categories");
+        url.searchParams.set("imlimit", "max");
+        url.searchParams.set("piprop", "original");
 
-        for (const title of pageTitles) {
-            const imagesUrl = new URL('https://en.wikipedia.org/w/api.php');
-            imagesUrl.searchParams.set('action', 'query');
-            imagesUrl.searchParams.set('format', 'json');
-            imagesUrl.searchParams.set('origin', '*');
-            imagesUrl.searchParams.set('titles', title);
-            imagesUrl.searchParams.set('prop', 'images');
-            imagesUrl.searchParams.set('imlimit', 'max');
+        const resp = await fetch(url.toString());
+        if (!resp.ok) return;
 
-            const resp = await fetch(imagesUrl.toString());
-            if (!resp.ok) continue;
+        const data = await resp.json();
+        const pages = Object.values(data.query.pages || {});
 
-            const data = await resp.json();
-            const pages = Object.values(data.query.pages || {});
-            for (const page of pages) {
-                const imgs = page.images || [];
-                for (const img of imgs) {
-                    const t = img.title?.toLowerCase();
-                    if (t && (t.includes('cover') || t.includes('box') || t.includes('case'))) {
-                        fileTitles.push(img.title);
+        for (const page of pages) {
+            if (page.missing) continue;
+            const cats = (page.categories || []).map((c) => c.title.toLowerCase());
+            if (cats.some((c) => c.includes("disambiguation"))) return;
+
+            // Infobox / main page image
+            if (page.original?.source) {
+                results.push({
+                    url: page.original.source,
+                    source: "wikipedia",
+                    type: "image",
+                    pageUrl,
+                });
+            }
+
+            // Page images
+            if (page.images) {
+                for (const img of page.images) {
+                    const imgTitle = img.title || "";
+                    if (!/logo|ambox|seal/i.test(imgTitle)) {
+                        const infoUrl = new URL(API);
+                        infoUrl.searchParams.set("action", "query");
+                        infoUrl.searchParams.set("format", "json");
+                        infoUrl.searchParams.set("origin", "*");
+                        infoUrl.searchParams.set("titles", img.title);
+                        infoUrl.searchParams.set("prop", "imageinfo");
+                        infoUrl.searchParams.set("iiprop", "url");
+
+                        const infoResp = await fetch(infoUrl.toString());
+                        if (!infoResp.ok) continue;
+                        const infoData = await infoResp.json();
+                        const p = Object.values(infoData.query.pages || {})[0];
+                        const url = p?.imageinfo?.[0]?.url;
+
+                        if (url) {
+                            results.push({
+                                url,
+                                source: "wikipedia",
+                                type: "image",
+                                pageUrl,
+                            });
+                        }
                     }
                 }
             }
         }
+    };
 
-        if (!fileTitles.length) return [];
+    const variants = [
+        `${gameName} (video game)`,
+        `${gameName} (Amiga video game)`,
+        `${gameName} (Amiga)`,
+        gameName,
+    ];
 
-        const images = [];
-        for (const fileTitle of fileTitles) {
-            const infoUrl = new URL('https://en.wikipedia.org/w/api.php');
-            infoUrl.searchParams.set('action', 'query');
-            infoUrl.searchParams.set('format', 'json');
-            infoUrl.searchParams.set('origin', '*');
-            infoUrl.searchParams.set('titles', fileTitle);
-            infoUrl.searchParams.set('prop', 'imageinfo');
-            infoUrl.searchParams.set('iiprop', 'url');
-
-            const infoResp = await fetch(infoUrl.toString());
-            if (!infoResp.ok) continue;
-            const infoData = await infoResp.json();
-
-            const page = Object.values(infoData.query.pages)[0];
-            const url = page?.imageinfo?.[0]?.url;
-
-            if (url) {
-                // In NORMAL mode we keep source for consistency
-                images.push({ url, source: 'wikipedia' });
-            }
-        }
-
-        return images;
-
-    } catch (err) {
-        console.error(`[Wikipedia] Error: ${err.message}`);
-        return [];
+    for (const v of variants) {
+        await tryTitle(v);
+        if (results.length) break;
     }
+
+    // Fallback search if nothing found
+    if (!results.length) {
+        const searchUrl = new URL(API);
+        searchUrl.searchParams.set("action", "query");
+        searchUrl.searchParams.set("format", "json");
+        searchUrl.searchParams.set("origin", "*");
+        searchUrl.searchParams.set("list", "search");
+        searchUrl.searchParams.set("srsearch", `${gameName} video game`);
+        searchUrl.searchParams.set("srlimit", "8");
+
+        const searchResp = await fetch(searchUrl.toString());
+        if (!searchResp.ok) return results;
+        const searchData = await searchResp.json();
+
+        const pageTitles = (searchData.query?.search || []).map((p) => p.title);
+        for (const t of pageTitles) {
+            await tryTitle(t);
+        }
+    }
+
+    // Deduplicate
+    const uniqueResults = [];
+    const seen = new Set();
+    for (const r of results) {
+        if (!seen.has(r.url)) {
+            seen.add(r.url);
+            uniqueResults.push(r);
+        }
+    }
+
+    return uniqueResults;
 };
 
+// --- Test Runner ---
+const testGame = async (gameName) => {
+  console.log(`\n🎮 === Testing: "${gameName}" ===`);
+  console.log("=".repeat(60));
+
+  const start = Date.now();
+  const images = await fetchImages(gameName);
+  const end = Date.now();
+
+  console.log(`\n⏱️ Request took: ${end - start}ms`);
+  console.log("📊 Images found:");
+  console.log(JSON.stringify(images, null, 2));
+  console.log("=".repeat(60));
+
+  return images;
+};
+
+(async () => {
+  // await testGame("Flat Out Ultimate Carnage");
+  await testGame("Outrun");
+  // await testGame("Banshee (Amiga video game)");
+  await testGame("Kirby Air Ride");
+})();

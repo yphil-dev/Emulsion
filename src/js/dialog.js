@@ -208,16 +208,59 @@ export function toggleFavDialog(message) {
     }, 5000);
 }
 
-export function helpDialog(defaultTabId = null) {
+function versioncheck(current, latest) {
+    const c = current.split('.').map(Number);
+    const l = latest.split('.').map(Number);
+
+    for (let i = 0; i < Math.max(c.length, l.length); i++) {
+        const a = c[i] || 0;
+        const b = l[i] || 0;
+        if (a < b) return false;
+        if (a > b) return true;
+    }
+    return true; // equal or newer
+}
+
+export async function helpDialog(defaultTabId = null) {
     const overlay = document.getElementById('help-overlay');
     const dialog = overlay.querySelector('.dialog');
     const okButton = dialog.querySelector('button.ok');
     const dialogTitle = dialog.querySelector('.dialog-title');
 
+    const versions = await ipcRenderer.invoke('get-versions');
+
+    dialog.querySelector('.current-version').textContent = versions.current;
+    dialog.querySelector('.latest-version').textContent = versions.latest;
+
+    const isUpToDate = versioncheck(versions.current, versions.latest);
+
+    if (isUpToDate) {
+        dialog.querySelector('.up-to-date').style.display = 'inline-block';
+    } else {
+        dialog.querySelector('.update-available').style.display = 'block';
+    }
+
+    dialog.querySelector('button.upgrade').addEventListener('click', () => {
+        ipcRenderer.invoke('go-to-url', 'https://github.com/yPhil-gh/Emulsion/releases');
+    });
+
+    dialog.querySelector('button.btn-liberapay').addEventListener('click', () => {
+        ipcRenderer.invoke('go-to-url', 'https://liberapay.com/yPhil/');
+    });
+
+    dialog.querySelector('button.btn-ko-fi').addEventListener('click', () => {
+        ipcRenderer.invoke('go-to-url', 'https://ko-fi.com/yphil');
+    });
+
+    dialog.querySelector('button.btn-patreon').addEventListener('click', () => {
+        ipcRenderer.invoke('go-to-url', 'https://www.patreon.com/yphil');
+    });
+
     overlay.style.alignItems = 'flex-start';
     overlay.style.paddingTop = '50px';
 
     const platformNames = dialog.querySelector('#platform-names');
+
     if (platformNames) {
         platformNames.textContent = PLATFORMS.map(platform => platform.name).join(', ');
     }
@@ -318,11 +361,10 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
     const okButton = dialog.querySelector('button.ok');
     const cancelButton = dialog.querySelector('button.cancel');
 
-    // Return a Promise that resolves with the user's choice
     return new Promise((resolve) => {
         function closeDialog() {
             DialogManager.closeCurrent();
-            DialogManager.restoreMode(); // Use the proper restore
+            DialogManager.restoreMode();
         }
 
         window.onDownloadMetaKeyDown = function onDownloadMetaKeyDown(event) {
@@ -330,52 +372,48 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
             event.stopImmediatePropagation();
 
             switch (event.key) {
-            case 'ArrowLeft':
-            case 'ArrowUp':
-                simulateTabNavigation(dialog, true);
-                break;
-            case 'ArrowRight':
-            case 'ArrowDown':
-                simulateTabNavigation(dialog);
-                break;
-            case 'Escape':
-                closeDialog();
-                resolve(null); // Resolve with null on escape
-                break;
-            case 'Enter':
-                if (!cancelButton.matches(':focus')) {
-                    onOk();
-                }
-                break;
-            default:
-                break;
+                case 'ArrowLeft':
+                case 'ArrowUp':
+                    simulateTabNavigation(dialog, true);
+                    break;
+                case 'ArrowRight':
+                case 'ArrowDown':
+                    simulateTabNavigation(dialog);
+                    break;
+                case 'Escape':
+                    closeDialog();
+                    resolve(null);
+                    break;
+                case 'Enter':
+                    if (!cancelButton.matches(':focus')) {
+                        onOk();
+                    }
+                    break;
             }
         };
 
         const handleCancel = () => {
             closeDialog();
-            resolve(null); // Resolve with null on cancel
+            resolve(null);
         };
-
         cancelButton.addEventListener('click', handleCancel);
 
         dialogTitle.innerHTML = `Download <span>${getPlatformInfo(LB.currentPlatform).name}</span> games meta data`;
 
-        // --- Build dialog options dynamically ---
         const optionsContainer = document.createElement('div');
         optionsContainer.className = 'batch-options';
 
-        const makeRadioOption = (id, label, count, checked, disabled, name) => {
+        // --- helper ---
+        const makeCheckboxOption = (id, label, count, checked, disabled) => {
             const wrapper = document.createElement('div');
             wrapper.className = 'batch-option';
 
-            const radio = document.createElement('input');
-            radio.type = 'radio';
-            radio.id = id;
-            radio.name = name;
-            radio.classList.add('input');
-            radio.checked = checked;
-            radio.disabled = disabled;
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = id;
+            checkbox.classList.add('input');
+            checkbox.checked = checked;
+            checkbox.disabled = disabled;
 
             const labelElement = document.createElement('label');
             labelElement.htmlFor = id;
@@ -384,31 +422,23 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
             const countText = count ? ` (${count})` : '';
             labelElement.textContent = `${label}${countText}`;
 
-            wrapper.appendChild(radio);
-            wrapper.appendChild(labelElement);
-
+            wrapper.append(checkbox, labelElement);
             return wrapper;
         };
 
         const hasImages = imagesCount > 0;
         const hasMeta = metaCount > 0;
 
-        // Build radio options for singly selected type
         const imgLabel = hasImages ? `Download missing images` : `No missing images`;
         const metaLabel = hasMeta ? `Download missing metadata` : `No missing metadata`;
 
         const imgSources = document.createElement('dl');
-
         const imgSourcesDT = document.createElement('dt');
         imgSourcesDT.textContent = 'Sources';
 
-        // Helper function to create icon-span pairs
         function createSourceDd(text, isEnabled) {
             const dd = document.createElement('dd');
-
-            if (!isEnabled) {
-                dd.classList.add('disabled');
-            }
+            if (!isEnabled) dd.classList.add('disabled');
 
             const icon = document.createElement('i');
             icon.className = 'form-icon fa fa-2x';
@@ -430,27 +460,20 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
         );
 
         const textSources = document.createElement('dl');
-
         const textSourcesDT = document.createElement('dt');
         textSourcesDT.textContent = 'Sources';
-
         textSources.append(textSourcesDT, createSourceDd('Wikipedia', true));
 
+        // --- append checkboxes and sources ---
         optionsContainer.appendChild(
-            makeRadioOption('batch-images', imgLabel, hasImages ? imagesCount : 0, hasImages, !hasImages, 'batch-type')
+            makeCheckboxOption('batch-images', imgLabel, hasImages ? imagesCount : 0, hasImages, !hasImages)
         );
-
-        if (hasImages) {
-            optionsContainer.appendChild(imgSources);
-        }
+        if (hasImages) optionsContainer.appendChild(imgSources);
 
         optionsContainer.appendChild(
-            makeRadioOption('batch-metadata', metaLabel, hasMeta ? metaCount : 0, hasImages && !hasMeta, !hasMeta, 'batch-type')
+            makeCheckboxOption('batch-metadata', metaLabel, hasMeta ? metaCount : 0, hasMeta, !hasMeta)
         );
-
-        if (hasMeta) {
-            optionsContainer.appendChild(textSources);
-        }
+        if (hasMeta) optionsContainer.appendChild(textSources);
 
         dialogBody.innerHTML = '';
         dialogBody.appendChild(optionsContainer);
@@ -462,8 +485,12 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
         const onOk = () => {
             const imagesChecked = document.getElementById('batch-images')?.checked || false;
             const metadataChecked = document.getElementById('batch-metadata')?.checked || false;
+
             closeDialog();
-            resolve({ imageBatch: imagesChecked, metaBatch: metadataChecked }); // Resolve with user's choice
+            resolve({
+                imageBatch: imagesChecked,
+                metaBatch: metadataChecked
+            });
         };
 
         okButton.onclick = onOk;

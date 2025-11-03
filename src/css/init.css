@@ -59,8 +59,8 @@
 }
 
 .theme-day {
-  --color-text-1: #eff6ff;
-  --color-text-2: #c7e0ff;
+  --color-text-1: #222;
+  --color-text-2: rgba(0, 20, 10, 0.9);
 
   --glow-color-rgb: 255, 107, 0;
 

@@ -836,50 +836,18 @@ ipcMain.handle('parse-sfo', async (_event, filePath) => {
     });
 });
 
-ipcMain.handle('open-about-window', async () => {
+ipcMain.handle('get-versions', async () => {
+    let latestVersion;
     try {
-        // Fetch latest release from GitHub
         const response = await fetch('https://api.github.com/repos/yPhil-gh/Emulsion/releases/latest');
         const data = await response.json();
-        const latestVersion = data.tag_name.replace(/^v/, ''); // Remove 'v' prefix if present
-
-        console.log("latestVersion: ", latestVersion);
-
-        const aboutWindow = new BrowserWindow({
-            width: 300,
-            height: 400,
-            resizable: false,
-            minimizable: false,
-            maximizable: false,
-            title: 'About Emulsion',
-            modal: true,
-            parent: mainWindow,
-            icon: path.join(__dirname, 'img/icon.png'),
-            webPreferences: {
-                nodeIntegration: true,
-                contextIsolation: false,
-            },
-        });
-
-        aboutWindow.removeMenu();
-
-        // Create URL with version parameters
-        const aboutUrl = new URL(`file://${path.join(__dirname, 'src/html/about.html')}`);
-        aboutUrl.searchParams.append('currentVersion', pjson.version.replace(/^v/, ''));
-        aboutUrl.searchParams.append('latestVersion', latestVersion);
-
-        aboutWindow.loadURL(aboutUrl.toString());
+        latestVersion = data.tag_name.replace(/^v/, '');
 
     } catch (error) {
         console.error('Failed to fetch GitHub release:', error);
-        // Fallback to just showing current version if GitHub fetch fails
-        const aboutWindow = new BrowserWindow({ /* same config */ });
-        aboutWindow.removeMenu();
-        const aboutUrl = new URL(`file://${path.join(__dirname, 'src/html/about.html')}`);
-        aboutUrl.searchParams.append('currentVersion', pjson.version);
-        aboutUrl.searchParams.append('latestVersion', 'Error fetching latest');
-        aboutWindow.loadURL(aboutUrl.toString());
     }
+
+    return {current: pjson.version, latest: latestVersion};
 });
 
 app.whenReady().then(() => {

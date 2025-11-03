@@ -100,7 +100,7 @@
 .help-dialog .tab-button {
   flex: 1;
   padding: 0.5em;
-  background: var(--color-bg);
+  background: var(--color-bg-selected);
   color: var(--color-text-1);
   border: none;
   font-weight: bold;
@@ -118,6 +118,14 @@
   width: 100%;
 }
 
+.help-dialog thead {
+  background: var(--color-bg);
+}
+
+.help-dialog thead tr {
+  background: var(--color-bg);
+}
+
 .help-dialog thead th {
   position: sticky;
   top: 0;
@@ -128,6 +136,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  background: var(--color-bg);
 }
 
 .help-dialog .th-content span {
@@ -163,12 +172,20 @@
 }
 
 /* Optional row styling */
-.help-dialog tbody tr:nth-child(odd)  { background: rgba(255,255,255,0.03); }
-.help-dialog tbody tr:nth-child(even) { background: rgba(255,255,255,0.07); }
+.help-dialog tbody tr:nth-child(odd)  { background: var(--color-bg-header); }
+.help-dialog tbody tr:nth-child(even) { background: var(--color-bg); }
 
-.help-dialog th, .help-dialog td {
+.help-dialog td {
   padding: 0.4em 0.6em;
   text-align: left;
+}
+
+.help-dialog th {
+  padding: 0 0 1em 0;
+}
+
+#shortcuts .th-content span {
+  margin-bottom: 1em;
 }
 
 .help-dialog .shortcuts {
@@ -265,6 +282,18 @@
   margin-top: 1em;
 }
 
+.help-dialog .up-to-date,
+.help-dialog .update-available {
+  display: none;
+}
+
+.help-dialog .tab-content .about {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-content: center;
+}
+
 .help-dialog #quickstart li {
   margin-bottom: 0.5em;
   /* font-size: clamp(20px, 1vw, 50px); */
@@ -354,4 +383,41 @@
 
 dd.disabled {
   color: gray;
+}
+
+.container .buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  justify-content: center;
+}
+
+.btn {
+  display: inline-block;
+  padding: 20px 30px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-decoration: none;
+  color: #fff;
+  border-radius: 10px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btn-patreon {
+  background: #FF424D;
+}
+
+.btn-liberapay {
+  background: #F6C915;
+  color: #000;
+}
+
+.btn-ko-fi {
+  background: #29ABE0;
 }

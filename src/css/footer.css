@@ -154,3 +154,32 @@ footer .control-section {
   opacity: 1;
   transition: opacity 1s ease;
 }
+
+
+#footer-progress-bars {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 2px;
+    pointer-events: none; /* avoid blocking clicks */
+}
+
+.footer-progress-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 2px;
+    width: 0%;
+    opacity: 0.8;
+    transition: width 0.3s ease;
+}
+
+/* Different colors for each bar */
+#progress-bar-1 {
+    background-color: var(--color-selected, #00f);
+}
+
+#progress-bar-2 {
+    background-color: var(--color-outline-control-button, #f00);
+}

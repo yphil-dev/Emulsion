@@ -98,7 +98,7 @@ async function initializeApp() {
         hideCursor();
         resetMouseTimer();
 
-        document.addEventListener('keydown', (event) => {
+        document.addEventListener('keydown', async (event) => {
 
             // if (event.key === 'F11') {
             //     // toggleFullScreen();
@@ -113,7 +113,7 @@ async function initializeApp() {
             }
 
             if (event.key === '?') {
-                helpDialog('shortcuts');
+                await helpDialog('shortcuts');
             }
 
             if (LB.mode === 'gallery' && window.onGalleryKeyDown) {

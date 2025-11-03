@@ -12,6 +12,7 @@ import { getSelectedGameContainer,
          simulateTabNavigation,
          setFooterSize,
          toggleHeaderNavLinks } from './utils.js';
+import { helpDialog } from './dialog.js';
 
 let menuState = {
     selectedIndex: 1,
@@ -349,8 +350,8 @@ function buildSettingsMenu() {
 
     cancelButton.addEventListener('click', onSettingsMenuCancel);
 
-    aboutButton.addEventListener('click', () => {
-        ipcRenderer.invoke('open-about-window');
+    aboutButton.addEventListener('click', async () => {
+        helpDialog('about');
     });
 
     saveButton.addEventListener('click', onSettingsMenuSave);

@@ -64,6 +64,10 @@
         <div id="menu" class="themed-background"></div>
 
         <footer id="footer">
+            <div id="footer-progress-bars">
+                <div class="footer-progress-bar" id="progress-bar-1"></div>
+                <div class="footer-progress-bar" id="progress-bar-2"></div>
+            </div>
             <div id="controls" class="left">
                 <div id="dpad" class="control-item">
                     <svg class="control-icon" style="--fill:var(--color-bg-control-button); --stroke:var(--color-outline-control-button); --fill-north:black; --fill-south:black; --fill-west:var(--color-selected); --fill-east:var(--color-selected);">
@@ -120,14 +124,7 @@
                 </div>
             </div>
 
-            <div id="notifications" class="right">
-                <svg id="footer-progress" class="pie-progress" viewBox="0 0 100 100" data-value="0">
-                    <circle cx="50" cy="50" r="45" class="progress-track" />
-                    <circle cx="50" cy="50" r="45" class="progress-fill" />
-                </svg>
-                <div id="notification">
-                </div>
-            </div>
+            <div id="notifications" class="right"></div>
 
         </footer>
 
@@ -170,6 +167,7 @@
                     <button class="tab-button active" data-tab="quickstart">Quickstart</button>
                     <button class="tab-button" data-tab="shortcuts">Controls</button>
                     <button class="tab-button" data-tab="cli-args">Command Line Arguments</button>
+                    <button class="tab-button" data-tab="about">About</button>
                 </div>
                 <div class="tab-content active" id="quickstart" data-description="Welcome to Emulsion!">
                     <p class="text">
@@ -392,6 +390,30 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+                <div class="tab-content" id="about" data-description="About Emulsion">
+                    <div class="about">
+                        <img src="../../img/icon.png" alt="App icon">
+                        <h2>Emulsion <span class="current-version">x.y.z</span> is <span class="up-to-date"> ✨ Up to date! </span></h2>
+                        <h3 class="update-available">
+                            <button class="upgrade button">✨ <span class="latest-version"></span> is available!</button>
+                        </h3>
+
+                        <div class="container">
+                            <p class="text">
+                                Hi! I'm <strong>yPhil</strong>, a <strong>passionate</strong> developer creating free and open-source software and music ; For everyone.
+                                Your support helps me continue building tools that make a difference.
+                            </p>
+                            <p class="text">
+                                Every contribution, no matter how small, means the world. Thank you for being part of this journey!
+                            </p>
+                            <div class="buttons">
+                                <button class="btn btn-liberapay">Liberapay</button>
+                                <button class="btn btn-ko-fi">Ko-fi</button>
+                                <button class="btn btn-patreon">Patreon</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="dialog-buttons">
                     <div class="open-dialog-at">

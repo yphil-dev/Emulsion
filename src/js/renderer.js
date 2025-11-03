@@ -82,7 +82,7 @@ loadPreferences()
         }
 
         if (LB.startupDialogPolicy === 'show') {
-            helpDialog('quickstart');
+            await helpDialog('quickstart');
         }
 
     })

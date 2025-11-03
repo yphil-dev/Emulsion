@@ -290,9 +290,7 @@ const TAGS_TO_KEEP = ['CD32', 'AGA'];
 
 // Terms to isolate if glued to a word
 const NUMERIC_SUFFIXES = [
-    '2d', '3d', '4d',
-    '32', '64', '128',
-    '2048', '2049'
+    '2d', '3d', '4d'
 ];
 
 export function cleanFileName(fileName) {
@@ -426,17 +424,7 @@ export function setKeydown(newHandler) {
 }
 
 export function notify(text) {
-    const notifications = document.getElementById('notifications');
-    const notification = document.getElementById('notification');
-
-    notification.textContent = text;
-    notifications.style.opacity = 1;
-
-    setTimeout(() => {
-        notifications.style.opacity = 0;
-        notification.textContent = '';
-        notification.innerHTML = '';
-    }, 3000);
+    console.log("text: ", text);
 }
 
 export function getPlatformByName(platformName) {
@@ -563,142 +551,40 @@ export function findImageFile(basePath, fileNameWithoutExt) {
     return newestImage;
 }
 
-let progressAnimationId = null;
-let currentProgressValue = 0;
-let targetProgressValue = 0;
-const CIRCUMFERENCE = 283; // 2 * π * 45 (radius)
-
-// Function to smoothly show the progress indicator
-export function showProgress() {
-    const pie = document.getElementById('footer-progress');
-    const notifications = document.getElementById('notifications');
-
-    if (pie) {
-        pie.style.opacity = 1;
-        pie.style.transform = 'scale(1)';
-    }
-
-    if (notifications) {
-        notifications.style.opacity = 1;
+function setFooterProgress(barIndex, percent) {
+    const bar = document.getElementById(`progress-bar-${barIndex}`);
+    if (bar) {
+        bar.style.width = `${Math.max(0, Math.min(100, percent))}vw`;
     }
 }
 
-// Function to smoothly hide the progress indicator
-export function hideProgress() {
-    const pie = document.getElementById('footer-progress');
-    const notifications = document.getElementById('notifications');
+export function setFooterProgressVisible(show = true) {
+    const container = document.getElementById('footer-progress-bars');
+    if (!container) return;
 
-    if (pie) {
-        pie.style.opacity = 0;
-        pie.style.transform = 'scale(0.9)';
-    }
-
-    if (notifications) {
-        notifications.style.opacity = 0;
-    }
-}
-
-// Function to reset progress to 0
-export function resetProgress() {
-    targetProgressValue = 0;
-    currentProgressValue = 0;
-
-    const pie = document.getElementById('footer-progress');
-    if (pie) {
-        const progressFill = pie.querySelector('.progress-fill');
-        if (progressFill) {
-            // Reset to empty circle (full dash offset) - accounting for 12 o'clock start
-            progressFill.style.strokeDashoffset = CIRCUMFERENCE;
-        }
-    }
-}
-
-// Function to set progress directly (for immediate updates)
-export function setProgressDirect(percent) {
-    targetProgressValue = percent;
-    currentProgressValue = percent;
-
-    const pie = document.getElementById('footer-progress');
-    if (pie) {
-        const progressFill = pie.querySelector('.progress-fill');
-        if (progressFill) {
-            const progressOffset = CIRCUMFERENCE - (percent / 100) * CIRCUMFERENCE;
-            progressFill.style.strokeDashoffset = progressOffset;
-        }
-    }
-}
-
-function setProgress(current, total) {
-    const fill = document.getElementById('menu-progress-fill');
-    const pie = document.getElementById('footer-progress');
-
-    if (total > 0) {
-        const targetPercent = (current / total) * 100;
-        targetProgressValue = targetPercent;
-
-        // Cancel any existing animation
-        if (progressAnimationId) {
-            cancelAnimationFrame(progressAnimationId);
-        }
-
-        // Start smooth animation towards target
-        animateProgress();
-
-        if (fill) fill.style.width = `${Math.round(targetPercent)}%`;
-    }
-}
-
-function animateProgress() {
-    const pie = document.getElementById('footer-progress');
-    if (!pie) return;
-
-    const progressFill = pie.querySelector('.progress-fill');
-    if (!progressFill) return;
-
-    // Smooth interpolation towards target with adaptive easing
-    const diff = targetProgressValue - currentProgressValue;
-    const step = diff * 0.15; // Slightly faster interpolation
-
-    if (Math.abs(diff) < 0.05) {
-        currentProgressValue = targetProgressValue;
+    if (show) {
+        container.style.opacity = '1';
+        container.style.transition = 'opacity 0.3s ease';
     } else {
-        currentProgressValue += step;
-    }
-
-    // Calculate stroke-dashoffset for SVG (inverted: 0% = full circle, 100% = empty circle)
-    const progressOffset = CIRCUMFERENCE - (currentProgressValue / 100) * CIRCUMFERENCE;
-    progressFill.style.strokeDashoffset = progressOffset;
-
-    // Continue animation if not at target
-    if (Math.abs(targetProgressValue - currentProgressValue) > 0.05) {
-        progressAnimationId = requestAnimationFrame(animateProgress);
-    } else {
-        progressAnimationId = null;
+        container.style.opacity = '0';
+        container.style.transition = 'opacity 0.6s ease';
     }
 }
 
 export async function executeBatchDownload(games, type, platformName) {
     if (type !== 'image' && type !== 'meta') return;
 
-    // Smooth show animation
-    showProgress();
-
-    function setProgressColor(newText, colorCode) {
-        const pie = document.getElementById('footer-progress');
-        if (pie) {
-            pie.classList.remove('success', 'error');
-            pie.classList.add(colorCode);
-            pie.title = newText;
-        }
-    }
+    if (type === 'image') setFooterProgress(1, 0);
+    if (type === 'meta') setFooterProgress(2, 0);
 
     for (let i = 0; i < games.length; i++) {
-        setProgressDirect((i / games.length) * 100);
 
         const gameContainer = games[i];
         const gameName = gameContainer.dataset.gameName;
 
         if (type === 'image') {
+            setFooterProgress(1, (i / games.length) * 100);
+
             const activePageContent = gameContainer.parentElement;
 
             const currentPage = document.querySelector(`div.page[data-platform="${platformName}"]`);
@@ -718,22 +604,11 @@ export async function executeBatchDownload(games, type, platformName) {
 
             elementToPulse.classList.add('loading');
 
-            setProgressColor(`${gameName}`, 'none');
-
             try {
                 const urls = await new Promise((resolve) => {
                     ipcRenderer.send('fetch-images', gameName, platformName, LB.steamGridAPIKey, LB.giantBombAPIKey);
                     ipcRenderer.once('image-urls', (event, urls) => resolve(urls));
                 });
-
-                if (!urls.length) {
-                    setProgressColor(`${gameName}`, 'error');
-                    elementToPulse.classList.remove('loading');
-                    await new Promise(r => setTimeout(r, 100));
-                    continue;
-                }
-
-                setProgressColor(`${gameName}`, 'success');
 
                 const url = typeof urls[0] === 'string' ? urls[0] : urls[0]?.url;
                 if (!url) continue;
@@ -763,14 +638,14 @@ export async function executeBatchDownload(games, type, platformName) {
                 elementToPulse.classList.remove('loading');
             }
         } else if (type === 'meta') {
+            setFooterProgress(2, (i / games.length) * 100);
+
             const currentPage = document.querySelector(`div.page[data-platform="${platformName}"]`);
             const isListMode = currentPage.dataset.viewMode === 'list';
             const gameContainerImage = gameContainer.querySelector('.game-container-image');
 
             let elementToPulse = isListMode ? gameContainer : gameContainerImage;
             elementToPulse.classList.add('loading');
-
-            setProgressColor(`${gameName}`, 'none');
 
             try {
                 const params = {
@@ -782,14 +657,6 @@ export async function executeBatchDownload(games, type, platformName) {
 
                 await getMeta(params);
 
-                setProgressColor(`${gameName}`, 'success');
-
-                // Update pane if this is the selected game in list mode
-                const activePage = document.querySelector('.page.active');
-                const selectedContainer = activePage.querySelector('.game-container.selected');
-                // if (selectedContainer && selectedContainer.dataset.gameName === gameName && activePage.dataset.viewMode === 'list') {
-                //     updateGamePane(selectedContainer);
-                // }
                 if (isListMode) {
                     updateGamePane(gameContainer);
                 }
@@ -797,22 +664,12 @@ export async function executeBatchDownload(games, type, platformName) {
 
             } catch (err) {
                 console.error(`Failed to fetch meta for ${gameName}:`, err);
-                setProgressColor(`${gameName}`, 'error');
                 elementToPulse.classList.remove('loading');
                 await new Promise(r => setTimeout(r, 100));
             }
         }
     }
 
-    // Set final progress to 100%
-    setProgressDirect(100);
-    const typeLabel = type === 'image' ? 'images' : 'metadata';
-    setProgressColor(`Batch download complete for ${typeLabel}!`, 'success');
-
-    // Smooth hide animation after a delay
-    setTimeout(() => {
-        hideProgress();
-    }, 1500);
 }
 
 export async function addFavorite(container) {
@@ -930,45 +787,60 @@ export async function batchDownload() {
         return;
     }
 
-    // Find games with missing images in the current platform
-    const pages = document.querySelectorAll('#galleries .page');
-    const currentPlatformPage = Array.from(pages).find(page =>
-        page.dataset.platform === LB.currentPlatform
-    );
-
-    if (!LB.preferences[LB.currentPlatform].gamesDir) {
+    // Ensure platform and directories are valid
+    const currentPlatform = LB.currentPlatform;
+    const platformPrefs = LB.preferences[currentPlatform];
+    if (!platformPrefs?.gamesDir) {
         document.getElementById('games-dir-sub-label').textContent = 'This field cannot be empty';
         return;
     }
 
-    const gamesMissingImage = currentPlatformPage.querySelectorAll(".game-container[data-missing-image]");
+    const pages = document.querySelectorAll('#galleries .page');
+    const currentPlatformPage = Array.from(pages).find(
+        page => page.dataset.platform === currentPlatform
+    );
+    if (!currentPlatformPage) {
+        console.warn("No page found for current platform:", currentPlatform);
+        return;
+    }
 
+    // Identify missing items
+    const gamesMissingImage = currentPlatformPage.querySelectorAll(".game-container[data-missing-image]");
     const gamesMissingMeta = await getMissingMetaGames(currentPlatformPage);
 
+    // Ask user for confirmation
     let confirmed;
     try {
         confirmed = await downloadMetaDialog(gamesMissingImage.length, gamesMissingMeta.length);
-    } catch (err) {
-        // Silently catch cancel error
+    } catch {
+        // Dialog cancelled
         return;
     }
+
     if (!confirmed) {
         console.info("Batch download cancelled by user");
         return;
     }
 
-    console.log("confirmed: ", confirmed);
+    setFooterProgressVisible(true);
+
+    const tasks = [];
+
+    if (confirmed.imageBatch) {
+        tasks.push(executeBatchDownload(gamesMissingImage, 'image', LB.currentPlatform));
+    }
+    if (confirmed.metaBatch) {
+        tasks.push(executeBatchDownload(gamesMissingMeta, 'meta', LB.currentPlatform));
+    }
 
     LB.batchRunning = true;
     try {
-        if (confirmed.imageBatch) {
-            await executeBatchDownload(gamesMissingImage, 'image', LB.currentPlatform);
-        }
-        if (confirmed.metaBatch) {
-            await executeBatchDownload(gamesMissingMeta, 'meta', LB.currentPlatform);
-        }
+        await Promise.all(tasks); // run concurrently
     } finally {
         LB.batchRunning = false;
+        setFooterProgress(1, 100);
+        setFooterProgress(2, 100);
+        setTimeout(() => setFooterProgressVisible(false), 1500);
     }
 }
 

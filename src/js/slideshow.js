@@ -42,7 +42,6 @@ export function initSlideShow(platformToDisplay) {
     function updateSlideShow() {
         const totalSlides = slides.length;
         const radius = 90 * totalSlides;
-        const is3D = LB.homeMenuTheme === '3D';
 
         slides.forEach((slide, i) => {
             const angleIncrement = 360 / totalSlides;

@@ -6,7 +6,7 @@ import { dirname, join } from 'path';
 import { spawn, exec } from 'child_process';
 import { getAllCoverImageUrls, getGameMetaData } from './src/js/backends.js';
 
-import { PLATFORMS } from './src/js/platforms.js';
+import { PLATFORMS, getPlatformInfo } from './src/js/platforms.js';
 
 import axios from 'axios';
 import os from 'os';
@@ -252,7 +252,6 @@ function loadPreferences() {
                     platformPreferences === null ||
                     typeof platformPreferences.numberOfColumns !== 'number' ||
                     typeof platformPreferences.footerSize !== 'string' ||
-                    typeof platformPreferences.homeMenuTheme !== 'string' ||
                     typeof platformPreferences.launchDialogPolicy !== 'string' ||
                     typeof platformPreferences.disabledPlatformsPolicy !== 'string' ||
                     typeof platformPreferences.steamGridAPIKey !== 'string'
@@ -448,7 +447,7 @@ ipcMain.handle('restart', async () => {
 });
 
 ipcMain.on('fetch-images', (event, gameName, platformName, steamGridAPIKey, giantBombAPIKey) => {
-    getAllCoverImageUrls(gameName, platformName, { steamGridAPIKey, giantBombAPIKey })
+    getAllCoverImageUrls(gameName.replace(/\s*[\(\[].*?[\)\]]/g, ''), getPlatformInfo(platformName).name, { steamGridAPIKey, giantBombAPIKey })
         .then((urls) => {
             event.reply('image-urls', urls);
         })
@@ -672,7 +671,6 @@ const defaultPreferences = {
         index: 0,
         numberOfColumns: 6,
         footerSize: "medium",
-        homeMenuTheme: "3D",
         disabledPlatformsPolicy: "show",
         recentlyPlayedPolicy: "hide",
         recentlyPlayedViewMode: "grid",

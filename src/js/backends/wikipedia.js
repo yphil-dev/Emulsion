@@ -1,9 +1,11 @@
-export const fetchImages = async (gameName) => {
+export const fetchImages = async (gameName, platformName) => {
     const API = "https://en.wikipedia.org/w/api.php";
     const results = [];
     const triedTitles = new Set();
 
     const tryTitle = async (title) => {
+        console.log("title: ", title);
+
         if (triedTitles.has(title.toLowerCase())) return;
         triedTitles.add(title.toLowerCase());
 
@@ -14,121 +16,158 @@ export const fetchImages = async (gameName) => {
         url.searchParams.set("format", "json");
         url.searchParams.set("origin", "*");
         url.searchParams.set("titles", title);
-        url.searchParams.set("prop", "images|pageimages|categories");
+        url.searchParams.set("prop", "images|pageimages|categories|info");
         url.searchParams.set("imlimit", "max");
         url.searchParams.set("piprop", "original");
+        url.searchParams.set("inprop", "url");
 
-        const resp = await fetch(url.toString());
-        if (!resp.ok) return;
+        try {
+            const resp = await fetch(url.toString());
+            if (!resp.ok) return;
 
-        const data = await resp.json();
-        const pages = Object.values(data.query.pages || {});
+            const data = await resp.json();
+            const pages = Object.values(data.query.pages || {});
 
-        for (const page of pages) {
-            if (page.missing) continue;
-            const cats = (page.categories || []).map((c) => c.title.toLowerCase());
-            if (cats.some((c) => c.includes("disambiguation"))) return;
+            for (const page of pages) {
+                if (page.missing) continue;
+                const cats = (page.categories || []).map((c) => c.title.toLowerCase());
+                if (cats.some((c) => c.includes("disambiguation"))) continue;
 
-            // Infobox / main page image
-            if (page.original?.source && !page.original.source.endsWith(".svg")) {
-                results.push({
-                    url: page.original.source,
-                    source: "wikipedia",
-                    type: "image",
-                    pageUrl,
-                });
-            }
+                // Infobox / main page image
+                if (page.original?.source) {
+                    results.push({
+                        url: page.original.source,
+                        source: "wikipedia",
+                        type: "image",
+                        pageUrl,
+                        isCover: page.original.source.toLowerCase().includes("cover") ||
+                            page.original.source.toLowerCase().includes("box")
+                    });
+                }
 
-            // Page images
-            if (page.images) {
-                for (const img of page.images) {
-                    const imgTitle = img.title || "";
-                    if (!/logo|ambox|seal/i.test(imgTitle)) {
+                // Page images - get detailed info for each
+                if (page.images) {
+                    // Batch process images to avoid too many requests
+                    const imageBatches = [];
+                    for (let i = 0; i < page.images.length; i += 10) {
+                        imageBatches.push(page.images.slice(i, i + 10));
+                    }
+
+                    for (const batch of imageBatches) {
+                        const imageTitles = batch.map(img => img.title).join('|');
+
                         const infoUrl = new URL(API);
                         infoUrl.searchParams.set("action", "query");
                         infoUrl.searchParams.set("format", "json");
                         infoUrl.searchParams.set("origin", "*");
-                        infoUrl.searchParams.set("titles", img.title);
+                        infoUrl.searchParams.set("titles", imageTitles);
                         infoUrl.searchParams.set("prop", "imageinfo");
-                        infoUrl.searchParams.set("iiprop", "url");
+                        infoUrl.searchParams.set("iiprop", "url|size|mime");
+                        infoUrl.searchParams.set("iilimit", "max");
 
-                        const infoResp = await fetch(infoUrl.toString());
-                        if (!infoResp.ok) continue;
-                        const infoData = await infoResp.json();
-                        const p = Object.values(infoData.query.pages || {})[0];
-                        const url = p?.imageinfo?.[0]?.url;
+                        try {
+                            const infoResp = await fetch(infoUrl.toString());
+                            if (!infoResp.ok) continue;
 
-                        if (url && !url.endsWith(".svg")) {
-                            results.push({
-                                url,
-                                source: "wikipedia",
-                                type: "image",
-                                pageUrl,
-                            });
+                            const infoData = await infoResp.json();
+                            const imagePages = Object.values(infoData.query.pages || {});
+
+                            for (const imgPage of imagePages) {
+                                const imageInfo = imgPage.imageinfo?.[0];
+                                if (imageInfo?.url) {
+                                    const imgTitle = imgPage.title || "";
+
+                                    // Skip logos, seals, icons, and small images
+                                    if (!/logo|ambox|seal|icon|symbol/i.test(imgTitle) &&
+                                        imageInfo.width >= 200 &&
+                                        imageInfo.height >= 200) {
+
+                                        results.push({
+                                            url: imageInfo.url,
+                                            source: "wikipedia",
+                                            type: "image",
+                                            pageUrl,
+                                            isCover: imageInfo.url.toLowerCase().includes("cover") ||
+                                                imgTitle.toLowerCase().includes("cover") ||
+                                                imageInfo.url.toLowerCase().includes("box") ||
+                                                imgTitle.toLowerCase().includes("box") ||
+                                                imageInfo.url.toLowerCase().includes("flyer") ||
+                                                imgTitle.toLowerCase().includes("flyer") ||
+                                                imgTitle.toLowerCase().includes("artwork") ||
+                                                imageInfo.url.toLowerCase().includes("artwork")
+                                        });
+                                    }
+                                }
+                            }
+                        } catch (error) {
+                            console.log("Error fetching image batch:", error);
                         }
                     }
                 }
             }
+        } catch (error) {
+            console.log("Error fetching page:", error);
         }
     };
 
+    // Expanded search variants
     const variants = [
+        `${gameName} (${platformName})`,
+        `${gameName} video game ${platformName}`,
         `${gameName} (video game)`,
-        `${gameName} (Amiga video game)`,
-        `${gameName} (Amiga)`,
+        `${gameName} (series)`,
+        `${gameName} (arcade game)`,
         gameName,
+        `${gameName} video game`
     ];
 
     for (const v of variants) {
         await tryTitle(v);
-        if (results.length) break;
+        // Don't break early - try all variants to get maximum results
     }
 
-    // Fallback search if nothing found
-    if (!results.length) {
-        const searchUrl = new URL(API);
-        searchUrl.searchParams.set("action", "query");
-        searchUrl.searchParams.set("format", "json");
-        searchUrl.searchParams.set("origin", "*");
-        searchUrl.searchParams.set("list", "search");
-        searchUrl.searchParams.set("srsearch", `${gameName} video game`);
-        searchUrl.searchParams.set("srlimit", "8");
-
-        const searchResp = await fetch(searchUrl.toString());
-        if (!searchResp.ok) return results;
-        const searchData = await searchResp.json();
-
-        const pageTitles = (searchData.query?.search || []).map((p) => p.title);
-        for (const t of pageTitles) {
-            await tryTitle(t);
-        }
-    }
-
-    // Deduplicate and remove svg again just in case
+    // Deduplicate and filter
     const uniqueResults = [];
     const seen = new Set();
+
+    function isAllowedImageType(url) {
+        const lowerUrl = url.toLowerCase();
+        return lowerUrl.endsWith('.png') ||
+            lowerUrl.endsWith('.jpg') ||
+            lowerUrl.endsWith('.jpeg') ||
+            lowerUrl.endsWith('.webp');
+    }
+
+    // First pass: add cover images
     for (const r of results) {
-        if (!seen.has(r.url) && !r.url.endsWith(".svg")) {
+        if (!seen.has(r.url) && isAllowedImageType(r.url) && r.isCover) {
             seen.add(r.url);
             uniqueResults.push(r);
         }
     }
 
+    // Second pass: add non-cover images
+    for (const r of results) {
+        if (!seen.has(r.url) && isAllowedImageType(r.url) && !r.isCover) {
+            seen.add(r.url);
+            uniqueResults.push(r);
+        }
+    }
+
+    console.log(`Found ${uniqueResults.length} images after filtering`);
     return uniqueResults;
 };
 
 
 // --- Test Runner ---
-const testGame = async (gameName) => {
+const testGame = async (gameName, platformName) => {
   console.log(`\n🎮 === Testing: "${gameName}" ===`);
-  console.log("=".repeat(60));
 
   const start = Date.now();
-  const images = await fetchImages(gameName);
+  const images = await fetchImages(gameName, platformName);
   const end = Date.now();
 
   console.log(`\n⏱️ Request took: ${end - start}ms`);
-  console.log("📊 Images found:");
   console.log(JSON.stringify(images, null, 2));
   console.log("=".repeat(60));
 
@@ -137,7 +176,8 @@ const testGame = async (gameName) => {
 
 (async () => {
   // await testGame("Flat Out Ultimate Carnage");
-  await testGame("Outrun");
-  // await testGame("Banshee (Amiga video game)");
-  // await testGame("Kirby Air Ride");
+    // await testGame("DuckTales");
+    // await testGame("Ninja Gaiden", "nes");
+    await testGame("Power Strike", "Master System");
+    // await testGame("Kirby Air Ride");
 })();

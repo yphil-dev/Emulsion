@@ -1021,7 +1021,7 @@ async function populateGameMenu(gameMenuContainer, gameName, platformName) {
 
                 const img = new Image();
                 img.src = url;
-                img.title = `${gameName}\n\n- Found on ${source}\n- Click to download and save`;
+                img.title = `${gameName}\n\n- Found on ${source}\n- Click to download and save\n URL: ${url}`;
                 img.classList.add('game-image');
                 img.style.opacity = '0';
                 img.style.transition = 'opacity 0.3s ease-in';

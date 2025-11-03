@@ -85,7 +85,6 @@ async function initializeApp() {
             recentlyPlayedViewMode: appData.recentlyPlayedViewMode,
             preferences: appData.preferences,
             galleryNumOfCols: appData.preferences.settings.numberOfColumns,
-            homeMenuTheme: appData.preferences.settings.homeMenuTheme
         });
 
         console.log("LB.favoritesViewMode: ", LB.favoritesViewMode);

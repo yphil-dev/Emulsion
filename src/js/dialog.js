@@ -403,11 +403,16 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
         imgSourcesDT.textContent = 'Sources';
 
         // Helper function to create icon-span pairs
-        function createSourceDd(iconClass, text) {
+        function createSourceDd(text, isEnabled) {
             const dd = document.createElement('dd');
 
+            if (!isEnabled) {
+                dd.classList.add('disabled');
+            }
+
             const icon = document.createElement('i');
-            icon.className = `form-icon fa fa-2x ${iconClass}`;
+            icon.className = 'form-icon fa fa-2x';
+            icon.classList.add(isEnabled ? 'fa-check-square-o' : 'fa-square-o');
             icon.setAttribute('aria-hidden', 'true');
 
             const span = document.createElement('span');
@@ -419,9 +424,9 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
 
         imgSources.append(
             imgSourcesDT,
-            createSourceDd('fa-square-o', 'Wikipedia'),
-            createSourceDd('fa-check-square-o', 'SteamGridDB'),
-            createSourceDd('fa-check-square-o', 'GiantBomb')
+            createSourceDd('Wikipedia', true),
+            createSourceDd('SteamGridDB', LB.steamGridAPIKey),
+            createSourceDd('GiantBomb', LB.giantBombAPIKey)
         );
 
         const textSources = document.createElement('dl');
@@ -429,7 +434,7 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
         const textSourcesDT = document.createElement('dt');
         textSourcesDT.textContent = 'Sources';
 
-        textSources.append(textSourcesDT, createSourceDd('fa-square-o', 'Wikipedia'));
+        textSources.append(textSourcesDT, createSourceDd('Wikipedia', true));
 
         optionsContainer.appendChild(
             makeRadioOption('batch-images', imgLabel, hasImages ? imagesCount : 0, hasImages, !hasImages, 'batch-type')

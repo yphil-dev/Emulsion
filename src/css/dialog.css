@@ -342,3 +342,7 @@
 .dialog.download-meta dl dd i {
   margin-right: 0.3em;
 }
+
+dd.disabled {
+  color: gray;
+}

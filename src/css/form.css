@@ -94,7 +94,7 @@ label.checkbox {
 
 /* When label has focus-within, style the radio-box inside it */
 .form-label:focus-within .radio-box {
-    color: var(--color-selected);
+    color: var(--color-selected) !important;
     background-color: var(--color-bg-selected);
 }
 

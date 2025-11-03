@@ -8,6 +8,7 @@ export const getGameMetaData = async (params) => {
 };
 
 export const getAllCoverImageUrls = async (gameName, platform, options = {}) => {
+    console.log("gameName: ", gameName, platform);
     const { steamGridAPIKey, giantBombAPIKey } = options;
 
     const backends = [];
@@ -23,13 +24,17 @@ export const getAllCoverImageUrls = async (gameName, platform, options = {}) => 
     }
 
     // Wikipedia API (no key required, works for all platforms)
-    backends.push(() => wikipediaFetch(gameName));
+    backends.push(() => wikipediaFetch(gameName, platform));
 
     const allResults = await Promise.allSettled(backends.map(fn => fn()));
+
+    console.log("allResults: ", allResults);
 
     const allImages = allResults.flatMap(result =>
         result.status === 'fulfilled' ? result.value : []
     );
+
+    console.log("allImages.flat(): ", allImages.flat());
 
     return allImages.flat();
 };

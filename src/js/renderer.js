@@ -20,7 +20,6 @@ loadPreferences()
             steamGridAPIKey: preferences.settings.steamGridAPIKey,
             giantBombAPIKey: preferences.settings.giantBombAPIKey,
             footerSize: preferences.settings.footerSize,
-            homeMenuTheme: preferences.settings.homeMenuTheme,
             theme: preferences.settings.theme,
             disabledPlatformsPolicy: preferences.settings.disabledPlatformsPolicy,
             recentlyPlayedPolicy: preferences.settings.recentlyPlayedPolicy,

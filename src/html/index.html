@@ -3,9 +3,6 @@
     <head>
         <title>Emulsion</title>
 
-        <link rel="preload" href="../font/Fork-Awesome-1.2.0/fonts/forkawesome-webfont.woff2" as="font" type="font/woff2" crossorigin>
-        <link rel="preload" href="../font/Fork-Awesome-1.2.0/fonts/forkawesome-webfont.woff" as="font" type="font/woff" crossorigin>
-
         <link rel="stylesheet" href="../font/Fork-Awesome-1.2.0/css/fork-awesome.css">
         <link rel="stylesheet" href="../css/init.css">
         <link rel="stylesheet" href="../css/spinner.css">
@@ -168,31 +165,37 @@
 
         <div id="help-overlay" class="overlay">
             <div class="dialog help-dialog">
+                <h3 class="dialog-title"></h3>
                 <div class="tabs">
                     <button class="tab-button active" data-tab="quickstart">Quickstart</button>
                     <button class="tab-button" data-tab="shortcuts">Controls</button>
                     <button class="tab-button" data-tab="cli-args">Command Line Arguments</button>
                 </div>
-                <div class="tab-content active" id="quickstart">
-                    <h3 class="dialog-title">Welcome to Emulsion!</h3>
-                    <p class="first">Emulsion is a game launcher that helps you organize and launch your games.</p>
-                    <h4>Setup</h4>
+                <div class="tab-content active" id="quickstart" data-description="Welcome to Emulsion!">
+                    <p class="text">
+                        Emulsion is your unified launcher for organizing, browsing, and playing games across all your favorite platforms — cleanly and beautifully.
+                    </p>
+
+                    <h4>Getting Started</h4>
                     <ul class="text">
-                        <li>Select a platform on the home screen</li>
-                        <li>Browse to your games directory</li>
-                        <li>Enter your emulator for that platform</li>
-                        <li>Enter your optional launch arguments for that emulator</li>
+                        <li>Pick a <strong>platform</strong> from the home screen (e.g. PlayStation, SNES, etc.).</li>
+                        <li>Choose your local <strong>games folder</strong> so Emulsion can scan and list your titles.</li>
+                        <li>Set your preferred <strong>emulator executable</strong> for that platform.</li>
+                        <li>(Optional) Add custom <strong>launch arguments</strong> to fine-tune how each emulator runs.</li>
                     </ul>
-                    <h4>Usage</h4>
+
+                    <h4>Using Emulsion</h4>
                     <ul class="text">
-                        <li>Select a platform on the home screen</li>
-                        <li>Browse your games and select one to launch</li>
-                        <li>Use your keyboard or game controller to navigate</li>
+                        <li>Browse your game library by cover or title — Emulsion auto-fetches artwork and metadata where possible.</li>
+                        <li>Press <strong>Enter</strong> (or your controller’s launch button) to start any game instantly.</li>
+                        <li>Navigate smoothly using your keyboard or controller — Emulsion is designed for both.</li>
                     </ul>
-                    <p>For more details, see the Keyboard Shortcuts tab or press any key to close.</p>
+
+                    <p class="text">
+                        Want more control? Check the <strong>Keyboard Shortcuts</strong> tab, or simply press any key to close this help screen and jump in.
+                    </p>
                 </div>
-                <div class="tab-content shortcuts" id="shortcuts">
-                    <h3 class="dialog-title">Controls</h3>
+                <div class="tab-content shortcuts" id="shortcuts" data-description="Controls & Shortcuts">
                     <table class="shortcuts">
                         <thead class="text">
                             <tr>
@@ -322,8 +325,7 @@
                     </table>
 
                 </div>
-                <div class="tab-content" id="cli-args">
-                    <h3 class="dialog-title">Command Line Arguments</h3>
+                <div class="tab-content" id="cli-args" data-description="Command Line Arguments">
                     <table class="text">
                         <thead>
                             <tr>
@@ -378,6 +380,18 @@
                     </table>
                 </div>
                 <div class="dialog-buttons">
+                    <div class="open-dialog-at">
+                        <input
+                            type="checkbox"
+                            id="open-dialog-at-startup"
+                            name="open-dialog-at-startup"
+                            checked
+                        />
+                        <label for="open-dialog-at-startup" class="text">
+                            Show this dialog on startup
+                        </label>
+                    </div>
+
                     <button class="ok button">OK</button>
                 </div>
             </div>
@@ -412,8 +426,8 @@
                     </div>
                 </div>
 
-                <div id="launch-game-dialog-buttons" class="dialog-buttons">
-                    <div class="open-dialog-at-launch">
+                <div class="dialog-buttons">
+                    <div class="open-dialog-at">
                         <input
                             type="checkbox"
                             id="open-dialog-at-launch"

@@ -20,6 +20,7 @@
   border-radius: 8px;
   /* gap: 10px; */
   max-width: 90vw;
+  max-height: 90vh;
   /* subtle separation from the page */
   border: 1px solid rgba(255, 255, 255, 0.08); /* or rgba(0,0,0,0.15) depending on theme */
   box-shadow:
@@ -86,6 +87,11 @@
 /*   width: 68vw; */
 /* } */
 
+.help-dialog {
+  width: 70vw;
+  max-width: 80vw;
+}
+
 .help-dialog .tabs {
   display: flex;
   margin-bottom: 1em;
@@ -106,6 +112,41 @@
   color: var(--color-selected);
 }
 
+.help-dialog table {
+  table-layout: fixed; /* ensures columns align and widths are consistent */
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.help-dialog thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;               /* keep above scrolling rows */
+}
+
+.help-dialog .th-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.help-dialog .th-content span {
+  color: var(--color-selected);
+}
+
+.help-dialog tbody tr {
+  height: 2em;
+}
+
+.help-dialog td {
+  vertical-align: middle;
+  height: 50px;
+}
+
+.help-dialog table td.game-controller-icon {
+  text-align: center;
+}
+
 .help-dialog .tab-content {
   display: none;
 }
@@ -114,77 +155,88 @@
   display: block;
 }
 
-.help-dialog table {
-  border-collapse: collapse;
-  border-spacing: 0;
-  width: 100%;
-}
+/* Optional row styling */
+.help-dialog tbody tr:nth-child(odd)  { background: rgba(255,255,255,0.03); }
+.help-dialog tbody tr:nth-child(even) { background: rgba(255,255,255,0.07); }
 
-.help-dialog th {
-  position: sticky;
-  top: 100px;
-}
-
-.help-dialog .dialog-title {
-  margin: 0;
-}
-
-.help-dialog table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.help-dialog table tbody {
-  display: block;
-  max-height: 90vh;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-.help-dialog table thead {
-  display: table;
-  width: 100%;
-}
-
-.help-dialog #cli-args table td {
-  width: 50%;
-}
-
-.help-dialog h3 {
-  margin-bottom: 0;
-}
-
-.help-dialog th .th-content {
-    display: flex;
-    flex-direction: column; /* only stacks content inside th */
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1em;
-}
-
-.help-dialog tbody tr:nth-child(even) {
-  background:var(--color-bg-header);
-}
-
-.help-dialog tbody tr:nth-child(odd) {
-  background:var(--color-bg);
-}
-
-.help-dialog td {
-  padding: 0 0.6em;
-  height: 1em;
-  vertical-align: middle;
+.help-dialog th, .help-dialog td {
+  padding: 0.4em 0.6em;
   text-align: left;
 }
 
-.help-dialog td svg {
-    display: inline-block; /* not flex */
-    vertical-align: middle;
-}
-
-.help-dialog td.game-controller-icon {
+.help-dialog .shortcuts {
+  max-height: 90vh;       /* your desired visible height */
+  overflow-y: auto;         /* makes the body scrollable */
   text-align: center;
 }
+
+/* .help-dialog table { */
+/*   border-collapse: collapse; */
+/*   border-spacing: 0; */
+/*   width: 100%; */
+/* } */
+
+/* .help-dialog thead { */
+/*     display: table-header-group; /\* ensures proper table header behavior *\/ */
+/* } */
+
+/* .help-dialog thead tr { */
+/*     display: table-row; /\* forces each row to act like a proper row *\/ */
+/* } */
+
+/* .help-dialog th { */
+/*   position: sticky; */
+/*   top: 100px; */
+/* } */
+
+/* .help-dialog table tbody { */
+/*   display: block; */
+/*   height: 500px; */
+/*   max-height: 90vh; */
+/*   overflow-y: auto; */
+/*   padding: 1em; */
+/* } */
+
+/* .help-dialog table thead { */
+/*   display: table; */
+/*   width: 100%; */
+/* } */
+
+/* .help-dialog #cli-args table td { */
+/*   width: 50%; */
+/* } */
+
+/* .help-dialog th .th-content { */
+/*     display: flex; */
+/*     flex-direction: column; /\* only stacks content inside th *\/ */
+/*     align-items: center; */
+/*     justify-content: center; */
+/*     margin-bottom: 1em; */
+/* } */
+
+/* .help-dialog tbody tr:nth-child(even) { */
+/*   background:var(--color-bg-header); */
+/* } */
+
+/* .help-dialog tbody tr:nth-child(odd) { */
+/*   background:var(--color-bg); */
+/* } */
+
+/* .help-dialog td { */
+/*   padding: 0 0.6em; */
+/*   height: 1em; */
+/*   vertical-align: middle; */
+/*   text-align: left; */
+/* } */
+
+/* .help-dialog td svg { */
+/*     display: inline-block; /\* not flex *\/ */
+/*     vertical-align: middle; */
+/* } */
+
+/* .help-dialog td.game-controller-icon { */
+/*   text-align: center; */
+/* } */
 
 .help-dialog img {
   width: 150px;
@@ -200,13 +252,6 @@
   font-size: 1.4em;
   color: #fff;
   border: 1px solid #666;
-}
-.help-dialog thead {
-    display: table-header-group; /* ensures proper table header behavior */
-}
-
-.help-dialog thead tr {
-    display: table-row; /* forces each row to act like a proper row */
 }
 
 .help-dialog p.first {
@@ -249,7 +294,7 @@
   background-color: var(--color-bg-header);
 }
 
-.launch-game-dialog div.open-dialog-at-launch {
+.dialog div.open-dialog-at {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -274,6 +319,10 @@
 
 .dialog.download-meta dl {
   margin-top: 0;
+}
+
+.dialog.download-meta input[type="radio"] {
+  margin-right: 1em;
 }
 
 .dialog.download-meta dl dd {

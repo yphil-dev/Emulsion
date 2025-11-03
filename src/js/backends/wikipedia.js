@@ -29,8 +29,10 @@ export const fetchImages = async (gameName, platformName) => {
             const pages = Object.values(data.query.pages || {});
 
             for (const page of pages) {
-                if (page.missing) continue;
-                const cats = (page.categories || []).map((c) => c.title.toLowerCase());
+                // Check if page exists (has pageid and is not missing)
+                if (page.missing !== undefined || !page.pageid) continue;
+
+                const cats = (page.categories || []).map((c) => c.title?.toLowerCase() || '');
                 if (cats.some((c) => c.includes("disambiguation"))) continue;
 
                 // Infobox / main page image
@@ -87,7 +89,9 @@ export const fetchImages = async (gameName, platformName) => {
                                             source: "wikipedia",
                                             type: "image",
                                             pageUrl,
-                                            isCover: imageInfo.url.toLowerCase().includes("cover") ||
+                                            isCover: imgTitle.toLowerCase().includes(platformName) ||
+                                                imageInfo.url.toLowerCase().includes(platformName) ||
+                                                imageInfo.url.toLowerCase().includes("cover") ||
                                                 imgTitle.toLowerCase().includes("cover") ||
                                                 imageInfo.url.toLowerCase().includes("box") ||
                                                 imgTitle.toLowerCase().includes("box") ||
@@ -110,20 +114,73 @@ export const fetchImages = async (gameName, platformName) => {
         }
     };
 
-    // Expanded search variants
-    const variants = [
-        `${gameName} (${platformName})`,
-        `${gameName} video game ${platformName}`,
-        `${gameName} (video game)`,
-        `${gameName} (series)`,
-        `${gameName} (arcade game)`,
-        gameName,
-        `${gameName} video game`
+    // First, use search to find the actual page titles
+    const searchTerms = [
+        `${gameName} ${platformName}`,
+        `${gameName} video game`,
+        `${gameName}`
     ];
 
-    for (const v of variants) {
-        await tryTitle(v);
-        // Don't break early - try all variants to get maximum results
+    let foundPages = [];
+
+    for (const term of searchTerms) {
+        const searchUrl = new URL(API);
+        searchUrl.searchParams.set("action", "query");
+        searchUrl.searchParams.set("format", "json");
+        searchUrl.searchParams.set("origin", "*");
+        searchUrl.searchParams.set("list", "search");
+        searchUrl.searchParams.set("srsearch", term);
+        searchUrl.searchParams.set("srlimit", "5");
+        searchUrl.searchParams.set("srprop", "");
+
+        try {
+            const searchResp = await fetch(searchUrl.toString());
+            if (!searchResp.ok) continue;
+
+            const searchData = await searchResp.json();
+            const searchResults = searchData.query?.search || [];
+
+            // Filter for relevant pages with proper null checks
+            const relevantPages = searchResults.filter(page => {
+                const title = page.title?.toLowerCase() || '';
+                const snippet = page.snippet?.toLowerCase() || '';
+
+                return !title.includes("disambiguation") &&
+                       (snippet.includes("video game") ||
+                        snippet.includes(platformName.toLowerCase()) ||
+                        title.includes(gameName.toLowerCase()));
+            });
+
+            foundPages.push(...relevantPages.map(p => p.title));
+            console.log(`Search for "${term}" found:`, relevantPages.map(p => p.title));
+
+        } catch (error) {
+            console.log("Search error:", error);
+        }
+    }
+
+    // Remove duplicates from found pages
+    foundPages = [...new Set(foundPages)];
+
+    // Try the found pages first
+    for (const pageTitle of foundPages) {
+        await tryTitle(pageTitle);
+    }
+
+    // If still no results, try our predefined variants
+    if (results.length === 0) {
+        const variants = [
+            `${gameName} (${platformName})`,
+            `${gameName} (video game)`,
+            `${gameName} (series)`,
+            `${gameName} (arcade game)`,
+            gameName,
+            `${gameName} video game`
+        ];
+
+        for (const v of variants) {
+            await tryTitle(v);
+        }
     }
 
     // Deduplicate and filter
@@ -174,10 +231,10 @@ const testGame = async (gameName, platformName) => {
   return images;
 };
 
-(async () => {
-  // await testGame("Flat Out Ultimate Carnage");
-    // await testGame("DuckTales");
-    // await testGame("Ninja Gaiden", "nes");
-    await testGame("Power Strike", "Master System");
-    // await testGame("Kirby Air Ride");
-})();
+// (async () => {
+//   // await testGame("Flat Out Ultimate Carnage");
+//     // await testGame("DuckTales", "NES");
+//     await testGame("Ninja Gaiden", "NES");
+//     // await testGame("Power Strike", "Master System");
+//     // await testGame("Kirby Air Ride");
+// })();

@@ -991,8 +991,11 @@ export async function openGameMenu(container) {
 async function populateGameMenu(gameMenuContainer, gameName, platformName) {
     const dummyContainer = gameMenuContainer.querySelector('.dummy-game-container');
     const currentImageElem = gameMenuContainer.querySelector('img.current-image');
+    const headerNbOfItems = document.querySelector('header .item-number');
 
     ipcRenderer.send('fetch-images', gameName, platformName, LB.steamGridAPIKey, LB.giantBombAPIKey);
+
+    headerNbOfItems.textContent = 0;
 
     ipcRenderer.once('image-urls', (event, urls) => {
         if (urls.length === 0) {
@@ -1013,11 +1016,11 @@ async function populateGameMenu(gameMenuContainer, gameName, platformName) {
             // Replace placeholder with real results
             dummyContainer.remove();
 
-            let i = 0;
+            let nbOfImages = 0;
 
             urls.forEach(({ url, source }) => {
 
-                document.querySelector('header .item-number').textContent = i++;
+                headerNbOfItems.textContent = nbOfImages++;
 
                 const img = new Image();
                 img.src = url;

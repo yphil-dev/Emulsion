@@ -52,20 +52,18 @@ export function initSlideShow(platformToDisplay) {
             slide.style.setProperty('--radius', radius);
 
             slide.classList.remove(
-                'active', 'prev-slide-3d', 'prev-slide-flat',
-                'next-slide-3d', 'next-slide-flat',
-                'adjacent-flat', 'adjacent-3d'
+                'active', 'prev', 'next', 'adjacent'
             );
 
             if (i === currentIndex) {
                 LB.currentPlatform = slide.dataset.platform;
                 slide.classList.add('active');
             } else if (i === (currentIndex - 1 + totalSlides) % totalSlides) {
-                slide.classList.add(is3D ? 'prev-slide-3d' : 'prev-slide-flat');
+                slide.classList.add('prev');
             } else if (i === (currentIndex + 1) % totalSlides) {
-                slide.classList.add(is3D ? 'next-slide-3d' : 'next-slide-flat');
+                slide.classList.add('next');
             } else {
-                slide.classList.add(is3D ? 'adjacent-3d' : 'adjacent-flat');
+                slide.classList.add('adjacent');
             }
         });
     }

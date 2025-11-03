@@ -149,6 +149,7 @@ function buildPrefsFormItem(name, iconName, type, description, shortDescription,
     let input;
     let inputValueDisplay;
     const group = document.createElement('div');
+    group.classList.add('input-group');
     const radios = [];
 
     if (typeof type === 'object') {
@@ -279,15 +280,11 @@ function buildSettingsMenu() {
     const numberOfColumnsGroup = numberOfColumns.group;
     const numberOfColumnsInput = numberOfColumns.input;
 
-    const footerSize = buildPrefsFormItem('footerSize', 'arrows', ['small', 'medium', 'big'], '', 'Footer menu size', LB.footerSize, setFooterSize);
+    const footerSize = buildPrefsFormItem('footerSize', 'arrows', ['small', 'medium', 'big'], '', 'Footer size', LB.footerSize, setFooterSize);
     const footerSizeGroup = footerSize.group;
     const footerSizeRadios = footerSize.radios;
 
-    const homeMenuTheme = buildPrefsFormItem('homeMenuTheme', 'arrows-h', ['flat', '3D'], '', 'Home menu style', LB.homeMenuTheme);
-    const homeMenuThemeGroup = homeMenuTheme.group;
-    const homeMenuThemeRadios = homeMenuTheme.radios;
-
-    const theme = buildPrefsFormItem('theme', 'eyedropper', ['default', 'day', 'night'], '', 'Emulsion Theme', LB.theme, applyTheme);
+    const theme = buildPrefsFormItem('theme', 'eyedropper', ['default', 'day', 'night'], '', 'Theme', LB.theme, applyTheme);
     const themeGroup = theme.group;
     const themeRadios = theme.radios;
 
@@ -313,7 +310,6 @@ function buildSettingsMenu() {
 
     // formContainer.appendChild(platformMenuImageCtn);
     formContainer.appendChild(numberOfColumnsGroup);
-    formContainer.appendChild(homeMenuThemeGroup);
     formContainer.appendChild(themeGroup);
     formContainer.appendChild(footerSizeGroup);
     formContainer.appendChild(disabledPlatformsPolicyGroup);
@@ -373,7 +369,6 @@ function buildSettingsMenu() {
             const newPrefs = {
                 numberOfColumns,
                 footerSize: footerSizeRadios.find(radio => radio.checked)?.value,
-                homeMenuTheme: homeMenuThemeRadios.find(radio => radio.checked)?.value,
                 theme: themeRadios.find(radio => radio.checked)?.value,
                 disabledPlatformsPolicy: disabledPlatformsPolicyRadios.find(radio => radio.checked)?.value,
                 recentlyPlayedPolicy: recentlyPlayedPolicyRadios.find(radio => radio.checked)?.value,
@@ -385,7 +380,6 @@ function buildSettingsMenu() {
             // Save preferences
             await updatePreference('settings', 'numberOfColumns', newPrefs.numberOfColumns);
             await updatePreference('settings', 'footerSize', newPrefs.footerSize);
-            await updatePreference('settings', 'homeMenuTheme', newPrefs.homeMenuTheme);
             await updatePreference('settings', 'theme', newPrefs.theme);
             await updatePreference('settings', 'disabledPlatformsPolicy', newPrefs.disabledPlatformsPolicy);
             await updatePreference('settings', 'recentlyPlayedPolicy', newPrefs.recentlyPlayedPolicy);
@@ -396,7 +390,6 @@ function buildSettingsMenu() {
             // Detect changes that require reload
             const somethingImportantChanged =
                   newPrefs.numberOfColumns !== LB.galleryNumOfCols ||
-                  newPrefs.homeMenuTheme !== LB.homeMenuTheme ||
                   newPrefs.disabledPlatformsPolicy !== LB.disabledPlatformsPolicy ||
                   newPrefs.recentlyPlayedPolicy !== LB.recentlyPlayedPolicy ||
                   newPrefs.favoritesPolicy !== LB.favoritesPolicy ||
@@ -407,7 +400,6 @@ function buildSettingsMenu() {
             Object.assign(LB, {
                 galleryNumOfCols: newPrefs.numberOfColumns,
                 footerSize: newPrefs.footerSize,
-                homeMenuTheme: newPrefs.homeMenuTheme,
                 theme: newPrefs.theme,
                 disabledPlatformsPolicy: newPrefs.disabledPlatformsPolicy,
                 recentlyPlayedPolicy: newPrefs.recentlyPlayedPolicy,
@@ -471,7 +463,7 @@ function buildPlatformMenuForm(platformName) {
     statusLabel.appendChild(statusLabelPlatormStatus);
 
     const gamesDirGroup = document.createElement('div');
-    gamesDirGroup.classList.add('form-menu-input-group');
+    gamesDirGroup.classList.add('input-group');
 
     const gamesDirInput = document.createElement('input');
     gamesDirInput.type = 'text';
@@ -507,7 +499,7 @@ function buildPlatformMenuForm(platformName) {
     gamesDirGroup.appendChild(gamesDirCtn);
 
     const emulatorGroup = document.createElement('div');
-    emulatorGroup.classList.add('form-menu-input-group');
+    emulatorGroup.classList.add('input-group');
 
     const emulatorIcon = document.createElement('div');
     emulatorIcon.classList.add('form-icon');
@@ -544,7 +536,7 @@ function buildPlatformMenuForm(platformName) {
 
     // ======== NEW EXTENSIONS SECTION ========
     const extensionsGroup = document.createElement('div');
-    extensionsGroup.classList.add('form-menu-input-group');
+    extensionsGroup.classList.add('input-group');
 
     // Label
     const extensionsLabel = document.createElement('label');
@@ -608,7 +600,7 @@ function buildPlatformMenuForm(platformName) {
     // ======== END EXTENSIONS SECTION ========
 
     const emulatorArgsGroup = document.createElement('div');
-    emulatorArgsGroup.classList.add('form-menu-input-group');
+    emulatorArgsGroup.classList.add('input-group');
 
     const emulatorArgsCtn = document.createElement('div');
     emulatorArgsCtn.classList.add('dual-ctn');

@@ -76,35 +76,41 @@ p.name {
   background-position: center;
   border-radius: 24px;
   /* opacity: 0.8; */
-  transition: transform 0.4s ease, opacity 0.1s ease, box-shadow 0.5s ease;
+  transition: transform 0.4s ease, filter 2s ease;
 }
 
 .slide .slide-content {
-  display: none;
+  /* display: none; */
+  transition: opacity 2s ease;
+  opacity: 0;
+}
+
+.slide.active .slide-content {
+  /* display: flex; */
+  opacity: 1;
 }
 
 .slide.active {
   transform: translateX(0) scale(1);
   animation: slide-pulse-glow 5s infinite ease-in-out;
   opacity: 1;
-  filter: brightness(150%);
+  filter: brightness(100%);
 }
 
-.slide.active .slide-content {
-  display: flex;
+.slide.prev,
+.slide.next {
+  filter: brightness(80%);
 }
 
-.slide.prev-slide-3d {
-  transform: translateX(-50vw) scale(0.9) rotateY(10deg);
-  filter: brightness(60%);
+.slide.prev {
+  transform: translateX(-50vw) scale(0.8) rotateY(10deg);
 }
 
-.slide.next-slide-3d {
-  transform: translateX(50vw) scale(0.9) rotateY(-10deg);
-  filter: brightness(60%);
+.slide.next {
+  transform: translateX(50vw) scale(0.8) rotateY(-10deg);
 }
 
-.slide.adjacent-3d {
+.slide.adjacent {
   /* transform: translateX(-900px) scale(0.7) rotateY(20deg); */
   transform: rotateY(calc(var(--angle) * 1deg)) translateZ(calc(var(--radius) * 1px));
   filter: brightness(50%);

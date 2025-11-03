@@ -1,6 +1,7 @@
+import path from 'path';
 import { PLATFORMS } from './platforms.js';
-const { ipcRenderer } = require('electron');
-const path = require('path');
+
+const { ipcRenderer } = await import('electron');
 
 async function loadUserData() {
     try {

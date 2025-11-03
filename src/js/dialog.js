@@ -208,10 +208,11 @@ export function toggleFavDialog(message) {
     }, 5000);
 }
 
-export function helpDialog() {
+export function helpDialog(defaultTabId = null) {
     const overlay = document.getElementById('help-overlay');
     const dialog = overlay.querySelector('.dialog');
     const okButton = dialog.querySelector('button.ok');
+    const dialogTitle = dialog.querySelector('.dialog-title');
 
     overlay.style.alignItems = 'flex-start';
     overlay.style.paddingTop = '50px';
@@ -221,82 +222,89 @@ export function helpDialog() {
         platformNames.textContent = PLATFORMS.map(platform => platform.name).join(', ');
     }
 
-    function setupTabs() {
+    function setupTabs(onTabChange, initialTabId) {
         const tabButtons = overlay.querySelectorAll('.tab-button');
         const tabContents = overlay.querySelectorAll('.tab-content');
 
         tabButtons.forEach(button => {
             button.addEventListener('click', () => {
-
+                // deactivate everything
                 tabButtons.forEach(btn => btn.classList.remove('active'));
                 tabContents.forEach(content => content.classList.remove('active'));
 
+                // activate this one
                 button.classList.add('active');
                 const tabId = button.getAttribute('data-tab');
                 const content = overlay.querySelector(`#${tabId}`);
-                if (content) {
-                    content.classList.add('active');
-                }
+                if (content) content.classList.add('active');
+                dialogTitle.textContent = content.dataset.description;
             });
         });
+
+        // 🟢 Auto-select initial tab if provided
+        if (initialTabId) {
+            const initialButton = overlay.querySelector(`.tab-button[data-tab="${initialTabId}"]`);
+            if (initialButton) {
+                initialButton.click();
+                return;
+            }
+        }
+
+        // fallback: select first tab if none active
+        const firstTab = tabButtons[0];
+        if (firstTab && !overlay.querySelector('.tab-button.active')) {
+            firstTab.click();
+        }
     }
 
     function closeDialog() {
         DialogManager.closeCurrent();
         DialogManager.restoreMode();
-
-        // Reset styles
-        overlay.style.alignItems = '';
-        overlay.style.paddingTop = '';
     }
 
     window.onKBHelpKeyDown = function onKBHelpKeyDown(event) {
         event.stopPropagation();
         event.stopImmediatePropagation();
 
-        const kbOverlay = document.getElementById('help-overlay');
-        if (kbOverlay && kbOverlay.style.display === 'flex') {
-            const tabButtons = kbOverlay.querySelectorAll('.tab-button');
-            if (tabButtons.length > 0) {
-                switch (event.key) {
-                case 'ArrowLeft':
-                    const activeLeft = kbOverlay.querySelector('.tab-button.active');
-                    let currentIndexLeft = Array.from(tabButtons).indexOf(activeLeft);
-                    currentIndexLeft = (currentIndexLeft - 1 + tabButtons.length) % tabButtons.length;
-                    tabButtons[currentIndexLeft].click();
-                    break;
-                case 'ArrowRight':
-                    const activeRight = kbOverlay.querySelector('.tab-button.active');
-                    let currentIndexRight = Array.from(tabButtons).indexOf(activeRight);
-                    currentIndexRight = (currentIndexRight + 1) % tabButtons.length;
-                    tabButtons[currentIndexRight].click();
-                    break;
-                case 'Escape':
-                case 'Enter':
-                    closeDialog();
-                    break;
-                default:
-                    break;
-                }
-            } else if (event.key === 'Escape' || event.key === 'Enter') {
-                closeDialog();
-            }
-        } else if (event.key === 'Escape' || event.key === 'Enter') {
+        const tabButtons = dialog.querySelectorAll('.tab-button');
+        switch (event.key) {
+        case 'ArrowLeft':
+            const activeLeft = dialog.querySelector('.tab-button.active');
+            let currentIndexLeft = Array.from(tabButtons).indexOf(activeLeft);
+            currentIndexLeft = (currentIndexLeft - 1 + tabButtons.length) % tabButtons.length;
+            tabButtons[currentIndexLeft].click();
+            break;
+        case 'ArrowRight':
+            const activeRight = dialog.querySelector('.tab-button.active');
+            let currentIndexRight = Array.from(tabButtons).indexOf(activeRight);
+            currentIndexRight = (currentIndexRight + 1) % tabButtons.length;
+            tabButtons[currentIndexRight].click();
+            break;
+        case 'Escape':
+        case 'Enter':
             closeDialog();
+            break;
+        default:
+            break;
         }
+
     };
 
-    // Set up event listeners
     okButton.addEventListener('click', closeDialog);
-    overlay.addEventListener('click', (e) => {
+    overlay.addEventListener('click', e => {
         if (e.target === overlay) closeDialog();
     });
 
-    // Open the dialog using DialogManager
     DialogManager.open(overlay, 'kbHelp');
-    setupTabs();
+
+    setupTabs((tabId, content, button) => {
+        console.log(`🧭 Tab changed to: ${tabId}`);
+        dialogTitle.textContent = tabId;
+    }, defaultTabId);
+
     okButton.focus();
 }
+
 
 export async function downloadMetaDialog(imagesCount, metaCount) {
     const overlay = document.getElementById('download-meta-overlay');

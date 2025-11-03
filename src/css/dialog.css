@@ -88,8 +88,8 @@
 /* } */
 
 .help-dialog {
-  width: 60vw;
-  max-width: 60vw;
+  width: 70vw;
+  max-width: 80vw;
 }
 
 .help-dialog .tabs {
@@ -112,41 +112,47 @@
   color: var(--color-selected);
 }
 
+.help-dialog table {
+  table-layout: fixed; /* ensures columns align and widths are consistent */
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.help-dialog thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;               /* keep above scrolling rows */
+}
+
+.help-dialog .th-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.help-dialog .th-content span {
+  color: var(--color-selected);
+}
+
+.help-dialog tbody tr {
+  height: 2em;
+}
+
+.help-dialog td {
+  vertical-align: middle;
+  height: 50px;
+}
+
+.help-dialog table td.game-controller-icon {
+  text-align: center;
+}
+
 .help-dialog .tab-content {
   display: none;
 }
 
 .help-dialog .tab-content.active {
   display: block;
-}
-
-.help-dialog .dialog-title {
-  margin: 0;
-}
-
-.help-dialog h3 {
-  margin-bottom: 0;
-}
-
-.help-dialog .shortcuts {
-  max-height: 90vh;       /* your desired visible height */
-  overflow-y: auto;         /* makes the body scrollable */
-  border: 1px solid #444;   /* optional */
-}
-
-/* Preserve full table semantics */
-.help-dialog table {
-  border-collapse: collapse;
-  width: 100%;
-}
-
-/* Sticky header */
-.help-dialog thead th {
-  position: sticky;
-  top: 0;
-  background: #222;         /* same color as dialog header maybe */
-  color: white;
-  z-index: 1;               /* keep above scrolling rows */
 }
 
 /* Optional row styling */
@@ -156,6 +162,12 @@
 .help-dialog th, .help-dialog td {
   padding: 0.4em 0.6em;
   text-align: left;
+}
+
+.help-dialog .shortcuts {
+  max-height: 90vh;       /* your desired visible height */
+  overflow-y: auto;         /* makes the body scrollable */
+  text-align: center;
 }
 
 /* .help-dialog table { */
@@ -282,7 +294,7 @@
   background-color: var(--color-bg-header);
 }
 
-.launch-game-dialog div.open-dialog-at-launch {
+.dialog div.open-dialog-at {
   display: flex;
   flex-direction: row;
   align-items: center;

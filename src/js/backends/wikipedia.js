@@ -135,9 +135,9 @@ const testGame = async (gameName) => {
   return images;
 };
 
-(async () => {
-  // await testGame("Flat Out Ultimate Carnage");
-  await testGame("Outrun");
-  // await testGame("Banshee (Amiga video game)");
-  // await testGame("Kirby Air Ride");
-})();
+// (async () => {
+//   // await testGame("Flat Out Ultimate Carnage");
+//   await testGame("Outrun");
+//   // await testGame("Banshee (Amiga video game)");
+//   // await testGame("Kirby Air Ride");
+// })();

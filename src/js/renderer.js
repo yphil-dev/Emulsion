@@ -1,8 +1,8 @@
-import { PLATFORMS } from './platforms.js';
 import { applyTheme, setFooterSize, initFooterControls } from './utils.js';
 import { buildHomeSlide, initSlideShow, initGallery, initGamepad } from './slideshow.js';
 import { loadPreferences } from './preferences.js';
 import { buildGalleries } from './gallery.js';
+import { helpDialog } from './dialog.js';
 
 const slideshow = document.getElementById("slideshow");
 
@@ -27,7 +27,9 @@ loadPreferences()
             recentlyPlayedViewMode: preferences.settings.recentlyPlayedViewMode,
             favoritesPolicy: preferences.settings.favoritesPolicy,
             favoritesViewMode: preferences.settings.favoritesViewMode,
-            favoritePendingAction: null
+            favoritePendingAction: null,
+            startupDialogPolicy: preferences.settings.startupDialogPolicy,
+            launchDialogPolicy: preferences.settings.launchDialogPolicy
         });
 
         LB.batchRunning = false;
@@ -78,6 +80,10 @@ loadPreferences()
             initGallery(LB.autoSelect);
         } else {
             initSlideShow(0);
+        }
+
+        if (LB.startupDialogPolicy === 'show') {
+            helpDialog('quickstart');
         }
 
     })

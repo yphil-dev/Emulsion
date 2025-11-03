@@ -526,17 +526,11 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
             if (activePage.dataset.platform === 'settings') {
                 openPlatformMenu(selectedContainer.dataset.platform, 'settings');
             } else if (!selectedContainer.classList.contains('empty-platform-game-container')) {
-                getPreference('settings', 'launchDialogPolicy')
-                    .then((value) => {
-                        if (value === 'show') {
-                            launchGameDialog(selectedContainer);
-                        } else {
-                            launchGame(selectedContainer);
-                        }
-                    })
-                    .catch((error) => {
-                        console.error('Failed to get settings preference:', error);
-                    });
+                if (LB.launchDialogPolicy === 'show') {
+                    launchGameDialog(selectedContainer);
+                } else {
+                    launchGame(selectedContainer);
+                }
             }
         } else {
             closeGameMenu(selectedContainer.querySelector('img').src);

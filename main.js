@@ -678,6 +678,8 @@ const defaultPreferences = {
         recentlyPlayedViewMode: "grid",
         favoritesPolicy: "hide",
         favoritesViewMode: "grid",
+        startupDialogPolicy: "show",
+        launchDialogPolicy: "show",
         theme: "night",
         steamGridAPIKey: "",
         giantBombAPIKey: ""

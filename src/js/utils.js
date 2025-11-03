@@ -1039,6 +1039,8 @@ function explodeGameContainer(gameContainer) {
         if (rect) {
             particle.style.left = (rect.left + rect.width / 2 - size / 2) + 'px';
             particle.style.top = (rect.top + rect.height / 2 - size / 2) + 'px';
+        } else {
+            return;
         }
 
         // Random direction/distance

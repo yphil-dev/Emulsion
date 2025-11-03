@@ -222,7 +222,7 @@ export function helpDialog(defaultTabId = null) {
         platformNames.textContent = PLATFORMS.map(platform => platform.name).join(', ');
     }
 
-    function setupTabs(onTabChange, initialTabId) {
+    function setupTabs(initialTabId) {
         const tabButtons = overlay.querySelectorAll('.tab-button');
         const tabContents = overlay.querySelectorAll('.tab-content');
 
@@ -241,7 +241,6 @@ export function helpDialog(defaultTabId = null) {
             });
         });
 
-        // 🟢 Auto-select initial tab if provided
         if (initialTabId) {
             const initialButton = overlay.querySelector(`.tab-button[data-tab="${initialTabId}"]`);
             if (initialButton) {
@@ -250,7 +249,6 @@ export function helpDialog(defaultTabId = null) {
             }
         }
 
-        // fallback: select first tab if none active
         const firstTab = tabButtons[0];
         if (firstTab && !overlay.querySelector('.tab-button.active')) {
             firstTab.click();
@@ -258,6 +256,14 @@ export function helpDialog(defaultTabId = null) {
     }
 
     function closeDialog() {
+        if (!document.getElementById('open-dialog-at-startup').checked) {
+            updatePreference('settings', 'startupDialogPolicy', 'hide');
+            LB.startupDialogPolicy = 'hide';
+        } else {
+            updatePreference('settings', 'startupDialogPolicy', 'show');
+            LB.startupDialogPolicy = 'show';
+        }
+
         DialogManager.closeCurrent();
         DialogManager.restoreMode();
     }
@@ -295,16 +301,13 @@ export function helpDialog(defaultTabId = null) {
         if (e.target === overlay) closeDialog();
     });
 
+    document.getElementById('open-dialog-at-startup').checked = LB.startupDialogPolicy === 'show' ? true : false;
     DialogManager.open(overlay, 'kbHelp');
 
-    setupTabs((tabId, content, button) => {
-        console.log(`🧭 Tab changed to: ${tabId}`);
-        dialogTitle.textContent = tabId;
-    }, defaultTabId);
+    setupTabs(defaultTabId);
 
     okButton.focus();
 }
-
 
 export async function downloadMetaDialog(imagesCount, metaCount) {
     const overlay = document.getElementById('download-meta-overlay');
@@ -605,10 +608,14 @@ export function launchGameDialog(gameContainer) {
 
     cancelButton.addEventListener('click', closeDialog);
 
-    okButton.addEventListener('click', async () => {
-        launchGame(gameContainer);
+    okButton.addEventListener('click', () => {
+        console.log("gameContainer: ", gameContainer);
+        if (gameContainer) {
+            launchGame(gameContainer);
+        }
         if (!document.getElementById('open-dialog-at-launch').checked) {
-            await updatePreference('settings', 'launchDialogPolicy', 'hide');
+            updatePreference('settings', 'launchDialogPolicy', 'hide');
+            LB.launchDialogPolicy = 'hide';
         }
         closeDialog();
     });

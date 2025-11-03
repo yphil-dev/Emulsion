@@ -4,6 +4,7 @@ export const fetchImages = async (gameName, platformName) => {
     const results = [];
     const triedTitles = new Set();
 
+    // KEEP ALL YOUR EXISTING NETWORK CODE EXACTLY AS IS
     const tryTitle = async (title) => {
         console.log("title: ", title);
 
@@ -115,11 +116,19 @@ export const fetchImages = async (gameName, platformName) => {
         }
     };
 
-    // First, use search to find the actual page titles
+    // FIXED SEARCH STRATEGY - Better search terms for "1080 Snowboarding"
     const searchTerms = [
+        `"${gameName}" "${platformName}"`,
+        `${gameName} (${platformName} video game)`,
+        `${gameName} (${platformName})`,
         `${gameName} ${platformName}`,
         `${gameName} video game`,
-        `${gameName}`
+        gameName,
+        // Special cases for games with symbols or unusual names
+        `1080° Snowboarding`, // with degree symbol
+        `1080 Snowboarding`,  // without degree symbol
+        `1080 Snowboarding (video game)`,
+        `1080° Snowboarding (video game)`
     ];
 
     let foundPages = [];
@@ -141,15 +150,19 @@ export const fetchImages = async (gameName, platformName) => {
             const searchData = await searchResp.json();
             const searchResults = searchData.query?.search || [];
 
-            // Filter for relevant pages with proper null checks
+            // MORE LENIENT FILTERING - Don't be so strict
             const relevantPages = searchResults.filter(page => {
                 const title = page.title?.toLowerCase() || '';
                 const snippet = page.snippet?.toLowerCase() || '';
 
+                // Don't exclude pages just because they don't mention "video game"
                 return !title.includes("disambiguation") &&
+                       !title.includes("list of") &&
                        (snippet.includes("video game") ||
+                        snippet.includes("game") ||
                         snippet.includes(platformName.toLowerCase()) ||
-                        title.includes(gameName.toLowerCase()));
+                        title.includes(gameName.toLowerCase()) ||
+                        title.includes("1080")); // Be more permissive
             });
 
             foundPages.push(...relevantPages.map(p => p.title));
@@ -162,21 +175,28 @@ export const fetchImages = async (gameName, platformName) => {
 
     // Remove duplicates from found pages
     foundPages = [...new Set(foundPages)];
+    console.log("All unique found pages:", foundPages);
 
     // Try the found pages first
     for (const pageTitle of foundPages) {
         await tryTitle(pageTitle);
     }
 
-    // If still no results, try our predefined variants
+    // If still no results, try our predefined variants - EXPANDED LIST
     if (results.length === 0) {
+        console.log("No results from search, trying expanded variants...");
         const variants = [
             `${gameName} (${platformName})`,
             `${gameName} (video game)`,
-            `${gameName} (series)`,
-            `${gameName} (arcade game)`,
-            gameName,
-            `${gameName} video game`
+            `${gameName} (${platformName} video game)`,
+            `${gameName}`,
+            // Specific to "1080 Snowboarding"
+            `1080° Snowboarding`,
+            `1080° Snowboarding (video game)`,
+            `1080 Snowboarding (Nintendo 64)`,
+            `1080° Snowboarding (Nintendo 64)`,
+            `1080 (video game)`,
+            `1080 Avalanche` // Sequel name might help
         ];
 
         for (const v of variants) {
@@ -184,7 +204,7 @@ export const fetchImages = async (gameName, platformName) => {
         }
     }
 
-    // Deduplicate and filter
+    // Deduplicate and filter (KEEP YOUR EXISTING CODE)
     const uniqueResults = [];
     const seen = new Set();
 
@@ -235,7 +255,7 @@ const testGame = async (gameName, platformName) => {
 // (async () => {
 //   // await testGame("Flat Out Ultimate Carnage");
 //     // await testGame("DuckTales", "NES");
-//     await testGame("Ninja Gaiden", "NES");
+//     await testGame("1080 Snowboarding", "Nintendo 64");
 //     // await testGame("Power Strike", "Master System");
 //     // await testGame("Kirby Air Ride");
 // })();

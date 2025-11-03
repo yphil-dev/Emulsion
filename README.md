@@ -14,7 +14,7 @@
 
 [Website](https://yphil.gitlab.io/emulsion) • [Download](https://github.com/yPhil-gh/emulsion/releases/latest) • [Documentation](#configuration) • [Cracktro](https://yphil.gitlab.io/ext/emulsion.html)
 
-![Emulsion Hero](https://yphil.gitlab.io/images/emulsion-screenshot_01.png?cache=xyzz)
+![Emulsion Hero](https://yphil.gitlab.io/images/emulsion-screenshot_01.png?cache=xyzzz)
 
 </div>
 
@@ -26,7 +26,7 @@ A portal to your **games** ; It brings everything together in one beautiful, res
 
 - **True Unification** - All your emulators, one elegant interface
 - **Fast** - Thousands of games realy to launch under the second
-- **Light** - Emulsion is not a gigantic cathedral that also does coffee like Launch Box or Retropie, or downright an operating system like Batocera 😉
+- **Light** - Emulsion is not a gigantic cathedral that also does coffee, or downright its own Operating System 😉
 
 ### *Unique* Features ; Why Emulsion?
 Only Emulsion does it this way ; Seriously, look it up!
@@ -34,10 +34,12 @@ Only Emulsion does it this way ; Seriously, look it up!
 - **Universal Input** - Keyboard, mouse, or any game controller
 - **Responsive UX** - Adapts perfectly to any screen size / orientation
 - **Flexible Storage** - Games across multiple drives? No problem!
-- **Smart Cover Art** - Manually curate your collection with images from multiple sources, or batch-download in real time
+- **Smart Meta data management** - Manually curate your collection with images and text from multiple sources (but always WikiPedia API as a fallback) or batch-download them in real time
 - **Non-Invasive** - Doesn't mess with your emulator configs
 - **Reproducible** - One config file = instant gaming PC setup
 - **Arcade Ready** - Perfect for driving an arcade cabinet
+
+![Emulsion Hero](https://yphil.gitlab.io/images/emulsion-screenshot_02.png?cache=x)
 
 ## Installation
 

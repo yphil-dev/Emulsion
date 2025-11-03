@@ -41,7 +41,7 @@ export async function displayMetaData(params, gameMetaData) {
     const metaNotFoundDiv = document.createElement('div');
     metaNotFoundDiv.classList.add('meta-not-found');
 
-    metaNotFoundDiv.innerHTML = `<p>No meta data found for ${params.cleanName}</p>`;
+    metaNotFoundDiv.innerHTML = `<p>No meta data found for ${params.gameFileName}</p>`;
 
     metaContainer.style.display = 'block';
 

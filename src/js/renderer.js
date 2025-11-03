@@ -3,7 +3,6 @@ import { applyTheme, setFooterSize, initFooterControls } from './utils.js';
 import { buildHomeSlide, initSlideShow, initGallery, initGamepad } from './slideshow.js';
 import { loadPreferences } from './preferences.js';
 import { buildGalleries } from './gallery.js';
-// import { helpDialog } from './dialog.js';
 
 const slideshow = document.getElementById("slideshow");
 
@@ -80,8 +79,6 @@ loadPreferences()
         } else {
             initSlideShow(0);
         }
-
-        // helpDialog('quickstart');
 
     })
     .catch(error => {

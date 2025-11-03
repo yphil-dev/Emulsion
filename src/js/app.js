@@ -114,7 +114,7 @@ async function initializeApp() {
             }
 
             if (event.key === '?') {
-                helpDialog('shortcuts');
+                helpDialog();
             }
 
             if (LB.mode === 'gallery' && window.onGalleryKeyDown) {

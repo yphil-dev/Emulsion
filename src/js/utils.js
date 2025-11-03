@@ -289,16 +289,14 @@ const PREDEFINED_TITLES = {
 
 const TAGS_TO_KEEP = ['CD32', 'AGA'];
 
-export function cleanFileName(fileName, includeTags = true) {
+export function cleanFileName(fileName) {
     // JUST check for tags and store them
     const foundTags = [];
-    if (includeTags) {
-        TAGS_TO_KEEP.forEach(tag => {
-            if (fileName.includes(tag)) {
-                foundTags.push(tag);
-            }
-        });
-    }
+    TAGS_TO_KEEP.forEach(tag => {
+        if (fileName.includes(tag)) {
+            foundTags.push(tag);
+        }
+    });
 
     // 1) Base part before underscore
     const raw = fileName.split('_')[0];

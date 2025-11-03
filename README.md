@@ -39,7 +39,7 @@ Only Emulsion does it this way ; Seriously, look it up!
 - **Reproducible** - One config file = instant gaming PC setup
 - **Arcade Ready** - Perfect for driving an arcade cabinet
 
-![Emulsion Hero](https://yphil.gitlab.io/images/emulsion-screenshot_02.png?cache=x)
+![Emulsion Hero](https://yphil.gitlab.io/images/emulsion-screenshot_03.png?cache=x)
 
 ## Installation
 

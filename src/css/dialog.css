@@ -150,6 +150,10 @@
   align-items: center;
 }
 
+.help-dialog table tbody i {
+  margin: 0 0.5em;
+}
+
 .help-dialog .tab-content {
   display: none;
 }
@@ -259,6 +263,11 @@
 
 .help-dialog p.first {
   margin-top: 1em;
+}
+
+.help-dialog #quickstart li {
+  margin-bottom: 0.5em;
+  /* font-size: clamp(20px, 1vw, 50px); */
 }
 
 .launch-game-dialog {

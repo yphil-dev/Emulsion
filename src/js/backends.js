@@ -4,6 +4,7 @@ import { fetchImages as giantbombFetch } from './backends/giantbomb.js';
 import { fetchGameMetaData } from './backends/wikipedia-text.js';
 
 export const getGameMetaData = async (params) => {
+    console.log("params.cleanName: ", params.cleanName);
     return await fetchGameMetaData(params.cleanName, params.platformName);
 };
 

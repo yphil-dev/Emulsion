@@ -41,7 +41,7 @@
 
   --color-outline-header: #050c16;
 
-  --color-outline-control-button: #555;
+  --color-outline-control-button: #888;
   --color-bg-control-button: #222;
 
   --color-outline-game-label: #050c16;
@@ -59,7 +59,7 @@
 }
 
 .theme-day {
-  --color-text-1: #003366;
+  --color-text-1: #eff6ff;
   --color-text-2: #c7e0ff;
 
   --glow-color-rgb: 255, 107, 0;

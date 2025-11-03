@@ -276,7 +276,6 @@ export function stripExtensions(fileName, platformExtensions = []) {
     return fileName;
 }
 
-// Uppercase ALPHANUMER1C
 const PREDEFINED_TITLES = {
     VRALLY2:        'V-Rally 2',
     WIPEOUT2097:    'WipEout 2097',
@@ -289,8 +288,14 @@ const PREDEFINED_TITLES = {
 
 const TAGS_TO_KEEP = ['CD32', 'AGA'];
 
+// Terms to isolate if glued to a word
+const NUMERIC_SUFFIXES = [
+    '2d', '3d', '4d',
+    '32', '64', '128',
+    '2048', '2049'
+];
+
 export function cleanFileName(fileName) {
-    // JUST check for tags and store them
     const foundTags = [];
     TAGS_TO_KEEP.forEach(tag => {
         if (fileName.includes(tag)) {
@@ -298,42 +303,35 @@ export function cleanFileName(fileName) {
         }
     });
 
-    // 1) Base part before underscore
     const raw = fileName.split('_')[0];
-
-    // 2) Remove all trailing "(…)" or "[…]"
     const noParens = raw.replace(/\s*[\(\[].*?[\)\]]/g, '');
-
-    // 3) Split into [core, subtitle] on first " - "
     const [corePart, subtitlePart] = noParens.split(/\s-\s(.+)$/);
-
-    // 4) Build lookup key from corePart: remove non-alphanumerics, uppercase
     const key = corePart.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
 
-    // 5) If exception exists, return it + suffix (if any)
     if (PREDEFINED_TITLES[key]) {
         const result = subtitlePart
-            ? `${PREDEFINED_TITLES[key]} - ${subtitlePart}`   // preserve subtitle
-            : PREDEFINED_TITLES[key];
-
-        // Add tags if any were found
+              ? `${PREDEFINED_TITLES[key]} - ${subtitlePart}`
+              : PREDEFINED_TITLES[key];
         return foundTags.length > 0 ? `${result} (${foundTags.join(', ')})` : result;
     }
 
-    // 6) Fallback to your original pipeline on the full raw filename
+    // Pipeline
     let s = _removeAfterUnderscore(fileName);
     s = _splitSpecial(s);
     s = _splitCamelCase(s);
     s = _splitAcronym(s);
     s = _removeParens(s);
     s = _removeBrackets(s);
+    s = _isolateNumericSuffixes(s);   // 👈 NEW STEP
     s = _moveTrailingArticleToFront(s);
 
     const result = _titleCase(s);
-
-    // Add tags if any were found
     return foundTags.length > 0 ? `${result} (${foundTags.join(', ')})` : result;
 }
+
+// ------------------------------------------------------------
+// helpers
+// ------------------------------------------------------------
 
 function _removeAfterUnderscore(s) {
     return s.split('_')[0];
@@ -360,12 +358,18 @@ function _removeBrackets(s) {
 }
 
 function _moveTrailingArticleToFront(s) {
-    // Matches "... , The" (case-insensitive), end of string
     const m = s.match(/^(.*?),\s*(The|An|A)$/i);
     if (m) {
-        // Capitalize the article properly and prepend
         const art = m[2].charAt(0).toUpperCase() + m[2].slice(1).toLowerCase();
         return `${art} ${m[1].trim()}`;
+    }
+    return s;
+}
+
+function _isolateNumericSuffixes(s) {
+    for (const term of NUMERIC_SUFFIXES) {
+        const re = new RegExp(`([A-Za-z])(${term})(\\b|$)`, 'gi');
+        s = s.replace(re, '$1 $2');
     }
     return s;
 }
@@ -374,11 +378,9 @@ function _titleCase(s) {
     return s
         .split(/\s+/)
         .map(word => {
-            // If it's all digits or ALL-CAP (or contains digits), leave as-is
             if (/^[0-9]+$/.test(word) || /^[A-Z0-9]+$/.test(word)) {
                 return word;
             }
-            // Otherwise, uppercase first letter, lowercase the rest
             return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
         })
         .join(' ');

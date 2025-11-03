@@ -514,7 +514,7 @@ function saveMetaToFile(params, data) {
 ipcMain.on('fetch-meta', (event, params) => {
 
     const searchParams = {
-        cleanName: params.cleanName,
+        cleanName: params.cleanName.replace(/\s*[\(\[].*?[\)\]]/g, ''),
         platformName: params.platformDisplayName
     };
 

@@ -173,22 +173,22 @@
                 </div>
                 <div class="tab-content active" id="quickstart" data-description="Welcome to Emulsion!">
                     <p class="text">
-                        Emulsion is your unified launcher for organizing, browsing, and playing games across all your favorite platforms — cleanly and beautifully.
+                        Your complete game collection, organized and ready to play.
                     </p>
 
                     <h4>Getting Started</h4>
                     <ul class="text">
-                        <li>Pick a <strong>platform</strong> from the home screen (e.g. PlayStation, SNES, etc.).</li>
-                        <li>Choose your local <strong>games folder</strong> so Emulsion can scan and list your titles.</li>
-                        <li>Set your preferred <strong>emulator executable</strong> for that platform.</li>
+                        <li>Pick a <strong>platform</strong> / <strong>console</strong> from the home screen or the settings menu ;</li>
+                        <li>Select the <strong>games folder</strong> for that platform ;</li>
+                        <li>Set your preferred <strong>emulator executable</strong> for that platform ;</li>
                         <li>(Optional) Add custom <strong>launch arguments</strong> to fine-tune how each emulator runs.</li>
                     </ul>
 
                     <h4>Using Emulsion</h4>
                     <ul class="text">
-                        <li>Browse your game library by cover or title — Emulsion auto-fetches artwork and metadata where possible.</li>
-                        <li>Press <strong>Enter</strong> (or your controller’s launch button) to start any game instantly.</li>
-                        <li>Navigate smoothly using your keyboard or controller — Emulsion is designed for both.</li>
+                        <li>Browse your game library by cover or title</li>
+                        <li>Optionnaly get the artwork and metadata of either <strong>one game</strong> or <strong>all the games</strong> in the current platform</li>
+                        <li>🚀 Press <strong>Enter</strong> (or your controller’s launch button) to start the game</li>
                     </ul>
 
                     <p class="text">
@@ -234,17 +234,17 @@
                                 <td></td>
                             </tr>
                             <tr>
-                                <td><kbd>←</kbd> / <kbd>→</kbd> / <kbd>↑</kbd> / <kbd>↓</kbd></td>
+                                <td><kbd>←</kbd> <kbd>→</kbd> <kbd>↑</kbd> <kbd>↓</kbd></td>
                                 <td>Navigate games / platforms / menu items</td>
                                 <td class="game-controller-icon">
-                                    <svg class="control-icon" style="--fill:var(--color-bg-control-button); --stroke:var(--color-outline-control-button); --fill-north:black; --fill-south:black; --fill-west:var(--color-selected); --fill-east:var(--color-selected);">
+                                    <svg class="control-icon" style="--fill:var(--color-bg-control-button); --stroke:var(--color-outline-control-button); --fill-north:var(--color-selected); --fill-south:var(--color-selected); --fill-west:var(--color-selected); --fill-east:var(--color-selected);">
                                         <use href="#dpad"/>
                                     </svg>
                                 </td>
                             </tr>
 
                             <tr>
-                                <td><kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd></td>
+                                <td><kbd>Shift</kbd> <i class="fa fa-plus"></i> <kbd>←</kbd> <kbd>→</kbd></td>
                                 <td>Navigate platforms</td>
                                 <td class="game-controller-icon">
                                     <svg class="control-icon"
@@ -275,7 +275,7 @@
                             </tr>
 
                             <tr>
-                                <td><kbd>Ctrl</kbd> + <kbd>M</kbd></td>
+                                <td><kbd>Ctrl</kbd> <i class="fa fa-plus"></i> <kbd>M</kbd></td>
                                 <td>Fetch game metadata</td>
                                 <td class="game-controller-icon">
                                     <svg class="control-icon" style=" --fill-east: black; --fill-south:black; --fill-north: black; --fill-west: var(--color-selected); --stroke: var(--color-outline-control-button);">
@@ -295,14 +295,14 @@
                             </tr>
 
                             <tr>
-                                <td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>K</kbd></td>
+                                <td><kbd>Ctrl</kbd> <i class="fa fa-plus"></i> <kbd>Shift</kbd> <i class="fa fa-plus"></i> <kbd>K</kbd></td>
                                 <td>Exit emulator and return to Emulsion</td>
                                 <td class="game-controller-icon">
                                     <svg class="control-icon"
                                          style="--fill: var(--color-bg-control-button); --fill-text: var(--color-selected); --stroke: var(--color-outline-control-button);">
                                         <use href="#select"></use>
                                     </svg>
-                                    <span> + </span>
+                                    <i class="fa fa-plus"></i>
                                     <svg class="control-icon" style="--fill-north:black; --fill-south:var(--color-selected); --fill-west:black; --fill-east:black; --stroke:var(--color-outline-control-button);">
                                         <use href="#dpad"/>
                                     </svg>
@@ -310,14 +310,28 @@
                             </tr>
 
                             <tr>
-                                <td><kbd>A–Z</kbd> / <kbd>0–9</kbd></td>
+                                <td><kbd>F5</kbd></td>
+                                <td>Restart Emulsion</td>
+                                <td class="game-controller-icon">
+                                    <svg class="control-icon"
+                                         style="--fill: var(--color-bg-control-button); --fill-text: var(--color-selected); --stroke: var(--color-outline-control-button);">
+                                        <use href="#select"></use>
+                                    </svg>
+                                    <i class="fa fa-plus"></i>
+                                    <svg class="control-icon" style="--fill-north:var(--color-selected); --fill-south:black; --fill-west:black; --fill-east:black; --stroke:var(--color-outline-control-button);">
+                                        <use href="#dpad"/>
+                                    </svg>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><kbd>A–Z</kbd> <kbd>0–9</kbd></td>
                                 <td>Jump to game by first letter (wrap-around)</td>
                                 <td></td>
                             </tr>
 
                             <tr>
-                                <td><kbd>Ctrl</kbd> + <kbd>L</kbd></td>
-                                <td>Toggle gallery page view mode</td>
+                                <td><kbd>Ctrl</kbd> <i class="fa fa-plus"></i> <kbd>L</kbd></td>
+                                <td>Toggle platform page view mode</td>
                                 <td></td>
                             </tr>
 

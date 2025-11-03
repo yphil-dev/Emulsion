@@ -993,7 +993,7 @@ async function populateGameMenu(gameMenuContainer, gameName, platformName) {
     const currentImageElem = gameMenuContainer.querySelector('img.current-image');
     const headerNbOfItems = document.querySelector('header .item-number');
 
-    ipcRenderer.send('fetch-images', gameName, platformName, LB.steamGridAPIKey, LB.giantBombAPIKey);
+    ipcRenderer.send('fetch-images', cleanFileName(gameName), platformName, LB.steamGridAPIKey, LB.giantBombAPIKey);
 
     headerNbOfItems.textContent = 0;
 
@@ -1186,7 +1186,7 @@ export async function closeGameMenu(imgSrc) {
         if (selectedGame) {
             const selectedGameImg = selectedGame.querySelector('.game-image');
             if (selectedGameImg) {
-                selectedGame.classList.add('loading');
+                selectedGameImg.classList.add('loading');
 
                 const gameName = selectedGame.dataset.gameName;
 
@@ -1200,7 +1200,7 @@ export async function closeGameMenu(imgSrc) {
                     selectedGameImg.src = savedImagePath + '?t=' + new Date().getTime();
                     selectedGameImg.onload = () => {
                         selectedGame.removeAttribute('data-missing-image');
-                        selectedGame.classList.remove('loading');
+                        selectedGameImg.classList.remove('loading');
                     };
                 }
             }

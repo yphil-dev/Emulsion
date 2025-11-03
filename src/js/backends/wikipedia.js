@@ -1,4 +1,5 @@
 export const fetchImages = async (gameName, platformName) => {
+    console.log("gameName, platformName: ", gameName, platformName);
     const API = "https://en.wikipedia.org/w/api.php";
     const results = [];
     const triedTitles = new Set();

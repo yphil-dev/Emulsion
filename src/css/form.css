@@ -254,8 +254,7 @@ input[type="checkbox"] {
 }
 
 input[type="radio"] {
-  accent-color: green;
-  /* accent-color: var(--color-button-off); */
+  accent-color: var(--color-selected);
   height: 30px;
   width: 30px;
 }
@@ -372,6 +371,10 @@ div.form-icon {
   min-width: 2ch;
   font-family: monospace;
   color: var(--color-selected);
+}
+
+input[type="range"] {
+  accent-color: var(--color-button-off);
 }
 
 #menu .input-group {

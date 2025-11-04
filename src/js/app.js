@@ -209,51 +209,21 @@ async function initializeApp() {
     }
 }
 
-// Font loading check and initialization
 function ensureFontsLoaded() {
-    return new Promise((resolve) => {
-        // Check if ForkAwesome font is loaded
-        const testElement = document.createElement('i');
-        testElement.className = 'fa fa-check';
-        testElement.style.position = 'absolute';
-        testElement.style.left = '-9999px';
-        testElement.style.fontFamily = 'ForkAwesome';
-        document.body.appendChild(testElement);
-
-        // Check font loading status
-        const computedStyle = window.getComputedStyle(testElement);
-        const fontFamily = computedStyle.getPropertyValue('font-family');
-
-        if (fontFamily.includes('ForkAwesome') || fontFamily.includes('forkawesome')) {
-            // Font is loaded
-            document.body.removeChild(testElement);
-            resolve();
-        } else {
-            // Wait for font to load
-            const checkFont = () => {
-                const style = window.getComputedStyle(testElement);
-                const family = style.getPropertyValue('font-family');
-                if (family.includes('ForkAwesome') || family.includes('forkawesome')) {
-                    document.body.removeChild(testElement);
-                    resolve();
-                } else {
-                    setTimeout(checkFont, 50);
-                }
-            };
-            checkFont();
-        }
+    return new Promise((resolve, reject) => {
+        document.fonts.ready
+            .then(() => {
+                console.log('All fonts loaded via Font Loading API');
+                resolve();
+            })
+            .catch(err => {
+                console.error('Unexpected font loading error:', err);
+                resolve();
+            });
     });
 }
 
-// Auto-initialize when module loads with font check
-ensureFontsLoaded().then(() => {
-    console.log('ForkAwesome icons are ready');
-    initializeApp().then(() => {
-        console.log('App fully initialized successfully');
-    });
-}).catch((error) => {
-    console.warn('Font loading check failed, initializing anyway:', error);
-    initializeApp().then(() => {
-        console.log('App fully initialized successfully');
-    });
-});
+ensureFontsLoaded()
+    .catch(err => console.warn('Font loading failed:', err))
+    .then(() => initializeApp())
+    .then(() => console.log('App fully initialized successfully'));

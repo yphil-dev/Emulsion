@@ -160,6 +160,67 @@
             </div>
         </div>
 
+        <div id="launch-game-overlay" class="overlay">
+            <div class="dialog launch-game-dialog">
+                <h2 class="dialog-title"></h2>
+                <h4 class="dialog-title text">Emulator: <span class="emulator-name"></span></h4>
+
+                <div class="launch-game-dialog-body">
+                    <div class="launch-game-dialog-left">
+                        <img class="game-image" src="../../img/missing.png" alt="Game Image">
+                    </div>
+                    <div class="launch-game-dialog-right">
+                        <h4>
+                            To exit the game and return to emulsion
+                        </h4>
+                        <div class="launch-game-shortcut">
+                            <svg class="control-icon-big" style="--fill: var(--color-bg-control-button); --fill-text: var(--color-selected); --stroke: var(--color-outline-control-button);">
+                                <use href="#select"></use>
+                            </svg>
+
+                            <div class="launch-game-shortcut-plus">
+                                <i class="fa fa-plus fa-3x"></i>
+                            </div>
+
+                            <svg class="control-icon-big" style="--fill:var(--color-bg-control-button); --fill-north:black; --fill-south:var(--color-selected); --fill-west:black; --fill-east:black; --stroke:var(--color-outline-control-button);">
+                                <use href="#dpad"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dialog-buttons">
+                    <div class="open-dialog-at">
+                        <input
+                            type="checkbox"
+                            id="open-dialog-at-launch"
+                            name="open-dialog-at-launch"
+                            checked
+                        />
+                        <label for="open-dialog-at-launch" class="text">
+                            Show this dialog on launch
+                        </label>
+                    </div>
+
+                    <button class="cancel button">Cancel</button>
+                    <button class="ok button">Launch</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="system-dialog-overlay" class="overlay">
+            <div class="dialog system-dialog">
+                <h3 class="dialog-title">Emulsion</h3>
+                <div class="system-dialog-buttons">
+                    <button class="button help">Help</button>
+                    <button class="button config">Configure</button>
+                    <button class="button restart">Restart</button>
+                    <button class="button quit">Quit</button>
+                    <button class="button cancel">Cancel</button>
+                </div>
+            </div>
+        </div>
+
         <div id="help-overlay" class="overlay">
             <div class="dialog help-dialog">
                 <h3 class="dialog-title"></h3>
@@ -321,15 +382,22 @@
                                     </svg>
                                 </td>
                             </tr>
+
+                            <tr>
+                                <td><kbd>F11</kbd></td>
+                                <td>Toggle full screen</td>
+                                <td></td>
+                            </tr>
+
                             <tr>
                                 <td><kbd>A–Z</kbd> <kbd>0–9</kbd></td>
-                                <td>Jump to game by first letter (wrap-around)</td>
+                                <td>Jump to platform / game by first letter</td>
                                 <td></td>
                             </tr>
 
                             <tr>
                                 <td><kbd>Ctrl</kbd> <i class="fa fa-plus"></i> <kbd>L</kbd></td>
-                                <td>Toggle platform page view mode</td>
+                                <td>Toggle grid / list view mode</td>
                                 <td></td>
                             </tr>
 
@@ -429,67 +497,6 @@
                     </div>
 
                     <button class="ok button">OK</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="launch-game-overlay" class="overlay">
-            <div class="dialog launch-game-dialog">
-                <h2 class="dialog-title"></h2>
-                <h4 class="dialog-title text">Emulator: <span class="emulator-name"></span></h4>
-
-                <div class="launch-game-dialog-body">
-                    <div class="launch-game-dialog-left">
-                        <img class="game-image" src="../../img/missing.png" alt="Game Image">
-                    </div>
-                    <div class="launch-game-dialog-right">
-                        <h4>
-                            To exit the game and return to emulsion
-                        </h4>
-                        <div class="launch-game-shortcut">
-                            <svg class="control-icon-big" style="--fill: var(--color-bg-control-button); --fill-text: var(--color-selected); --stroke: var(--color-outline-control-button);">
-                                <use href="#select"></use>
-                            </svg>
-
-                            <div class="launch-game-shortcut-plus">
-                                <i class="fa fa-plus fa-3x"></i>
-                            </div>
-
-                            <svg class="control-icon-big" style="--fill:var(--color-bg-control-button); --fill-north:black; --fill-south:var(--color-selected); --fill-west:black; --fill-east:black; --stroke:var(--color-outline-control-button);">
-                                <use href="#dpad"/>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="dialog-buttons">
-                    <div class="open-dialog-at">
-                        <input
-                            type="checkbox"
-                            id="open-dialog-at-launch"
-                            name="open-dialog-at-launch"
-                            checked
-                        />
-                        <label for="open-dialog-at-launch" class="text">
-                            Show this dialog on launch
-                        </label>
-                    </div>
-
-                    <button class="cancel button">Cancel</button>
-                    <button class="ok button">Launch</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="system-dialog-overlay" class="overlay">
-            <div class="dialog system-dialog">
-                <h3 class="dialog-title">Emulsion</h3>
-                <div class="system-dialog-buttons">
-                    <button class="button help">Help</button>
-                    <button class="button config">Configure</button>
-                    <button class="button restart">Restart</button>
-                    <button class="button quit">Quit</button>
-                    <button class="button cancel">Cancel</button>
                 </div>
             </div>
         </div>

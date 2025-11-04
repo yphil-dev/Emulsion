@@ -16,6 +16,10 @@ export async function buildGalleries (preferences, userDataPath) {
             const platformNames = PLATFORMS.map(p => p.name).filter(name => preferences[name]);
             const platforms = ['settings', ...platformNames];
 
+            // Prepare all gallery building promises
+            const galleryPromises = [];
+            const platformParams = [];
+
             for (const platformName of platforms) {
                 let prefs = preferences[platformName];
 
@@ -49,10 +53,8 @@ export async function buildGalleries (preferences, userDataPath) {
                         isEnabled
                     };
 
-                    const container = await buildGallery(params);
-                    if (container) {
-                        galleriesContainer.appendChild(container);
-                    }
+                    galleryPromises.push(buildGallery(params));
+                    platformParams.push({ platformName, prefs, index: platformName === 'settings' ? 0 : i + 1 });
 
                     if (platformName !== 'settings') {
                         if (prefs.isEnabled) {
@@ -71,31 +73,54 @@ export async function buildGalleries (preferences, userDataPath) {
                         platforms,
                         extensions: 'none'
                     };
-                    const container = await buildGallery(params);
-                    if (container) {
-                        galleriesContainer.appendChild(container);
-                    }
+                    galleryPromises.push(buildGallery(params));
+                    platformParams.push({ platformName, prefs: null, index: 0 });
                     // Don't increment i for settings
                 } else {
                     reject('No prefs for ' + platformName);
+                    return;
                 }
             }
 
-            if (LB.recentlyPlayedPolicy === 'show') {
-                const recentGallery = await buildRecentGallery({ userDataPath, index: platforms.length });
-                if (recentGallery) {
-                    galleriesContainer.appendChild(recentGallery);
+            // Build all galleries in parallel
+            const galleryContainers = await Promise.all(galleryPromises);
+
+            // Append all containers to DOM in order (maintaining visual consistency)
+            galleryContainers.forEach(container => {
+                if (container) {
+                    galleriesContainer.appendChild(container);
                 }
-                platforms.push("recents");
+            });
+
+            // Build additional galleries (recents and favorites) in parallel
+            const additionalPromises = [];
+
+            if (LB.recentlyPlayedPolicy === 'show') {
+                additionalPromises.push(
+                    buildRecentGallery({ userDataPath, index: platforms.length })
+                        .then(recentGallery => {
+                            if (recentGallery) {
+                                galleriesContainer.appendChild(recentGallery);
+                                platforms.push("recents");
+                            }
+                        })
+                );
             }
 
             if (LB.favoritesPolicy === 'show') {
-                const favGallery = await buildFavoritesGallery({ userDataPath, index: LB.recentlyPlayedPolicy === 'hide' ? platforms.length : platforms.length + 1 });
-                if (favGallery) {
-                    galleriesContainer.appendChild(favGallery);
-                }
-                platforms.push("favorites");
+                additionalPromises.push(
+                    buildFavoritesGallery({ userDataPath, index: LB.recentlyPlayedPolicy === 'hide' ? platforms.length : platforms.length + 1 })
+                        .then(favGallery => {
+                            if (favGallery) {
+                                galleriesContainer.appendChild(favGallery);
+                                platforms.push("favorites");
+                            }
+                        })
+                );
             }
+
+            // Wait for additional galleries to complete
+            await Promise.all(additionalPromises);
 
             resolve(platforms);
         } catch (error) {
@@ -175,12 +200,16 @@ export async function buildGallery(params) {
         let fileName = path.basename(gameFilePath);
         let fileNameWithoutExt = stripExtensions(fileName, extensions);
 
-        // PS3 special handling - fetch PS3 titles in parallel
+        // PS3 special handling - fetch PS3 titles in parallel (but limit concurrency to avoid overwhelming IPC)
         if (platform === 'ps3') {
-            const ps3Title = await getPs3GameName(gameFilePath);
-            if (ps3Title) {
-                console.log("ps3Title: ", ps3Title);
-                fileNameWithoutExt = stripExtensions(ps3Title);
+            try {
+                const ps3Title = await getPs3GameName(gameFilePath);
+                if (ps3Title) {
+                    fileNameWithoutExt = stripExtensions(ps3Title);
+                }
+            } catch (err) {
+                console.warn(`Failed to parse PS3 title for ${gameFilePath}:`, err);
+                // Continue with original filename if parsing fails
             }
         }
 

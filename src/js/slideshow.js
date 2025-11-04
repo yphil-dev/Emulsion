@@ -132,14 +132,41 @@ export function initSlideShow(platformToDisplay) {
             systemDialog('quit');
             break;
 
-        }
-    };
+        default:
+            if (!event.ctrlKey && !event.altKey && !event.metaKey && /^[a-z0-9]$/i.test(event.key)) {
+                const key = event.key.toLowerCase();
+                const startIndex = currentIndex + 1;
+                let matchIndex = -1;
 
-    // // Footer buttons
-    // updateFooterControls('dpad', 'button-dpad-ew', 'Platforms', 'on');
-    // updateFooterControls('shoulders', 'same', 'Platforms', 'off');
-    // updateFooterControls('west', 'same', 'same', 'off');
-    // updateFooterControls('east', 'same', 'Exit');
+                // forward search
+                for (let i = startIndex; i < slides.length; i++) {
+                    const name = (slides[i].dataset.platform || slides[i].dataset.name || '').toLowerCase();
+                    if (name.startsWith(key)) {
+                        matchIndex = i;
+                        break;
+                    }
+                }
+
+                // wrap-around search
+                if (matchIndex === -1) {
+                    for (let i = 0; i < startIndex; i++) {
+                        const name = (slides[i].dataset.platform || slides[i].dataset.name || '').toLowerCase();
+                        if (name.startsWith(key)) {
+                            matchIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                if (matchIndex >= 0) {
+                    currentIndex = matchIndex;
+                    updateSlideShow();
+                }
+            }
+            break;
+        }
+
+    };
 
     updateFooterControlsFor('slide-show');
 

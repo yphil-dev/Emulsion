@@ -374,6 +374,7 @@ let mainWindow;
 
 function createWindows() {
     mainWindow = new BrowserWindow({
+        show: false,
         width: 800,
         height: 600,
         fullscreen: process.argv.includes('--full-screen'),
@@ -384,6 +385,10 @@ function createWindows() {
         },
     });
     mainWindow.loadFile('src/html/index.html');
+
+    mainWindow.once('ready-to-show', () => {
+        mainWindow.show();
+    });
 
     if (app.isPackaged) {
         Menu.setApplicationMenu(null);

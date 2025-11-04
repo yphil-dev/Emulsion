@@ -24,8 +24,6 @@ window.onMenuKeyDown = function onMenuKeyDown(event) {
 
     const menu = document.getElementById('menu');
 
-    console.log("event: ", event);
-
     switch (event.key) {
     case 'ArrowRight':
     case 'ArrowDown':
@@ -39,12 +37,12 @@ window.onMenuKeyDown = function onMenuKeyDown(event) {
 
     case 's':
         if (event.ctrlKey) {
-            document.getElementById('menu').querySelector('.save-button').click();
+            document.getElementById('menu').querySelector('button.save-button').click();
         }
         break;
 
     case 'Escape':
-        closeSettingsOrPlatformMenu();
+        document.getElementById('menu').querySelector('button.cancel').click();
         break;
     }
 };
@@ -340,7 +338,7 @@ function buildSettingsMenu() {
 
     const cancelButton = document.createElement('button');
     cancelButton.type = 'button';
-    cancelButton.classList.add('is-info', 'button');
+    cancelButton.classList.add('cancel', 'button');
     cancelButton.textContent = 'Cancel';
 
     const formContainerButtons = document.createElement('div');
@@ -364,7 +362,13 @@ function buildSettingsMenu() {
 
     saveButton.addEventListener('click', onSettingsMenuSave);
 
-    function onSettingsMenuCancel(event) {
+    function onSettingsMenuCancel() {
+        if (themeRadios.find(radio => radio.checked)?.value !== LB.theme) {
+            applyTheme(LB.theme);
+        }
+        if (themeRadios.find(radio => radio.checked)?.value !== LB.footerSize) {
+            setFooterSize(LB.footerSize);
+        }
         closeSettingsOrPlatformMenu();
     }
 
@@ -937,8 +941,6 @@ export function openPlatformMenu(platformName, context) {
 }
 
 async function closeSettingsOrPlatformMenu() {
-
-    console.warn('CLOSE called', new Date().toISOString(), new Error().stack);
 
     const menu = document.getElementById('menu');
 

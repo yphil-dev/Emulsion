@@ -327,7 +327,6 @@ export async function helpDialog(defaultTabId = null) {
         event.stopImmediatePropagation();
 
         const tabButtons = dialog.querySelectorAll('.tab-button');
-
         const scrollableContainer = dialog.querySelector('div.shortcuts');
 
         switch (event.key) {

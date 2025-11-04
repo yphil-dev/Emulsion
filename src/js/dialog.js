@@ -168,6 +168,17 @@ export function editMetaDialog(params, gameMetaData) {
     window.onMetaEditKeyDown = function onMetaEditKeyDown(event) {
         event.stopPropagation();
         event.stopImmediatePropagation();
+        switch (event.key) {
+
+        case 's':
+            if (event.ctrlKey) {
+                dialog.querySelector('button.ok').click();
+            }
+            break;
+
+        case 'Escape':
+            break;
+        }
     };
 
     okButton.addEventListener('click', () => {
@@ -316,23 +327,43 @@ export async function helpDialog(defaultTabId = null) {
         event.stopImmediatePropagation();
 
         const tabButtons = dialog.querySelectorAll('.tab-button');
+
+        const scrollableContainer = dialog.querySelector('div.shortcuts');
+
         switch (event.key) {
+        case 'ArrowUp':
+            if (scrollableContainer) {
+                scrollableContainer.scrollBy({ top: -40, behavior: 'smooth' });
+                event.preventDefault();
+            }
+            break;
+
+        case 'ArrowDown':
+            if (scrollableContainer) {
+                scrollableContainer.scrollBy({ top: 40, behavior: 'smooth' });
+                event.preventDefault();
+            }
+            break;
+
         case 'ArrowLeft':
             const activeLeft = dialog.querySelector('.tab-button.active');
             let currentIndexLeft = Array.from(tabButtons).indexOf(activeLeft);
             currentIndexLeft = (currentIndexLeft - 1 + tabButtons.length) % tabButtons.length;
             tabButtons[currentIndexLeft].click();
             break;
+
         case 'ArrowRight':
             const activeRight = dialog.querySelector('.tab-button.active');
             let currentIndexRight = Array.from(tabButtons).indexOf(activeRight);
             currentIndexRight = (currentIndexRight + 1) % tabButtons.length;
             tabButtons[currentIndexRight].click();
             break;
+
         case 'Escape':
         case 'Enter':
             closeDialog();
             break;
+
         default:
             break;
         }

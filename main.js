@@ -785,10 +785,6 @@ ipcMain.handle('toggle-fullscreen', () => {
 });
 
 ipcMain.handle('save-preferences', async (event, prefs) => {
-    console.log("prefs: ", prefs);
-    // console.log("typeof prefs.nes?.isEnabled:", typeof prefs.nes?.isEnabled);
-    // console.log("prefs.nes?.isEnabled:", prefs.nes?.isEnabled);
-    console.log('Main received prefs:', JSON.stringify(prefs, null, 2));
     savePreferences(prefs);
 });
 

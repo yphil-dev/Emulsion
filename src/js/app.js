@@ -5,8 +5,11 @@ const fsp = require('fs').promises;
 const axios = require('axios');
 
 import * as preferences from './preferences.js';
-import * as theme from './theme.js';
 import { systemDialog, helpDialog } from './dialog.js';
+import { applyTheme, setFooterSize, initFooterControls } from './utils.js';
+import { buildHomeSlide, initSlideShow, initGallery, initGamepad } from './slideshow.js';
+import { loadPreferences } from './preferences.js';
+import { buildGalleries } from './gallery.js';
 
 // Make Node.js modules globally available
 window.ipcRenderer = ipcRenderer;
@@ -23,7 +26,6 @@ const LB = {
 
 // Make LB globally available for backward compatibility
 window.LB = LB;
-
 
 let mouseBlankerTimer = null;
 let lastInputWasMouse = false;
@@ -58,10 +60,22 @@ function hideCursor() {
 
 async function initializeApp() {
     try {
+        // Load all app data and preferences in one call
         const appData = await preferences.loadAppData();
 
-        // Batch assign all LB properties at once to avoid multiple property assignments
+        // Load SVG symbols
+        fetch('../html/svg-symbols.html').then(res => res.text()).then(html => document.body.insertAdjacentHTML('afterbegin', html)).catch(console.error);
+
+        // Initialize gamepad and footer controls
+        initGamepad();
+        initFooterControls();
+
+        // Load preferences for UI initialization
+        const uiPreferences = await loadPreferences();
+
+        // Batch assign ALL LB properties at once to avoid multiple property assignments and concurrency issues
         Object.assign(LB, {
+            // App data properties
             userDataPath: appData.userDataPath,
             baseDir: appData.baseDir,
             versionNumber: appData.versionNumber,
@@ -73,11 +87,29 @@ async function initializeApp() {
             recentlyPlayedViewMode: appData.recentlyPlayedViewMode,
             preferences: appData.preferences,
             galleryNumOfCols: appData.preferences.settings.numberOfColumns,
+
+            // UI preference properties
+            steamGridAPIKey: uiPreferences.settings.steamGridAPIKey,
+            giantBombAPIKey: uiPreferences.settings.giantBombAPIKey,
+            footerSize: uiPreferences.settings.footerSize,
+            theme: uiPreferences.settings.theme,
+            disabledPlatformsPolicy: uiPreferences.settings.disabledPlatformsPolicy,
+            recentlyPlayedPolicy: uiPreferences.settings.recentlyPlayedPolicy,
+            favoritesPolicy: uiPreferences.settings.favoritesPolicy,
+            favoritePendingAction: null,
+            startupDialogPolicy: uiPreferences.settings.startupDialogPolicy,
+            launchDialogPolicy: uiPreferences.settings.launchDialogPolicy
         });
+
+        LB.batchRunning = false;
 
         console.log("LB.favoritesViewMode: ", LB.favoritesViewMode);
 
-        // Start listening
+        // Set up theme and footer
+        setFooterSize(LB.footerSize);
+        applyTheme(LB.theme);
+
+        // Start listening for input events
         document.addEventListener('mousemove', handleMouseInput);
         document.addEventListener('mousedown', handleMouseInput);
         document.addEventListener('wheel', handleMouseInput);
@@ -86,8 +118,8 @@ async function initializeApp() {
         hideCursor();
         resetMouseTimer();
 
+        // Set up keyboard shortcuts
         document.addEventListener('keydown', async (event) => {
-
             if (event.key === 'F11') {
                 ipcRenderer.invoke('toggle-fullscreen');
             }
@@ -127,7 +159,50 @@ async function initializeApp() {
             }
         });
 
-        console.log('App initialized successfully');
+        // Build galleries and initialize UI
+        return buildGalleries(uiPreferences, LB.userDataPath)
+            .then((platforms) => {
+                LB.totalNumberOfPlatforms = platforms.length - 1;
+
+                const slideshow = document.getElementById("slideshow");
+
+                // Build home slides in parallel for better performance
+                const homeSlidePromises = platforms.map((platform) => {
+                    return new Promise((resolve) => {
+                        const homeSlide = buildHomeSlide(platform, uiPreferences);
+                        if (homeSlide) {
+                            slideshow.appendChild(homeSlide);
+                        }
+                        resolve();
+                    });
+                });
+
+                return Promise.all(homeSlidePromises).then(() => {
+                    // Batch DOM operations for final UI setup
+                    const galleriesContainer = document.getElementById('galleries');
+                    const main = document.getElementById("main");
+                    const splash = document.getElementById("splash");
+                    const footer = document.getElementById("footer");
+
+                    // Single style update for all elements
+                    galleriesContainer.style.display = 'none';
+                    main.style.display = 'flex';
+                    splash.style.display = 'none';
+                    footer.style.display = 'flex';
+
+                    if (LB.autoSelect && LB.enabledPlatforms.some(platform => platform === LB.autoSelect)) {
+                        initGallery(LB.autoSelect);
+                    } else {
+                        initSlideShow(0);
+                    }
+
+                    // Show startup dialog if configured
+                    if (LB.startupDialogPolicy === 'show') {
+                        return helpDialog('quickstart');
+                    }
+                });
+            });
+
     } catch (error) {
         console.error('Failed to initialize app:', error);
         throw error;
@@ -173,8 +248,12 @@ function ensureFontsLoaded() {
 // Auto-initialize when module loads with font check
 ensureFontsLoaded().then(() => {
     console.log('ForkAwesome icons are ready');
-    initializeApp();
+    initializeApp().then(() => {
+        console.log('App fully initialized successfully');
+    });
 }).catch((error) => {
     console.warn('Font loading check failed, initializing anyway:', error);
-    initializeApp();
+    initializeApp().then(() => {
+        console.log('App fully initialized successfully');
+    });
 });

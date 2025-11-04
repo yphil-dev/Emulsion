@@ -49,7 +49,7 @@ export function updateFooterControlsFor(context) {
         break;
 
     case 'platform-menu':
-        updateFooterControls('dpad', 'same', 'Inputs', 'on');
+        updateFooterControls('dpad', 'ns', 'Inputs', 'on');
         updateFooterControls('west', 'same', '', 'off');
         updateFooterControls('shoulders', 'same', '', 'off');
         updateFooterControls('north', 'same', 'same', 'off');
@@ -66,7 +66,6 @@ export function updateFooterControlsFor(context) {
     case 'slide-show':
         initFooterControls();
         break;
-
     }
 }
 

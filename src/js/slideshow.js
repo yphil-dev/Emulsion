@@ -8,7 +8,7 @@ import { updateFooterControlsFor,
          launchGame,
          simulateKeyDown,
          toggleHeaderNavLinks } from './utils.js';
-import { getPreference, updatePreference } from './preferences.js';
+import { updatePreference } from './preferences.js';
 import { getMeta, displayMetaData } from './metadata.js';
 import { editMetaDialog, toggleFavDialog, launchGameDialog, systemDialog } from './dialog.js';
 
@@ -31,7 +31,6 @@ export function initSlideShow(platformToDisplay) {
     const slides = Array.from(slideshow.querySelectorAll('.slide'));
     let currentIndex = 0;
 
-    // Find start index by platform name or dataset.index
     if (platformToDisplay) {
         const foundIndex = slides.findIndex(
             s => s.dataset.platform === platformToDisplay || s.dataset.name === platformToDisplay

@@ -23,29 +23,44 @@ window.onMenuKeyDown = function onMenuKeyDown(event) {
     event.stopImmediatePropagation();
 
     const menu = document.getElementById('menu');
+    const active = document.activeElement;
+
+    const isTextInput = (el) =>
+          el.tagName === 'INPUT' && el.type === 'text' ||
+          el.tagName === 'TEXTAREA';
 
     switch (event.key) {
     case 'ArrowRight':
-    case 'ArrowDown':
-        simulateTabNavigation(menu);
+    case 'ArrowLeft':
+        // Only prevent default/tab if NOT in a text input
+        if (!isTextInput(active)) {
+            simulateTabNavigation(menu, event.key === 'ArrowLeft');
+            event.preventDefault();
+        }
         break;
 
-    case 'ArrowLeft':
+    case 'ArrowDown':
+        simulateTabNavigation(menu);
+        event.preventDefault();
+        break;
+
     case 'ArrowUp':
         simulateTabNavigation(menu, true);
+        event.preventDefault();
         break;
 
     case 's':
         if (event.ctrlKey) {
-            document.getElementById('menu').querySelector('button.save-button').click();
+            menu.querySelector('button.save')?.click();
         }
         break;
 
     case 'Escape':
-        document.getElementById('menu').querySelector('button.cancel').click();
+        menu.querySelector('button.cancel')?.click();
         break;
     }
 };
+
 
 window.onGameMenuKeyDown = function onGameMenuKeyDown(event) {
 
@@ -328,7 +343,7 @@ function buildSettingsMenu() {
     // Buttons
     const saveButton = document.createElement('button');
     saveButton.type = 'button';
-    saveButton.classList.add('button', 'save-button');
+    saveButton.classList.add('button', 'save');
     saveButton.textContent = 'Save';
 
     const aboutButton = document.createElement('button');
@@ -338,7 +353,7 @@ function buildSettingsMenu() {
 
     const cancelButton = document.createElement('button');
     cancelButton.type = 'button';
-    cancelButton.classList.add('cancel', 'button');
+    cancelButton.classList.add('button', 'cancel');
     cancelButton.textContent = 'Cancel';
 
     const formContainerButtons = document.createElement('div');
@@ -638,17 +653,17 @@ function buildPlatformMenuForm(platformName) {
 
     const saveButton = document.createElement('button');
     saveButton.type = 'button';
-    saveButton.classList.add('button', 'save-button');
+    saveButton.classList.add('button', 'save');
     saveButton.textContent = 'Save';
 
     const helpButton = document.createElement('button');
     helpButton.type = 'button';
-    helpButton.classList.add('button');
+    helpButton.classList.add('button', 'help');
     helpButton.textContent = 'Help';
 
     const cancelButton = document.createElement('button');
     cancelButton.type = 'button';
-    cancelButton.classList.add('button');
+    cancelButton.classList.add('button', 'cancel');
     cancelButton.textContent = 'Cancel';
 
     getPreference(platformName, 'gamesDir')

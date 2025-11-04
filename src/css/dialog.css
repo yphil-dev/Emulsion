@@ -44,6 +44,7 @@
 .dialog .text {
   color: var(--color-text-1);
   font-family: var(--font-second);
+  font-size: clamp(20px, 1vw, 50px);
 }
 
 .dialog .dialog-buttons {
@@ -292,11 +293,6 @@
   flex-direction: column;
   align-items: center;
   align-content: center;
-}
-
-.help-dialog #quickstart li {
-  margin-bottom: 0.5em;
-  /* font-size: clamp(20px, 1vw, 50px); */
 }
 
 .launch-game-dialog {

@@ -70,10 +70,6 @@
   width: 100%;
 }
 
-.page-content.list::-webkit-scrollbar {
-  display: none; /* Webkit */
-}
-
 .page-content.list .game-container {
   display: flex;
   flex-direction: row;
@@ -295,7 +291,7 @@ i.disabled { pointer-events: none; opacity: 0.5; }
   height: 100%;
   padding: 0;
   list-style: none;
-  scrollbar-width: none;
+  /* scrollbar-width: none; */
   -ms-overflow-style: none;
 }
 
@@ -325,7 +321,7 @@ i.disabled { pointer-events: none; opacity: 0.5; }
   width: 100%;
   aspect-ratio: 2 / 3;
   overflow: hidden;
-  padding: 0.5em;
+  padding: 0.5em 0.5em 0.5em 0;
   border-bottom: 1px solid var(--color-border-off);
 }
 

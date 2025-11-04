@@ -257,7 +257,7 @@ export async function helpDialog(defaultTabId = null) {
     });
 
     overlay.style.alignItems = 'flex-start';
-    overlay.style.paddingTop = '50px';
+    overlay.style.paddingTop = '20px';
 
     const platformNames = dialog.querySelector('#platform-names');
 

@@ -9,48 +9,57 @@
 @font-face {
   font-family: 'MeromSans';
   src: url('../font/MeromSans-Regular.ttf') format('opentype');
-  font-weight: normal; /* For variable fonts */
+  font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'TaylorSans';
   src: url('../font/TaylorSans-Regular.ttf') format('truetype');
-  font-weight: normal; /* For variable fonts */
+  font-weight: normal;
   font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Saira';
+  src: url('../font/Saira-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
 }
 
 :root {
   --font-main: 'Orbitron', sans-serif;
-  --font-second: 'TaylorSans', sans-serif;
+  --font-second: 'Saira', sans-serif;
   --font-third: "Inter", "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
   --font-fourth: "MeromSans", sans-serif;
-  --color-succes: #00ff18;
-  --color-icon: #007bff;
+  --color-succes: rgb(0, 255, 24);
+  --color-icon: rgb(0, 123, 255);
 
-  --color-bg1: #0B192C;
-  --color-bg2: #1E3E62;
+  --color-bg1: rgb(11, 25, 44);
+  --color-bg2: rgb(30, 62, 98);
 
-  --color-text-1: #93FFD8;
-  --color-text-2: #FFFFFF;
-  --color-text-3: rgb(234,0,0); /* big platform names */
+  --color-text-1: rgb(147, 255, 216);
+  --color-text-2: rgb(255, 255, 255);
+  --color-text-3: rgb(234, 0, 0); /* big platform names */
 
-  --color-bg-header: #050c16;
-  --color-border-header: #1E3E62;
-  --color-text-header: whitesmoke;
+  --color-bg-header: rgb(5, 12, 22);
+  --color-border-header: rgb(30, 62, 98);
+  --color-text-header: rgb(245, 245, 245);
 
-  --color-outline-header: #050c16;
+  --color-outline-header: rgb(5, 12, 22);
 
-  --color-outline-control-button: #888;
-  --color-bg-control-button: #222;
+  --color-outline-control-button: rgb(136, 136, 136);
+  --color-bg-control-button: rgb(34, 34, 34);
 
-  --color-outline-game-label: #050c16;
+  --color-outline-game-label: rgb(5, 12, 22);
 
-  --color-button-off: #FF4742;
-  --color-button-on: #050c16;
+  --color-button-off: rgb(255, 71, 66);
+  --color-button-on: rgb(5, 12, 22);
 
-  --color-border-on: #FF4742;
-  --color-border-off: #1E3E62;
+  --color-border-on: rgb(255, 71, 66);
+  --color-border-off: rgb(30, 62, 98);
 
   --slide-rotation-angle: 90deg;
   --slide-rotation-radius: 100px;
@@ -59,86 +68,84 @@
 }
 
 .theme-day {
-  --color-text-1: #222;
+  --color-text-1: rgb(41, 48, 53);
   --color-text-2: rgba(0, 20, 10, 0.9);
 
-  --glow-color-rgb: 255, 107, 0;
+  --color-platform-text-header: rgb(10, 63, 74);
+  --color-platform-outline-header: rgb(163, 255, 255);
 
-  --color-platform-text-header: #0a3f4a;
-  --color-platform-outline-header: #a3ffff;
+  --color-bg-header: rgb(153, 193, 239);
+  --color-bg: rgb(189, 217, 255);
+  --color-border-header: rgb(57, 116, 184);
+  --color-text-header: rgb(255, 255, 255);
 
-  --color-bg-header: #99c1ef;
-  --color-bg: #bdd9ff;
-  --color-border-header: #3974b8;
-  --color-text-header: #ffffff;
+  --color-text-game-label: rgb(41, 241, 234);
 
-  --color-text-game-label: #29f1ea;
+  --color-selected: rgb(255, 107, 0);
+  --color-bg-selected: rgb(199, 224, 255);
 
-  --color-selected: #ff6b00;
-  --color-bg-selected: #c7e0ff;
-
-  --color-hr: #9a9aad;
+  --color-hr: rgb(120, 160, 210); /* lighter blue, contrasts with bg (189,217,255) */
 
   /* BADGE COLORS */
   --color-text-badge: rgba(0, 20, 10, 0.9); /* Very dark green text */
   --color-bg-badge: rgba(100, 200, 150, 0.5); /* Light cool green background */
 
   /* BUTTON COLORS - Day Theme */
-  --color-button-on: #ff6b00; /* Vibrant orange */
-  --color-button-off: #3974b8; /* Light blue */
-  --color-border-on: #ff6b00;
-  --color-border-off: #3974b8;
+  --color-button-on: rgb(255, 107, 0);
+  --color-button-off: rgb(100, 170, 251);
+  --color-border-on: rgb(255, 107, 0);
+  --color-border-off: rgb(57, 116, 184);
 }
 
 .theme-night {
-  --color-text-1: #e8f5e8;
-  --color-text-2: #ffbc00;
+  --color-text-1: rgb(232, 245, 232);
+  --color-text-2: rgb(255, 188, 0);
 
   --glow-color-rgb: 255, 0, 247;
 
-  --color-platform-text-header: #29f1ea;
-  --color-platform-outline-header: #0a0a0f;
+  --color-platform-text-header: rgb(41, 241, 234);
+  --color-platform-outline-header: rgb(10, 10, 15);
 
-  --color-bg-header: #050c16;
-  --color-bg: #0a1425; /* Slightly lighter than header but still dark */
-  --color-selected: #29f1ea;
-  --color-bg-selected: #0f2b4d;
+  --color-bg-header: rgb(5, 12, 22);
+  --color-bg: rgb(10, 20, 37);
+  --color-selected: rgb(41, 241, 234);
+  --color-bg-selected: rgb(15, 43, 77);
 
-  --color-hr: #0f2b4d;
+  --color-hr: rgb(40, 70, 80); /* darker blue, contrasts with bg (10,20,37) */
 
   /* BADGE COLORS */
   --color-text-badge: 255, 230, 0; /* BRIGHT electric yellow */
   --color-bg-badge: 0, 30, 80; /* Richer deep space blue */
   /* BUTTON COLORS - Night Theme */
-  --color-button-on: #29f1ea; /* Cyber teal */
-  --color-button-off: #ff6b00; /* Deep space blue */
-  --color-border-on: #29f1ea;
-  --color-border-off: #0f2b4d;
+  --color-button-on: rgb(41, 241, 234); /* Cyber teal */
+  --color-button-off: rgb(255, 107, 0); /* Deep space blue */
+  --color-border-on: rgb(41, 241, 234);
+  --color-border-off: rgb(15, 43, 77);
 }
 
 .theme-default {
-  --color-text-1: whitesmoke;
-  --color-text-2: #fff3d8;
+  --color-text-1: rgb(245, 245, 245);
+  --color-text-2: rgb(255, 243, 216);
 
   --glow-color-rgb: 255, 243, 216;
 
-  --color-platform-text-header: #1a1e2a;
-  --color-platform-outline-header: #29f1ea;
-  --color-bg-header: #050c16;
-  --color-bg: #0f1729; /* Dark blue-gray - lighter than header */
-  --color-selected: #00ffcc; /* Cyberpunk teal that matches the text-1 accent */
-  --color-bg-selected: #050c16;
+  --color-platform-text-header: rgb(26, 30, 42);
+  --color-platform-outline-header: rgb(41, 241, 234);
+  --color-bg-header: rgb(5, 12, 22);
+  --color-bg: rgb(15, 23, 41); /* Dark blue-gray - lighter than header */
+  --color-selected: rgb(0, 255, 204); /* Cyberpunk teal that matches the text-1 accent */
+  --color-bg-selected: rgb(5, 12, 22);
 
-  --color-hr: #334;
+  --color-hr: rgb(50, 60, 80); /* mid-dark blue-gray, contrasts with bg (15,23,41) */
 
   /* BADGE COLORS */
   --color-text-badge: 0, 0, 0; /* Black text for cyberpunk feel */
   --color-bg-badge: 41, 241, 234; /* Cyberpunk teal to match the primary accent */
   /* BUTTON COLORS - Default Theme */
-  --color-button-on: #29f1ea;
-  --color-button-off: #334;
-  --color-border-on: #00ffcc;
-  --color-border-off: #334;
+  --color-button-on: rgb(41, 241, 234);
+  --color-button-off: rgb(51, 51, 68);
+  --color-border-on: rgb(0, 255, 204);
+  --color-border-off: rgb(51, 51, 68);
 }
 
 /* Font loading optimizations for better icon availability */
@@ -225,15 +232,15 @@ p {
 }
 
 *::-webkit-scrollbar-track {
-  background: var(--color-bg1);
+  background: var(--color-bg-selected);
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: var(--color-border-on);
+  background-color: var(--color-hr);
   border-radius: 6px;
-  border: 2px solid var(--color-bg1); /* gives padding effect */
+  border: 2px solid var(--color-bg-selected); /* gives padding effect */
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background-color: var(--color-border-off);
+  background-color: var(--color-selected);
 }

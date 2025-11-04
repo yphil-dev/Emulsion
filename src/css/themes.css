@@ -1,0 +1,79 @@
+.theme-day {
+  --color-text-1: rgb(41, 48, 53);
+  --color-text-2: rgba(0, 20, 10, 0.9);
+
+  --glow-color-rgb: 255, 210, 60;
+
+
+  --color-platform-text-header: rgb(10, 63, 74);
+  --color-platform-outline-header: rgb(163, 255, 255);
+
+  --color-bg-header: rgb(153, 193, 239);
+  --color-bg: rgb(189, 217, 255);
+  --color-border-header: rgb(57, 116, 184);
+  --color-text-header: rgb(255, 255, 255);
+
+  --color-text-game-label: rgb(41, 241, 234);
+
+  --color-selected: rgb(255, 107, 0);
+  --color-bg-selected: rgb(199, 224, 255);
+
+  --color-hr: rgb(120, 160, 210);
+
+  --color-text-badge: rgba(0, 20, 10, 0.9);
+  --color-bg-badge: rgba(100, 200, 150, 0.5);
+
+  --color-button-on: rgb(255, 107, 0);
+  --color-button-off: rgb(100, 170, 251);
+  --color-border-on: rgb(255, 107, 0);
+  --color-border-off: rgb(57, 116, 184);
+}
+
+.theme-night {
+  --color-text-1: rgb(232, 245, 232);
+  --color-text-2: rgb(255, 188, 0);
+
+  --glow-color-rgb: 255, 0, 247;
+
+  --color-platform-text-header: rgb(41, 241, 234);
+  --color-platform-outline-header: rgb(10, 10, 15);
+
+  --color-bg-header: rgb(5, 12, 22);
+  --color-bg: rgb(10, 20, 37);
+  --color-selected: rgb(41, 241, 234);
+  --color-bg-selected: rgb(15, 43, 77);
+
+  --color-hr: rgb(40, 70, 80);
+
+  --color-text-badge: 255, 230, 0;
+  --color-bg-badge: 0, 30, 80;
+
+  --color-button-on: rgb(41, 241, 234);
+  --color-button-off: rgb(255, 107, 0);
+  --color-border-on: rgb(41, 241, 234);
+  --color-border-off: rgb(15, 43, 77);
+}
+
+.theme-default {
+  --color-text-1: rgb(245, 245, 245);
+  --color-text-2: rgb(255, 243, 216);
+
+  --glow-color-rgb: 10, 143, 216;
+
+  --color-platform-text-header: rgb(26, 30, 42);
+  --color-platform-outline-header: rgb(41, 241, 234);
+  --color-bg-header: rgb(5, 12, 22);
+  --color-bg: rgb(15, 23, 41);
+  --color-selected: rgb(0, 255, 204);
+  --color-bg-selected: rgb(5, 12, 22);
+
+  --color-hr: rgb(50, 60, 80);
+
+  --color-text-badge: 0, 0, 0;
+  --color-bg-badge: 41, 241, 234;
+
+  --color-button-on: rgb(41, 241, 234);
+  --color-button-off: rgb(51, 51, 68);
+  --color-border-on: rgb(0, 255, 204);
+  --color-border-off: rgb(51, 51, 68);
+}

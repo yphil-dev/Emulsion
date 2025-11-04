@@ -103,13 +103,9 @@ async function initializeApp() {
 
         LB.batchRunning = false;
 
-        console.log("LB.favoritesViewMode: ", LB.favoritesViewMode);
-
-        // Set up theme and footer
         setFooterSize(LB.footerSize);
         applyTheme(LB.theme);
 
-        // Start listening for input events
         document.addEventListener('mousemove', handleMouseInput);
         document.addEventListener('mousedown', handleMouseInput);
         document.addEventListener('wheel', handleMouseInput);
@@ -178,17 +174,11 @@ async function initializeApp() {
                 });
 
                 return Promise.all(homeSlidePromises).then(() => {
-                    // Batch DOM operations for final UI setup
-                    const galleriesContainer = document.getElementById('galleries');
-                    const main = document.getElementById("main");
-                    const splash = document.getElementById("splash");
-                    const footer = document.getElementById("footer");
 
-                    // Single style update for all elements
-                    galleriesContainer.style.display = 'none';
-                    main.style.display = 'flex';
-                    splash.style.display = 'none';
-                    footer.style.display = 'flex';
+                    document.getElementById('galleries').style.display = 'none';
+                    document.getElementById("splash").remove();
+                    document.getElementById("main").style.display = 'flex';
+                    document.getElementById("footer").style.display = 'flex';
 
                     if (LB.autoSelect && LB.enabledPlatforms.some(platform => platform === LB.autoSelect)) {
                         initGallery(LB.autoSelect);
@@ -213,17 +203,14 @@ function ensureFontsLoaded() {
     return new Promise((resolve, reject) => {
         document.fonts.ready
             .then(() => {
-                console.log('All fonts loaded via Font Loading API');
-                resolve();
-            })
-            .catch(err => {
-                console.error('Unexpected font loading error:', err);
                 resolve();
             });
     });
 }
 
 ensureFontsLoaded()
-    .catch(err => console.warn('Font loading failed:', err))
-    .then(() => initializeApp())
+    .then(() => {
+        document.getElementById('splash').classList.add('show');
+        return initializeApp();
+    })
     .then(() => console.log('App fully initialized successfully'));

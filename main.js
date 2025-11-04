@@ -373,10 +373,24 @@ ipcMain.handle('save-cover', async (_event, src, dest) => {
 let mainWindow;
 
 function createWindows() {
+
+    let initColor;
+
+    switch (loadPreferences().settings.theme) {
+    case 'day':
+        initColor = '#bdd9ff';
+        break;
+    case 'night':
+        initColor = '#0a1425';
+        break;
+    case 'default':
+        initColor = '#0f1729';
+        break;
+    }
+
     mainWindow = new BrowserWindow({
         show: false,
-        width: 800,
-        height: 600,
+        backgroundColor: initColor,
         fullscreen: process.argv.includes('--full-screen'),
         icon: path.join(__dirname, 'img/icon.png'),
         webPreferences: {

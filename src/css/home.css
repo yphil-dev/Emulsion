@@ -1,18 +1,21 @@
 #splash {
-    position: absolute;
-    width: 700px;
-    height: 700px;
-    z-index: 15;
+  position: fixed;
+  top: calc(50vh - 350px);
+  left: calc(50vw - 350px);
+  width: 700px;
+  height: 700px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-image: url('../../img/platforms/settings.png');
+  background-size: cover;
+  opacity: 0 !important;
+  transition: opacity 0.1s ease-in;
+}
 
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
-    /* background-color: var(--color-bg1); */
-    background-image: url('../../img/platforms/settings.png');
-    background-size: cover;
-    transition: opacity 2s ease;
+#splash.show {
+  opacity: 1 !important;
 }
 
 #splash img {

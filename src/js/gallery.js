@@ -4,7 +4,7 @@ import { cleanFileName,
          scanDirectory,
          getPs3GameName,
          findImageFile } from './utils.js';
-import { getPreference, incrementNbGames } from './preferences.js';
+import { incrementNbGames } from './preferences.js';
 import { openPlatformMenu } from './menu.js';
 
 export async function buildGalleries (preferences, userDataPath) {
@@ -238,7 +238,7 @@ export async function buildGallery(params) {
 
     page.appendChild(pageContent);
 
-    document.getElementById('loading-platform-name').textContent = platform;
+    document.getElementById('loading-platform-name').textContent = getPlatformInfo(platform).name;
 
     return page;
 }

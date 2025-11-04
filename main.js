@@ -687,7 +687,6 @@ ipcMain.on('run-command', (event, data) => {
 
 const defaultPreferences = {
     settings: {
-        index: 0,
         numberOfColumns: 6,
         footerSize: "medium",
         disabledPlatformsPolicy: "show",
@@ -697,7 +696,7 @@ const defaultPreferences = {
         favoritesViewMode: "grid",
         startupDialogPolicy: "show",
         launchDialogPolicy: "show",
-        theme: "night",
+        theme: "default",
         steamGridAPIKey: "",
         giantBombAPIKey: ""
     }

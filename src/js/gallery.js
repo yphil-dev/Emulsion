@@ -23,6 +23,7 @@ export async function buildGalleries (preferences, userDataPath) {
             for (const platformName of platforms) {
                 let prefs = preferences[platformName];
 
+
                 if (prefs) {
                     let gamesDir, viewMode, emulator, emulatorArgs, extensions, isEnabled, index;
                     if (platformName === 'settings') {
@@ -63,6 +64,7 @@ export async function buildGalleries (preferences, userDataPath) {
                         i++;
                     }
                 } else if (platformName === 'settings') {
+                    document.getElementById('loading-platform-name').textContent = 'settings';
                     const params = {
                         platform: platformName,
                         gamesDir: 'none',
@@ -141,10 +143,6 @@ export async function buildGallery(params) {
         extensions,
         isEnabled
     } = params;
-
-    const platformInfo = getPlatformInfo(platform);
-
-    document.getElementById('loading-platform-name').textContent = platform;
 
     const page = document.createElement('div');
     page.classList.add('page');
@@ -239,6 +237,9 @@ export async function buildGallery(params) {
     pageContent.appendChild(fragment);
 
     page.appendChild(pageContent);
+
+    document.getElementById('loading-platform-name').textContent = platform;
+
     return page;
 }
 
@@ -300,6 +301,9 @@ export function buildGameContainer({
 }
 
 async function buildFavoritesGallery({ index }) {
+
+    document.getElementById('loading-platform-name').textContent = 'favorites';
+
     const favorites = LB.favorites;
 
     const noFavorites = (!favorites || favorites.length === 0 || favorites.error);
@@ -343,6 +347,9 @@ async function buildFavoritesGallery({ index }) {
 }
 
 async function buildRecentGallery({ index }) {
+
+    document.getElementById('loading-platform-name').textContent = 'recents';
+
     const recents = LB.recents;
     if (!recents || recents.length === 0 || recents.error) {
         console.log("No recent entries found.");

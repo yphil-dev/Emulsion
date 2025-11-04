@@ -776,6 +776,14 @@ ipcMain.handle('load-preferences', () => {
     }
 });
 
+ipcMain.handle('toggle-fullscreen', () => {
+    const win = BrowserWindow.getFocusedWindow();
+    if (win) {
+        const isFull = win.isFullScreen();
+        win.setFullScreen(!isFull);
+    }
+});
+
 ipcMain.handle('save-preferences', async (event, prefs) => {
     console.log("prefs: ", prefs);
     // console.log("typeof prefs.nes?.isEnabled:", typeof prefs.nes?.isEnabled);

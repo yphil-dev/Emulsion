@@ -56,18 +56,6 @@ function hideCursor() {
     document.body.classList.add('no-hover');
 }
 
-
-function toggleFullScreen(elem = document.documentElement) {
-    if (!document.fullscreenElement) {
-        elem.requestFullscreen().catch(err => {
-            console.error(`Error attempting to enable fullscreen: ${err.message}`);
-        });
-    } else {
-        document.exitFullscreen();
-    }
-}
-
-// Initialize app data on load
 async function initializeApp() {
     try {
         const appData = await preferences.loadAppData();
@@ -100,9 +88,9 @@ async function initializeApp() {
 
         document.addEventListener('keydown', async (event) => {
 
-            // if (event.key === 'F11') {
-            //     // toggleFullScreen();
-            // }
+            if (event.key === 'F11') {
+                ipcRenderer.invoke('toggle-fullscreen');
+            }
 
             if (event.key === 'F5') {
                 window.location.reload();

@@ -321,7 +321,7 @@ i.disabled { pointer-events: none; opacity: 0.5; }
   width: 100%;
   aspect-ratio: 2 / 3;
   overflow: hidden;
-  padding: 0.5em 0.5em 0.5em 0;
+  padding: 0.5em;
   border-bottom: 1px solid var(--color-border-off);
 }
 

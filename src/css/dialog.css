@@ -96,6 +96,8 @@
 .help-dialog .tabs {
   display: flex;
   margin-bottom: 1em;
+  border: 1px solid var(--color-bg-selected);
+  border-radius: 6px;
 }
 
 .help-dialog .tab-button {
@@ -106,6 +108,14 @@
   border: none;
   font-weight: bold;
   transition: background 0.3s ease;
+}
+
+.help-dialog .tab-button:first-child {
+  border-radius: 6px 0 0 6px;
+}
+
+.help-dialog .tab-button:last-child {
+  border-radius: 0 6px 6px 0;
 }
 
 .help-dialog .tab-button.active {
@@ -121,15 +131,19 @@
 
 .help-dialog thead {
   background: var(--color-bg);
+  opacity: 0.9;
+  backdrop-filter: blur(3px);
 }
 
-.help-dialog thead tr {
-  background: var(--color-bg);
-}
+/* .help-dialog thead tr { */
+/*   background: var(--color-bg); */
+/*   backdrop-filter: inherit; */
+/* } */
 
 .help-dialog thead th {
   position: sticky;
   top: 0;
+  backdrop-filter: inherit;
   z-index: 1;               /* keep above scrolling rows */
 }
 

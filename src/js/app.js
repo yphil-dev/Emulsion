@@ -200,7 +200,7 @@ async function initializeApp() {
 }
 
 function ensureFontsLoaded() {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         document.fonts.ready
             .then(() => {
                 resolve();

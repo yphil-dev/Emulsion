@@ -24,6 +24,8 @@ window.onMenuKeyDown = function onMenuKeyDown(event) {
 
     const menu = document.getElementById('menu');
 
+    console.log("event: ", event);
+
     switch (event.key) {
     case 'ArrowRight':
     case 'ArrowDown':
@@ -33,6 +35,12 @@ window.onMenuKeyDown = function onMenuKeyDown(event) {
     case 'ArrowLeft':
     case 'ArrowUp':
         simulateTabNavigation(menu, true);
+        break;
+
+    case 's':
+        if (event.ctrlKey) {
+            document.getElementById('menu').querySelector('.save-button').click();
+        }
         break;
 
     case 'Escape':

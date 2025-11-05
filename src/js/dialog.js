@@ -699,33 +699,24 @@ export function installEmulatorsDialog(emulators) {
     const emulatorsCtn = document.createElement('div');
     emulatorsCtn.classList.add('emulators', 'text');
 
-    // --- NEW: Flathub status display ---
+    // Flathub status display
     const flathubStatus = document.createElement('div');
     flathubStatus.classList.add('flathub-status');
     flathubStatus.textContent = 'Checking Flatpak / Flathub status...';
     emulatorsCtn.appendChild(flathubStatus);
-    // ----------------------------------
 
     const emulatorsTable = document.createElement('table');
     emulatorsTable.id = 'emulators-table';
     emulatorsTable.classList.add('emulators-table');
-
-    // Header
-    const header = document.createElement('thead');
-    header.innerHTML = `
-        <tr>
-            <th>Emulator</th>
-            <th class="center">Status</th>
-            <th class="center">Actions</th>
-        </tr>`;
-    emulatorsTable.appendChild(header);
 
     // Body
     const tbody = document.createElement('tbody');
     emulatorsTable.appendChild(tbody);
     emulatorsCtn.appendChild(emulatorsTable);
 
-    // ✅ FIX: This now targets flathubStatus, not undefined statusCell
+    // Store row data for easy access
+    const rowData = new Map();
+
     async function checkFlathubStatus() {
         try {
             const flatpakAvailable = await ipcRenderer.invoke('is-flatpak-available');
@@ -743,70 +734,93 @@ export function installEmulatorsDialog(emulators) {
         }
     }
 
+    // Check installation status for all emulators
+    async function checkAllEmulatorsStatus() {
+        const flatpakAvailable = await ipcRenderer.invoke('is-flatpak-available');
+
+        for (const [flatpakId, data] of rowData) {
+            const { statusCell, selectButton, installButton } = data;
+
+            if (!flatpakAvailable) {
+                statusCell.textContent = 'Flatpak not available';
+                statusCell.className = 'status unavailable';
+                installButton.disabled = true;
+                continue;
+            }
+
+            try {
+                const isInstalled = await ipcRenderer.invoke('is-flatpak-installed', flatpakId);
+
+                if (isInstalled) {
+                    statusCell.textContent = '✅ Installed';
+                    statusCell.className = 'status installed';
+                    selectButton.style.display = 'inline-block';
+                    installButton.style.display = 'none';
+                } else {
+                    statusCell.textContent = 'Not installed';
+                    statusCell.className = 'status not-installed';
+                    selectButton.style.display = 'none';
+                    installButton.style.display = 'inline-block';
+                    installButton.disabled = false;
+                }
+            } catch (error) {
+                statusCell.textContent = 'Error checking status';
+                statusCell.className = 'status error';
+            }
+        }
+    }
+
     // Build rows
     emulators.forEach(emulator => {
-        const { name, flatpak: flatpakId } = emulator;
+        const { name, flatpak, args } = emulator;
 
         const row = document.createElement('tr');
 
         // Name cell
         const nameCell = document.createElement('td');
         nameCell.classList.add('name');
-        nameCell.textContent = flatpakId ? `${name} (${flatpakId})` : name;
+        nameCell.textContent = flatpak ? `${name} (${flatpak})` : name;
 
         // Status cell
         const statusCell = document.createElement('td');
         statusCell.classList.add('status');
-        statusCell.textContent = 'Unknown';
+        statusCell.textContent = 'Checking...';
 
         // Actions
         const actionsCell = document.createElement('td');
-
         const buttons = document.createElement('div');
         buttons.className = 'buttons';
 
-        const checkButton = document.createElement('button');
-        checkButton.textContent = 'Check';
-        checkButton.classList.add('button', 'small', 'left');
+        const selectButton = document.createElement('button');
+        selectButton.textContent = 'Select';
+        selectButton.classList.add('button', 'small', 'left');
+        selectButton.style.display = 'none'; // Hidden by default
 
         const installButton = document.createElement('button');
         installButton.textContent = 'Install';
         installButton.classList.add('button', 'small');
         installButton.disabled = true;
+        installButton.style.display = 'inline-block'; // Visible by default
 
-        buttons.append(checkButton, installButton);
-
+        buttons.append(selectButton, installButton);
         actionsCell.append(buttons);
         row.append(nameCell, statusCell, actionsCell);
         tbody.appendChild(row);
 
         // Disable if no flatpak
-        if (!flatpakId) {
+        if (!flatpak) {
             statusCell.textContent = 'No Flatpak available';
             statusCell.className = 'status unavailable';
-            checkButton.disabled = true;
+            selectButton.disabled = true;
             installButton.disabled = true;
             return;
         }
 
-        // Handlers
-        checkButton.addEventListener('click', async () => {
-            const isInstalled = await ipcRenderer.invoke('is-flatpak-installed', flatpakId);
-            const flatpakAvailable = await ipcRenderer.invoke('is-flatpak-available');
+        // Store row data for status checking
+        rowData.set(flatpak, { statusCell, selectButton, installButton });
 
-            if (isInstalled) {
-                statusCell.textContent = '✅ Installed';
-                statusCell.className = 'status installed';
-                installButton.style.display = 'none';
-            } else if (flatpakAvailable) {
-                statusCell.textContent = 'Not installed';
-                statusCell.className = 'status not-installed';
-                installButton.disabled = false;
-            } else {
-                statusCell.textContent = 'Flatpak not available';
-                statusCell.className = 'status unavailable';
-                installButton.disabled = true;
-            }
+        selectButton.addEventListener('click', () => {
+            console.log(`Selected emulator: ${name} (${flatpak}) args: ${args}`);
         });
 
         installButton.addEventListener('click', async () => {
@@ -815,10 +829,11 @@ export function installEmulatorsDialog(emulators) {
             statusCell.className = 'status installing';
 
             try {
-                await ipcRenderer.invoke('install-flatpak', flatpakId);
+                await ipcRenderer.invoke('install-flatpak', flatpak);
                 statusCell.textContent = '✅ Installed';
                 statusCell.className = 'status installed';
                 installButton.style.display = 'none';
+                selectButton.style.display = 'inline-block';
             } catch (error) {
                 statusCell.textContent = '❌ Failed';
                 statusCell.className = 'status error';
@@ -830,8 +845,13 @@ export function installEmulatorsDialog(emulators) {
 
     body.appendChild(emulatorsCtn);
 
-    // Check Flathub status when dialog opens
-    checkFlathubStatus();
+    // Check Flathub status and emulator status when dialog opens
+    async function initializeDialog() {
+        await checkFlathubStatus();
+        await checkAllEmulatorsStatus();
+    }
+
+    initializeDialog();
 
     function closeDialog() {
         DialogManager.closeCurrent();

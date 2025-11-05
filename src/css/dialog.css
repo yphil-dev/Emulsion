@@ -36,6 +36,7 @@
   color:var(--color-selected);
 }
 
+.dialog .title,
 .dialog .dialog-title {
   text-align: center;
   margin-top: 0;
@@ -365,8 +366,8 @@ dd.disabled {
 }
 
 .install-emulators {
-  width: 80vw;
-  max-width: 1200px;
+  width: 60vw;
+  max-width: 1000px;
 }
 
 .install-emulators .emulator {
@@ -413,10 +414,6 @@ dd.disabled {
   gap: 0.5em;               /* space between buttons */
   margin: 0 auto;           /* center horizontally if width shrinks */
   width: auto;              /* let it size to content */
-}
-
-.emulators-table td .button.left {
-  margin-left: unset;
 }
 
 .dialog *::-webkit-scrollbar-thumb {

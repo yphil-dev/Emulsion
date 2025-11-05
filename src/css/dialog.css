@@ -48,9 +48,9 @@
   font-size: clamp(15px, 1vw, 30px);
 }
 
+.dialog .buttons,
 .dialog .dialog-buttons {
   display: flex;
-  gap: 20px;
   justify-content: center;
   margin-top: 20px;
 }
@@ -363,3 +363,60 @@ dd.disabled {
 .btn-ko-fi {
   background: #29ABE0;
 }
+
+.install-emulators {
+  width: 80vw;
+  max-width: 1200px;
+}
+
+.install-emulators .emulator {
+  height: 50px;
+  width: 100%;
+  padding: 6px;
+  border: 1px solid var(--color-border-header);
+  border-radius: 6px;
+}
+
+.install-emulators .emulators .button {
+  font-family: var(--font-fourth);
+  padding: 6px;
+}
+
+.dialog.install-emulators table .buttons {
+  margin-top: unset;
+}
+
+.dialog.install-emulators table {
+  border-collapse: collapse;
+  width: 100%; /* Example: Make table span full width */
+}
+
+.dialog.install-emulators table th,
+.dialog.install-emulators table td {
+  padding: 8px; /* Add spacing within cells */
+  text-align: center;
+}
+
+.dialog.install-emulators table th,
+.dialog.install-emulators table td.name {
+  text-align: left;
+}
+
+.dialog.install-emulators table th.center {
+  text-align: center;
+}
+
+.emulators-table td .buttons {
+  display: inline-flex;     /* not flex, inline-flex so it's centered by text-align */
+  justify-content: center;
+  align-items: center;
+  gap: 0.5em;               /* space between buttons */
+  margin: 0 auto;           /* center horizontally if width shrinks */
+  width: auto;              /* let it size to content */
+}
+
+.emulators-table td .button.left {
+  margin-left: unset;
+}
+
+

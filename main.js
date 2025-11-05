@@ -891,3 +891,75 @@ app.whenReady().then(() => {
         killChildProcesses(childProcesses);
     });
 });
+
+ipcMain.handle('install-flatpak', async (event, appId) => {
+  return new Promise((resolve, reject) => {
+    // First check if Flathub remote exists for user, if not add it
+    exec('flatpak remotes --user | grep flathub', (error) => {
+      if (error) {
+        // Flathub not configured for user, add it
+        exec('flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo', (addError) => {
+          if (addError) {
+            // If adding user remote fails, try to use system remote
+            installFromSystemRemote();
+            return;
+          }
+          installFromUserRemote();
+        });
+      } else {
+        installFromUserRemote();
+      }
+    });
+
+    function installFromUserRemote() {
+      exec(`flatpak install --user --noninteractive --assumeyes flathub ${appId}`,
+        (error, stdout, stderr) => {
+          if (error) {
+            reject(new Error(`Installation failed: ${stderr || error.message}`));
+          } else {
+            resolve({ success: true, appId });
+          }
+        }
+      );
+    }
+
+    function installFromSystemRemote() {
+      // Try to install from system remote without --user flag
+      exec(`flatpak install --noninteractive --assumeyes flathub ${appId}`,
+        (error, stdout, stderr) => {
+          if (error) {
+            reject(new Error(`Installation failed: ${stderr || error.message}`));
+          } else {
+            resolve({ success: true, appId });
+          }
+        }
+      );
+    }
+  });
+});
+
+ipcMain.handle('is-flatpak-available', async () => {
+  return new Promise((resolve) => {
+    exec('which flatpak', (error) => {
+      resolve(!error);
+    });
+  });
+});
+
+ipcMain.handle('is-flatpak-installed', async (event, appId) => {
+  return new Promise((resolve) => {
+    // Check both user and system installations
+    exec('flatpak list --app --all', (error, stdout) => {
+      resolve(!error && stdout.includes(appId));
+    });
+  });
+});
+
+ipcMain.handle('is-flathub-configured', async () => {
+  return new Promise((resolve) => {
+    // Check both user and system remotes
+    exec('flatpak remotes --all | grep flathub', (error, stdout) => {
+      resolve(!error && stdout.includes('flathub'));
+    });
+  });
+});

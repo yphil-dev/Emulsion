@@ -26,7 +26,7 @@ header {
 }
 
 /* 3-column grid in center */
-.center {
+header .center {
   flex: 1;
   display: flex;
   align-items: center;

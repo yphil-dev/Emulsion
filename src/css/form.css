@@ -172,7 +172,6 @@ label.checkbox {
 .bottom-buttons {
   display: flex;
   flex-direction: row;
-  gap: 1em;
   justify-content: flex-end;
   margin-top: 1em;
 }
@@ -206,16 +205,13 @@ button {
   font-size: 16px;
   font-weight: 800;
   padding: 12px 14px;
+  margin-left: 1em;
 }
 
 .button:hover,
 .button:focus {
   color: var(--color-selected);
   outline: 2px solid var(--color-selected);
-}
-
-.button-browse {
-  margin-left: 1em;
 }
 
 .input,
@@ -285,7 +281,6 @@ div.form-icon {
 .extensions-inputs-container {
     display: flex;
     flex-direction: row;
-    gap: 0.5rem;
 }
 
 .extension-input-row {

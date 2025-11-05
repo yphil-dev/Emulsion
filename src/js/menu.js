@@ -1,4 +1,4 @@
-import { getPlatformInfo } from './platforms.js';
+import { PLATFORMS, getPlatformInfo } from './platforms.js';
 import { initSlideShow, initGallery } from './slideshow.js';
 import { updatePreference, getPreference } from './preferences.js';
 import { getSelectedGameContainer,
@@ -12,7 +12,7 @@ import { getSelectedGameContainer,
          simulateTabNavigation,
          setFooterSize,
          toggleHeaderNavLinks } from './utils.js';
-import { helpDialog } from './dialog.js';
+import { helpDialog, installEmulatorsDialog } from './dialog.js';
 
 let menuState = {
     selectedIndex: 1,
@@ -32,7 +32,6 @@ window.onMenuKeyDown = function onMenuKeyDown(event) {
     switch (event.key) {
     case 'ArrowRight':
     case 'ArrowLeft':
-        // Only prevent default/tab if NOT in a text input
         if (!isTextInput(active)) {
             simulateTabNavigation(menu, event.key === 'ArrowLeft');
             event.preventDefault();
@@ -52,6 +51,12 @@ window.onMenuKeyDown = function onMenuKeyDown(event) {
     case 's':
         if (event.ctrlKey) {
             menu.querySelector('button.save')?.click();
+        }
+        break;
+
+    case 'i':
+        if (event.ctrlKey) {
+            menu.querySelector('button.install')?.click();
         }
         break;
 
@@ -555,8 +560,13 @@ function buildPlatformMenuForm(platformName) {
     emulatorButton.classList.add('button', 'button-browse');
     emulatorButton.textContent = 'Browse';
 
+    const installEmulatorsButton = document.createElement('button');
+    installEmulatorsButton.classList.add('button', 'install');
+    installEmulatorsButton.textContent = 'Install';
+
     emulatorCtn.appendChild(emulatorIcon);
     emulatorCtn.appendChild(emulatorInput);
+    emulatorCtn.appendChild(installEmulatorsButton);
     emulatorCtn.appendChild(emulatorButton);
 
     emulatorGroup.appendChild(emulatorInputLabel);
@@ -656,11 +666,6 @@ function buildPlatformMenuForm(platformName) {
     saveButton.classList.add('button', 'save');
     saveButton.textContent = 'Save';
 
-    const helpButton = document.createElement('button');
-    helpButton.type = 'button';
-    helpButton.classList.add('button', 'help');
-    helpButton.textContent = 'Help';
-
     const cancelButton = document.createElement('button');
     cancelButton.type = 'button';
     cancelButton.classList.add('button', 'cancel');
@@ -721,7 +726,6 @@ function buildPlatformMenuForm(platformName) {
     const formContainerButtons = document.createElement('div');
     formContainerButtons.classList.add('bottom-buttons-menu', 'bottom-buttons');
     formContainerButtons.appendChild(cancelButton);
-    formContainerButtons.appendChild(helpButton);
     formContainerButtons.appendChild(saveButton);
 
     getPreference(platformName, 'isEnabled')
@@ -765,8 +769,14 @@ function buildPlatformMenuForm(platformName) {
 
     cancelButton.addEventListener('click', closeSettingsOrPlatformMenu);
 
-    helpButton.addEventListener('click', () => {
-        ipcRenderer.invoke('go-to-url', 'https://gitlab.com/yphil/emulsion/-/blob/master/README.md#usage');
+    installEmulatorsButton.addEventListener('click', () => {
+
+        const platform = PLATFORMS.find(p => p.name === platformName);
+
+        console.log("platform.emulators: ", platform.emulators);
+
+        installEmulatorsDialog(platform.emulators);
+        // ipcRenderer.invoke('go-to-url', 'https://gitlab.com/yphil/emulsion/-/blob/master/README.md#usage');
     });
 
     saveButton.addEventListener('click', onPlatformMenuSaveButtonClick);

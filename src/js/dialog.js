@@ -686,3 +686,185 @@ export function launchGameDialog(gameContainer) {
     DialogManager.open(overlay, 'launchGame');
     okButton.focus();
 }
+
+export function installEmulatorsDialog(emulators) {
+    const overlay = document.getElementById('install-emulators-dialog-overlay');
+    const dialog = overlay.querySelector('div.dialog');
+    const okButton = dialog.querySelector('.ok');
+    const cancelButton = dialog.querySelector('.cancel');
+
+    const body = dialog.querySelector('div.body');
+    body.textContent = '';
+
+    const emulatorsCtn = document.createElement('div');
+    emulatorsCtn.classList.add('emulators', 'text');
+
+    // --- NEW: Flathub status display ---
+    const flathubStatus = document.createElement('div');
+    flathubStatus.classList.add('flathub-status');
+    flathubStatus.textContent = 'Checking Flatpak / Flathub status...';
+    emulatorsCtn.appendChild(flathubStatus);
+    // ----------------------------------
+
+    const emulatorsTable = document.createElement('table');
+    emulatorsTable.id = 'emulators-table';
+    emulatorsTable.classList.add('emulators-table');
+
+    // Header
+    const header = document.createElement('thead');
+    header.innerHTML = `
+        <tr>
+            <th>Emulator</th>
+            <th class="center">Status</th>
+            <th class="center">Actions</th>
+        </tr>`;
+    emulatorsTable.appendChild(header);
+
+    // Body
+    const tbody = document.createElement('tbody');
+    emulatorsTable.appendChild(tbody);
+    emulatorsCtn.appendChild(emulatorsTable);
+
+    // ✅ FIX: This now targets flathubStatus, not undefined statusCell
+    async function checkFlathubStatus() {
+        try {
+            const flatpakAvailable = await ipcRenderer.invoke('is-flatpak-available');
+            const flathubConfigured = await ipcRenderer.invoke('is-flathub-configured');
+
+            if (!flatpakAvailable) {
+                flathubStatus.textContent = '❌ Flatpak not installed on system';
+            } else if (!flathubConfigured) {
+                flathubStatus.textContent = '⚠️ Flathub remote not configured (will be added automatically during installation)';
+            } else {
+                flathubStatus.textContent = '✅ Flatpak and Flathub configured';
+            }
+        } catch (error) {
+            flathubStatus.textContent = '❌ Error checking Flatpak status';
+        }
+    }
+
+    // Build rows
+    emulators.forEach(emulator => {
+        const { name, flatpak: flatpakId } = emulator;
+
+        const row = document.createElement('tr');
+
+        // Name cell
+        const nameCell = document.createElement('td');
+        nameCell.classList.add('name');
+        nameCell.textContent = flatpakId ? `${name} (${flatpakId})` : name;
+
+        // Status cell
+        const statusCell = document.createElement('td');
+        statusCell.classList.add('status');
+        statusCell.textContent = 'Unknown';
+
+        // Actions
+        const actionsCell = document.createElement('td');
+
+        const buttons = document.createElement('div');
+        buttons.className = 'buttons';
+
+        const checkButton = document.createElement('button');
+        checkButton.textContent = 'Check';
+        checkButton.classList.add('button', 'small', 'left');
+
+        const installButton = document.createElement('button');
+        installButton.textContent = 'Install';
+        installButton.classList.add('button', 'small');
+        installButton.disabled = true;
+
+        buttons.append(checkButton, installButton);
+
+        actionsCell.append(buttons);
+        row.append(nameCell, statusCell, actionsCell);
+        tbody.appendChild(row);
+
+        // Disable if no flatpak
+        if (!flatpakId) {
+            statusCell.textContent = 'No Flatpak available';
+            statusCell.className = 'status unavailable';
+            checkButton.disabled = true;
+            installButton.disabled = true;
+            return;
+        }
+
+        // Handlers
+        checkButton.addEventListener('click', async () => {
+            const isInstalled = await ipcRenderer.invoke('is-flatpak-installed', flatpakId);
+            const flatpakAvailable = await ipcRenderer.invoke('is-flatpak-available');
+
+            if (isInstalled) {
+                statusCell.textContent = '✅ Installed';
+                statusCell.className = 'status installed';
+                installButton.style.display = 'none';
+            } else if (flatpakAvailable) {
+                statusCell.textContent = 'Not installed';
+                statusCell.className = 'status not-installed';
+                installButton.disabled = false;
+            } else {
+                statusCell.textContent = 'Flatpak not available';
+                statusCell.className = 'status unavailable';
+                installButton.disabled = true;
+            }
+        });
+
+        installButton.addEventListener('click', async () => {
+            installButton.disabled = true;
+            statusCell.textContent = 'Installing...';
+            statusCell.className = 'status installing';
+
+            try {
+                await ipcRenderer.invoke('install-flatpak', flatpakId);
+                statusCell.textContent = '✅ Installed';
+                statusCell.className = 'status installed';
+                installButton.style.display = 'none';
+            } catch (error) {
+                statusCell.textContent = '❌ Failed';
+                statusCell.className = 'status error';
+                installButton.disabled = false;
+                console.error('Installation failed:', error);
+            }
+        });
+    });
+
+    body.appendChild(emulatorsCtn);
+
+    // Check Flathub status when dialog opens
+    checkFlathubStatus();
+
+    function closeDialog() {
+        DialogManager.closeCurrent();
+        DialogManager.restoreMode();
+    }
+
+    window.installEmulatorsGameKeyDown = function (event) {
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+
+        switch (event.key) {
+            case 'ArrowRight':
+            case 'ArrowDown':
+                simulateTabNavigation(dialog);
+                break;
+            case 'ArrowLeft':
+            case 'ArrowUp':
+                simulateTabNavigation(dialog, true);
+                break;
+            case 'Escape':
+                closeDialog();
+                break;
+        }
+    };
+
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeDialog();
+    });
+
+    cancelButton.addEventListener('click', closeDialog);
+    okButton.addEventListener('click', closeDialog);
+
+    DialogManager.open(overlay, 'launchGame');
+    okButton.focus();
+}
+

@@ -152,6 +152,8 @@ async function initializeApp() {
                 window.onLaunchGameKeyDown(event);
             } else if (LB.mode === 'downloadMetaDialog' && window.onDownloadMetaKeyDown) {
                 window.onDownloadMetaKeyDown(event);
+            } else if (LB.mode === 'installDialog' && window.onInstallKeyDown) {
+                window.onInstallKeyDown(event);
             }
         });
 

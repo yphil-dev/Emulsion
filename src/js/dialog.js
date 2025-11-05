@@ -858,7 +858,7 @@ export function installEmulatorsDialog(emulators) {
         DialogManager.restoreMode();
     }
 
-    window.installEmulatorsGameKeyDown = function (event) {
+    window.onInstallKeyDown = function (event) {
         event.stopPropagation();
         event.stopImmediatePropagation();
 
@@ -884,7 +884,7 @@ export function installEmulatorsDialog(emulators) {
     cancelButton.addEventListener('click', closeDialog);
     okButton.addEventListener('click', closeDialog);
 
-    DialogManager.open(overlay, 'launchGame');
+    DialogManager.open(overlay, 'installDialog');
     okButton.focus();
 }
 

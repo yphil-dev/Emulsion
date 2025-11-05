@@ -550,7 +550,7 @@ function buildPlatformMenuForm(platformName) {
 
     const emulatorInput = document.createElement('input');
     emulatorInput.type = 'text';
-    emulatorInput.classList.add('input');
+    emulatorInput.classList.add('emulator', 'input');
     emulatorInput.placeholder = `Your ${platformInfo.name} emulator`;
 
     const emulatorCtn = document.createElement('div');
@@ -652,7 +652,7 @@ function buildPlatformMenuForm(platformName) {
     emulatorArgsLabel.classList.add('form-label');
 
     const emulatorArgsInput = document.createElement('input');
-    emulatorArgsInput.classList.add('input');
+    emulatorArgsInput.classList.add('args', 'input');
     emulatorArgsInput.type = 'text';
     emulatorArgsInput.placeholder = `Your ${platformInfo.name} emulator arguments`;
 

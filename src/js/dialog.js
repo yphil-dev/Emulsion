@@ -690,8 +690,11 @@ export function launchGameDialog(gameContainer) {
 export function installEmulatorsDialog(emulators) {
     const overlay = document.getElementById('install-emulators-dialog-overlay');
     const dialog = overlay.querySelector('div.dialog');
-    const okButton = dialog.querySelector('.ok');
-    const cancelButton = dialog.querySelector('.cancel');
+    const closeButton = dialog.querySelector('.cancel');
+
+    const menu = document.getElementById('menu');
+    const emulatorInput = menu.querySelector('input.emulator');
+    const emulatorArgsInput = menu.querySelector('input.args');
 
     const body = dialog.querySelector('div.body');
     body.textContent = '';
@@ -821,6 +824,9 @@ export function installEmulatorsDialog(emulators) {
 
         selectButton.addEventListener('click', () => {
             console.log(`Selected emulator: ${name} (${flatpak}) args: ${args}`);
+            emulatorInput.value = `flatpak run ${flatpak}`;
+            emulatorArgsInput.value = args;
+            closeDialog();
         });
 
         installButton.addEventListener('click', async () => {
@@ -881,10 +887,9 @@ export function installEmulatorsDialog(emulators) {
         if (e.target === overlay) closeDialog();
     });
 
-    cancelButton.addEventListener('click', closeDialog);
-    okButton.addEventListener('click', closeDialog);
+    closeButton.addEventListener('click', closeDialog);
 
     DialogManager.open(overlay, 'installDialog');
-    okButton.focus();
+    closeButton.focus();
 }
 

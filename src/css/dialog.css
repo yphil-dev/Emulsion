@@ -388,8 +388,7 @@ dd.disabled {
 }
 
 .dialog.install-emulators table {
-  border-collapse: collapse;
-  width: 100%; /* Example: Make table span full width */
+  width: 100%;
 }
 
 .dialog.install-emulators table th,
@@ -401,6 +400,10 @@ dd.disabled {
 .dialog.install-emulators table th,
 .dialog.install-emulators table td.name {
   text-align: left;
+}
+
+.dialog.install-emulators table td.action {
+  text-align: right;
 }
 
 .dialog.install-emulators table th.center {
@@ -425,48 +428,92 @@ dd.disabled {
 .dialog *::-webkit-scrollbar-track {
   background: var(--color-bg-dialog);
 }
+
 .loader {
-  width: 14px;
-  height: 20px;
-  display: block;
-  margin: 5px 5px 0;
-  border: 1px solid #FFF;
-  border-radius: 0 0 50px 50px;
-  position: relative;
-  box-shadow: 0px 0px #FF3D00 inset;
-  background-image: linear-gradient(#FF3D00 100px, transparent 0);
-  background-position: 0px 4px;
-  background-size: 22px 80px;
-  background-repeat: no-repeat;
-  box-sizing: border-box;
-}
-
-.loader::before {
-  content: '';
-  box-sizing: border-box;
-  left: -2px;
-  bottom: 4px;
+  display: inline-block;
+  transform: rotateZ(45deg);
+  perspective: 1000px;
   border-radius: 50%;
-  position: absolute;
-  width: 3px;
-  height: 4px;
-  animation: animloader1 2s linear infinite;
+  width: 2em;
+  height: 2em;
+  color: var(--color-text-1);
+  vertical-align: middle;
 }
 
-@keyframes animloader1 {
+.loader:before,
+.loader:after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: inherit;
+  height: inherit;
+  border-radius: 50%;
+  transform: rotateX(70deg);
+  animation: 1s spin linear infinite;
+}
+
+.loader:after {
+  color: var(--color-selected);
+  transform: rotateY(70deg);
+  animation-delay: .4s;
+}
+
+@keyframes rotate {
   0% {
-    box-shadow: 3px -2px rgba(255, 255, 255, 0), 7px -1px rgba(255, 255, 255, 0), 11px -3px rgba(255, 255, 255, 0);
-  }
-  25% {
-    box-shadow: 3px -6px rgba(255, 255, 255, 0.5), 7px -8px rgba(255, 255, 255, 0.4), 11px -4px rgba(255, 255, 255, 0.5);
-  }
-  50% {
-    box-shadow: 3px -12px rgba(255, 255, 255, 0.3), 7px -10px rgba(255, 255, 255, 0.2), 11px -14px rgba(255, 255, 255, 0.3);
-  }
-  75% {
-    box-shadow: 3px -16px rgba(255, 255, 255, 0.2), 7px -18px rgba(255, 255, 255, 0.1), 11px -12px rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%) rotateZ(0deg);
   }
   100% {
-    box-shadow: 3px -20px rgba(255, 255, 255, 0), 7px -22px rgba(255, 255, 255, 0), 11px -18px rgba(255, 255, 255, 0);
+    transform: translate(-50%, -50%) rotateZ(360deg);
   }
+}
+
+@keyframes rotateccw {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(-360deg);
+  }
+}
+
+@keyframes spin {
+  0%,
+  100% {
+    box-shadow: .2em 0px 0 0px currentcolor;
+  }
+  12% {
+    box-shadow: .2em .2em 0 0 currentcolor;
+  }
+  25% {
+    box-shadow: 0 .2em 0 0px currentcolor;
+  }
+  37% {
+    box-shadow: -.2em .2em 0 0 currentcolor;
+  }
+  50% {
+    box-shadow: -.2em 0 0 0 currentcolor;
+  }
+  62% {
+    box-shadow: -.2em -.2em 0 0 currentcolor;
+  }
+  75% {
+    box-shadow: 0px -.2em 0 0 currentcolor;
+  }
+  87% {
+    box-shadow: .2em -.2em 0 0 currentcolor;
+  }
+}
+
+/* visually hide but still announce */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
 }

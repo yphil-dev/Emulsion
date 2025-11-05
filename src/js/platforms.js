@@ -9,8 +9,8 @@ export const PLATFORMS = [
         name: "atari",
         extensions: [".zip"],
         emulators: [
-            { name: "stella", flatpak: "org.stella.Stella", args: "--fullscreen" },
-            { name: "retroarch", flatpak: "org.libretro.RetroArch", args: "-f" }
+            { name: "stella", flatpak: "io.github.stella_emu.Stella", args: "--fullscreen" },
+            { name: "ARES", flatpak: "dev.ares.ares", args: "--fullscreen" }
         ]
     },
     {
@@ -20,13 +20,7 @@ export const PLATFORMS = [
         vendor: "Amstrad",
         name: "amstrad",
         extensions: [".dsk", ".cpr"],
-        emulators: [
-            { name: "caprice32", flatpak: null, args: "--fullscreen" },
-            { name: "retroarch", flatpak: "org.libretro.RetroArch", args: "-f" },
-            { name: "javacpc", flatpak: null, args: "" },
-            { name: "mame", flatpak: "org.mamedev.MAME", args: "-nowindow" },
-            { name: "arnold", flatpak: null, args: "" }
-        ]
+        emulators: []
     },
     {
         nbGames: 0,
@@ -36,9 +30,8 @@ export const PLATFORMS = [
         name: "spectrum",
         extensions: [".zip"],
         emulators: [
-            { name: "fuse", flatpak: null, args: "--full-screen" },
-            { name: "retroarch", flatpak: "org.libretro.RetroArch", args: "-f" },
-            { name: "spectaculator", flatpak: null, args: "" }
+            { name: "fuse", flatpak: "net.sourceforge.fuse_emulator.Fuse", args: "--full-screen" },
+            { name: "ARES", flatpak: "dev.ares.ares", args: "--fullscreen" }
         ]
     },
     {
@@ -49,9 +42,7 @@ export const PLATFORMS = [
         name: "c64",
         extensions: [".zip"],
         emulators: [
-            { name: "vice", flatpak: null, args: "-fullscreen" },
-            { name: "retroarch", flatpak: "org.libretro.RetroArch", args: "-f" },
-            { name: "frodo", flatpak: null, args: "" }
+            { name: "VICE", flatpak: "net.sf.VICE", args: "-fullscreen" }
         ]
     },
     {
@@ -62,10 +53,9 @@ export const PLATFORMS = [
         name: "nes",
         extensions: [".zip"],
         emulators: [
-            { name: "nestopia", flatpak: "ca._0ldsk00l.Nestopia", args: "--fullscreen" },
-            { name: "fceux", flatpak: null, args: "--fullscreen 1" },
-            { name: "retroarch", flatpak: "org.libretro.RetroArch", args: "-f" },
-            { name: "mesen", flatpak: "com.mesen.Mesen", args: "--fullscreen" }
+            { name: "Nestopia", flatpak: "ca._0ldsk00l.Nestopia", args: "--fullscreen" },
+            { name: "bsnes", flatpak: "dev.bsnes.bsnes", args: "--fullscreen" },
+            { name: "ARES", flatpak: "dev.ares.ares", args: "--fullscreen" }
         ]
     },
     {
@@ -76,10 +66,9 @@ export const PLATFORMS = [
         name: "sms",
         extensions: [".zip"],
         emulators: [
-            { name: "kega-fusion", flatpak: null, args: "-fullscreen" },
-            { name: "retroarch", flatpak: "org.libretro.RetroArch", args: "-f" },
-            { name: "osmose", flatpak: null, args: "" },
-            { name: "dgen", flatpak: null, args: "-f" }
+            { name: "Kega Fusion", flatpak: "com.carpeludum.KegaFusion", args: "-fullscreen" },
+            { name: "Blastem", flatpak: "com.retrodev.blastem", args: "-f" },
+            { name: "ARES", flatpak: "dev.ares.ares", args: "--fullscreen" }
         ]
     },
     {
@@ -90,9 +79,7 @@ export const PLATFORMS = [
         name: "pcengine",
         extensions: [".pce"],
         emulators: [
-            { name: "mednafen", flatpak: "com.mednafen.Mednafen", args: "-fs 1" },
-            { name: "retroarch", flatpak: "org.libretro.RetroArch", args: "-f" },
-            { name: "ootake", flatpak: null, args: "" }
+            { name: "ARES", flatpak: "dev.ares.ares", args: "--fullscreen" }
         ]
     },
     {
@@ -103,10 +90,7 @@ export const PLATFORMS = [
         name: "amiga",
         extensions: [".lha", ".adf"],
         emulators: [
-            { name: "fs-uae", flatpak: null, args: "--fullscreen" },
-            { name: "winuae", flatpak: null, args: "-f" },
-            { name: "retroarch", flatpak: "org.libretro.RetroArch", args: "-f" },
-            { name: "emux", flatpak: null, args: "" }
+            { name: "amiberry", flatpak: "com.blitterstudio.amiberry", args: "-s joyport1_amiberry_custom_axis_none_righttrigger='Quit emulator' --autoload" }
         ]
     },
     {
@@ -118,9 +102,8 @@ export const PLATFORMS = [
         extensions: [".md"],
         emulators: [
             { name: "kega-fusion", flatpak: null, args: "-fullscreen" },
-            { name: "retroarch", flatpak: "org.libretro.RetroArch", args: "-f" },
-            { name: "blastem", flatpak: null, args: "-m gen -f" },
-            { name: "genesis-plus-gx", flatpak: null, args: "" }
+            { name: "ARES", flatpak: "dev.ares.ares", args: "--fullscreen" },
+            { name: "Blastem", flatpak: "com.retrodev.blastem", args: "-f" }
         ]
     },
     {
@@ -132,10 +115,9 @@ export const PLATFORMS = [
         extensions: [".md"],
         emulators: [
             { name: "mgba", flatpak: "io.mgba.mGBA", args: "-f" },
-            { name: "retroarch", flatpak: "org.libretro.RetroArch", args: "-f" },
-            { name: "vba-m", flatpak: null, args: "--fullscreen" },
-            { name: "gambatte", flatpak: null, args: "" },
-            { name: "bgb", flatpak: null, args: "" }
+            { name: "ARES", flatpak: "dev.ares.ares", args: "--fullscreen" },
+            { name: "Sameboy", flatpak: "io.github.sameboy.SameBoy", args: "--fullscreen" },
+            { name: "GB Enhanced+", flatpak: "com.github.shonumi.gbe-plus", args: "" }
         ]
     },
     {
@@ -146,9 +128,6 @@ export const PLATFORMS = [
         name: "lynx",
         extensions: [".md"],
         emulators: [
-            { name: "mednafen", flatpak: "com.mednafen.Mednafen", args: "-fs 1" },
-            { name: "retroarch", flatpak: "org.libretro.RetroArch", args: "-f" },
-            { name: "handy", flatpak: null, args: "--fullscreen" }
         ]
     },
     {
@@ -160,9 +139,7 @@ export const PLATFORMS = [
         extensions: [".zip"],
         emulators: [
             { name: "kega-fusion", flatpak: null, args: "-fullscreen" },
-            { name: "retroarch", flatpak: "org.libretro.RetroArch", args: "-f" },
-            { name: "osmose", flatpak: null, args: "" },
-            { name: "genesis-plus-gx", flatpak: null, args: "" }
+            { name: "ARES", flatpak: "dev.ares.ares", args: "--fullscreen" }
         ]
     },
     {
@@ -173,11 +150,10 @@ export const PLATFORMS = [
         name: "snes",
         extensions: [".smc"],
         emulators: [
-            { name: "snes9x", flatpak: "com.snes9x.Snes9x", args: "--fullscreen" },
-            { name: "retroarch", flatpak: "org.libretro.RetroArch", args: "-f" },
-            { name: "bsnes", flatpak: null, args: "--fullscreen" },
-            { name: "higan", flatpak: null, args: "--fullscreen" },
-            { name: "zsnes", flatpak: null, args: "-m" }
+            { name: "Snes9x", flatpak: "com.snes9x.Snes9x", args: "--fullscreen" },
+            { name: "bsnes", flatpak: "dev.bsnes.bsnes", args: "--fullscreen" },
+            { name: "ARES", flatpak: "dev.ares.ares", args: "--fullscreen" },
+            { name: "zsnes", flatpak: "io.github.xyproto.zsnes", args: "-m" }
         ]
     },
     {
@@ -188,9 +164,7 @@ export const PLATFORMS = [
         name: "jaguar",
         extensions: [".jag"],
         emulators: [
-            { name: "virtual-jaguar", flatpak: null, args: "--fullscreen" },
-            { name: "retroarch", flatpak: "org.libretro.RetroArch", args: "-f" },
-            { name: "project-tempest", flatpak: null, args: "" }
+            { name: "BigPEmu", flatpak: "com.richwhitehouse.BigPEmu", args: "-f" }
         ]
     },
     {
@@ -201,10 +175,8 @@ export const PLATFORMS = [
         name: "saturn",
         extensions: [".cue"],
         emulators: [
-            { name: "mednafen", flatpak: "com.mednafen.Mednafen", args: "-fs 1" },
-            { name: "yabause", flatpak: null, args: "-f" },
-            { name: "retroarch", flatpak: "org.libretro.RetroArch", args: "-f" },
-            { name: "kronos", flatpak: null, args: "--fullscreen" }
+            { name: "Ymir", flatpak: "io.github.strikerx3.ymir", args: "-f" },
+            { name: "Blastem", flatpak: "com.retrodev.blastem", args: "-f" }
         ]
     },
     {
@@ -215,10 +187,7 @@ export const PLATFORMS = [
         name: "ps1",
         extensions: [".cue"],
         emulators: [
-            { name: "duckstation", flatpak: "org.duckstation.DuckStation", args: "-fullscreen -nogui" },
-            { name: "retroarch", flatpak: "org.libretro.RetroArch", args: "-f" },
-            { name: "pcsx-r", flatpak: "net.pcsxr.PCSXR", args: "-nogui -cdfile" },
-            { name: "mednafen", flatpak: "com.mednafen.Mednafen", args: "-fs 1" }
+            { name: "duckstation", flatpak: "org.duckstation.DuckStation", args: "-fullscreen -nogui" }
         ]
     },
     {
@@ -229,10 +198,9 @@ export const PLATFORMS = [
         name: "n64",
         extensions: [".z64"],
         emulators: [
-            { name: "mupen64plus", flatpak: null, args: "--fullscreen" },
-            { name: "retroarch", flatpak: "org.libretro.RetroArch", args: "-f" },
-            { name: "project64", flatpak: null, args: "--fullscreen" },
-            { name: "simple64", flatpak: null, args: "--fullscreen" }
+            { name: "Rosalie's Mupen GUI", flatpak: "com.github.Rosalie241.RMG", args: "--nogui --fullscreen" },
+            { name: "Gopher64", flatpak: "io.github.gopher64.gopher64", args: "-f" },
+            { name: "M64Py", flatpak: "net.sourceforge.m64py.M64Py", args: "--fullscreen" }
         ]
     },
     {
@@ -243,10 +211,7 @@ export const PLATFORMS = [
         name: "dreamcast",
         extensions: [".gdi", ".cdi"],
         emulators: [
-            { name: "flycast", flatpak: null, args: "--fullscreen" },
-            { name: "retroarch", flatpak: "org.libretro.RetroArch", args: "-f" },
-            { name: "redream", flatpak: null, args: "--fullscreen" },
-            { name: "nulldc", flatpak: null, args: "-config nullDC_GUI:Fullscreen=1" }
+            { name: "flycast", flatpak: "org.flycast.Flycast", args: "--fullscreen" }
         ]
     },
     {
@@ -257,8 +222,8 @@ export const PLATFORMS = [
         name: "ps2",
         extensions: [".bin", ".iso"],
         emulators: [
-            { name: "pcsx2", flatpak: "net.pcsx2.PCSX2", args: "-nogui -fullscreen" },
-            { name: "play!", flatpak: null, args: "--fullscreen" }
+            { name: "PCSX2", flatpak: "net.pcsx2.PCSX2", args: "-nogui -fullscreen" },
+            { name: "Play!", flatpak: "org.purei.Play", args: "--fullscreen" }
         ]
     },
     {
@@ -269,8 +234,7 @@ export const PLATFORMS = [
         name: "gamecube",
         extensions: [".iso", ".ciso"],
         emulators: [
-            { name: "dolphin", flatpak: "org.DolphinEmu.dolphin-emu", args: "-b -e" },
-            { name: "retroarch", flatpak: "org.libretro.RetroArch", args: "-f" }
+            { name: "dolphin", flatpak: "org.DolphinEmu.dolphin-emu", args: "-b -e" }
         ]
     },
     {
@@ -281,8 +245,7 @@ export const PLATFORMS = [
         name: "xbox",
         extensions: [".iso"],
         emulators: [
-            { name: "xemu", flatpak: "app.xemu.xemu", args: "-full-screen -dvd_path" },
-            { name: "cxbx-reloaded", flatpak: null, args: "--fullscreen" }
+            { name: "xemu", flatpak: "app.xemu.xemu", args: "-full-screen -dvd_path" }
         ]
     },
     {
@@ -293,8 +256,7 @@ export const PLATFORMS = [
         name: "psp",
         extensions: [".iso"],
         emulators: [
-            { name: "ppsspp", flatpak: "org.ppsspp.PPSSPP", args: "--fullscreen" },
-            { name: "retroarch", flatpak: "org.libretro.RetroArch", args: "-f" }
+            { name: "PPSSPP", flatpak: "org.ppsspp.PPSSPP", args: "--fullscreen" }
         ]
     },
     {
@@ -305,7 +267,7 @@ export const PLATFORMS = [
         name: "ps3",
         extensions: [".SFO"],
         emulators: [
-            { name: "rpcs3", flatpak: "net.rpcs3.RPCS3", args: "--no-gui" }
+            { name: "RPCS3", flatpak: "net.rpcs3.RPCS3", args: "--no-gui" }
         ]
     },
     {
@@ -316,8 +278,7 @@ export const PLATFORMS = [
         name: "3ds",
         extensions: [".3ds"],
         emulators: [
-            { name: "citra", flatpak: "org.citra_emu.citra", args: "-f" },
-            { name: "retroarch", flatpak: "org.libretro.RetroArch", args: "-f" }
+            { name: "Azahar", flatpak: "org.azahar_emu.Azahar", args: "-f" }
         ]
     },
     {
@@ -328,7 +289,7 @@ export const PLATFORMS = [
         name: "xbox360",
         extensions: [".iso", ".xex"],
         emulators: [
-            { name: "xenia", flatpak: null, args: "--fullscreen" }
+            { name: "Xenia Canary", flatpak: null, args: "-f", url:"https://github.com/xenia-canary/xenia-canary-releases"}
         ]
     },
     {
@@ -339,8 +300,7 @@ export const PLATFORMS = [
         name: "ps4",
         extensions: [".iso"],
         emulators: [
-            { name: "fpPS4", flatpak: null, args: "--fullscreen" },
-            { name: "spine", flatpak: null, args: "--fullscreen" }
+            { name: "shadPS4", flatpak: "net.shadps4.shadPS4", args: "--fullscreen" }
         ]
     }
 ];

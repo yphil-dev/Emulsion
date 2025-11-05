@@ -694,7 +694,7 @@ export function installEmulatorsDialog(emulators) {
 
     const menu = document.getElementById('menu');
     const emulatorInput = menu.querySelector('input.emulator');
-    const emulatorArgsInput = menu.querySelector('input.args');
+    const argsInput = menu.querySelector('input.args');
 
     const body = dialog.querySelector('div.body');
     body.textContent = '';
@@ -760,6 +760,7 @@ export function installEmulatorsDialog(emulators) {
                     selectButton.style.display = 'inline-block';
                     installButton.style.display = 'none';
                 } else {
+
                     statusCell.textContent = 'Not installed';
                     statusCell.className = 'status not-installed';
                     selectButton.style.display = 'none';
@@ -775,7 +776,7 @@ export function installEmulatorsDialog(emulators) {
 
     // Build rows
     emulators.forEach(emulator => {
-        const { name, flatpak, args } = emulator;
+        const { name, flatpak, args, url } = emulator;
 
         const row = document.createElement('tr');
 
@@ -784,19 +785,33 @@ export function installEmulatorsDialog(emulators) {
         nameCell.classList.add('name');
         nameCell.textContent = flatpak ? `${name} (${flatpak})` : name;
 
+        const loader = document.createElement('span');
+        loader.className = 'loader';
+        loader.setAttribute('role', 'status');
+        loader.setAttribute('aria-live', 'polite');
+        loader.setAttribute('aria-label', 'Checking installation status');
+
+        // Create hidden text for screen readers
+        const hiddenText = document.createElement('span');
+        hiddenText.className = 'visually-hidden';
+        hiddenText.textContent = 'Checking installation status...';
+
         // Status cell
         const statusCell = document.createElement('td');
         statusCell.classList.add('status');
-        statusCell.textContent = 'Checking...';
+        // statusCell.textContent = 'Checking...';
+        statusCell.innerHTML = '';
+        // statusCell.append(loader, hiddenText);
 
         // Actions
-        const actionsCell = document.createElement('td');
+        const actionCell = document.createElement('td');
+        actionCell.classList.add('action');
         const buttons = document.createElement('div');
         buttons.className = 'buttons';
 
         const selectButton = document.createElement('button');
         selectButton.textContent = 'Select';
-        selectButton.classList.add('button', 'small', 'left');
+        selectButton.classList.add('button', 'small');
         selectButton.style.display = 'none'; // Hidden by default
 
         const installButton = document.createElement('button');
@@ -806,17 +821,18 @@ export function installEmulatorsDialog(emulators) {
         installButton.style.display = 'inline-block'; // Visible by default
 
         buttons.append(selectButton, installButton);
-        actionsCell.append(buttons);
-        row.append(nameCell, statusCell, actionsCell);
+        actionCell.append(buttons);
+        row.append(nameCell, statusCell, actionCell);
         tbody.appendChild(row);
 
         // Disable if no flatpak
         if (!flatpak) {
-            statusCell.textContent = 'No Flatpak available';
+            console.log("no flatpak: ");
+            statusCell.textContent = 'No FlatPak available yet';
             statusCell.className = 'status unavailable';
             selectButton.disabled = true;
-            installButton.disabled = true;
-            return;
+            installButton.textContent = 'Manual install';
+            // return;
         }
 
         // Store row data for status checking
@@ -825,13 +841,25 @@ export function installEmulatorsDialog(emulators) {
         selectButton.addEventListener('click', () => {
             console.log(`Selected emulator: ${name} (${flatpak}) args: ${args}`);
             emulatorInput.value = `flatpak run ${flatpak}`;
-            emulatorArgsInput.value = args;
+            argsInput.value = args;
             closeDialog();
         });
 
         installButton.addEventListener('click', async () => {
+            if (!flatpak) {
+                ipcRenderer.invoke('go-to-url', url);
+                closeDialog();
+                return;
+            }
+
             installButton.disabled = true;
-            statusCell.textContent = 'Installing...';
+            // statusCell.textContent = 'Installing...';
+
+            hiddenText.textContent = 'Installing FlatPak';
+            loader.setAttribute('aria-label', 'Installing FlatPak');
+            statusCell.innerHTML = '';
+            statusCell.append(loader, hiddenText);
+
             statusCell.className = 'status installing';
 
             try {

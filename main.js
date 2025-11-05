@@ -957,9 +957,8 @@ ipcMain.handle('is-flatpak-installed', async (event, appId) => {
 
 ipcMain.handle('is-flathub-configured', async () => {
   return new Promise((resolve) => {
-    // Check both user and system remotes
-    exec('flatpak remotes --all | grep flathub', (error, stdout) => {
-      resolve(!error && stdout.includes('flathub'));
+    exec('flatpak remotes | grep flathub', (error, stdout) => {
+      resolve(!error && stdout.trim().length > 0);
     });
   });
 });

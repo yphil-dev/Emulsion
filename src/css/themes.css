@@ -8,8 +8,10 @@
   --color-platform-text-header: rgb(10, 63, 74);
   --color-platform-outline-header: rgb(163, 255, 255);
 
-  --color-bg-header: rgb(153, 193, 239);
   --color-bg: rgb(189, 217, 255);
+  --color-bg-dialog: rgb(173, 200, 235); /* slightly darker & muted than --color-bg */
+  --color-bg-header: rgb(153, 193, 239);
+
   --color-border-header: rgb(57, 116, 184);
   --color-text-header: rgb(255, 255, 255);
 
@@ -38,11 +40,12 @@
   --color-platform-text-header: rgb(41, 241, 234);
   --color-platform-outline-header: rgb(10, 10, 15);
 
-  --color-bg-header: rgb(5, 12, 22);
   --color-bg: rgb(10, 20, 37);
-  --color-selected: rgb(41, 241, 234);
+  --color-bg-header: rgb(5, 12, 22);
+  --color-bg-dialog: rgb(8, 18, 33); /* slightly darker, keeps cool/night feel */
   --color-bg-selected: rgb(15, 43, 77);
 
+  --color-selected: rgb(41, 241, 234);
   --color-hr: rgb(40, 70, 80);
 
   --color-text-badge: 255, 230, 0;
@@ -62,11 +65,13 @@
 
   --color-platform-text-header: rgb(26, 30, 42);
   --color-platform-outline-header: rgb(41, 241, 234);
-  --color-bg-header: rgb(5, 12, 22);
+
   --color-bg: rgb(15, 23, 41);
-  --color-selected: rgb(0, 255, 204);
+  --color-bg-header: rgb(5, 12, 22);
+  --color-bg-dialog: rgb(32, 28, 36); /* subtle warm charcoal */
   --color-bg-selected: rgb(0, 49, 83);
 
+  --color-selected: rgb(0, 255, 204);
   --color-hr: rgb(50, 60, 80);
 
   --color-text-badge: 0, 0, 0;

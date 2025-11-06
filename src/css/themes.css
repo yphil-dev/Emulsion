@@ -53,7 +53,7 @@
 
   --color-text-game-label: rgb(41, 241, 234);
 
-  --color-selected: rgb(135, 0, 145);
+  --color-selected: rgb(0, 120, 145);
   --color-bg-selected: rgb(150, 197, 255);
 
   --color-hr: rgb(120, 160, 210);
@@ -64,7 +64,7 @@
   --color-button-on: rgb(255, 107, 0);
   --color-button-off: rgb(100, 170, 251);
   --color-border-on: rgb(255, 107, 0);
-  --color-border-off: rgb(57, 116, 184);
+  --color-border-off: rgb(149, 175, 204);
 }
 
 .theme-night {

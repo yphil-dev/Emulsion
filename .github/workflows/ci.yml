@@ -42,6 +42,16 @@ jobs:
       - name: Build Linux packages
         run: npx electron-builder --config builder.yml --linux
 
+      - name: Trigger manifest update
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          curl -s --fail -X POST \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: token ${{ secrets.FLATHUB_MANIFEST_TOKEN }}" \
+          https://api.github.com/repos/yPhil-gh/com.yPhil.Emulsion/dispatches \
+          -d "{\"event_type\":\"new_release\",\"client_payload\":{\"tag\":\"$TAG\"}}"
+
   # 5. Build Windows (NSIS .exe) and auto-publish on tag
   build_windows:
     runs-on: windows-latest

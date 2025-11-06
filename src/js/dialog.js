@@ -583,8 +583,8 @@ export function systemDialog(focusButton = 'cancel') {
             } else if (focusedButton === restartButton) {
                 window.location.reload();
             } else if (focusedButton === configButton && !LB.kioskMode) {
-                initGallery('settings');
                 closeDialog();
+                initGallery('settings');
             }
             break;
         case 'Escape':
@@ -597,8 +597,8 @@ export function systemDialog(focusButton = 'cancel') {
 
     if (!LB.kioskMode) {
         configButton.addEventListener('click', () => {
-            initGallery('settings');
             closeDialog();
+            initGallery('settings');
         });
     } else {
         configButton.style.display = 'none';

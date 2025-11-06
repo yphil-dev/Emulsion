@@ -198,16 +198,12 @@ export function simulateTabNavigation(container, shiftKey = false) {
         'button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
 
-    console.log("focusableElements: ", focusableElements);
-
     const focusableElementsArray = Array.from(focusableElements)
           .filter(el =>
               !el.disabled &&
                   window.getComputedStyle(el).display !== 'none' &&
                   !(el.tagName === 'INPUT' && el.type === 'range')
           );
-
-    console.log("focusableElementsArray: ", focusableElementsArray);
 
     if (focusableElementsArray.length === 0) {
         return;

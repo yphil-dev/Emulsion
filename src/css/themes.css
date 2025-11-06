@@ -1,3 +1,35 @@
+
+.theme-default {
+  --color-text-1: rgb(245, 245, 245);
+  --color-text-2: rgb(61, 173, 255);
+
+  --color-text-1-rgb: 245, 245, 245;
+  --color-text-2-rgb: 61, 173, 255;
+
+  --color-glow-rgb: 10, 143, 216;
+
+  --color-platform-text-header: rgb(26, 30, 42);
+  --color-platform-outline-header: rgb(41, 241, 234);
+
+  --color-bg: rgb(15, 23, 41);
+  --color-bg-rgb: 15, 23, 41;
+
+  --color-bg-header: rgb(5, 12, 22);
+  --color-bg-dialog: rgb(32, 28, 36); /* subtle warm charcoal */
+  --color-bg-selected: rgb(0, 49, 83);
+
+  --color-selected: rgb(0, 255, 204);
+  --color-hr: rgb(50, 60, 80);
+
+  --color-text-badge: 0, 0, 0;
+  --color-bg-badge: 41, 241, 234;
+
+  --color-button-on: rgb(41, 241, 234);
+  --color-button-off: rgb(51, 51, 68);
+  --color-border-on: rgb(0, 255, 204);
+  --color-border-off: rgb(51, 51, 68);
+}
+
 .theme-day {
   --color-text-1: rgb(41, 48, 53);
   --color-text-2: rgb(48, 57, 133);
@@ -65,35 +97,4 @@
   --color-button-off: rgb(255, 107, 0);
   --color-border-on: rgb(41, 241, 234);
   --color-border-off: rgb(15, 43, 77);
-}
-
-.theme-default {
-  --color-text-1: rgb(245, 245, 245);
-  --color-text-2: rgb(61, 173, 255);
-
-  --color-text-1-rgb: 245, 245, 245;
-  --color-text-2-rgb: 61, 173, 255;
-
-  --color-glow-rgb: 10, 143, 216;
-
-  --color-platform-text-header: rgb(26, 30, 42);
-  --color-platform-outline-header: rgb(41, 241, 234);
-
-  --color-bg: rgb(15, 23, 41);
-  --color-bg-rgb: 15, 23, 41;
-
-  --color-bg-header: rgb(5, 12, 22);
-  --color-bg-dialog: rgb(32, 28, 36); /* subtle warm charcoal */
-  --color-bg-selected: rgb(0, 49, 83);
-
-  --color-selected: rgb(0, 255, 204);
-  --color-hr: rgb(50, 60, 80);
-
-  --color-text-badge: 0, 0, 0;
-  --color-bg-badge: 41, 241, 234;
-
-  --color-button-on: rgb(41, 241, 234);
-  --color-button-off: rgb(51, 51, 68);
-  --color-border-on: rgb(0, 255, 204);
-  --color-border-off: rgb(51, 51, 68);
 }

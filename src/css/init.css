@@ -65,6 +65,12 @@
   --slide-rotation-radius: 100px;
   --page-rotation-angle: 0;
   --page-rotation-radius: 0;
+
+  --filter-glow-platform:
+    drop-shadow(0 0 2px rgba(255, 255, 255, 0.08))
+    drop-shadow(0 0 16px rgba(255, 255, 255, 0.06))
+    drop-shadow(0 0 24px rgba(255, 255, 255, 0.05));
+
 }
 
 /* Font loading optimizations for better icon availability */
@@ -163,3 +169,4 @@ p {
 *::-webkit-scrollbar-thumb:hover {
   background-color: var(--color-selected);
 }
+

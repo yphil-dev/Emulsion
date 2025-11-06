@@ -232,6 +232,8 @@ export const GalleryState = {
 
 export function initGallery(platformNameOrIndex, focusIndex = null) {
 
+    document.getElementById('menu').style.display = 'none';
+
     LB.mode = 'gallery';
 
     main.style.top = '100px';

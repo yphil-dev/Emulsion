@@ -374,11 +374,11 @@ dd.disabled {
 
 .loader {
   display: inline-block;
-  width: 24px;
-  height: 24px;
-  border: 3px solid rgba(255,255,255,0.3);
+  width: 16px;
+  height: 16px;
+  border: 3px solid var(--color-selected);
   border-radius: 50%;
-  border-top-color: #fff;
+  border-top-color: var(--color-text-1);
   animation: spin 1s ease-in-out infinite;
   -webkit-animation: spin 1s ease-in-out infinite;
 }
@@ -409,8 +409,15 @@ dd.disabled {
 
 .install-emulators .emulators .button {
   font-family: var(--font-fourth);
-  padding: 6px;
 }
+
+.install-emulators .emulators .button.install {
+  min-width: 80px;
+}
+
+/* .install-emulators .emulators-table .button { */
+/*   font-family: var(--font-fourth); */
+/* } */
 
 .dialog.install-emulators table {
   border-collapse: separate;
@@ -449,11 +456,11 @@ dd.disabled {
   text-align: center;
 }
 
-.dialog .fa-close {
+.dialog .error {
   color: crimson;
 }
 
-.dialog .fa-check {
+.dialog .success {
   color: green;
 }
 

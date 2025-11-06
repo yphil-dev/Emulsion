@@ -39,7 +39,6 @@
 
   --color-glow-rgb: 255, 210, 60;
 
-
   --color-platform-text-header: rgb(10, 63, 74);
   --color-platform-outline-header: rgb(163, 255, 255);
 
@@ -54,7 +53,7 @@
 
   --color-text-game-label: rgb(41, 241, 234);
 
-  --color-selected: rgb(140, 255, 160);
+  --color-selected: rgb(135, 0, 145);
   --color-bg-selected: rgb(150, 197, 255);
 
   --color-hr: rgb(120, 160, 210);

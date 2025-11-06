@@ -272,7 +272,7 @@ div.platform-container {
 
 div.platform-info .name {
   font-size: clamp(14px, 1.4vw, 24px);
-  color: var(--color-selected);
+  color: var(--color-text-1);
 }
 
 div.platform-info .vendor {

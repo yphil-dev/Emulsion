@@ -43,13 +43,13 @@ jobs:
 
       - name: Trigger Flathub manifest update
         if: startsWith(github.ref, 'refs/tags/')
-        run: |
-          TAG=${GITHUB_REF#refs/tags/}
-          curl -s --fail -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: token ${{ secrets.FLATHUB_MANIFEST_TOKEN }}" \
-            -d "{\"event_type\":\"new_release\",\"client_payload\":{\"tag\":\"$TAG\"}}" \
-            "https://api.github.com/repos/yPhil-gh/com.yPhil.Emulsion/dispatches"
+        run: >
+          TAG=${GITHUB_REF#refs/tags/} &&
+          curl -s --fail -X POST
+          -H "Accept: application/vnd.github+json"
+          -H "Authorization: token ${{ secrets.FLATHUB_MANIFEST_TOKEN }}"
+          -d "{\"event_type\":\"new_release\",\"client_payload\":{\"tag\":\"$TAG\"}}"
+          "https://api.github.com/repos/yPhil-gh/com.yPhil.Emulsion/dispatches"
 
   build_windows:
     runs-on: windows-latest

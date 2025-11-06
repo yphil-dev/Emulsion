@@ -60,6 +60,8 @@ button {
   text-align: center;
   height: 40vh;
   /* min-height: 300px; */
+
+  filter: var(--filter-glow-platform);
 }
 
 /* Details text div */

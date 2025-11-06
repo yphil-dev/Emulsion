@@ -64,7 +64,6 @@ export async function updatePreference(platformName, key, value) {
         const preferences = await loadPreferences();
 
         if (preferences[platformName][key] === value) {
-            console.log("Nothing to save or do.");
             return null;
         }
 

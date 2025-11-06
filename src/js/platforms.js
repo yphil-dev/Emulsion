@@ -9,7 +9,6 @@ export const PLATFORMS = [
         name: "atari",
         extensions: [".zip"],
         emulators: [
-            { name: "stella", flatpak: "io.github.stella_emu.Stella", args: "--fullscreen" },
             { name: "ARES", flatpak: "dev.ares.ares", args: "--fullscreen" }
         ]
     },
@@ -20,7 +19,10 @@ export const PLATFORMS = [
         vendor: "Amstrad",
         name: "amstrad",
         extensions: [".dsk", ".cpr"],
-        emulators: []
+        emulators: [
+            { name: "Caprice32", flatpak: null, args: "", url: "https://github.com/ColinPitrat/caprice32" }
+
+        ]
     },
     {
         nbGames: 0,
@@ -30,7 +32,7 @@ export const PLATFORMS = [
         name: "spectrum",
         extensions: [".zip"],
         emulators: [
-            { name: "fuse", flatpak: "net.sourceforge.fuse_emulator.Fuse", args: "--full-screen" },
+            { name: "fuse", flatpak: "net.sourceforge.fuse_emulator.Fuse", args: "--sound --auto-load" },
             { name: "ARES", flatpak: "dev.ares.ares", args: "--fullscreen" }
         ]
     },
@@ -101,7 +103,7 @@ export const PLATFORMS = [
         name: "megadrive",
         extensions: [".md"],
         emulators: [
-            { name: "kega-fusion", flatpak: null, args: "-fullscreen" },
+            { name: "Kega Fusion", flatpak: "com.carpeludum.KegaFusion", args: "-fullscreen" },
             { name: "ARES", flatpak: "dev.ares.ares", args: "--fullscreen" },
             { name: "Blastem", flatpak: "com.retrodev.blastem", args: "-f" }
         ]
@@ -138,7 +140,7 @@ export const PLATFORMS = [
         name: "gamegear",
         extensions: [".zip"],
         emulators: [
-            { name: "kega-fusion", flatpak: null, args: "-fullscreen" },
+            { name: "Kega Fusion", flatpak: "com.carpeludum.KegaFusion", args: "-fullscreen" },
             { name: "ARES", flatpak: "dev.ares.ares", args: "--fullscreen" }
         ]
     },

@@ -251,6 +251,7 @@ div.dummy-game-container i { color: var(--color-border-on); }
 
 div.platform-container {
   justify-content: flex-start;
+  filter: var(--filter-glow-platform);
 }
 
 .explosion-particle {

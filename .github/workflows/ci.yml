@@ -57,7 +57,6 @@ jobs:
             https://api.github.com/repos/yPhil-gh/com.yPhil.Emulsion/dispatches \
             -d "{\"event_type\":\"new_release\",\"client_payload\":{\"tag\":\"$TAG\"}}"
 
-
   # 5. Build Windows (NSIS .exe) and auto-publish on tag
   build_windows:
     runs-on: windows-latest

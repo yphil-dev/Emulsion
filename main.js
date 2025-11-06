@@ -688,7 +688,7 @@ ipcMain.on('run-command', (event, data) => {
 const defaultPreferences = {
     settings: {
         numberOfColumns: 6,
-        footerSize: "medium",
+        footerSize: "small",
         disabledPlatformsPolicy: "show",
         recentlyPlayedPolicy: "hide",
         recentlyPlayedViewMode: "grid",
@@ -951,6 +951,14 @@ ipcMain.handle('is-flatpak-installed', async (event, appId) => {
     // Check both user and system installations
     exec('flatpak list --app --all', (error, stdout) => {
       resolve(!error && stdout.includes(appId));
+    });
+  });
+});
+
+ipcMain.handle('is-flatpak-installing', async (event, appId) => {
+  return new Promise((resolve) => {
+    exec(`ps aux | grep -E "flatpak.*${appId}" | grep -v grep`, (error, stdout) => {
+      resolve(!error && stdout.trim().length > 0);
     });
   });
 });

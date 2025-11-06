@@ -123,26 +123,24 @@ footer.footer-small {
   /* --footer-height: 44px; */
   --footer-font: 14px;
   --footer-gap: 5px;
-  --icon-size: 28px;
 }
 
 footer.footer-medium {
   /* --footer-height: 70px; */
   --footer-font: 18px;
   --footer-gap: 7px;
-  --icon-size: 60px;
 }
 
 footer.footer-big {
   /* --footer-height: 100px; */
   --footer-font: 20px;
   --footer-gap: 10px;
-  --icon-size: 80px;
 }
 
 .control-icon {
   height: calc(var(--footer-height) - 14px);
   width: calc(var(--footer-height) - 14px);
+  transition: all 0.4s ease;
 }
 
 .control-icon-big {

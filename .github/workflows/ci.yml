@@ -1,18 +1,23 @@
+# .github/workflows/ci.yml
 name: Build & Release
 
+# 1. Only run on tag pushes
 on:
   push:
     tags:
-      - '*'  # any tag
+      - '*'   # any tag :contentReference[oaicite:4]{index=4}
 
+# 2. Grant GITHUB_TOKEN write permissions so Electron Builder can publish releases
 permissions:
-  contents: write   # allow Releases API write access
-  packages: write   # allow auto-publish to GitHub Packages
+  contents: write    # allow Releases API write access :contentReference[oaicite:5]{index=5}
+  packages: write    # if you ever auto-publish to GitHub Packages :contentReference[oaicite:6]{index=6}
 
+# 3. Make GITHUB_TOKEN available as GH_TOKEN for Electron Builder
 env:
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
+  # 4. Build Linux (.deb + AppImage) and auto-publish on tag
   build_linux:
     runs-on: ubuntu-latest
     steps:
@@ -24,10 +29,11 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Update system
-        run: sudo apt-get update
+      - name: Update the system
+        run: |
+          sudo apt-get update
 
-      - name: Install Linux dependencies
+      - name: DLoad & Install Linux dependencies
         run: |
           sudo snap install snapcraft --classic
           sudo apt-get install -y dpkg fakeroot jq npm bash fuse cmake libsdl2-dev
@@ -36,21 +42,7 @@ jobs:
       - name: Build Linux packages
         run: npx electron-builder --config builder.yml --linux
 
-      - name: Debug FLATHUB_MANIFEST_TOKEN
-        run: echo "FLATHUB_MANIFEST_TOKEN length: ${#FLATHUB_MANIFEST_TOKEN}"
-        env:
-          FLATHUB_MANIFEST_TOKEN: ${{ secrets.FLATHUB_MANIFEST_TOKEN }}
-
-      - name: Trigger Flathub manifest update
-        if: startsWith(github.ref, 'refs/tags/')
-        run: >
-          TAG=${GITHUB_REF#refs/tags/} &&
-          curl -s --fail -X POST
-          -H "Accept: application/vnd.github+json"
-          -H "Authorization: token ${{ secrets.FLATHUB_MANIFEST_TOKEN }}"
-          -d "{\"event_type\":\"new_release\",\"client_payload\":{\"tag\":\"$TAG\"}}"
-          "https://api.github.com/repos/yPhil-gh/com.yPhil.Emulsion/dispatches"
-
+  # 5. Build Windows (NSIS .exe) and auto-publish on tag
   build_windows:
     runs-on: windows-latest
     steps:
@@ -67,3 +59,6 @@ jobs:
 
       - name: Build Windows package
         run: npx electron-builder --config builder.yml --win nsis --x64
+        # this will auto-publish `.exe` to the GitHub Release :contentReference[oaicite:8]{index=8}
+
+# No separate "release" job needed—electron-builder will create or update the GitHub Release for you.

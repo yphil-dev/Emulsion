@@ -63,13 +63,13 @@
 
 @keyframes slide-pulse-glow {
   0% {
-    filter: drop-shadow(0 0 1px rgba(var(--glow-color-rgb), 0.6));
+    filter: drop-shadow(0 0 1px rgba(var(--color-glow-rgb), 0.6));
   }
   50% {
-    filter: drop-shadow(0 0 10px rgba(var(--glow-color-rgb), 0.7));
+    filter: drop-shadow(0 0 10px rgba(var(--color-glow-rgb), 0.7));
   }
   100% {
-    filter: drop-shadow(0 0 1px rgba(var(--glow-color-rgb), 0.6));
+    filter: drop-shadow(0 0 1px rgba(var(--color-glow-rgb), 0.6));
   }
 }
 
@@ -110,12 +110,12 @@
 
 .slide-content > p.vendor {
   margin: 0;
-  color: var(--color-text-1);
+  color: var(--color-text-2);
 }
 
 .slide-content > p.name {
   font-size: 16pt;
-  color: var(--color-selected);
+  color: var(--color-text-1);
 }
 
 .footer-small { max-height: 40.5vh !important; }

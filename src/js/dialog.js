@@ -428,7 +428,7 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
         };
         cancelButton.addEventListener('click', handleCancel);
 
-        dialogTitle.innerHTML = `Download <span>${getPlatformInfo(LB.currentPlatform).name}</span> games meta data`;
+        dialogTitle.innerHTML = `Download <span class="title-name">${getPlatformInfo(LB.currentPlatform).name}</span> games meta data`;
 
         const optionsContainer = document.createElement('div');
         optionsContainer.className = 'batch-options';
@@ -472,7 +472,7 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
 
             const icon = document.createElement('i');
             icon.className = 'form-icon fa fa-2x';
-            icon.classList.add(isEnabled ? 'fa-check-square-o' : 'fa-square-o');
+            icon.classList.add(isEnabled ? 'fa-check' : 'fa-close');
             icon.setAttribute('aria-hidden', 'true');
 
             const span = document.createElement('span');
@@ -692,6 +692,8 @@ export function installEmulatorsDialog(emulators) {
     const dialog = overlay.querySelector('div.dialog');
     const closeButton = dialog.querySelector('.cancel');
 
+    dialog.querySelector('.title-name').textContent = getPlatformInfo(LB.currentPlatform).name;
+
     const menu = document.getElementById('menu');
     const emulatorInput = menu.querySelector('input.emulator');
     const argsInput = menu.querySelector('input.args');
@@ -726,14 +728,14 @@ export function installEmulatorsDialog(emulators) {
             const flathubConfigured = await ipcRenderer.invoke('is-flathub-configured');
 
             if (!flatpakAvailable) {
-                flathubStatus.textContent = '❌ Flatpak not installed on system';
+                flathubStatus.textContent = '<i class="fa fa-close" aria-hidden="true"></i> Flatpak not installed on system';
             } else if (!flathubConfigured) {
-                flathubStatus.textContent = '⚠️ Flathub remote not configured (will be added automatically during installation)';
+                flathubStatus.textContent = '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Flathub remote not configured (will be added automatically during installation)';
             } else {
-                flathubStatus.textContent = '✅ Flatpak and Flathub configured';
+                flathubStatus.innerHTML = '<i class="fa fa-check" aria-hidden="true"></i> Flatpak and Flathub configured';
             }
         } catch (error) {
-            flathubStatus.textContent = '❌ Error checking Flatpak status';
+            flathubStatus.textContent = '<i class="fa fa-close" aria-hidden="true"></i> Error checking Flatpak status';
         }
     }
 
@@ -746,7 +748,6 @@ export function installEmulatorsDialog(emulators) {
 
             if (!flatpakAvailable) {
                 statusCell.textContent = 'Flatpak not available';
-                statusCell.className = 'status unavailable';
                 installButton.disabled = true;
                 continue;
             }
@@ -755,21 +756,18 @@ export function installEmulatorsDialog(emulators) {
                 const isInstalled = await ipcRenderer.invoke('is-flatpak-installed', flatpakId);
 
                 if (isInstalled) {
-                    statusCell.textContent = '✅ Installed';
-                    statusCell.className = 'status installed';
+                    statusCell.innerHTML = `<i class="fa fa-check" aria-hidden="true"></i> Installed`;
                     selectButton.style.display = 'inline-block';
                     installButton.style.display = 'none';
                 } else {
 
-                    statusCell.textContent = 'Not installed';
-                    statusCell.className = 'status not-installed';
+                    statusCell.innerHTML = `<i class="fa fa-close" aria-hidden="true"></i> Not installed`;
                     selectButton.style.display = 'none';
                     installButton.style.display = 'inline-block';
                     installButton.disabled = false;
                 }
             } catch (error) {
                 statusCell.textContent = 'Error checking status';
-                statusCell.className = 'status error';
             }
         }
     }
@@ -783,7 +781,7 @@ export function installEmulatorsDialog(emulators) {
         // Name cell
         const nameCell = document.createElement('td');
         nameCell.classList.add('name');
-        nameCell.textContent = flatpak ? `${name} (${flatpak})` : name;
+        nameCell.innerHTML = flatpak ? `<strong>${name}</strong> (${flatpak})` : name;
 
         const loader = document.createElement('span');
         loader.className = 'loader';
@@ -829,7 +827,6 @@ export function installEmulatorsDialog(emulators) {
         if (!flatpak) {
             console.log("no flatpak: ");
             statusCell.textContent = 'No FlatPak available yet';
-            statusCell.className = 'status unavailable';
             selectButton.disabled = true;
             installButton.textContent = 'Manual install';
             // return;
@@ -857,20 +854,17 @@ export function installEmulatorsDialog(emulators) {
 
             hiddenText.textContent = 'Installing FlatPak';
             loader.setAttribute('aria-label', 'Installing FlatPak');
-            statusCell.innerHTML = '';
+            statusCell.textContent = '';
             statusCell.append(loader, hiddenText);
 
-            statusCell.className = 'status installing';
 
             try {
                 await ipcRenderer.invoke('install-flatpak', flatpak);
-                statusCell.textContent = '✅ Installed';
-                statusCell.className = 'status installed';
+                statusCell.innerHTML = '<i class="fa fa-check" aria-hidden="true"></i> Installed';
                 installButton.style.display = 'none';
                 selectButton.style.display = 'inline-block';
             } catch (error) {
-                statusCell.textContent = '❌ Failed';
-                statusCell.className = 'status error';
+                statusCell.innerHTML = '<i class="fa fa-close" aria-hidden="true"></i> Failed';
                 installButton.disabled = false;
                 console.error('Installation failed:', error);
             }

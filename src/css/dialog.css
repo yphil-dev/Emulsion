@@ -18,22 +18,19 @@
   background: var(--color-bg-dialog);
   padding: 20px;
   border-radius: 8px;
-  /* gap: 10px; */
   max-width: 90vw;
   max-height: 90vh;
-  /* subtle separation from the page */
-  border: 1px solid rgba(255, 255, 255, 0.08); /* or rgba(0,0,0,0.15) depending on theme */
+  border: 1px solid rgba(var(--color-text-2-rgb), 0.05);
   box-shadow:
-    0 2px 6px rgba(0, 0, 0, 0.25),  /* soft outer shadow */
-    0 0 12px rgba(255, 255, 255, 0.05) inset; /* faint inner glow for depth */
-  backdrop-filter: blur(3px); /* optional if you want a translucent feel */
+    0 2px 6px rgba(var(--color-bg-rgb), 0.25),  /* soft outer shadow */
+    0 0 12px rgba(var(--color-text-2-rgb), 0.05) inset; /* faint inner glow for depth */
 }
 
 .dialog h1,
 .dialog h2,
 .dialog h3,
 .dialog h4 {
-  color:var(--color-selected);
+  color:var(--color-text-2);
 }
 
 .dialog .title,
@@ -52,7 +49,7 @@
 .dialog .buttons,
 .dialog .dialog-buttons {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   margin-top: 20px;
 }
 
@@ -154,10 +151,6 @@
   flex-direction: column;
   align-items: center;
   background: var(--color-bg-dialog);
-}
-
-.help-dialog .th-content span {
-  color: var(--color-selected);
 }
 
 .help-dialog tbody tr {
@@ -296,11 +289,6 @@
   color: var(--color-selected);
 }
 
-
-.dialog.download-meta .dialog-title span {
-  color: var(--color-text-2);
-}
-
 .dialog.download-meta dl {
   margin-top: 0;
 }
@@ -363,51 +351,6 @@ dd.disabled {
 
 .btn-ko-fi {
   background: #29ABE0;
-}
-
-.install-emulators {
-  width: 60vw;
-  max-width: 1000px;
-}
-
-.install-emulators .emulator {
-  height: 50px;
-  width: 100%;
-  padding: 6px;
-  border: 1px solid var(--color-border-header);
-  border-radius: 6px;
-}
-
-.install-emulators .emulators .button {
-  font-family: var(--font-fourth);
-  padding: 6px;
-}
-
-.dialog.install-emulators table .buttons {
-  margin-top: unset;
-}
-
-.dialog.install-emulators table {
-  width: 100%;
-}
-
-.dialog.install-emulators table th,
-.dialog.install-emulators table td {
-  padding: 8px; /* Add spacing within cells */
-  text-align: center;
-}
-
-.dialog.install-emulators table th,
-.dialog.install-emulators table td.name {
-  text-align: left;
-}
-
-.dialog.install-emulators table td.action {
-  text-align: right;
-}
-
-.dialog.install-emulators table th.center {
-  text-align: center;
 }
 
 .emulators-table td .buttons {
@@ -516,4 +459,62 @@ dd.disabled {
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   border: 0;
+}
+
+.install-emulators {
+  width: 60vw;
+  max-width: 1000px;
+}
+
+.install-emulators .emulator {
+  height: 50px;
+  width: 100%;
+  padding: 6px;
+  border: 1px solid var(--color-border-header);
+  border-radius: 6px;
+}
+
+.install-emulators .emulators .button {
+  font-family: var(--font-fourth);
+  padding: 6px;
+}
+
+.dialog.install-emulators table .buttons {
+  margin-top: unset;
+}
+
+.dialog.install-emulators table {
+  width: 100%;
+}
+
+.dialog.install-emulators table th,
+.dialog.install-emulators table td {
+  padding: 0.3em 0;
+  text-align: center;
+}
+
+.dialog.install-emulators table th,
+.dialog.install-emulators table td.name,
+.dialog.install-emulators table td.status {
+  text-align: left;
+}
+
+.dialog.install-emulators table td.action {
+  text-align: right;
+}
+
+.dialog.install-emulators table th.center {
+  text-align: center;
+}
+
+.dialog .fa-close {
+  color: crimson;
+}
+
+.dialog .fa-check {
+  color: green;
+}
+
+.dialog .title-name {
+    color: var(--color-selected);
 }

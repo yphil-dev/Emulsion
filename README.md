@@ -68,8 +68,10 @@ npm install && npm start
 
 **Get gaming in 5 minutes:**
 
+1. Open any console page
+
 1. **Get some games** - Let's say [NES](https://duckduckgo.com/?q=vimms+lair+NES) ROMs
-2. **Install an emulator** - e.g., `sudo apt install nestopia`
+2. **Install an emulator**
 3. **Open Emulsion** → Settings → NES
    - **Games Directory**: Browse to your NES games folder
    - **Emulator**: Enter `nestopia`
@@ -92,28 +94,6 @@ npm install && npm start
 | **Emulator Arguments**   | Optional flags (most emulators don't need any)                                                                                                                                                 |
 | **Get all cover images** | Batch download of all this platform's game covers artwork (you can close the menu and do something else - like play a game - while it downloads and refreshes your games gallery in real time) |
 | **Extensions**           | File types to scan for (e.g., `.zip`, `.iso`)                                                                                                                                                  |
-
-### Emulator Quick Reference
-
-Here's what works great on our machines:
-
-| Platform   | Recommended Emulator                                      | Arguments            | Extensions      |
-|------------|-----------------------------------------------------------|----------------------|-----------------|
-| Atari      | **[Stella](https://stella-emu.github.io/)**               |                      | `.zip`          |
-| NES        | **[Nestopia](https://nestopia.sourceforge.net/)**         | `--fullscreen`       | `.zip`          |
-| SMS        | **[Mednafen](https://mednafen.github.io/)**               |                      | `.zip`          |
-| PCEngine   | **[Mednafen](https://mednafen.github.io/)**               |                      | `.zip`          |
-| Amiga      | **[AmiBerry](https://github.com/BlitterStudio/amiberry)** |                      | `.lha`, `.adf`  |
-| Mega Drive | [Blastem](https://www.retrodev.com/blastem/)              | `-m gen -f`          | `.md`           |
-| SNES       | [Mesen](https://www.mesen.ca/)                            |                      | `.smc`          |
-| PSX        | [DuckStation](https://github.com/stenzek/duckstation)     | `-fullscreen -nogui` | `.cue`          |
-| N64        | **[Mupen64Plus](https://mupen64plus.org/)**               |                      | `.z64`          |
-| Dreamcast  | [Flycast](https://github.com/flyinghead/flycast)          |                      | `.gdi`, `.cdi`  |
-| PS2        | **[PCSX2](https://pcsx2.net/)**                           | `-nogui -fullscreen` | `.iso`          |
-| GameCube   | [Dolphin](https://dolphin-emu.org/)                       | `-b -e`              | `.iso`, `.ciso` |
-| PS3        | [RPCS3](https://rpcs3.net/)                               | `--no-gui`           | `.SFO`          |
-
-**Bold names** = Available in Ubuntu repos! Install with: `apt install nestopia mednafen amiberry mupen64plus pcsx2`
 
 ## Cover Art
 

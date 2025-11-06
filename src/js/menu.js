@@ -536,7 +536,7 @@ function buildPlatformMenuForm(platformName) {
 
     const emulatorIcon = document.createElement('div');
     emulatorIcon.classList.add('form-icon');
-    emulatorIcon.innerHTML = '<i class="form-icon fa fa-2x fa-gamepad" aria-hidden="true"></i>';
+    emulatorIcon.innerHTML = '<i class="form-icon fa fa-2x fa-cube" aria-hidden="true"></i>';
 
     const emulatorInputLabel = document.createElement('label');
     emulatorInputLabel.textContent = "Emulator";
@@ -645,7 +645,7 @@ function buildPlatformMenuForm(platformName) {
 
     const emulatorArgsIcon = document.createElement('div');
     emulatorArgsIcon.classList.add('form-icon');
-    emulatorArgsIcon.innerHTML = '<i class="form-icon emulator-args-icon fa fa-2x fa-rocket" aria-hidden="true"></i>';
+    emulatorArgsIcon.innerHTML = '<i class="form-icon emulator-args-icon fa fa-2x fa-terminal" aria-hidden="true"></i>';
 
     const emulatorArgsLabel = document.createElement('label');
     emulatorArgsLabel.textContent = 'Emulator Arguments';

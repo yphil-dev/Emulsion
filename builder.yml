@@ -1,6 +1,6 @@
 # electron-builder.yml
 
-appId: com.yphil.emulsion
+appId: com.yPhil.Emulsion
 productName: Emulsion
 artifactName: "emulsion_${arch}.${ext}"
 asar: true

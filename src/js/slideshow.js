@@ -79,12 +79,19 @@ export function initSlideShow(platformToDisplay) {
     // Slide click
     slides.forEach(slide => {
         slide.addEventListener('click', event => {
+            console.log("event: ", event);
             event.stopPropagation();
             event.stopImmediatePropagation();
             const slideDiv = event.target.closest('div.slide');
 
-            if (slideDiv.classList.contains('active')) simulateKeyDown('Enter');
-            else initSlideShow(slideDiv.dataset.platform);
+            console.log("slideDiv.classList: ", slideDiv.classList);
+
+            if (slideDiv.classList.contains('active')) {
+                console.log("plop: ");
+                simulateKeyDown('Enter');
+            } else {
+                initSlideShow(slideDiv.dataset.platform);
+            };
         });
     });
 

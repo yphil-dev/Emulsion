@@ -12,7 +12,7 @@ import { getSelectedGameContainer,
          simulateTabNavigation,
          setFooterSize,
          toggleHeaderNavLinks } from './utils.js';
-import { helpDialog, installEmulatorsDialog } from './dialog.js';
+import { helpDialog, installEmulatorsDialog, systemDialog } from './dialog.js';
 
 let menuState = {
     selectedIndex: 1,
@@ -63,6 +63,15 @@ window.onMenuKeyDown = function onMenuKeyDown(event) {
     case 'Escape':
         menu.querySelector('button.cancel')?.click();
         break;
+
+    case '/':
+        systemDialog('quit');
+        break;
+
+    case '?':
+        helpDialog('shortcuts');
+        break;
+
     }
 };
 

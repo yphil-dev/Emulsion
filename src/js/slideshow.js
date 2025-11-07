@@ -10,7 +10,7 @@ import { updateFooterControlsFor,
          toggleHeaderNavLinks } from './utils.js';
 import { updatePreference } from './preferences.js';
 import { getMeta, displayMetaData } from './metadata.js';
-import { editMetaDialog, toggleFavDialog, launchGameDialog, systemDialog } from './dialog.js';
+import { editMetaDialog, toggleFavDialog, launchGameDialog, systemDialog, helpDialog } from './dialog.js';
 
 const main = document.querySelector('main');
 const slideshow = document.getElementById("slideshow");
@@ -138,6 +138,14 @@ export function initSlideShow(platformToDisplay) {
             systemDialog('quit');
             break;
 
+        case '/':
+            systemDialog('quit');
+            break;
+
+        case '?':
+            helpDialog('shortcuts');
+            break;
+
         default:
             if (!event.ctrlKey && !event.altKey && !event.metaKey && /^[a-z0-9]$/i.test(event.key)) {
                 const key = event.key.toLowerCase();
@@ -170,6 +178,8 @@ export function initSlideShow(platformToDisplay) {
                 }
             }
             break;
+
+
         }
 
     };
@@ -545,6 +555,14 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         } else {
             initSlideShow(activePage.dataset.platform);
         }
+        break;
+
+    case '/':
+        systemDialog('quit');
+        break;
+
+    case '?':
+        helpDialog('shortcuts');
         break;
 
     case 'Enter':

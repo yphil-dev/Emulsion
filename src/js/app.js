@@ -116,20 +116,15 @@ async function initializeApp() {
 
         // Set up keyboard shortcuts
         document.addEventListener('keydown', async (event) => {
+
             if (event.key === 'F11') {
                 ipcRenderer.invoke('toggle-fullscreen');
+                return;
             }
 
             if (event.key === 'F5') {
                 window.location.reload();
-            }
-
-            if (event.key === '/') {
-                systemDialog();
-            }
-
-            if (event.key === '?') {
-                await helpDialog('shortcuts');
+                return;
             }
 
             if (LB.mode === 'gallery' && window.onGalleryKeyDown) {

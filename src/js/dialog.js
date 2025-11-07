@@ -3,6 +3,7 @@ import { displayMetaData } from './metadata.js';
 import { PLATFORMS, getPlatformInfo } from './platforms.js';
 import { simulateTabNavigation, launchGame } from './utils.js';
 import { updatePreference } from './preferences.js';
+import { openPlatformMenu } from './menu.js';
 
 const DialogManager = {
     currentDialog: null,
@@ -10,6 +11,7 @@ const DialogManager = {
     mainMode: null, // Track the main non-dialog mode
 
     open(dialogElement, mode) {
+        console.log("dialogElement: ", dialogElement);
         this.closeCurrent();
         this.previousMode = LB.mode;
 
@@ -383,6 +385,7 @@ export async function helpDialog(defaultTabId = null) {
 }
 
 export async function downloadMetaDialog(imagesCount, metaCount) {
+    console.log("downloadMetaDialog: ");
     const overlay = document.getElementById('download-meta-overlay');
     const dialog = overlay.querySelector('.dialog');
     const dialogTitle = dialog.querySelector('.dialog-title');
@@ -391,17 +394,23 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
     const okButton = dialog.querySelector('button.ok');
     const cancelButton = dialog.querySelector('button.cancel');
 
+    if (!dialog) {
+        console.error(".dialog element not found!");
+        return null;
+    }
+
     return new Promise((resolve) => {
-        function closeDialog() {
-            DialogManager.closeCurrent();
-            DialogManager.restoreMode();
-        }
+        try {
+            function closeDialog() {
+                DialogManager.closeCurrent();
+                DialogManager.restoreMode();
+            }
 
-        window.onDownloadMetaKeyDown = function onDownloadMetaKeyDown(event) {
-            event.stopPropagation();
-            event.stopImmediatePropagation();
+            window.onDownloadMetaKeyDown = function onDownloadMetaKeyDown(event) {
+                event.stopPropagation();
+                event.stopImmediatePropagation();
 
-            switch (event.key) {
+                switch (event.key) {
                 case 'ArrowLeft':
                 case 'ArrowUp':
                     simulateTabNavigation(dialog, true);
@@ -419,121 +428,182 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
                         onOk();
                     }
                     break;
-            }
-        };
+                }
+            };
 
-        const handleCancel = () => {
-            closeDialog();
-            resolve(null);
-        };
-        cancelButton.addEventListener('click', handleCancel);
-
-        dialogTitle.innerHTML = `Download <span class="title-name">${getPlatformInfo(LB.currentPlatform).name}</span> games meta data`;
-
-        const optionsContainer = document.createElement('div');
-        optionsContainer.className = 'batch-options';
-
-        // --- helper ---
-        const makeCheckboxOption = (id, label, count, checked, disabled) => {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'batch-option';
-
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.id = id;
-            checkbox.classList.add('input');
-            checkbox.checked = checked;
-            checkbox.disabled = disabled;
-
-            const labelElement = document.createElement('label');
-            labelElement.htmlFor = id;
-            labelElement.className = 'form-label';
-
-            const countText = count ? ` (${count})` : '';
-            labelElement.textContent = `${label}${countText}`;
-
-            wrapper.append(checkbox, labelElement);
-            return wrapper;
-        };
-
-        const hasImages = imagesCount > 0;
-        const hasMeta = metaCount > 0;
-
-        const imgLabel = hasImages ? `Download missing images` : `No missing images`;
-        const metaLabel = hasMeta ? `Download missing metadata` : `No missing metadata`;
-
-        const imgSources = document.createElement('dl');
-        const imgSourcesDT = document.createElement('dt');
-        imgSourcesDT.textContent = 'Sources';
-
-        function createSourceDd(text, isEnabled) {
-            const dd = document.createElement('dd');
-            if (!isEnabled) dd.classList.add('disabled');
-
-            const icon = document.createElement('i');
-            icon.className = 'form-icon fa fa-2x';
-            icon.classList.add(isEnabled ? 'fa-check success' : 'fa-close error');
-            icon.setAttribute('aria-hidden', 'true');
-
-            const span = document.createElement('span');
-            span.textContent = text;
-
-            dd.append(icon, span);
-            return dd;
-        }
-
-        imgSources.append(
-            imgSourcesDT,
-            createSourceDd('Wikipedia', true),
-            createSourceDd('SteamGridDB', LB.steamGridAPIKey),
-            createSourceDd('GiantBomb', LB.giantBombAPIKey)
-        );
-
-        const textSources = document.createElement('dl');
-        const textSourcesDT = document.createElement('dt');
-        textSourcesDT.textContent = 'Sources';
-        textSources.append(textSourcesDT, createSourceDd('Wikipedia', true));
-
-        // --- append checkboxes and sources ---
-        optionsContainer.appendChild(
-            makeCheckboxOption('batch-images', imgLabel, hasImages ? imagesCount : 0, hasImages, !hasImages)
-        );
-        if (hasImages) optionsContainer.appendChild(imgSources);
-
-        optionsContainer.appendChild(
-            makeCheckboxOption('batch-metadata', metaLabel, hasMeta ? metaCount : 0, hasMeta, !hasMeta)
-        );
-        if (hasMeta) optionsContainer.appendChild(textSources);
-
-        dialogBody.innerHTML = '';
-        dialogBody.appendChild(optionsContainer);
-
-        const showOk = hasImages || hasMeta;
-        okButton.style.display = showOk ? 'block' : 'none';
-        cancelButton.textContent = showOk ? 'Cancel' : 'Close';
-
-        const onOk = () => {
-            const imagesChecked = document.getElementById('batch-images')?.checked || false;
-            const metadataChecked = document.getElementById('batch-metadata')?.checked || false;
-
-            closeDialog();
-            resolve({
-                imageBatch: imagesChecked,
-                metaBatch: metadataChecked
-            });
-        };
-
-        okButton.onclick = onOk;
-
-        overlay.onclick = (e) => {
-            if (e.target === overlay) {
+            const handleCancel = () => {
                 closeDialog();
                 resolve(null);
-            }
-        };
+            };
+            cancelButton.addEventListener('click', handleCancel);
 
-        DialogManager.open(overlay, 'downloadMetaDialog');
-        cancelButton.focus();
+            dialogTitle.innerHTML = `Download <span class="title-name">${getPlatformInfo(LB.currentPlatform).name}</span> games meta data`;
+
+            const optionsContainer = document.createElement('div');
+            optionsContainer.className = 'batch-options';
+
+            // --- helper ---
+            const makeCheckboxOption = (id, label, checked, disabled) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'batch-option';
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = id;
+                checkbox.checked = checked;
+                checkbox.disabled = disabled;
+
+                const labelElement = document.createElement('label');
+                labelElement.htmlFor = id;
+                labelElement.className = 'form-label';
+
+                labelElement.innerHTML = label;
+
+                wrapper.append(checkbox, labelElement);
+                return wrapper;
+            };
+
+            const hasImages = imagesCount > 0;
+            const hasMeta = metaCount > 0;
+
+            // const imgLabel = hasImages ? `Download missing images` : `No missing images`;
+            // const metaLabel = hasMeta ? `Download missing metadata` : `No missing metadata`;
+
+            const imgSourcesTable = document.createElement('table');
+            imgSourcesTable.className = 'sources-table';
+
+            // Create thead
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            const headerCell = document.createElement('th');
+            headerCell.textContent = 'Images sources';
+            headerCell.colSpan = 3; // Span both columns
+            headerRow.appendChild(headerCell);
+            thead.appendChild(headerRow);
+
+            // Create tbody
+            const tbody = document.createElement('tbody');
+
+            function createSourceRow(text, isEnabled) {
+                const row = document.createElement('tr');
+
+                const iconCell = document.createElement('td');
+                const icon = document.createElement('i');
+                icon.className = 'form-icon fa fa-2x';
+                if (isEnabled) {
+                    icon.classList.add('fa-check', 'success');
+                } else {
+                    icon.classList.add('fa-close', 'error');
+                }
+                icon.setAttribute('aria-hidden', 'true');
+                iconCell.appendChild(icon);
+
+                const textCell = document.createElement('td');
+                textCell.textContent = text;
+                if (!isEnabled) {
+                    textCell.classList.add('disabled');
+                }
+
+                const buttonCell = document.createElement('td');
+                buttonCell.className = 'last';
+
+                const setupButton = document.createElement('button');
+                setupButton.textContent = 'Setup';
+                setupButton.className = 'small button';
+
+                setupButton.addEventListener('click', () => {
+                    closeDialog();
+                    resolve(null);
+                    openPlatformMenu('settings');
+                });
+
+                if (!isEnabled) {
+                    buttonCell.appendChild(setupButton);
+                }
+
+                row.append(iconCell, textCell, buttonCell);
+                return row;
+            }
+
+            // Add rows to tbody
+            tbody.append(
+                createSourceRow('Wikipedia', true),
+                createSourceRow('SteamGridDB', LB.steamGridAPIKey),
+                createSourceRow('GiantBomb', LB.giantBombAPIKey)
+            );
+
+            // Assemble table
+            imgSourcesTable.append(thead, tbody);
+
+            const textSources = document.createElement('table');
+            textSources.className = 'sources-table';
+
+            // Create thead for text sources
+            const textThead = document.createElement('thead');
+            const textHeaderRow = document.createElement('tr');
+            const textHeaderCell = document.createElement('th');
+            textHeaderCell.textContent = 'Text Sources';
+            textHeaderCell.colSpan = 2;
+            textHeaderRow.appendChild(textHeaderCell);
+            textThead.appendChild(textHeaderRow);
+
+            // Create tbody for text sources
+            const textTbody = document.createElement('tbody');
+            textTbody.appendChild(createSourceRow('Wikipedia', true));
+
+            // Assemble text sources table
+            textSources.append(textThead, textTbody);
+
+            const imgLabel = `Download <span class="accent">${imagesCount}</span> missing images`;
+            const metaLabel = `Download <span class="accent">${metaCount}</span> missing metadata`;
+
+            // --- append checkboxes and sources ---
+            optionsContainer.appendChild(
+                makeCheckboxOption('batch-images', imgLabel, hasImages, !hasImages)
+            );
+
+            if (hasImages) optionsContainer.appendChild(imgSourcesTable);
+
+            optionsContainer.appendChild(
+                makeCheckboxOption('batch-metadata', metaLabel, hasMeta, !hasMeta)
+            );
+            if (hasMeta) optionsContainer.appendChild(textSources);
+
+            dialogBody.innerHTML = '';
+            dialogBody.appendChild(optionsContainer);
+
+            const showOk = hasImages || hasMeta;
+            okButton.style.display = showOk ? 'block' : 'none';
+            cancelButton.textContent = showOk ? 'Cancel' : 'Close';
+
+            const onOk = () => {
+                const imagesChecked = document.getElementById('batch-images')?.checked || false;
+                const metadataChecked = document.getElementById('batch-metadata')?.checked || false;
+
+                closeDialog();
+                resolve({
+                    imageBatch: imagesChecked,
+                    metaBatch: metadataChecked
+                });
+            };
+
+            okButton.onclick = onOk;
+
+            overlay.onclick = (e) => {
+                if (e.target === overlay) {
+                    closeDialog();
+                    resolve(null);
+                }
+            };
+
+            DialogManager.open(overlay, 'downloadMetaDialog');
+            cancelButton.focus();
+
+        } catch (error) {
+            console.error("ERROR IN DOWNLOADMETADIALOG PROMISE:", error);
+            console.error("Error stack:", error.stack);
+            resolve(null);
+        }
     });
 }
 
@@ -821,7 +891,7 @@ export function installEmulatorsDialog(emulators) {
         buttons.className = 'buttons';
 
         const selectButton = document.createElement('button');
-        selectButton.innerHTML = '<i class="fa fa-bolt" aria-hidden="true"></i> Select';
+        selectButton.innerHTML = '<i class="fa fa-bolt success" aria-hidden="true"></i> Select';
         selectButton.classList.add('button');
         selectButton.style.display = 'none'; // Hidden by default
 

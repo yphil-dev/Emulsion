@@ -13,6 +13,12 @@ button {
   margin-left: 1em;
 }
 
+.button.small {
+  font-size: 0.625em; /* 10px / 16px */
+  padding: 0.375em 0.5em; /* 6px / 16px, 8px / 16px */
+  margin-left: 0.5em;
+}
+
 .button:hover,
 .button:focus {
   color: var(--color-selected);
@@ -82,7 +88,7 @@ button {
   font-size: 14px;
 }
 
-.form-label {
+#menu .form-label {
   display: flex !important;
   flex-direction: row;
   align-items: baseline;
@@ -93,8 +99,6 @@ button {
   font-weight: normal;
   font-style: normal;
   font-size: 1em;
-
-  margin-bottom: 0.2em;
 }
 
 .form-menu-input-group .form-label {

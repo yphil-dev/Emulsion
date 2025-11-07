@@ -100,7 +100,8 @@
 .page-content:not(.list) .game-container-image:hover,
 .page-content:not(.list) .selected .game-container-image,
 .page-content:not(.list) .selected .platform-image,
-.menu-game-container.selected {
+.menu-game-container.selected,
+.menu-game-container:hover {
   border-color: var(--color-selected);
 }
 
@@ -323,7 +324,6 @@ i.disabled { pointer-events: none; opacity: 0.5; }
   aspect-ratio: 2 / 3;
   overflow: hidden;
   padding: 0.5em;
-  border-bottom: 1px solid var(--color-border-off);
 }
 
 .pane-image img {
@@ -391,14 +391,15 @@ div.menu-current-image-container {
   flex-direction: column-reverse;
 }
 
-.manual-select-button {
+.current-image-buttons {
   position: absolute;
-  bottom: 0;
-  border-radius: 0;
-}
+  bottom: 0.5em;
 
-.button-wide {
-  width: 100%;
+  width: -webkit-fill-available;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
 }
 
 .empty-platform-game-container button {

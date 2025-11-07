@@ -100,7 +100,7 @@ export const fetchGameMetaData = async (gameName, platform = null) => {
         const extract = pageData.extract || '';
 
         // Extract data using helper functions
-        const platforms = extractPlatformsFromText(extract);
+        const platforms = extractPlatformsFromText(platform);
         const releaseDate = extractReleaseDate(extract);
         const genre = extractGenre(extract);
         const developers = extractDevelopers(extract);
@@ -127,32 +127,16 @@ export const fetchGameMetaData = async (gameName, platform = null) => {
     }
 };
 
-// Helper functions to extract clean data (same as before)
-function extractPlatformsFromText(text) {
-    const platformKeywords = [
-        'nintendo', 'playstation', 'xbox',
-        'nes', 'snes', 'n64', 'gamecube', 'wii', 'game boy', 'ds', '3ds',
-        'ps1', 'ps2', 'ps3', 'ps4', 'ps5', 'psp', 'vita',
-        'xbox', 'xbox 360', 'xbox series',
-        'arcade', 'commodore', 'amiga', 'atari', 'sega', 'genesis', 'dreamcast'
-    ];
+// Helper functions to extract clean data
+function extractPlatformsFromText(searchedPlatform) {
+    if (!searchedPlatform) return null;
 
-    const foundPlatforms = [];
-    const lowerText = text.toLowerCase();
+    // Clean up the platform name
+    const cleanPlatform = searchedPlatform.split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
 
-    platformKeywords.forEach(platform => {
-        if (lowerText.includes(platform)) {
-            // Clean up the platform name
-            const cleanPlatform = platform.split(' ')
-                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                .join(' ');
-            if (!foundPlatforms.includes(cleanPlatform)) {
-                foundPlatforms.push(cleanPlatform);
-            }
-        }
-    });
-
-    return foundPlatforms.length > 0 ? foundPlatforms : null;
+    return [cleanPlatform];
 }
 
 function extractReleaseDate(text) {

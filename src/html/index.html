@@ -70,8 +70,8 @@
 
         <footer id="footer">
             <div id="footer-progress-bars">
-                <div class="footer-progress-bar" id="progress-bar-1"></div>
-                <div class="footer-progress-bar" id="progress-bar-2"></div>
+                <div class="footer-progress-bar meta" id="progress-bar-2"></div>
+                <div class="footer-progress-bar images" id="progress-bar-1"></div>
             </div>
             <div id="controls" class="left">
                 <div id="dpad" class="control-item">
@@ -203,7 +203,7 @@
                             checked
                         />
                         <label for="open-dialog-at-launch" class="text">
-                            Show this dialog on launch
+                            Show this on launch
                         </label>
                     </div>
 
@@ -293,6 +293,17 @@
                                 <td><kbd>?</kbd></td>
                                 <td class="text">Display this window</td>
                                 <td></td>
+                            </tr>
+
+                            <tr>
+                                <td><kbd>/</kbd></td>
+                                <td>Open menu</td>
+                                <td class="game-controller-icon">
+                                    <svg class="control-icon"
+                                         style="--fill: var(--color-bg-control-button); --fill-text: var(--color-selected); --stroke: var(--color-outline-control-button);">
+                                        <use href="#start"></use>
+                                    </svg>
+                                </td>
                             </tr>
                             <tr>
                                 <td><kbd>←</kbd> <kbd>→</kbd> <kbd>↑</kbd> <kbd>↓</kbd></td>
@@ -404,8 +415,14 @@
                             </tr>
 
                             <tr>
+                                <td><kbd>Ctrl</kbd> <i class="fa fa-plus"></i> <kbd>I</kbd></td>
+                                <td>Game images menu</td>
+                                <td></td>
+                            </tr>
+
+                            <tr>
                                 <td><kbd>Ctrl</kbd> <i class="fa fa-plus"></i> <kbd>S</kbd></td>
-                                <td>Save (Menus, meta data, etc.)</td>
+                                <td>Save & close (Menus, data edit, etc.)</td>
                                 <td class="game-controller-icon"></td>
                             </tr>
 
@@ -479,13 +496,16 @@
                             <p class="text">
                                 Hi! I'm <strong>yPhil</strong>, a <strong>passionate</strong> developer creating free and open-source software and music&nbsp;; For everyone. Your support helps me continue building things.
                             </p>
+
+                            <h4 class="title">Thanks a lot!</h4>
+
                             <p class="text">
                                 Every contribution, no matter how small, means the world. Thank you for being part of this journey!
                             </p>
                             <div class="buttons">
-                                <button class="btn btn-liberapay">Liberapay</button>
-                                <button class="btn btn-ko-fi">Ko-fi</button>
-                                <button class="btn btn-patreon">Patreon</button>
+                                <button class="button btn-liberapay">Liberapay</button>
+                                <button class="button btn-ko-fi">Ko-fi</button>
+                                <button class="button btn-patreon">Patreon</button>
                             </div>
                         </div>
                     </div>
@@ -499,7 +519,7 @@
                             checked
                         />
                         <label for="open-dialog-at-startup" class="text">
-                            Show this dialog on startup
+                            Show this on startup
                         </label>
                     </div>
 
@@ -516,6 +536,11 @@
                     <button class="button cancel">Close</button>
                 </div>
             </div>
+        </div>
+        <div id="dummy-font-loader">
+            <span class="taylor">plop</span>
+            <span class="merom">plop</span>
+            <span class="saira">plop</span>
         </div>
 
         <script type="module" src="../js/app.js"></script>

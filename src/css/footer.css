@@ -10,7 +10,7 @@ footer {
   justify-content: space-between;
   background-color: var(--color-bg-header);
   color: var(--color-text-header);
-  border-top: 1px solid var(--color-border-header);
+  border-top: 1px solid var(--color-border-off);
   font-size: var(--footer-font, 18px);
   font-weight: bold;
   z-index: 3;

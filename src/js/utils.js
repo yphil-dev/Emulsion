@@ -137,9 +137,9 @@ export function applyTheme(theme) {
     const bgPath = path.join(LB.baseDir, 'img', 'themes', theme, 'background.png');
     const bgImageUrl = `url("file://${bgPath.replace(/\\/g, '/')}")`;
 
-    elementsToTheme.forEach(element => {
-        element.style.backgroundImage = bgImageUrl;
-    });
+    // elementsToTheme.forEach(element => {
+    //     element.style.backgroundImage = bgImageUrl;
+    // });
 
     menu.style.transition = 'filter 1s';
     menu.style.filter = 'opacity(0.5)';
@@ -148,12 +148,12 @@ export function applyTheme(theme) {
     body.classList.add(`theme-${theme}`);
 
     menu.style.transition = 'filter 1s, color 1s';
-    menu.style.filter = 'opacity(0.5)';
+    menu.style.filter = 'opacity(1)';
 
-    setTimeout(() => {
-        menu.style.backgroundImage = bgImageUrl;
-        menu.style.filter = 'opacity(1)';
-    }, 100);
+    // setTimeout(() => {
+    //     menu.style.backgroundImage = bgImageUrl;
+    //     menu.style.filter = 'opacity(1)';
+    // }, 100);
 }
 
 export function setFooterSize(size) {

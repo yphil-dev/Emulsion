@@ -23,12 +23,14 @@ const DialogManager = {
         this.currentDialog = dialogElement;
         LB.mode = mode;
         dialogElement.style.display = 'flex';
+        dialogElement.style.visibility = 'visible';
         return dialogElement;
     },
 
     closeCurrent() {
         if (this.currentDialog) {
             this.currentDialog.style.display = 'none';
+            // this.currentDialog.classList.remove('active');
             this.currentDialog = null;
         }
     },
@@ -180,7 +182,16 @@ export function editMetaDialog(params, gameMetaData) {
 
         case 'Escape':
             break;
+
+        case '/':
+            systemDialog('quit');
+            break;
+
+        case '?':
+            helpDialog('shortcuts');
+            break;
         }
+
     };
 
     okButton.addEventListener('click', () => {
@@ -360,6 +371,14 @@ export async function helpDialog(defaultTabId = null) {
             tabButtons[currentIndexRight].click();
             break;
 
+        case '/':
+            systemDialog('quit');
+            break;
+
+        case '?':
+            helpDialog('shortcuts');
+            break;
+
         case 'Escape':
         case 'Enter':
             closeDialog();
@@ -377,6 +396,7 @@ export async function helpDialog(defaultTabId = null) {
     });
 
     document.getElementById('open-dialog-at-startup').checked = LB.startupDialogPolicy === 'show' ? true : false;
+    dialog.style.visibility = 'visible';
     DialogManager.open(overlay, 'kbHelp');
 
     setupTabs(defaultTabId);
@@ -428,6 +448,14 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
                         onOk();
                     }
                     break;
+                case '/':
+                    systemDialog('quit');
+                    break;
+
+                case '?':
+                    helpDialog('shortcuts');
+                    break;
+
                 }
             };
 
@@ -657,6 +685,12 @@ export function systemDialog(focusButton = 'cancel') {
                 initGallery('settings');
             }
             break;
+
+        case '?':
+            helpDialog('shortcuts');
+            break;
+
+        case '/':
         case 'Escape':
             closeDialog();
             break;
@@ -731,6 +765,14 @@ export function launchGameDialog(gameContainer) {
         case 'Escape':
             closeDialog();
             break;
+        case '/':
+            systemDialog('quit');
+            break;
+
+        case '?':
+            helpDialog('shortcuts');
+            break;
+
         }
     };
 
@@ -995,17 +1037,24 @@ export function installEmulatorsDialog(emulators) {
         event.stopImmediatePropagation();
 
         switch (event.key) {
-            case 'ArrowRight':
-            case 'ArrowDown':
-                simulateTabNavigation(dialog);
-                break;
-            case 'ArrowLeft':
-            case 'ArrowUp':
-                simulateTabNavigation(dialog, true);
-                break;
-            case 'Escape':
-                closeDialog();
-                break;
+        case 'ArrowRight':
+        case 'ArrowDown':
+            simulateTabNavigation(dialog);
+            break;
+        case 'ArrowLeft':
+        case 'ArrowUp':
+            simulateTabNavigation(dialog, true);
+            break;
+        case 'Escape':
+            closeDialog();
+            break;
+        case '/':
+            systemDialog('quit');
+            break;
+        case '?':
+            helpDialog('shortcuts');
+            break;
+
         }
     };
 

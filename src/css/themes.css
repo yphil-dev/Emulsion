@@ -1,4 +1,13 @@
 .theme-day {
+
+  --bg: linear-gradient(
+    180deg,
+    #E0F7FA 0%,
+    #B0E2FF 30%,
+    #98D8E8 60%,
+    #87CEEB 100%
+  );
+
   --color-text-1: rgb(41, 48, 53);
   --color-text-2: rgb(48, 57, 133);
 
@@ -39,6 +48,15 @@
 }
 
 .theme-default {
+
+  --bg: linear-gradient(
+    180deg,
+    #1A1A1A 0%,       /* Dark gray */
+    #151515 25%,      /* Very dark gray */
+    #101010 60%,      /* Near black */
+    #080808 100%      /* Pure black */
+  );
+
   --color-text-1: rgb(245, 245, 245);
   --color-text-2: rgb(61, 173, 255);
 
@@ -66,7 +84,7 @@
   --color-button-on: rgb(41, 241, 234);
   --color-button-off: rgb(51, 51, 68);
   --color-border-on: rgb(0, 255, 204);
-  --color-border-off: rgb(51, 51, 68);
+  --color-border-off: rgb(37, 37, 53);
 
   --filter-glow-header:
     drop-shadow(0 0 1px rgba(255, 255, 255, 0.08))
@@ -76,6 +94,14 @@
 }
 
 .theme-night {
+
+--bg: linear-gradient(
+  180deg,
+  #060B21 0%,       /* Intense dark navy */
+  #0A1128 30%,      /* Deep midnight blue */
+  #0F172A 60%,      /* Rich dark blue */
+  #141C36 100%      /* Dark blue */
+);
   --color-text-1: rgb(232, 245, 232);
   --color-text-2: rgb(255, 188, 0);
 
@@ -90,8 +116,8 @@
   --color-bg: rgb(10, 20, 37);
   --color-bg-rgb: 10, 20, 37;
 
-  --color-bg-header: rgb(5, 12, 22);
-  --color-bg-dialog: rgb(8, 18, 33); /* slightly darker, keeps cool/night feel */
+  --color-bg-header: rgb(23, 36, 55);
+  --color-bg-dialog: rgb(8, 18, 55); /* slightly darker, keeps cool/night feel */
   --color-bg-selected: rgb(15, 43, 77);
 
   --color-selected: rgb(41, 241, 234);

@@ -5,11 +5,11 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(10, 10, 10, 0.3);
+  background: rgba(var(--color-bg-rgb), 0.3);
   justify-content: center;
   align-items: center;
   z-index: 10000;
-  /* backdrop-filter: blur(1px); */
+  backdrop-filter: blur(1px);
 }
 
 .dialog {
@@ -125,7 +125,7 @@
   color: var(--color-selected);
 }
 
-.help-dialog table {
+.dialog table {
   table-layout: fixed; /* ensures columns align and widths are consistent */
   border-collapse: collapse;
   width: 100%;
@@ -188,9 +188,8 @@
   display: block;
 }
 
-/* Optional row styling */
-.help-dialog tbody tr:nth-child(odd)  { background: var(--color-bg-header); }
-.help-dialog tbody tr:nth-child(even) { background: var(--color-bg-dialog); }
+.dialog tbody tr:nth-child(odd)  { background: var(--color-bg-header); }
+.dialog tbody tr:nth-child(even) { background: var(--color-bg-dialog); }
 
 .help-dialog td {
   padding: 0.4em 0.6em;
@@ -395,6 +394,10 @@ dd.disabled {
 .dialog.install-emulators table td {
   padding: 8px; /* Add spacing within cells */
   text-align: center;
+}
+
+.dialog.install-emulators table td.status {
+  text-align: left;
 }
 
 .dialog.install-emulators table th,

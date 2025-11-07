@@ -1,9 +1,10 @@
 #splash {
   position: fixed;
-  top: calc(50vh - 350px);
-  left: calc(50vw - 350px);
-  width: 700px;
-  height: 700px;
+  top: 50%;
+  left: 50%;
+  width: 50vw;
+  height: 50vw;
+  transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -19,8 +20,8 @@
 }
 
 #splash img {
-    width: 400px;
-    height: 400px;
+    width: 57vw; /* Scales with container */
+    height: 57vw;
 }
 
 #slideshow {
@@ -33,26 +34,19 @@
   transform-style: preserve-3d;
 }
 
-#top-menu:focus,
-#slideshow:focus,
-.gallery:focus {
-  outline: none;
-}
-
 .slide {
   position: absolute;
-  width: 700px;
-  height: 700px;
+  width: 50vw;
+  height: 50vw;
   background-size: cover;
   background-position: center;
   border-radius: 24px;
-  /* opacity: 0.8; */
   transition: transform 0.4s ease, filter 2s ease;
 }
 
 .slide .slide-content {
   /* display: none; */
-  transition: opacity 2s ease;
+  transition: opacity 0.05s ease;
   opacity: 0;
 }
 
@@ -95,9 +89,14 @@
 
 .slide.adjacent {
   /* transform: translateX(-900px) scale(0.7) rotateY(20deg); */
-  transform: rotateY(calc(var(--angle) * 1deg)) translateZ(calc(var(--radius) * 1px));
+  transform: rotateY(calc(var(--angle) * 1deg)) translateZ(calc(var(--radius) * 1.5px));
   filter: brightness(80%);
 }
+
+/* .slide.adjacent { */
+/*     transform: rotateY(calc(var(--angle) * 1deg)) translateZ(calc(20vw + 200px)); */
+/*     filter: brightness(80%); */
+/* } */
 
 .slide-content {
   position: relative;

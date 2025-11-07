@@ -105,6 +105,7 @@
     outline: none;
 }
 
+
 body {
   font-family: var(--font-main);
   letter-spacing: 1px;
@@ -137,14 +138,6 @@ body {
 
   transition: background 0.8s ease;
 }
-
-/* body { */
-/*     background: url('your-big-image.jpg') center/cover no-repeat fixed; */
-/*     margin: 0; */
-/*     padding: 0; */
-/*     width: 100vw; */
-/*     height: 100vh; */
-/* } */
 
 .no-hover * {
   pointer-events: none !important;
@@ -210,12 +203,4 @@ p {
 
 *::-webkit-scrollbar-thumb:hover {
   background-color: var(--color-selected);
-}
-
-table {
-  width: 100%; /* Make table span full width */
-  border-collapse: collapse; /* Collapse borders for a cleaner look */
-  margin: 20px 0; /* Add some vertical spacing */
-  border-radius: 6px; /* Rounded corners for the table */
-  overflow: hidden; /* Ensures border-radius is visible */
 }

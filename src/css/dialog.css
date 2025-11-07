@@ -9,7 +9,7 @@
   justify-content: center;
   align-items: center;
   z-index: 10000;
-  backdrop-filter: blur(1px);
+  /* backdrop-filter: blur(1px); */
 }
 
 .dialog {
@@ -18,24 +18,22 @@
   background: var(--color-bg-dialog);
   padding: 20px;
   border-radius: 8px;
+  /* gap: 10px; */
   max-width: 90vw;
   max-height: 90vh;
-  border: 1px solid rgba(var(--color-text-2-rgb), 0.05);
+  /* subtle separation from the page */
+  border: 1px solid rgba(255, 255, 255, 0.08); /* or rgba(0,0,0,0.15) depending on theme */
   box-shadow:
-    0 2px 6px rgba(var(--color-bg-rgb), 0.25),  /* soft outer shadow */
-    0 0 12px rgba(var(--color-text-2-rgb), 0.05) inset; /* faint inner glow for depth */
-}
-
-#help-overlay {
-  visibility: hidden;
-  transition: visibility 5s;
+    0 2px 6px rgba(0, 0, 0, 0.25),  /* soft outer shadow */
+    0 0 12px rgba(255, 255, 255, 0.05) inset; /* faint inner glow for depth */
+  backdrop-filter: blur(3px); /* optional if you want a translucent feel */
 }
 
 .dialog h1,
 .dialog h2,
 .dialog h3,
 .dialog h4 {
-  color:var(--color-text-2);
+  color:var(--color-selected);
 }
 
 .dialog .title,
@@ -54,7 +52,7 @@
 .dialog .buttons,
 .dialog .dialog-buttons {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   margin-top: 20px;
 }
 
@@ -158,6 +156,10 @@
   background: var(--color-bg-dialog);
 }
 
+.help-dialog .th-content span {
+  color: var(--color-selected);
+}
+
 .help-dialog tbody tr {
   height: 2em;
 }
@@ -187,10 +189,10 @@
 }
 
 /* Optional row styling */
-.dialog tbody tr:nth-child(odd)  { background: var(--color-bg-header); }
-.dialog tbody tr:nth-child(even) { background: var(--color-bg-dialog); }
+.help-dialog tbody tr:nth-child(odd)  { background: var(--color-bg-header); }
+.help-dialog tbody tr:nth-child(even) { background: var(--color-bg-dialog); }
 
-.dialog td {
+.help-dialog td {
   padding: 0.4em 0.6em;
   text-align: left;
 }
@@ -294,12 +296,60 @@
   color: var(--color-selected);
 }
 
+
+.dialog.download-meta .dialog-title span {
+  color: var(--color-text-2);
+}
+
+.dialog.download-meta dl {
+  margin-top: 0;
+}
+
 .dialog.download-meta input[type="radio"] {
   margin-right: 1em;
 }
 
-.help-dialog .about .buttons {
+.dialog.download-meta dl dd {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.dialog.download-meta dl dt {
+  margin-bottom: 0.3em;
+}
+
+.dialog.download-meta dl dd i {
+  margin-right: 0.3em;
+}
+
+dd.disabled {
+  color: gray;
+}
+
+.container .buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
   justify-content: center;
+}
+
+.btn {
+  display: inline-block;
+  padding: 20px 30px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-decoration: none;
+  color: #fff;
+  border-radius: 10px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 .btn-patreon {
@@ -313,6 +363,51 @@
 
 .btn-ko-fi {
   background: #29ABE0;
+}
+
+.install-emulators {
+  width: 60vw;
+  max-width: 1000px;
+}
+
+.install-emulators .emulator {
+  height: 50px;
+  width: 100%;
+  padding: 6px;
+  border: 1px solid var(--color-border-header);
+  border-radius: 6px;
+}
+
+.install-emulators .emulators .button {
+  font-family: var(--font-fourth);
+  padding: 6px;
+}
+
+.dialog.install-emulators table .buttons {
+  margin-top: unset;
+}
+
+.dialog.install-emulators table {
+  width: 100%;
+}
+
+.dialog.install-emulators table th,
+.dialog.install-emulators table td {
+  padding: 8px; /* Add spacing within cells */
+  text-align: center;
+}
+
+.dialog.install-emulators table th,
+.dialog.install-emulators table td.name {
+  text-align: left;
+}
+
+.dialog.install-emulators table td.action {
+  text-align: right;
+}
+
+.dialog.install-emulators table th.center {
+  text-align: center;
 }
 
 .emulators-table td .buttons {
@@ -336,20 +431,79 @@
 
 .loader {
   display: inline-block;
-  width: 16px;
-  height: 16px;
-  border: 3px solid var(--color-selected);
+  transform: rotateZ(45deg);
+  perspective: 1000px;
   border-radius: 50%;
-  border-top-color: var(--color-text-1);
-  animation: spin 1s ease-in-out infinite;
-  -webkit-animation: spin 1s ease-in-out infinite;
+  width: 2em;
+  height: 2em;
+  color: var(--color-text-1);
+  vertical-align: middle;
+}
+
+.loader:before,
+.loader:after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: inherit;
+  height: inherit;
+  border-radius: 50%;
+  transform: rotateX(70deg);
+  animation: 1s spin linear infinite;
+}
+
+.loader:after {
+  color: var(--color-selected);
+  transform: rotateY(70deg);
+  animation-delay: .4s;
+}
+
+@keyframes rotate {
+  0% {
+    transform: translate(-50%, -50%) rotateZ(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotateZ(360deg);
+  }
+}
+
+@keyframes rotateccw {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(-360deg);
+  }
 }
 
 @keyframes spin {
-  to { -webkit-transform: rotate(360deg); }
-}
-@-webkit-keyframes spin {
-  to { -webkit-transform: rotate(360deg); }
+  0%,
+  100% {
+    box-shadow: .2em 0px 0 0px currentcolor;
+  }
+  12% {
+    box-shadow: .2em .2em 0 0 currentcolor;
+  }
+  25% {
+    box-shadow: 0 .2em 0 0px currentcolor;
+  }
+  37% {
+    box-shadow: -.2em .2em 0 0 currentcolor;
+  }
+  50% {
+    box-shadow: -.2em 0 0 0 currentcolor;
+  }
+  62% {
+    box-shadow: -.2em -.2em 0 0 currentcolor;
+  }
+  75% {
+    box-shadow: 0px -.2em 0 0 currentcolor;
+  }
+  87% {
+    box-shadow: .2em -.2em 0 0 currentcolor;
+  }
 }
 
 /* visually hide but still announce */
@@ -362,74 +516,4 @@
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   border: 0;
-}
-
-.install-emulators {
-  width: 60vw;
-  max-width: 1000px;
-}
-
-.install-emulators .emulators .button {
-  font-family: var(--font-fourth);
-}
-
-.install-emulators .emulators .button.install {
-  min-width: 80px;
-}
-
-/* .install-emulators .emulators-table .button { */
-/*   font-family: var(--font-fourth); */
-/* } */
-
-.dialog.install-emulators table {
-  border-collapse: separate;
-  border-spacing: 0;
-  width: 100%;
-}
-
-.dialog.install-emulators table .buttons {
-  margin-top: unset;
-}
-
-/* .dialog.install-emulators table tr { */
-/*   border: 1px solid var(--color-hr); */
-/*   border-radius: 6px; */
-/*   margin-bottom: 1em; */
-/* } */
-
-.dialog.install-emulators table th,
-.dialog.install-emulators table td {
-  padding: 0.5em;
-  text-align: center;
-  /* border: 1px solid var(--color-border-off); */
-}
-
-.dialog.install-emulators table th,
-.dialog.install-emulators table td.name,
-.dialog.install-emulators table td.status {
-  text-align: left;
-}
-
-.dialog.install-emulators table td.action {
-  text-align: right;
-}
-
-.dialog.install-emulators table th.center {
-  text-align: center;
-}
-
-.dialog .error {
-  color: crimson;
-}
-
-.dialog .success {
-  color: green;
-}
-
-.dialog .title-name {
-    color: var(--color-selected);
-}
-
-.dialog td.last {
-  text-align: right;
 }

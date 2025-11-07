@@ -29,6 +29,23 @@
   font-display: swap;
 }
 
+#dummy-font-loader .merom {
+  font-family: 'MeromSans';
+}
+
+#dummy-font-loader .taylor {
+  font-family: 'TaylorSans';
+}
+
+#dummy-font-loader .saira {
+  font-family: 'Saira';
+}
+
+#dummy-font-loader {
+  font-size: 3pt;
+  opacity: 0.1;
+}
+
 :root {
   --font-main: 'Orbitron', sans-serif;
   --font-second: 'Saira', sans-serif;
@@ -170,3 +187,10 @@ p {
   background-color: var(--color-selected);
 }
 
+table {
+  width: 100%; /* Make table span full width */
+  border-collapse: collapse; /* Collapse borders for a cleaner look */
+  margin: 20px 0; /* Add some vertical spacing */
+  border-radius: 6px; /* Rounded corners for the table */
+  overflow: hidden; /* Ensures border-radius is visible */
+}

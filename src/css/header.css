@@ -40,11 +40,13 @@ header .platform-image {
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center right;
-  opacity: 0.85;
-  border-radius: 8px;
-  filter: drop-shadow(0 0 1px var(--color-platform-text-header))
-          drop-shadow(0 0 2px var(--color-platform-text-header));
-  animation: subtle-pulse 12s ease-in-out infinite;
+  /* filter: var(--filter-glow-platform); */
+  /* opacity: 0.85; */
+  /* border-radius: 8px; */
+  filter: var(--filter-glow-header);
+  /* filter: drop-shadow(0 0 1px rgba(var(--color-glow-rgb), 0.2)) */
+          /* drop-shadow(0 0 2px rgba(var(--color-glow-rgb), 0.2)); */
+  /* animation: subtle-pulse 12s ease-in-out infinite; */
 }
 
 @keyframes subtle-pulse {

@@ -152,7 +152,6 @@ window.onGameMenuKeyDown = function onGameMenuKeyDown(event) {
 };
 
 function onGameMenuClick(event) {
-    console.log("event.target: ", event.target);
     const img = event.target.closest('img');
     if (img) {
         closeGameMenu(img.src);
@@ -604,7 +603,7 @@ function buildPlatformMenuForm(platformName) {
 
     // Create the “Select +” button wired to add a new row
     const addExtensionBtn = document.createElement('button');
-    addExtensionBtn.classList.add('button', 'small');
+    addExtensionBtn.classList.add('button');
     addExtensionBtn.innerHTML = '<i class="form-icon emulator-args-icon fa fa-plus" aria-hidden="true"></i>';
     addExtensionBtn.addEventListener('click', () => {
         // Guard so we never exceed 3
@@ -910,7 +909,7 @@ function buildPlatformMenuForm(platformName) {
 
         if (!isFirst) {
             const removeBtn = document.createElement('button');
-            removeBtn.classList.add('button', 'small', 'danger');
+            removeBtn.classList.add('button');
             removeBtn.innerHTML = '<i class="form-icon emulator-args-icon fa fa-remove" aria-hidden="true"></i>';
             removeBtn.addEventListener('click', () => row.remove());
             row.appendChild(removeBtn);
@@ -931,6 +930,8 @@ function buildPlatformMenuForm(platformName) {
 
 export function openPlatformMenu(platformName, context) {
 
+    console.log("platformName, context: ", platformName, context);
+
     LB.mode = 'menu';
     LB.currentPlatform = platformName;
 
@@ -940,10 +941,6 @@ export function openPlatformMenu(platformName, context) {
     menu.innerHTML = '';
 
     updateFooterControlsFor('platform-menu');
-
-    // updateFooterControls('dpad', 'button-dpad-nesw', 'Inputs', 'on');
-    // updateFooterControls('west', 'same', '', 'off');
-    // updateFooterControls('shoulders', 'same', '', 'off');
 
     menu.dataset.menuPlatform = platformName;
     menu.dataset.context = context || null;
@@ -1008,6 +1005,7 @@ export async function openGameMenu(container) {
 
 
     menu.style.height = '100vh';
+    menu.style.display = 'flex';
 
     toggleHeaderNavLinks('hide');
 
@@ -1020,13 +1018,13 @@ export async function openGameMenu(container) {
     await populateGameMenu(currentGameImgContainer, gameName, platformName);
 
     // menuContainer.addEventListener('wheel', onGameMenuWheel);
-    menuContainer.addEventListener('click', onGameMenuClick);
+    // menuContainer.addEventListener('click', onGameMenuClick);
 
 }
 
-async function populateGameMenu(gameMenuContainer, gameName, platformName) {
-    const dummyContainer = gameMenuContainer.querySelector('.dummy-game-container');
-    const currentImageElem = gameMenuContainer.querySelector('img.current-image');
+async function populateGameMenu(menuContainer, gameName, platformName) {
+    const dummyContainer = menuContainer.querySelector('.dummy-game-container');
+    const currentImageElem = menuContainer.querySelector('img.current-image');
     const headerNbOfItems = document.querySelector('header .item-number');
 
     ipcRenderer.send('fetch-images', cleanFileName(gameName), platformName, LB.steamGridAPIKey, LB.giantBombAPIKey);
@@ -1096,7 +1094,10 @@ async function populateGameMenu(gameMenuContainer, gameName, platformName) {
                 sourceIcon.title = `Source: ${source}`;
                 menuGameContainer.appendChild(sourceIcon);
 
-                gameMenuContainer.appendChild(menuGameContainer);
+
+                menuGameContainer.addEventListener('click', onGameMenuClick);
+
+                menuContainer.appendChild(menuGameContainer);
 
                 img.onload = () => requestAnimationFrame(() => { img.style.opacity = '1'; });
                 img.onerror = () => console.warn('Failed to load image:', url);
@@ -1107,12 +1108,14 @@ async function populateGameMenu(gameMenuContainer, gameName, platformName) {
 }
 
 function buildManualSelectButton(gameName, platformName, imgElem) {
-    const btn = document.createElement('button');
-    btn.classList.add('button', 'button-wide', 'manual-select-button');
-    btn.title = 'Select image';
-    btn.innerHTML = '<i class="fa fa-plus" aria-hidden="true"></i>';
 
-    btn.addEventListener('click', async e => {
+    const button = document.createElement('button');
+    button.classList.add('button', 'small', 'manual-select-button');
+    button.title = 'Select image';
+    // btn.innerHTML = '<i class="fa fa-plus" aria-hidden="true"></i>';
+    button.textContent = 'Browse';
+
+    button.addEventListener('click', async e => {
         e.stopPropagation();
 
         // Ask the main process to show a file picker
@@ -1140,7 +1143,28 @@ function buildManualSelectButton(gameName, platformName, imgElem) {
 
     });
 
-    return btn;
+    return button;
+}
+
+function buildRemoveButton(img) {
+
+    const button = document.createElement('button');
+    button.classList.add('button', 'small', 'remove-button');
+    button.title = 'Delete image';
+    button.textContent = 'Remove';
+
+    button.addEventListener('click', async e => {
+        const success = await ipcRenderer.invoke('delete-image', decodeURIComponent(img.src.replace('file://', '')));
+
+        if (success) {
+            img.src = path.join(LB.baseDir, 'img', 'missing.png');
+        } else {
+            console.log('Failed to delete cover');
+        }
+
+    });
+
+    return button;
 }
 
 function buildCurrentGameImgContainer(gameName, image, platformName) {
@@ -1161,12 +1185,15 @@ function buildCurrentGameImgContainer(gameName, image, platformName) {
     gameLabel.classList.add('game-label');
     // gameLabel.textContent = 'Current Image';
 
-    const manualBtn = buildManualSelectButton(gameName, platformName, currentImage);
+    const buttons = document.createElement('div');
+    buttons.className = 'current-image-buttons';
 
-    console.log("manualBtn: ", manualBtn);
+    const manualSelectButton = buildManualSelectButton(gameName, platformName, currentImage);
+    const removeButton = buildRemoveButton(currentImage);
 
-    currentImageContainer.appendChild(currentImage);
-    currentImageContainer.appendChild(manualBtn);
+    buttons.append(manualSelectButton, removeButton);
+
+    currentImageContainer.append(currentImage, buttons);
 
     gameMenuContainer.appendChild(currentImageContainer);
 
@@ -1258,7 +1285,7 @@ export async function closeGameMenu(imgSrc) {
     }
 
     // menuContainer.removeEventListener('wheel', onGameMenuWheel);
-    menuContainer.removeEventListener('click', onGameMenuClick);
+    // menuContainer.removeEventListener('click', onGameMenuClick);
 
     initGallery(LB.currentPlatform, selectedIndex);
 

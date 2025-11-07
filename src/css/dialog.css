@@ -185,7 +185,7 @@
 .dialog tbody tr:nth-child(odd)  { background: var(--color-bg-header); }
 .dialog tbody tr:nth-child(even) { background: var(--color-bg-dialog); }
 
-.help-dialog td {
+.dialog td {
   padding: 0.4em 0.6em;
   text-align: left;
 }
@@ -289,55 +289,12 @@
   color: var(--color-selected);
 }
 
-.dialog.download-meta dl {
-  margin-top: 0;
-}
-
 .dialog.download-meta input[type="radio"] {
   margin-right: 1em;
 }
 
-.dialog.download-meta dl dd {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-.dialog.download-meta dl dt {
-  margin-bottom: 0.3em;
-}
-
-.dialog.download-meta dl dd i {
-  margin-right: 0.3em;
-}
-
-dd.disabled {
-  color: gray;
-}
-
-.container .buttons {
-  display: flex;
-  flex-direction: row;
-  gap: 20px;
+.help-dialog .about .buttons {
   justify-content: center;
-}
-
-.btn {
-  display: inline-block;
-  padding: 20px 30px;
-  font-size: 1.2rem;
-  font-weight: bold;
-  text-decoration: none;
-  color: #fff;
-  border-radius: 10px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.btn:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 .btn-patreon {
@@ -468,11 +425,6 @@ dd.disabled {
     color: var(--color-selected);
 }
 
-/* General Table Styling */
-table {
-  width: 100%; /* Make table span full width */
-  border-collapse: collapse; /* Collapse borders for a cleaner look */
-  margin: 20px 0; /* Add some vertical spacing */
-  border-radius: 6px; /* Rounded corners for the table */
-  overflow: hidden; /* Ensures border-radius is visible */
+.dialog td.last {
+  text-align: right;
 }

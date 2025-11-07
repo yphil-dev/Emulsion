@@ -780,6 +780,8 @@ export async function batchDownload() {
         return;
     }
 
+    console.log("batchDownload: ");
+
     // Ensure platform and directories are valid
     const currentPlatform = LB.currentPlatform;
     const platformPrefs = LB.preferences[currentPlatform];

@@ -339,6 +339,28 @@ const downloadAndSaveImage = async (imgSrc, platform, gameName, gamesDir) => {
     }
 };
 
+// delete cover from covers directory (with existence check)
+ipcMain.handle('delete-image', async (_event, imagePath) => {
+  return new Promise(resolve => {
+    // Check if file exists first
+    fs.access(imagePath, fs.constants.F_OK, (err) => {
+      if (err) {
+        // File doesn't exist, consider this a success
+        return resolve(true);
+      }
+
+      // File exists, proceed with deletion
+      fs.unlink(imagePath, err2 => {
+        if (err2) {
+          console.error('delete-cover error:', err2);
+          return resolve(false);
+        }
+        resolve(true);
+      });
+    });
+  });
+});
+
 // manual pick image file
 ipcMain.handle('pick-image', async () => {
   const { canceled, filePaths } = await dialog.showOpenDialog({
@@ -967,6 +989,36 @@ ipcMain.handle('is-flathub-configured', async () => {
   return new Promise((resolve) => {
     exec('flatpak remotes | grep flathub', (error, stdout) => {
       resolve(!error && stdout.trim().length > 0);
+    });
+  });
+});
+
+ipcMain.handle('get-flatpak-download-size', async (event, appId) => {
+  return new Promise((resolve) => {
+    exec(`flatpak install --user --assumeyes --dry-run flathub ${appId}`, (error, stdout, stderr) => {
+      if (error) {
+        resolve(null); // Couldn't determine size
+        return;
+      }
+
+      // Parse the output to find the total download size
+      const lines = stdout.split('\n');
+      for (const line of lines) {
+        if (line.includes('Total download size:')) {
+          // Extract the size (e.g., "Total download size: 1.2 GB")
+          const sizeMatch = line.match(/Total download size:\s*([\d.]+)\s*(\w+)/);
+          if (sizeMatch) {
+            resolve({
+              size: parseFloat(sizeMatch[1]),
+              unit: sizeMatch[2],
+              fullText: line.trim()
+            });
+            return;
+          }
+        }
+      }
+
+      resolve(null); // Size not found in output
     });
   });
 });

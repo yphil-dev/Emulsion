@@ -164,20 +164,17 @@ footer .control-section {
 }
 
 .footer-progress-bar {
-    position: absolute;
-    top: 0;
-    left: 0;
     height: 2px;
     width: 0%;
-    opacity: 0.8;
+    opacity: 1;
     transition: width 0.3s ease;
 }
 
 /* Different colors for each bar */
 #progress-bar-1 {
-    background-color: var(--color-selected, #00f);
+    background-color: #4CAF50; /* Green for images - represents growth/content */
 }
 
 #progress-bar-2 {
-    background-color: var(--color-outline-control-button, #f00);
+    background-color: #2196F3; /* Blue for metadata - represents information/data */
 }

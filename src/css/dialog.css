@@ -15,6 +15,8 @@
 .dialog {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+
   background: var(--color-bg-dialog);
   padding: 20px;
   border-radius: 8px;
@@ -38,6 +40,7 @@
 
 .dialog .title,
 .dialog .dialog-title {
+  color: var(--color-text-2);
   text-align: center;
   margin-top: 0;
 }
@@ -53,7 +56,7 @@
 .dialog .dialog-buttons {
   display: flex;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 1em;
 }
 
 .dialog.form {
@@ -98,14 +101,13 @@
 .help-dialog .tabs {
   display: flex;
   margin-bottom: 1em;
-  border: 1px solid var(--color-bg-selected);
   border-radius: 6px;
 }
 
 .help-dialog .tab-button {
   flex: 1;
   padding: 0.5em;
-  background: var(--color-bg-selected);
+  background: var(--color-bg-input);
   color: var(--color-text-1);
   border: none;
   font-weight: bold;

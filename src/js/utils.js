@@ -518,7 +518,7 @@ export async function scanDirectory(gamesDir, extensions, recursive = true, igno
             }
         }
     } catch (err) {
-        console.error("Error reading directory:", gamesDir, err);
+        console.warn("Error reading directory:", gamesDir, err);
     }
 
     return files;

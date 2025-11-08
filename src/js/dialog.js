@@ -71,14 +71,14 @@ function createEditMetaForm(params, gameMetaData) {
 
     fields.forEach(field => {
         const label = document.createElement('label');
-        label.className = 'form-label';
+        label.className = 'form-label title';
         label.textContent = field.label;
         form.appendChild(label);
 
         let input;
         if (field.type === 'textarea') {
             input = document.createElement('textarea');
-            input.rows = 15;
+            input.rows = 12;
         } else {
             input = document.createElement('input');
             input.type = field.type;
@@ -181,6 +181,7 @@ export function editMetaDialog(params, gameMetaData) {
             break;
 
         case 'Escape':
+            closeDialog();
             break;
 
         case '/':

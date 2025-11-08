@@ -1,3 +1,32 @@
+#menu {
+  position: absolute;
+  left: 0;
+  top: 101px;
+
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+
+  width: 100vw;
+
+  font-size: 16pt;
+  font-weight: bold;
+
+  z-index: 3;
+  opacity: 0;
+  animation: fadeIn 0.3s ease-in-out forwards;
+
+  overflow: auto;
+  background: var(--bg);
+
+}
+
+#form-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
 button {
   font-family: var(--font-main);
   background: var(--color-button-off);
@@ -42,13 +71,17 @@ button {
   font-size: 12pt;
   font-weight: 700;
 
-  color: #FFFFFF;
+  color: var(--color-text-input);
 
-  background-color: var(--color-bg2);
+  background-color: var(--color-bg-input);
   border: 1px solid var(--color-border-off);
   border-radius: 6px;
   /* box-shadow: rgba(0, 0, 0, 0.1) 1px 2px 4px; */
-  font-family: var(--font-main);
+  font-family: var(--font-second);
+}
+
+.input {
+  padding: 0.5em;
 }
 
 #platform-form,
@@ -93,8 +126,12 @@ button {
   flex-direction: row;
   align-items: baseline;
 
-  /* font-family: var(--font-second); */
   color: var(--color-selected);
+
+  /* Very subtle outline */
+  text-shadow:
+    0.5px  0.5px 1px rgba(var(--color-text-2-rgb), 0.2),
+    -0.5px -0.5px 1px rgba(var(--color-text-2-rgb), 0.2);
 
   font-weight: normal;
   font-style: normal;
@@ -109,7 +146,6 @@ button {
   display: flex;
   align-items: anchor-center;
 }
-
 
 label.checkbox {
   font-family: var(--font-main);
@@ -149,7 +185,6 @@ label.checkbox {
 /* When label has focus-within, style the radio-box inside it */
 .form-label:focus-within .radio-box {
     color: var(--color-selected) !important;
-    background-color: var(--color-bg-selected);
 }
 
 /* Style the radio buttons as rectangles */
@@ -158,10 +193,11 @@ label.checkbox {
   flex: 1; /* Make the box fill the available space */
   font-weight: normal;
   height: 100%;
-  color: white;
+  color: var(--color-text-1);
   justify-content: center;
   align-items: center;
   border-right: 1px solid gray;
+  background-color: var(--color-bg);
   transition: background 0.3s;
 }
 
@@ -171,8 +207,8 @@ label.checkbox {
 
 /* Change color when selected */
 .radio-container input[type="radio"]:checked + .radio-box {
-    background-color: var(--color-button-off);
-    color: var(--color-text-1);
+    background-color: var(--color-bg-input);
+    color: var(--color-text-2);
     font-weight: bold;
 }
 
@@ -196,32 +232,6 @@ label.checkbox {
   flex-direction: row;
 }
 
-#menu {
-  position: absolute;
-  left: 0;
-  top: 101px;
-
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
-
-  width: 100vw;
-
-  font-size: 16pt;
-  font-weight: bold;
-
-  z-index: 3;
-  opacity: 0;
-  animation: fadeIn 0.3s ease-in-out forwards;
-
-  overflow: auto;
-}
-
-#form-container {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
 
 .bottom-buttons {
   display: flex;
@@ -271,7 +281,7 @@ input[type="radio"] {
 }
 
 .input:focus {
-  border: 2px solid var(--color-text-2);
+  outline: 2px solid var(--color-selected);
 }
 
 input[type="checkbox"]:focus {
@@ -388,6 +398,7 @@ input[type="range"] {
 }
 
 #menu .input-group {
+  font-family: var(--font-second);
   margin-bottom: 0.5em;
 }
 

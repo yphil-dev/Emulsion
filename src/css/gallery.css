@@ -338,13 +338,13 @@ i.disabled { pointer-events: none; opacity: 0.5; }
   flex-direction: column;
   flex: 1 1 auto;
   overflow: hidden;
+  padding: 0 0.5em;
 }
 
 .pane-text .game-title {
   color: var(--color-selected);
   font-size: larger;
   font-weight: bold;
-  padding: 0 0.5em;
 }
 
 .pane-controls {
@@ -369,8 +369,7 @@ i.disabled { pointer-events: none; opacity: 0.5; }
 
 dl.game-meta-data {
   margin: 0;
-  padding: 0 0.5em;
-  overflow: visible;           /* scrolling handled by parent */
+  overflow: visible; /* scrolling handled by parent */
   height: auto;
 }
 

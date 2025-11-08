@@ -594,11 +594,20 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
 
         break;
 
+    case 'e':
+        if (event.ctrlKey) {
+            const editMetaButton = document.getElementById('edit-meta-button');
+            if (editMetaButton) {
+                editMetaButton.click();
+            }
+        }
+        break;
 
     case 'l':
-        if (!LB.kioskMode) {
-            if (event.ctrlKey) {
-                document.getElementById('view-mode-toggle-button').click();
+        if (event.ctrlKey) {
+            const viewModeToggleButton = document.getElementById('view-mode-toggle-button');
+            if (viewModeToggleButton) {
+                viewModeToggleButton.click();
             }
         }
         break;
@@ -912,28 +921,32 @@ function buildGamePane(params) {
     gameTitle.classList.add('game-title');
 
     const fetchMetaButton = document.createElement('button');
-    fetchMetaButton.classList.add('pane-fetch-meta-button', 'button');
+    fetchMetaButton.classList.add('fetch-meta-button', 'button');
+    fetchMetaButton.id = 'fetch-meta-button';
 
     const metaIcon = document.createElement('i');
     metaIcon.className = 'fa fa-wikidata';
     fetchMetaButton.appendChild(metaIcon);
 
     const coverArtButton = document.createElement('button');
-    coverArtButton.classList.add('pane-edit-cover-art-button', 'button');
+    coverArtButton.classList.add('edit-cover-art-button', 'button');
+    coverArtButton.id = 'edit-cover-art-button';
 
     const coverArtIcon = document.createElement('i');
     coverArtIcon.className = 'fa fa-image';
     coverArtButton.appendChild(coverArtIcon);
 
     const webLinkButton = document.createElement('button');
-    webLinkButton.classList.add('pane-web-link-button', 'button');
+    webLinkButton.classList.add('web-link-button', 'button');
+    webLinkButton.id = 'web-link-button';
 
     const webLinkIcon = document.createElement('i');
     webLinkIcon.className = 'fa fa-external-link';
     webLinkButton.appendChild(webLinkIcon);
 
     const editMetaButton = document.createElement('button');
-    editMetaButton.classList.add('pane-edit-meta-button', 'button');
+    editMetaButton.classList.add('edit-meta-button', 'button');
+    editMetaButton.id = 'edit-meta-button';
 
     const editMetaIcon = document.createElement('i');
     editMetaIcon.className = 'fa fa-pencil';
@@ -1028,16 +1041,16 @@ export async function updateGamePane(selectedContainer) {
     const imagePane = gamePane.querySelector('.pane-image');
 
     if (!LB.kioskMode) {
-        const webLinkButton = gamePane.querySelector('.pane-web-link-button');
+        const webLinkButton = gamePane.querySelector('.web-link-button');
         webLinkButton.title = `Search the web for "${selectedContainer.dataset.cleanName}"`;
 
-        const editMetaButton = gamePane.querySelector('.pane-edit-meta-button');
+        const editMetaButton = gamePane.querySelector('.edit-meta-button');
         editMetaButton.title = `Edit meta data for "${selectedContainer.dataset.cleanName}"`;
 
-        const editCoverArtButton = gamePane.querySelector('.pane-edit-cover-art-button');
+        const editCoverArtButton = gamePane.querySelector('.edit-cover-art-button');
         editCoverArtButton.title = `Edit coverArt data for "${selectedContainer.dataset.cleanName}"`;
 
-        const fetchMetaButton = gamePane.querySelector('.pane-fetch-meta-button');
+        const fetchMetaButton = gamePane.querySelector('.fetch-meta-button');
         fetchMetaButton.title = `Fetch meta data from WikiData for "${selectedContainer.dataset.cleanName}"`;
     }
 

@@ -915,7 +915,7 @@ function buildGamePane(params) {
     fetchMetaButton.classList.add('pane-fetch-meta-button', 'button');
 
     const metaIcon = document.createElement('i');
-    metaIcon.className = 'fa fa-refresh';
+    metaIcon.className = 'fa fa-wikidata';
     fetchMetaButton.appendChild(metaIcon);
 
     const coverArtButton = document.createElement('button');

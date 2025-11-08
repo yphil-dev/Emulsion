@@ -1,12 +1,13 @@
 .theme-day {
 
---bg: linear-gradient(
-  180deg,
-  #CAEBFF 0%,       /* Much less white, more blue */
-  #98D8E8 30%,
-  #87CEEB 60%,
-  #6BB9F0 100%      /* Deeper blue at bottom */
-);
+  --bg: linear-gradient(
+    180deg,
+    #E0F7FA 0%,
+    #B0E2FF 30%,
+    #98D8E8 60%,
+    #87CEEB 100%
+  );
+
   --color-text-1: rgb(41, 48, 53);
   --color-text-2: rgb(48, 57, 133);
 
@@ -116,7 +117,7 @@
   --color-bg-rgb: 10, 20, 37;
 
   --color-bg-header: rgb(23, 36, 55);
-  --color-bg-dialog: rgb(6, 12, 35);
+  --color-bg-dialog: rgb(8, 18, 55); /* slightly darker, keeps cool/night feel */
   --color-bg-selected: rgb(15, 43, 77);
 
   --color-selected: rgb(41, 241, 234);

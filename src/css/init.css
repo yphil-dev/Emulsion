@@ -119,6 +119,23 @@ body {
   cursor: default;
 
   background: var(--bg);
+
+/*   background: linear-gradient(180deg, */
+/*                               #FF6B6B 0%,       /\* Warm orange-red *\/ */
+/*                               #FFA726 30%,      /\* Golden yellow *\/ */
+/*                               #87CEEB 70%,      /\* Sky blue *\/ */
+/*                               #E0F7FA 100%      /\* Light blue-white *\/ */
+/* ); */
+
+
+/*   background: linear-gradient(180deg, */
+/*                               #4A90E2 0%,       /\* Deep sky blue *\/ */
+/*                               #6BB9F0 20%,      /\* Bright blue *\/ */
+/*                               #87CEEB 50%,      /\* Sky blue *\/ */
+/*                               #B0E2FF 80%,      /\* Light blue *\/ */
+/*                               #E0F7FA 100%      /\* Near white *\/ */
+/* ); */
+
   transition: background 0.8s ease;
 }
 

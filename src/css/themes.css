@@ -2,7 +2,7 @@
 
   --bg: linear-gradient(
     180deg,
-    #E0F7FA 0%,
+    #B0D7DA 0%,
     #B0E2FF 30%,
     #98D8E8 60%,
     #87CEEB 100%
@@ -14,15 +14,20 @@
   --color-text-1-rgb: 41, 48, 53;
   --color-text-2-rgb: 48, 57, 133;
 
-  --color-glow-rgb: 255, 210, 60;
+  --color-text-subtitles: rgb(255, 255, 255);
+
+  --color-text-input: rgb(0, 0, 0);
+
+  --color-glow-rgb: 255, 100, 200;
 
   --color-platform-text-header: rgb(10, 63, 74);
   --color-platform-outline-header: rgb(163, 255, 255);
 
-  --color-bg: rgb(189, 217, 255);
+  --color-bg: rgb(150, 190, 235);
+  --color-bg-input: rgb(214, 222, 241);
   --color-bg-rgb: 189, 217, 255;
 
-  --color-bg-dialog: rgb(173, 200, 235); /* slightly darker & muted than --color-bg */
+  --color-bg-dialog: rgb(137, 179, 233); /* slightly darker & muted than --color-bg */
   --color-bg-header: rgb(153, 193, 239);
 
   --color-border-header: rgb(57, 116, 184);
@@ -30,8 +35,8 @@
 
   --color-text-game-label: rgb(41, 241, 234);
 
-  --color-selected: rgb(248, 255, 219);
-  --color-bg-selected: rgb(150, 197, 255);
+  --color-selected: rgb(35, 197, 83);
+  --color-bg-selected: rgb(191, 199, 227);
 
   --color-hr: rgb(120, 160, 210);
 
@@ -39,7 +44,7 @@
   --color-bg-badge: rgba(100, 200, 150, 0.5);
 
   --color-button-on: rgb(255, 107, 0);
-  --color-button-off: rgb(100, 170, 251);
+  --color-button-off: rgb(67, 97, 187);
   --color-border-on: rgb(255, 107, 0);
   --color-border-off: rgb(149, 175, 204);
 
@@ -60,6 +65,8 @@
   --color-text-1: rgb(245, 245, 245);
   --color-text-2: rgb(61, 173, 255);
 
+  --color-text-input: rgb(0, 0, 0);
+
   --color-text-1-rgb: 245, 245, 245;
   --color-text-2-rgb: 61, 173, 255;
 
@@ -69,6 +76,7 @@
   --color-platform-outline-header: rgb(41, 241, 234);
 
   --color-bg: rgb(15, 23, 41);
+  --color-bg-input: rgb(114, 122, 141);
   --color-bg-rgb: 15, 23, 41;
 
   --color-bg-header: rgb(5, 12, 22);
@@ -95,29 +103,33 @@
 
 .theme-night {
 
---bg: linear-gradient(
-  180deg,
-  #060B21 0%,       /* Intense dark navy */
-  #0A1128 30%,      /* Deep midnight blue */
-  #0F172A 60%,      /* Rich dark blue */
-  #141C36 100%      /* Dark blue */
-);
+  --bg: linear-gradient(
+    180deg,
+    #060B21 0%,       /* Intense dark navy */
+    #0A1128 30%,      /* Deep midnight blue */
+    #0F172A 60%,      /* Rich dark blue */
+    #141C36 100%      /* Dark blue */
+  );
+
   --color-text-1: rgb(232, 245, 232);
   --color-text-2: rgb(255, 188, 0);
 
   --color-text-1-rgb: 232, 245, 232;
   --color-text-2-rgb: 255, 188, 0;
 
+  --color-text-input: rgb(232, 245, 232);
+
   --color-glow-rgb: 255, 0, 247;
 
   --color-platform-text-header: rgb(41, 241, 234);
   --color-platform-outline-header: rgb(10, 10, 15);
 
-  --color-bg: rgb(10, 20, 37);
-  --color-bg-rgb: 10, 20, 37;
+  --color-bg: rgb(25, 25, 50);
+  --color-bg-input: rgb(60, 60, 90);
+  --color-bg-rgb: 25, 25, 50;
 
   --color-bg-header: rgb(23, 36, 55);
-  --color-bg-dialog: rgb(8, 18, 55); /* slightly darker, keeps cool/night feel */
+  --color-bg-dialog: rgb(23, 24, 30);
   --color-bg-selected: rgb(15, 43, 77);
 
   --color-selected: rgb(41, 241, 234);

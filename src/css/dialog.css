@@ -45,6 +45,10 @@
   margin-top: 0;
 }
 
+.dialog-body {
+  color: var(--color-text-1);
+}
+
 .dialog .text {
   color: var(--color-text-1);
   font-family: var(--font-second);
@@ -127,7 +131,7 @@
   color: var(--color-selected);
 }
 
-.help-dialog table {
+.dialog table {
   table-layout: fixed; /* ensures columns align and widths are consistent */
   border-collapse: collapse;
   width: 100%;
@@ -191,7 +195,7 @@
 .dialog tbody tr:nth-child(odd)  { background: var(--color-bg-header); }
 .dialog tbody tr:nth-child(even) { background: var(--color-bg-dialog); }
 
-.help-dialog td {
+.dialog td {
   padding: 0.4em 0.6em;
   text-align: left;
 }
@@ -295,6 +299,15 @@
   color: var(--color-selected);
 }
 
+
+.dialog.download-meta table tbody td:last-child {
+  text-align: right;
+  align-items: flex-end;
+}
+
+.dialog.download-meta table th {
+  text-align: left;
+}
 
 .dialog.download-meta .dialog-title span {
   color: var(--color-text-2);

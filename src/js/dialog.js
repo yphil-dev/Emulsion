@@ -505,7 +505,7 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
             const thead = document.createElement('thead');
             const headerRow = document.createElement('tr');
             const headerCell = document.createElement('th');
-            headerCell.textContent = 'Images sources';
+            headerCell.innerHTML = '<h3>Images sources</h3>';
             headerCell.colSpan = 3; // Span both columns
             headerRow.appendChild(headerCell);
             thead.appendChild(headerRow);
@@ -534,7 +534,6 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
                 }
 
                 const buttonCell = document.createElement('td');
-                buttonCell.className = 'last';
 
                 const setupButton = document.createElement('button');
                 setupButton.textContent = 'Setup';
@@ -571,7 +570,7 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
             const textThead = document.createElement('thead');
             const textHeaderRow = document.createElement('tr');
             const textHeaderCell = document.createElement('th');
-            textHeaderCell.textContent = 'Text Sources';
+            textHeaderCell.innerHTML = '<h3>Text sources</h3>';
             textHeaderCell.colSpan = 2;
             textHeaderRow.appendChild(textHeaderCell);
             textThead.appendChild(textHeaderRow);

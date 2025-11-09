@@ -155,7 +155,7 @@ export function initSlideShow(platformToDisplay) {
 
                 // forward search
                 for (let i = startIndex; i < slides.length; i++) {
-                    const name = (slides[i].dataset.platform || slides[i].dataset.name || '').toLowerCase();
+                    const name = slides[i].dataset.platformDisplayName.toLowerCase();
                     if (name.startsWith(key)) {
                         matchIndex = i;
                         break;
@@ -165,7 +165,7 @@ export function initSlideShow(platformToDisplay) {
                 // wrap-around search
                 if (matchIndex === -1) {
                     for (let i = 0; i < startIndex; i++) {
-                        const name = (slides[i].dataset.platform || slides[i].dataset.name || '').toLowerCase();
+                        const name = slides[i].dataset.platformDisplayName.toLowerCase();
                         if (name.startsWith(key)) {
                             matchIndex = i;
                             break;
@@ -208,6 +208,7 @@ export function buildHomeSlide(platformName, preferences) {
     slideContent.innerHTML = `<p class="vendor">${platformInfo.vendor}</p> <p class="name">${platformInfo.name}</p>`;
 
     slide.setAttribute('data-platform', platformName);
+    slide.setAttribute('data-platform-display-name', platformInfo.name);
 
     slide.appendChild(slideContent);
 

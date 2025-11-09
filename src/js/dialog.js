@@ -513,7 +513,7 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
             // Create tbody
             const tbody = document.createElement('tbody');
 
-            function createSourceRow(text, isEnabled) {
+            function createSourceRow(sourceName, isEnabled) {
                 const row = document.createElement('tr');
 
                 const iconCell = document.createElement('td');
@@ -528,7 +528,7 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
                 iconCell.appendChild(icon);
 
                 const textCell = document.createElement('td');
-                textCell.textContent = text;
+                textCell.textContent = sourceName;
                 if (!isEnabled) {
                     textCell.classList.add('disabled');
                 }
@@ -542,7 +542,7 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
                 setupButton.addEventListener('click', () => {
                     closeDialog();
                     resolve(null);
-                    openPlatformMenu('settings');
+                    openPlatformMenu('settings', 'gallery', sourceName);
                 });
 
                 if (!isEnabled) {
@@ -586,16 +586,15 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
             const metaLabel = `Download <span class="accent">${metaCount}</span> missing metadata`;
 
             // --- append checkboxes and sources ---
+            if (hasImages) optionsContainer.appendChild(imgSourcesTable);
             optionsContainer.appendChild(
                 makeCheckboxOption('batch-images', imgLabel, hasImages, !hasImages)
             );
 
-            if (hasImages) optionsContainer.appendChild(imgSourcesTable);
-
+            if (hasMeta) optionsContainer.appendChild(textSources);
             optionsContainer.appendChild(
                 makeCheckboxOption('batch-metadata', metaLabel, hasMeta, !hasMeta)
             );
-            if (hasMeta) optionsContainer.appendChild(textSources);
 
             dialogBody.innerHTML = '';
             dialogBody.appendChild(optionsContainer);

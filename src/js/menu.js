@@ -937,9 +937,9 @@ function buildPlatformMenuForm(platformName) {
     return formContainer;
 }
 
-export function openPlatformMenu(platformName, context) {
+export function openPlatformMenu(platformName, context, eltToFocus) {
 
-    console.log("platformName, context: ", platformName, context);
+    console.log("platformName, context, eltToFocus: ", platformName, context, eltToFocus);
 
     LB.mode = 'menu';
     LB.currentPlatform = platformName;
@@ -956,6 +956,12 @@ export function openPlatformMenu(platformName, context) {
 
     const platformMenuForm = buildPlatformMenuForm(platformName);
     menu.appendChild(platformMenuForm);
+
+    if (platformName === 'settings' && eltToFocus) {
+        console.log("eltToFocus: ", eltToFocus);
+        const fieldToFocus = menu.querySelector(eltToFocus === 'GiantBomb' ? '.giantBombAPIkey' : '.steamGridAPIKey');
+        fieldToFocus.focus();
+    }
 
     const header = document.getElementById('header');
 

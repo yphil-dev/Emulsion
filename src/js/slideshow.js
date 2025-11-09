@@ -851,7 +851,6 @@ async function setGalleryViewMode(viewMode, save) {
 
     page.dataset.viewMode = viewMode;
     // pageContent.classList.remove('list');
-    viewToggleBtn.classList.remove('fa-list', 'fa-th');
 
     if (save) {
         if (LB.currentPlatform === 'favorites') {
@@ -865,6 +864,7 @@ async function setGalleryViewMode(viewMode, save) {
 
     if (viewMode === 'list') {
         pageContent.classList.add('list');
+        viewToggleBtn.classList.remove('fa-list');
         viewToggleBtn.classList.add('fa-th');
         viewToggleBtn.title = 'Grid mode';
         if (gamePane) {
@@ -880,6 +880,7 @@ async function setGalleryViewMode(viewMode, save) {
         pageContent.classList.remove('list');
         pageContent.classList.add('grid');
         viewToggleBtn.title = 'List mode';
+        viewToggleBtn.classList.remove('fa-th');
         viewToggleBtn.classList.add('fa-list');
         if (gamePane) {
             gamePane.style.display = 'none';

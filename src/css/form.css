@@ -43,7 +43,8 @@ button {
 }
 
 .button.small {
-  font-size: smaller; /* 10px / 16px */
+  font-size: smaller;
+  padding: 0.6em;
 }
 
 .button:hover,

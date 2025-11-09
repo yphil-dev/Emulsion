@@ -36,6 +36,9 @@
   --color-text-game-label: rgb(41, 241, 234);
 
   --color-selected: rgb(35, 197, 83);
+
+  --color-selected-rgb: 35, 197, 83;
+
   --color-bg-selected: rgb(191, 199, 227);
 
   --color-hr: rgb(120, 160, 210);
@@ -84,6 +87,9 @@
   --color-bg-selected: rgb(0, 49, 83);
 
   --color-selected: rgb(0, 255, 204);
+
+  --color-selected-rgb: 0, 255, 204;
+
   --color-hr: rgb(50, 60, 80);
 
   --color-text-badge: 0, 0, 0;
@@ -133,6 +139,9 @@
   --color-bg-selected: rgb(15, 43, 77);
 
   --color-selected: rgb(41, 241, 234);
+
+  --color-selected-rgb: 41, 241, 234;
+
   --color-hr: rgb(40, 70, 80);
 
   --color-text-badge: 255, 230, 0;

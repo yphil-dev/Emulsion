@@ -129,6 +129,7 @@ export function initSlideShow(platformToDisplay) {
             slideshow.style.display = 'none';
             break;
         }
+
         case 'Home':
         case 'End':
             initSlideShow('settings');

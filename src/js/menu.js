@@ -957,12 +957,6 @@ export function openPlatformMenu(platformName, context, eltToFocus) {
     const platformMenuForm = buildPlatformMenuForm(platformName);
     menu.appendChild(platformMenuForm);
 
-    if (platformName === 'settings' && eltToFocus) {
-        console.log("eltToFocus: ", eltToFocus);
-        const fieldToFocus = menu.querySelector(eltToFocus === 'GiantBomb' ? '.giantBombAPIkey' : '.steamGridAPIKey');
-        fieldToFocus.focus();
-    }
-
     const header = document.getElementById('header');
 
     if (LB.onHeaderWheel) {
@@ -975,6 +969,20 @@ export function openPlatformMenu(platformName, context, eltToFocus) {
 
     updateHeader(platformName);
     toggleHeaderNavLinks('hide');
+
+    if (platformName === 'settings' && eltToFocus) {
+        console.log("eltToFocus: ", eltToFocus);
+        const fieldToFocus = document.getElementById('giantBombAPIkey');
+        // const gbButton = menu.querySelector('.giantBombAPIkey');
+
+        if (fieldToFocus) {
+            fieldToFocus.focus();
+        } else {
+            console.log("nope: ", menu);
+        }
+
+    }
+
 }
 
 async function closeSettingsOrPlatformMenu() {

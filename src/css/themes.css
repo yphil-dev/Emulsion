@@ -43,8 +43,8 @@
 
   --color-hr: rgb(120, 160, 210);
 
-  --color-text-badge: rgba(0, 20, 10, 0.9);
-  --color-bg-badge: rgba(100, 200, 150, 0.5);
+  --color-text-badge: rgba(41, 241, 234, 1);
+  --color-bg-badge: rgba(67, 97, 187, 0.5);
 
   --color-button-on: rgb(255, 107, 0);
   --color-button-off: rgb(67, 97, 187);
@@ -68,7 +68,7 @@
   --color-text-1: rgb(245, 245, 245);
   --color-text-2: rgb(61, 173, 255);
 
-  --color-text-input: rgb(0, 0, 0);
+  --color-text-input: rgb(208, 238, 255);
 
   --color-text-1-rgb: 245, 245, 245;
   --color-text-2-rgb: 61, 173, 255;
@@ -92,8 +92,8 @@
 
   --color-hr: rgb(50, 60, 80);
 
-  --color-text-badge: 0, 0, 0;
-  --color-bg-badge: 41, 241, 234;
+  --color-text-badge: rgba(0, 255, 204, 1);
+  --color-bg-badge: rgba(51, 51, 68, 0.5);
 
   --color-button-on: rgb(41, 241, 234);
   --color-button-off: rgb(51, 51, 68);
@@ -144,8 +144,8 @@
 
   --color-hr: rgb(40, 70, 80);
 
-  --color-text-badge: 255, 230, 0;
-  --color-bg-badge: 0, 30, 80;
+  --color-text-badge: rgba(255, 230, 0, 1);
+  --color-bg-badge: rgba(0, 30, 80, 0.5);
 
   --color-button-on: rgb(41, 241, 234);
   --color-button-off: rgb(255, 107, 0);

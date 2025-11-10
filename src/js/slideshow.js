@@ -335,6 +335,19 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
             );
             page.className = currentClasses.join(' ');
 
+            const length = GalleryState.enabledPages.length;
+
+            // if (index === activePos) {
+            //     page.classList.add('active');
+            // } else if (index === (activePos - 1 + length) % length) {
+            //     page.classList.add('prev');
+            // } else if (index === (activePos + 1) % length) {
+            //     page.classList.add('next');
+            // } else {
+            //     page.classList.add('adjacent');
+            // }
+
+
             if (index === activePos) {
                 initCurrentGallery(page);
                 LB.currentPlatform = page.dataset.platform;
@@ -361,9 +374,9 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
                 }
 
                 updateHeaderControls(page.dataset);
-            } else if (index === activePos - 1) {
+            } else if (index === (activePos - 1 + length) % length) {
                 page.classList.add('prev');
-            } else if (index === activePos + 1) {
+            } else if (index === (activePos + 1) % length) {
                 page.classList.add('next');
             } else {
                 page.classList.add('adjacent');

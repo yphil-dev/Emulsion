@@ -208,7 +208,7 @@ div.menu-game-container {
   font-family: sans-serif;
   font-size: 1.2vw;
   font-weight: 600;
-  color: rgb(var(--color-text-badge), 0.9);
+  color: var(--color-text-badge);
   background-color: var(--color-bg-badge);
   border: 1px solid var(--color-outline-control-button);
   /* box-shadow: 0 2px 4px rgba(0,0,0,0.2); */

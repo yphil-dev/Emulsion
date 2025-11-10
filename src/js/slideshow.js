@@ -236,6 +236,84 @@ function setGalleryFooterControls(pageDataset) {
 // Gallery navigation - simplified, works directly with DOM
 let selectedIndex = 0;
 
+// Global function for gallery page navigation
+function goToGalleryPage(direction = 1) {
+    const pages = Array.from(document.querySelectorAll('#galleries .page'));
+    const currentPage = pages.find(p => p.classList.contains('active'));
+    let currentIndex = pages.indexOf(currentPage);
+
+    // Find next page in DOM order, skipping disabled pages
+    let nextIndex = currentIndex;
+    do {
+        nextIndex = (nextIndex + direction + pages.length) % pages.length;
+        const nextPage = pages[nextIndex];
+        const platform = nextPage.dataset.platform;
+
+        // Check if page is enabled
+        if (platform === 'settings' || platform === 'recents' || platform === 'favorites') {
+            break; // Always allow these pages
+        }
+
+        const isEnabled = LB.preferences[platform]?.isEnabled;
+        if (isEnabled) {
+            break; // Found enabled page
+        }
+    } while (nextIndex !== currentIndex); // Prevent infinite loop
+
+    // Update active page
+    pages.forEach(p => p.classList.remove('active'));
+    pages[nextIndex].classList.add('active');
+
+    // Update gallery display
+    const currentPageNew = pages.find(p => p.classList.contains('active'));
+    const currentIndexNew = pages.indexOf(currentPageNew);
+
+    pages.forEach((page, index) => {
+        page.classList.remove('active', 'prev', 'next', 'adjacent');
+
+        if (page === currentPageNew) {
+            // Re-init the current gallery
+            const gameContainers = Array.from(page.querySelectorAll('.game-container'));
+            const selected = page.querySelector('.game-container.selected');
+
+            if (!selected && !page.dataset.empty) {
+                gameContainers[0].classList.add('selected');
+                selectedIndex = 0;
+            } else {
+                selectedIndex = gameContainers.indexOf(selected);
+            }
+
+            LB.currentPlatform = page.dataset.platform;
+            page.classList.add('active');
+
+            const pageContent = page.querySelector('.page-content');
+            if (pageContent) {
+                pageContent.scrollTop = 0;
+            }
+            page.style.overflowY = 'auto';
+            page.style.overflowX = 'hidden';
+
+            if (page.dataset.platform === 'recents' || page.dataset.platform === 'favorites') {
+                const platformBadges = page.querySelectorAll('.platform-badge');
+                platformBadges.forEach(badge => badge.style.display = 'block');
+            }
+
+            if (!page.dataset.empty) {
+                setGalleryViewMode(page.dataset.viewMode);
+            }
+
+            updateHeader(page.dataset.platform);
+            setGalleryFooterControls(page.dataset);
+        } else if (index === (currentIndexNew - 1 + pages.length) % pages.length) {
+            page.classList.add('prev');
+        } else if (index === (currentIndexNew + 1) % pages.length) {
+            page.classList.add('next');
+        } else {
+            page.classList.add('adjacent');
+        }
+    });
+}
+
 export function initGallery(platformNameOrIndex, focusIndex = null) {
 
     document.getElementById('menu').style.display = 'none';
@@ -385,36 +463,8 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
         }
     }
 
-    function goToPage(direction = 1) {
-        const currentPage = pages.find(p => p.classList.contains('active'));
-        let currentIndex = pages.indexOf(currentPage);
-
-        // Find next page in DOM order, skipping disabled pages
-        let nextIndex = currentIndex;
-        do {
-            nextIndex = (nextIndex + direction + pages.length) % pages.length;
-            const nextPage = pages[nextIndex];
-            const platform = nextPage.dataset.platform;
-
-            // Check if page is enabled
-            if (platform === 'settings' || platform === 'recents' || platform === 'favorites') {
-                break; // Always allow these pages
-            }
-
-            const isEnabled = LB.preferences[platform]?.isEnabled;
-            if (isEnabled) {
-                break; // Found enabled page
-            }
-        } while (nextIndex !== currentIndex); // Prevent infinite loop
-
-        // Update active page
-        pages.forEach(p => p.classList.remove('active'));
-        pages[nextIndex].classList.add('active');
-        updateGallery();
-    }
-
-    const goToNextPage = () => goToPage(1);
-    const goToPrevPage = () => goToPage(-1);
+    const goToNextPage = () => goToGalleryPage(1);
+    const goToPrevPage = () => goToGalleryPage(-1);
 
     galleries.addEventListener('wheel', event => {
         const scrollableDiv = document.querySelector('.game-pane');
@@ -479,88 +529,11 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         return Math.min(Math.max((row + rows) * LB.galleryNumOfCols + col, 0), containers.length - 1);
     };
 
-    // Helper function to go to next/prev page
-    const goToPage = (direction = 1) => {
-        const pages = Array.from(document.querySelectorAll('#galleries .page'));
-        const currentPage = pages.find(p => p.classList.contains('active'));
-        let currentIndex = pages.indexOf(currentPage);
-
-        // Find next page in DOM order, skipping disabled pages
-        let nextIndex = currentIndex;
-        do {
-            nextIndex = (nextIndex + direction + pages.length) % pages.length;
-            const nextPage = pages[nextIndex];
-            const platform = nextPage.dataset.platform;
-
-            // Check if page is enabled
-            if (platform === 'settings' || platform === 'recents' || platform === 'favorites') {
-                break; // Always allow these pages
-            }
-
-            const isEnabled = LB.preferences[platform]?.isEnabled;
-            if (isEnabled) {
-                break; // Found enabled page
-            }
-        } while (nextIndex !== currentIndex); // Prevent infinite loop
-
-        // Update active page
-        pages.forEach(p => p.classList.remove('active'));
-        pages[nextIndex].classList.add('active');
-
-        // Update gallery display
-        const currentPageNew = pages.find(p => p.classList.contains('active'));
-        const currentIndexNew = pages.indexOf(currentPageNew);
-
-        pages.forEach((page, index) => {
-            page.classList.remove('active', 'prev', 'next', 'adjacent');
-
-            if (page === currentPageNew) {
-                // Re-init the current gallery
-                const gameContainers = Array.from(page.querySelectorAll('.game-container'));
-                const selected = page.querySelector('.game-container.selected');
-
-                if (!selected && !page.dataset.empty) {
-                    gameContainers[0].classList.add('selected');
-                    selectedIndex = 0;
-                } else {
-                    selectedIndex = gameContainers.indexOf(selected);
-                }
-
-                LB.currentPlatform = page.dataset.platform;
-                page.classList.add('active');
-
-                const pageContent = page.querySelector('.page-content');
-                if (pageContent) {
-                    pageContent.scrollTop = 0;
-                }
-                page.style.overflowY = 'auto';
-                page.style.overflowX = 'hidden';
-
-                if (page.dataset.platform === 'recents' || page.dataset.platform === 'favorites') {
-                    const platformBadges = page.querySelectorAll('.platform-badge');
-                    platformBadges.forEach(badge => badge.style.display = 'block');
-                }
-
-                if (!page.dataset.empty) {
-                    setGalleryViewMode(page.dataset.viewMode);
-                }
-
-                updateHeader(page.dataset.platform);
-                setGalleryFooterControls(page.dataset);
-            } else if (index === (currentIndexNew - 1 + pages.length) % pages.length) {
-                page.classList.add('prev');
-            } else if (index === (currentIndexNew + 1) % pages.length) {
-                page.classList.add('next');
-            } else {
-                page.classList.add('adjacent');
-            }
-        });
-    };
 
     switch (event.key) {
     case 'ArrowLeft':
         if (event.shiftKey) {
-            goToPage(-1);
+            goToGalleryPage(-1);
             selectedIndex = 1;
         } else {
             if (isListMode && LB.mode === 'gallery') {
@@ -576,7 +549,7 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
 
     case 'ArrowRight':
         if (event.shiftKey) {
-            goToPage(1);
+            goToGalleryPage(1);
             selectedIndex = 0;
         } else {
             if (isListMode && LB.mode === 'gallery') {

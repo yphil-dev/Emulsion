@@ -836,6 +836,14 @@ export async function batchDownload() {
         LB.batchRunning = false;
         setFooterProgress(1, 100);
         setFooterProgress(2, 100);
+
+        // Ensure all loading classes are removed from the current platform's containers
+        const currentPlatformPage = document.querySelector(`div.page[data-platform="${LB.currentPlatform}"]`);
+        if (currentPlatformPage) {
+            const loadingElements = currentPlatformPage.querySelectorAll('.loading');
+            loadingElements.forEach(element => element.classList.remove('loading'));
+        }
+
         setTimeout(() => setFooterProgressVisible(false), 1500);
     }
 }

@@ -971,18 +971,11 @@ export function openPlatformMenu(platformName, context, eltToFocus) {
     toggleHeaderNavLinks('hide');
 
     if (platformName === 'settings' && eltToFocus) {
-        console.log("eltToFocus: ", eltToFocus);
-        const fieldToFocus = document.getElementById('giantBombAPIkey');
-        // const gbButton = menu.querySelector('.giantBombAPIkey');
-
+        const fieldToFocus = document.getElementById(eltToFocus === 'GiantBomb' ? 'giantBombAPIKey' : 'steamGridAPIKey');
         if (fieldToFocus) {
             fieldToFocus.focus();
-        } else {
-            console.log("nope: ", menu);
         }
-
     }
-
 }
 
 async function closeSettingsOrPlatformMenu() {

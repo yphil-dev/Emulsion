@@ -6,7 +6,6 @@ export const fetchImages = async (gameName, platformName) => {
 
     // KEEP ALL YOUR EXISTING NETWORK CODE EXACTLY AS IS
     const tryTitle = async (title) => {
-        console.log("title: ", title);
 
         if (triedTitles.has(title.toLowerCase())) return;
         triedTitles.add(title.toLowerCase());
@@ -116,19 +115,13 @@ export const fetchImages = async (gameName, platformName) => {
         }
     };
 
-    // FIXED SEARCH STRATEGY - Better search terms for "1080 Snowboarding"
     const searchTerms = [
         `"${gameName}" "${platformName}"`,
         `${gameName} (${platformName} video game)`,
         `${gameName} (${platformName})`,
         `${gameName} ${platformName}`,
         `${gameName} video game`,
-        gameName,
-        // Special cases for games with symbols or unusual names
-        `1080° Snowboarding`, // with degree symbol
-        `1080 Snowboarding`,  // without degree symbol
-        `1080 Snowboarding (video game)`,
-        `1080° Snowboarding (video game)`
+        gameName
     ];
 
     let foundPages = [];
@@ -166,7 +159,7 @@ export const fetchImages = async (gameName, platformName) => {
             });
 
             foundPages.push(...relevantPages.map(p => p.title));
-            console.log(`Search for "${term}" found:`, relevantPages.map(p => p.title));
+            // console.log(`Search for "${term}" found:`, relevantPages.map(p => p.title));
 
         } catch (error) {
             console.log("Search error:", error);
@@ -175,7 +168,7 @@ export const fetchImages = async (gameName, platformName) => {
 
     // Remove duplicates from found pages
     foundPages = [...new Set(foundPages)];
-    console.log("All unique found pages:", foundPages);
+    // console.log("All unique found pages:", foundPages);
 
     // Try the found pages first
     for (const pageTitle of foundPages) {
@@ -189,14 +182,7 @@ export const fetchImages = async (gameName, platformName) => {
             `${gameName} (${platformName})`,
             `${gameName} (video game)`,
             `${gameName} (${platformName} video game)`,
-            `${gameName}`,
-            // Specific to "1080 Snowboarding"
-            `1080° Snowboarding`,
-            `1080° Snowboarding (video game)`,
-            `1080 Snowboarding (Nintendo 64)`,
-            `1080° Snowboarding (Nintendo 64)`,
-            `1080 (video game)`,
-            `1080 Avalanche` // Sequel name might help
+            `${gameName}`
         ];
 
         for (const v of variants) {
@@ -232,7 +218,7 @@ export const fetchImages = async (gameName, platformName) => {
         }
     }
 
-    console.log(`Found ${uniqueResults.length} images after filtering`);
+    // console.log(`Found ${uniqueResults.length} images after filtering`);
     return uniqueResults;
 };
 
@@ -254,8 +240,8 @@ const testGame = async (gameName, platformName) => {
 
 // (async () => {
 //   // await testGame("Flat Out Ultimate Carnage");
-//     // await testGame("DuckTales", "NES");
-//     await testGame("1080 Snowboarding", "Nintendo 64");
+//     await testGame("DuckTales", "NES");
+//     // await testGame("Duck Tales", "NES");
 //     // await testGame("Power Strike", "Master System");
 //     // await testGame("Kirby Air Ride");
 // })();

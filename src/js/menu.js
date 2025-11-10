@@ -1004,6 +1004,7 @@ export async function openGameMenu(container) {
     const menu = document.getElementById('menu');
     const menuContainer = document.getElementById('menu');
     const gameName = container.dataset.gameName;
+    const cleanName = container.dataset.cleanName;
     const platformName = container.dataset.platform;
     const gameImage = container.querySelector('img');
 
@@ -1031,7 +1032,7 @@ export async function openGameMenu(container) {
 
     const currentGameImgContainer = buildCurrentGameImgContainer(gameName, gameImage, platformName);
     menuContainer.appendChild(currentGameImgContainer);
-    await populateGameMenu(currentGameImgContainer, gameName, platformName);
+    await populateGameMenu(currentGameImgContainer, cleanName, platformName);
 
     // menuContainer.addEventListener('wheel', onGameMenuWheel);
     // menuContainer.addEventListener('click', onGameMenuClick);
@@ -1043,7 +1044,7 @@ async function populateGameMenu(menuContainer, gameName, platformName) {
     const currentImageElem = menuContainer.querySelector('img.current-image');
     const headerNbOfItems = document.querySelector('header .item-number');
 
-    ipcRenderer.send('fetch-images', cleanFileName(gameName), platformName, LB.steamGridAPIKey, LB.giantBombAPIKey);
+    ipcRenderer.send('fetch-images', gameName, platformName, LB.steamGridAPIKey, LB.giantBombAPIKey);
 
     headerNbOfItems.textContent = 0;
 

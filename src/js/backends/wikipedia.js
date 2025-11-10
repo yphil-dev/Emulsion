@@ -153,7 +153,6 @@ export const fetchImages = async (gameName, platformName) => {
                        !title.includes("list of") &&
                        (snippet.includes("video game") ||
                         snippet.includes("game") ||
-                        snippet.includes(platformName.toLowerCase()) ||
                         title.includes(gameName.toLowerCase()) ||
                         title.includes("1080")); // Be more permissive
             });
@@ -239,9 +238,9 @@ const testGame = async (gameName, platformName) => {
 };
 
 // (async () => {
-//   // await testGame("Flat Out Ultimate Carnage");
+//     await testGame("Flat Out Ultimate Carnage");
 //     await testGame("DuckTales", "NES");
-//     // await testGame("Duck Tales", "NES");
-//     // await testGame("Power Strike", "Master System");
-//     // await testGame("Kirby Air Ride");
+//     await testGame("Super Spike ", "NES");
+//     await testGame("Power Strike", "Master System");
+//     await testGame("Kirby Air Ride");
 // })();

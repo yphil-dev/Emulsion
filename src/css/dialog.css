@@ -88,7 +88,7 @@
   margin-top: 0.5em;
 }
 
-.batch-option span.accent {
+span.accent {
     color: var(--color-selected);
     font-weight: bold;
 }

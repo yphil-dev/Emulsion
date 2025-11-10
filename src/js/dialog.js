@@ -46,7 +46,6 @@ const DialogManager = {
         // Always restore to the main mode, not the previous mode
         if (this.mainMode) {
             LB.mode = this.mainMode;
-            console.log("Restored to main mode: ", LB.mode);
         }
     },
 
@@ -215,8 +214,8 @@ export function toggleFavDialog(message) {
     const dialogTitle = document.createElement('h3');
     dialogTitle.textContent = 'Favorites';
 
-    const dialogText = document.createElement('div');
-    dialogText.textContent = message;
+    const dialogText = document.createElement('h4');
+    dialogText.innerHTML = message;
 
     dialog.id = 'favorite-confirmation';
     dialog.className = 'dialog';

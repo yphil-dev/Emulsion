@@ -496,6 +496,7 @@ ipcMain.handle('restart', async () => {
 });
 
 ipcMain.on('fetch-images', (event, gameName, platformName, steamGridAPIKey, giantBombAPIKey) => {
+    console.log("gameName, platformName: ", gameName, platformName);
     getAllCoverImageUrls(gameName.replace(/\s*[\(\[].*?[\)\]]/g, ''), getPlatformInfo(platformName).name, { steamGridAPIKey, giantBombAPIKey })
         .then((urls) => {
             event.reply('image-urls', urls);

@@ -87,7 +87,6 @@ export function initSlideShow(platformToDisplay) {
             console.log("slideDiv.classList: ", slideDiv.classList);
 
             if (slideDiv.classList.contains('active')) {
-                console.log("plop: ");
                 simulateKeyDown('Enter');
             } else {
                 initSlideShow(slideDiv.dataset.platform);
@@ -234,13 +233,8 @@ function setGalleryFooterControls(pageDataset) {
     }
 }
 
-// galleryState.js
-export const GalleryState = {
-    selectedIndex: 0,
-    currentPageIndex: 0,
-    gameContainers: [],
-    enabledPages: [],
-};
+// Gallery navigation - simplified, works directly with DOM
+let selectedIndex = 0;
 
 export function initGallery(platformNameOrIndex, focusIndex = null) {
 
@@ -258,41 +252,37 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
 
     const pages = Array.from(galleries.querySelectorAll('.page'));
 
-    GalleryState.enabledPages = pages.filter(p => p.dataset.status !== 'disabled');
-
-    // --- Find target page
-    const targetPage = typeof platformNameOrIndex === 'string'
-        ? GalleryState.enabledPages.find(p => p.dataset.platform === platformNameOrIndex)
-        : (typeof platformNameOrIndex === 'number' && platformNameOrIndex >= 0 && platformNameOrIndex < GalleryState.enabledPages.length)
-            ? GalleryState.enabledPages[platformNameOrIndex]
-            : null;
+    // Find target page in DOM order
+    let targetPage;
+    if (typeof platformNameOrIndex === 'string') {
+        targetPage = pages.find(p => p.dataset.platform === platformNameOrIndex);
+    } else if (typeof platformNameOrIndex === 'number' && platformNameOrIndex >= 0 && platformNameOrIndex < pages.length) {
+        targetPage = pages[platformNameOrIndex];
+    }
 
     if (!targetPage) {
-        console.error('Could not find page for:', platformNameOrIndex, 'falling back to first enabled page');
-        targetPage = GalleryState.enabledPages[0];
+        console.error('Could not find page for:', platformNameOrIndex, 'falling back to first page');
+        targetPage = pages[0];
         if (!targetPage) {
-            console.error('No enabled pages found, cannot initialize gallery');
+            console.error('No pages found, cannot initialize gallery');
             return;
         }
     }
 
-    GalleryState.currentPageIndex = GalleryState.enabledPages.indexOf(targetPage);
-
     function initCurrentGallery(page) {
-
-        GalleryState.gameContainers = Array.from(page.querySelectorAll('.game-container'));
+        const gameContainers = Array.from(page.querySelectorAll('.game-container'));
 
         const selected = page.querySelector('.game-container.selected');
 
         if (!selected && !page.dataset.empty) {
-            GalleryState.gameContainers[0].classList.add('selected');
-            GalleryState.selectedIndex = 0;
+            gameContainers[0].classList.add('selected');
+            selectedIndex = 0;
         } else {
-            GalleryState.selectedIndex = GalleryState.gameContainers.indexOf(selected);
+            selectedIndex = gameContainers.indexOf(selected);
         }
 
         if (!page.dataset.listenersAttached) {
-            GalleryState.gameContainers.forEach(container => {
+            gameContainers.forEach(container => {
                 container.addEventListener('click', (event) => {
                     event.stopPropagation();
                     event.stopImmediatePropagation();
@@ -303,7 +293,7 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
                         launchGameDialog(container);
                     }
 
-                    GalleryState.gameContainers.forEach(c => c.classList.remove('selected'));
+                    gameContainers.forEach(c => c.classList.remove('selected'));
                 });
 
                 container.addEventListener('contextmenu', (event) => {
@@ -311,7 +301,7 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
                     event.stopPropagation();
                     event.stopImmediatePropagation();
 
-                    GalleryState.gameContainers.forEach(c => c.classList.remove('selected'));
+                    gameContainers.forEach(c => c.classList.remove('selected'));
                     container.classList.add('selected');
                     openGameMenu(container);
                 });
@@ -322,51 +312,31 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
         toggleHeaderNavLinks('show');
         updateHeader(page.dataset.platform);
         setGalleryFooterControls(page.dataset);
-
     }
 
     function updateGallery() {
-        const activePos = GalleryState.currentPageIndex;
+        const currentPage = pages.find(p => p.classList.contains('active'));
+        const currentIndex = pages.indexOf(currentPage);
 
-        GalleryState.enabledPages.forEach((page, index) => {
-            // Use a more efficient class management approach
-            const currentClasses = page.className.split(' ').filter(cls =>
-                !['active', 'prev', 'next', 'adjacent'].includes(cls)
-            );
-            page.className = currentClasses.join(' ');
+        pages.forEach((page, index) => {
+            // Clear navigation classes
+            page.classList.remove('active', 'prev', 'next', 'adjacent');
 
-            const length = GalleryState.enabledPages.length;
-
-            // if (index === activePos) {
-            //     page.classList.add('active');
-            // } else if (index === (activePos - 1 + length) % length) {
-            //     page.classList.add('prev');
-            // } else if (index === (activePos + 1) % length) {
-            //     page.classList.add('next');
-            // } else {
-            //     page.classList.add('adjacent');
-            // }
-
-
-            if (index === activePos) {
+            if (page === currentPage) {
                 initCurrentGallery(page);
                 LB.currentPlatform = page.dataset.platform;
                 page.classList.add('active');
 
                 const pageContent = page.querySelector('.page-content');
-                // Reset scroll position when switching pages
                 if (pageContent) {
                     pageContent.scrollTop = 0;
                 }
-                // Ensure the page is scrollable for grid mode
                 page.style.overflowY = 'auto';
                 page.style.overflowX = 'hidden';
 
                 if (page.dataset.platform === 'recents' || page.dataset.platform === 'favorites') {
                     const platformBadges = page.querySelectorAll('.platform-badge');
-                    platformBadges.forEach(badge => {
-                        badge.style.display = 'block';
-                    });
+                    platformBadges.forEach(badge => badge.style.display = 'block');
                 }
 
                 if (!page.dataset.empty) {
@@ -374,9 +344,9 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
                 }
 
                 updateHeaderControls(page.dataset);
-            } else if (index === (activePos - 1 + length) % length) {
+            } else if (index === (currentIndex - 1 + pages.length) % pages.length) {
                 page.classList.add('prev');
-            } else if (index === (activePos + 1) % length) {
+            } else if (index === (currentIndex + 1) % pages.length) {
                 page.classList.add('next');
             } else {
                 page.classList.add('adjacent');
@@ -385,7 +355,6 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
     }
 
     function updateHeaderControls(pageDataset) {
-
         const headerControls = document.getElementById('header-controls');
 
         if (LB.kioskMode) {
@@ -417,42 +386,60 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
     }
 
     function goToPage(direction = 1) {
-        const next = (GalleryState.currentPageIndex + direction + GalleryState.enabledPages.length) % GalleryState.enabledPages.length;
-        GalleryState.currentPageIndex = next;
+        const currentPage = pages.find(p => p.classList.contains('active'));
+        let currentIndex = pages.indexOf(currentPage);
+
+        // Find next page in DOM order, skipping disabled pages
+        let nextIndex = currentIndex;
+        do {
+            nextIndex = (nextIndex + direction + pages.length) % pages.length;
+            const nextPage = pages[nextIndex];
+            const platform = nextPage.dataset.platform;
+
+            // Check if page is enabled
+            if (platform === 'settings' || platform === 'recents' || platform === 'favorites') {
+                break; // Always allow these pages
+            }
+
+            const isEnabled = LB.preferences[platform]?.isEnabled;
+            if (isEnabled) {
+                break; // Found enabled page
+            }
+        } while (nextIndex !== currentIndex); // Prevent infinite loop
+
+        // Update active page
+        pages.forEach(p => p.classList.remove('active'));
+        pages[nextIndex].classList.add('active');
         updateGallery();
     }
 
-    GalleryState.goToNextPage = () => goToPage(1);
-    GalleryState.goToPrevPage = () => goToPage(-1);
+    const goToNextPage = () => goToPage(1);
+    const goToPrevPage = () => goToPage(-1);
 
     galleries.addEventListener('wheel', event => {
-
         const scrollableDiv = document.querySelector('.game-pane');
 
         if (scrollableDiv && scrollableDiv.contains(event.target)) {
-            // Let normal scrolling happen
             return;
         }
 
         event.preventDefault();
-        if (event.shiftKey) event.deltaY > 0 ? GalleryState.goToNextPage() : GalleryState.goToPrevPage();
-        else simulateKeyDown(event.deltaY > 0 ? 'ArrowDown' : 'ArrowUp');
+        if (event.shiftKey) {
+            event.deltaY > 0 ? goToNextPage() : goToPrevPage();
+        } else {
+            simulateKeyDown(event.deltaY > 0 ? 'ArrowDown' : 'ArrowUp');
+        }
     });
 
     header.addEventListener('wheel', event => {
         event.preventDefault();
         if (LB.mode === 'gallery') {
-            event.deltaY > 0 ? GalleryState.goToNextPage() : GalleryState.goToPrevPage();
+            event.deltaY > 0 ? goToNextPage() : goToPrevPage();
         }
     });
 
-    document.getElementById('prev-link').addEventListener('click', function() {
-        GalleryState.goToPrevPage();
-    });
-
-    document.getElementById('next-link').addEventListener('click', function() {
-        GalleryState.goToNextPage();
-    });
+    document.getElementById('prev-link').addEventListener('click', goToPrevPage);
+    document.getElementById('next-link').addEventListener('click', goToNextPage);
 
     document.getElementById('view-mode-toggle-button').addEventListener('click', function() {
         setGalleryViewMode(this.classList.contains('fa-th') ? 'grid' : 'list', true);
@@ -466,6 +453,9 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
         batchDownload();
     });
 
+    // Set initial active page
+    pages.forEach(p => p.classList.remove('active'));
+    targetPage.classList.add('active');
     updateGallery();
 }
 
@@ -476,11 +466,11 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
     const isGallery = LB.mode === 'gallery';
     const isGameMenu = LB.mode === 'gameMenu';
 
+    const activePage = document.querySelector('.page.active');
     const containers = isGallery
-          ? GalleryState.gameContainers
+          ? Array.from(activePage.querySelectorAll('.game-container'))
           : Array.from(menu.querySelectorAll('.menu-game-container'));
 
-    const activePage = document.querySelector('.page.active');
     const isListMode = activePage && activePage.querySelector('.page-content') ? activePage.querySelector('.page-content').classList.contains('list') : false;
 
     const _moveRows = (idx, rows) => {
@@ -489,79 +479,155 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         return Math.min(Math.max((row + rows) * LB.galleryNumOfCols + col, 0), containers.length - 1);
     };
 
+    // Helper function to go to next/prev page
+    const goToPage = (direction = 1) => {
+        const pages = Array.from(document.querySelectorAll('#galleries .page'));
+        const currentPage = pages.find(p => p.classList.contains('active'));
+        let currentIndex = pages.indexOf(currentPage);
+
+        // Find next page in DOM order, skipping disabled pages
+        let nextIndex = currentIndex;
+        do {
+            nextIndex = (nextIndex + direction + pages.length) % pages.length;
+            const nextPage = pages[nextIndex];
+            const platform = nextPage.dataset.platform;
+
+            // Check if page is enabled
+            if (platform === 'settings' || platform === 'recents' || platform === 'favorites') {
+                break; // Always allow these pages
+            }
+
+            const isEnabled = LB.preferences[platform]?.isEnabled;
+            if (isEnabled) {
+                break; // Found enabled page
+            }
+        } while (nextIndex !== currentIndex); // Prevent infinite loop
+
+        // Update active page
+        pages.forEach(p => p.classList.remove('active'));
+        pages[nextIndex].classList.add('active');
+
+        // Update gallery display
+        const currentPageNew = pages.find(p => p.classList.contains('active'));
+        const currentIndexNew = pages.indexOf(currentPageNew);
+
+        pages.forEach((page, index) => {
+            page.classList.remove('active', 'prev', 'next', 'adjacent');
+
+            if (page === currentPageNew) {
+                // Re-init the current gallery
+                const gameContainers = Array.from(page.querySelectorAll('.game-container'));
+                const selected = page.querySelector('.game-container.selected');
+
+                if (!selected && !page.dataset.empty) {
+                    gameContainers[0].classList.add('selected');
+                    selectedIndex = 0;
+                } else {
+                    selectedIndex = gameContainers.indexOf(selected);
+                }
+
+                LB.currentPlatform = page.dataset.platform;
+                page.classList.add('active');
+
+                const pageContent = page.querySelector('.page-content');
+                if (pageContent) {
+                    pageContent.scrollTop = 0;
+                }
+                page.style.overflowY = 'auto';
+                page.style.overflowX = 'hidden';
+
+                if (page.dataset.platform === 'recents' || page.dataset.platform === 'favorites') {
+                    const platformBadges = page.querySelectorAll('.platform-badge');
+                    platformBadges.forEach(badge => badge.style.display = 'block');
+                }
+
+                if (!page.dataset.empty) {
+                    setGalleryViewMode(page.dataset.viewMode);
+                }
+
+                updateHeader(page.dataset.platform);
+                setGalleryFooterControls(page.dataset);
+            } else if (index === (currentIndexNew - 1 + pages.length) % pages.length) {
+                page.classList.add('prev');
+            } else if (index === (currentIndexNew + 1) % pages.length) {
+                page.classList.add('next');
+            } else {
+                page.classList.add('adjacent');
+            }
+        });
+    };
+
     switch (event.key) {
     case 'ArrowLeft':
         if (event.shiftKey) {
-            GalleryState.goToPrevPage();
-            GalleryState.selectedIndex = 1;
+            goToPage(-1);
+            selectedIndex = 1;
         } else {
             if (isListMode && LB.mode === 'gallery') {
-                GalleryState.selectedIndex = Math.max(GalleryState.selectedIndex - 1, 0);
+                selectedIndex = Math.max(selectedIndex - 1, 0);
             } else {
-                if (LB.mode === 'gameMenu' && GalleryState.selectedIndex === 1) {
+                if (LB.mode === 'gameMenu' && selectedIndex === 1) {
                     return;
                 }
-                GalleryState.selectedIndex = (GalleryState.selectedIndex - 1 + containers.length) % containers.length;
+                selectedIndex = (selectedIndex - 1 + containers.length) % containers.length;
             }
         }
         break;
 
     case 'ArrowRight':
         if (event.shiftKey) {
-            const nextPage = GalleryState.goToNextPage();
-            if (nextPage) {
-                GalleryState.selectedIndex = nextPage;
-            }
+            goToPage(1);
+            selectedIndex = 0;
         } else {
             if (isListMode && LB.mode === 'gallery') {
-                GalleryState.selectedIndex = Math.min(GalleryState.selectedIndex + 1, containers.length - 1);
+                selectedIndex = Math.min(selectedIndex + 1, containers.length - 1);
             } else {
-                GalleryState.selectedIndex = (GalleryState.selectedIndex + 1) % containers.length;
+                selectedIndex = (selectedIndex + 1) % containers.length;
             }
         }
         break;
 
     case 'ArrowUp':
         if (isListMode && LB.mode === 'gallery') {
-            GalleryState.selectedIndex = Math.max(GalleryState.selectedIndex - 1, 0);
+            selectedIndex = Math.max(selectedIndex - 1, 0);
         } else {
-            if (LB.mode === 'gameMenu' && GalleryState.selectedIndex === LB.galleryNumOfCols) {
+            if (LB.mode === 'gameMenu' && selectedIndex === LB.galleryNumOfCols) {
                 return;
             }
-            GalleryState.selectedIndex = _moveRows(GalleryState.selectedIndex, -1);
+            selectedIndex = _moveRows(selectedIndex, -1);
         }
         break;
 
     case 'ArrowDown':
         if (isListMode && LB.mode === 'gallery') {
-            GalleryState.selectedIndex = Math.min(GalleryState.selectedIndex + 1, containers.length - 1);
+            selectedIndex = Math.min(selectedIndex + 1, containers.length - 1);
         } else {
-            GalleryState.selectedIndex = _moveRows(GalleryState.selectedIndex, 1);
+            selectedIndex = _moveRows(selectedIndex, 1);
         }
         break;
 
     case 'PageUp':
         if (isListMode && LB.mode === 'gallery') {
-            GalleryState.selectedIndex = Math.max(GalleryState.selectedIndex - 10, 0);
+            selectedIndex = Math.max(selectedIndex - 10, 0);
         } else {
-            GalleryState.selectedIndex = _moveRows(GalleryState.selectedIndex, -Math.ceil(10 / LB.galleryNumOfCols));
+            selectedIndex = _moveRows(selectedIndex, -Math.ceil(10 / LB.galleryNumOfCols));
         }
         break;
 
     case 'PageDown':
         if (isListMode && LB.mode === 'gallery') {
-            GalleryState.selectedIndex = Math.min(GalleryState.selectedIndex + 10, containers.length - 1);
+            selectedIndex = Math.min(selectedIndex + 10, containers.length - 1);
         } else {
-            GalleryState.selectedIndex = _moveRows(GalleryState.selectedIndex, Math.ceil(10 / LB.galleryNumOfCols));
+            selectedIndex = _moveRows(selectedIndex, Math.ceil(10 / LB.galleryNumOfCols));
         }
         break;
 
     case 'Home':
-        GalleryState.selectedIndex = 0;
+        selectedIndex = 0;
         break;
 
     case 'End':
-        GalleryState.selectedIndex = containers.length - 1;
+        selectedIndex = containers.length - 1;
         break;
 
     case 'Escape':
@@ -585,7 +651,7 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         event.stopImmediatePropagation();
         event.preventDefault();
 
-        const selectedContainer = containers[GalleryState.selectedIndex];
+        const selectedContainer = containers[selectedIndex];
 
         if (isGallery) {
             if (activePage.dataset.platform === 'settings') {
@@ -604,7 +670,7 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
 
     case '+':
         if (!LB.kioskMode) {
-            handleFavoriteToggle(containers[GalleryState.selectedIndex]);
+            handleFavoriteToggle(containers[selectedIndex]);
         }
 
         break;
@@ -630,7 +696,7 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
     case 'i':
         if (!LB.kioskMode) {
             if (event.ctrlKey) {
-                const selectedContainer = containers[GalleryState.selectedIndex];
+                const selectedContainer = containers[selectedIndex];
                 openGameMenu(selectedContainer);
             }
         }
@@ -650,7 +716,7 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
     default:
         if (!event.ctrlKey && !event.altKey && !event.metaKey && /^[a-z0-9]$/i.test(event.key)) {
             const key = event.key.toLowerCase();
-            const startIndex = GalleryState.selectedIndex + 1;
+            const startIndex = selectedIndex + 1;
             let matchIndex = -1;
 
             for (let i = startIndex; i < containers.length; i++) {
@@ -673,18 +739,18 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
             }
 
             if (matchIndex >= 0) {
-                GalleryState.selectedIndex = matchIndex;
+                selectedIndex = matchIndex;
             }
         }
         break;
 
     }
 
-    const selectedContainer = containers[GalleryState.selectedIndex];
+    const selectedContainer = containers[selectedIndex];
     const isEmptyPage = activePage.dataset.empty === 'true';
 
     containers.forEach((container, index) =>
-        container.classList.toggle('selected', index === GalleryState.selectedIndex)
+        container.classList.toggle('selected', index === selectedIndex)
     );
 
     if (LB.mode === 'gameMenu') {
@@ -1133,8 +1199,8 @@ function handleFavoriteToggle(selectedContainer) {
         // Check if it's already a favorite to show appropriate message
         const isFavorite = checkIfFavorite(selectedContainer);
         const message = isFavorite
-            ? 'Press + again to remove from favorites'
-            : 'Press + again to add to favorites';
+            ? `Press + again to remove <span class="accent">${selectedContainer.dataset.cleanName}</span> from favorites`
+            : `Press + again to add <span class="accent">${selectedContainer.dataset.cleanName}</span> to favorites`;
 
         toggleFavDialog(message);
     }

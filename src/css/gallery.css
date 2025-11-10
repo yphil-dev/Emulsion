@@ -399,13 +399,17 @@ div.menu-current-image-container {
 
 .current-image-buttons {
   position: absolute;
-  bottom: 0.5em;
 
   width: -webkit-fill-available;
 
   display: flex;
   flex-direction: row;
   justify-content: space-around;
+  padding-bottom: 0.3em;
+}
+
+.current-image-buttons button {
+  margin: 0;
 }
 
 .empty-platform-game-container button {

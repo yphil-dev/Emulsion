@@ -1164,25 +1164,38 @@ function buildManualSelectButton(gameName, platformName, imgElem) {
 }
 
 function buildRemoveButton(img) {
-
     const button = document.createElement('button');
     button.classList.add('button', 'very-small', 'remove-button');
     button.title = 'Delete image';
     button.textContent = 'Remove';
 
     button.addEventListener('click', async e => {
-        const success = await ipcRenderer.invoke('delete-image', decodeURIComponent(img.src.replace('file://', '')));
+        const fileName = new URL(img.src).pathname.split('/').pop();
+
+        if (fileName === 'missing.png') {
+            return; // don't show button for missing image
+        }
+
+        // ask user before deleting
+        const confirmed = confirm(`Delete "${decodeURIComponent(fileName)}"?`);
+        if (!confirmed) return;
+
+        const success = await ipcRenderer.invoke(
+            'delete-image',
+            decodeURIComponent(img.src.replace('file://', ''))
+        );
 
         if (success) {
             img.src = path.join(LB.baseDir, 'img', 'missing.png');
         } else {
             console.log('Failed to delete cover');
         }
-
     });
 
-    return button;
+    const fileName = new URL(img.src).pathname.split('/').pop();
+    return fileName !== 'missing.png' ? button : null;
 }
+
 
 function buildCurrentGameImgContainer(gameName, image, platformName) {
     const gameMenuContainer = document.createElement('div');
@@ -1208,7 +1221,10 @@ function buildCurrentGameImgContainer(gameName, image, platformName) {
     const manualSelectButton = buildManualSelectButton(gameName, platformName, currentImage);
     const removeButton = buildRemoveButton(currentImage);
 
-    buttons.append(manualSelectButton, removeButton);
+    buttons.appendChild(manualSelectButton);
+    if (removeButton) {
+        buttons.appendChild(removeButton);
+    }
 
     currentImageContainer.append(currentImage, buttons);
 

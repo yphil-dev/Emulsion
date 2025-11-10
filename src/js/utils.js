@@ -574,7 +574,8 @@ export async function executeBatchDownload(games, type, platformName) {
     for (let i = 0; i < games.length; i++) {
 
         const gameContainer = games[i];
-        const gameName = gameContainer.dataset.cleanName;
+        const gameName = gameContainer.dataset.gameName;
+        const cleanName = gameContainer.dataset.cleanName;
 
         if (type === 'image') {
             setFooterProgress(1, (i / games.length) * 100);
@@ -600,7 +601,7 @@ export async function executeBatchDownload(games, type, platformName) {
 
             try {
                 const urls = await new Promise((resolve) => {
-                    ipcRenderer.send('fetch-images', gameName, platformName, LB.steamGridAPIKey, LB.giantBombAPIKey);
+                    ipcRenderer.send('fetch-images', cleanName, platformName, LB.steamGridAPIKey, LB.giantBombAPIKey);
                     ipcRenderer.once('image-urls', (event, urls) => resolve(urls));
                 });
 

@@ -140,8 +140,12 @@ body {
 }
 
 
-h1, h2, h3, h4 {
+h1, h2, h4 {
   color:var(--color-text-2);
+}
+
+h3 {
+  color:var(--color-text-1);
 }
 
 .no-hover * {

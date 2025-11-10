@@ -111,11 +111,15 @@ header .platform-image {
   right: 30vw;
   height: 28px;
   width: 120px;
+
   display: flex;
   justify-content: space-evenly;
   align-items: center;
+
+  background: var(--color-bg-controls);
   color: var(--color-text-1);
   border: 1px solid var(--color-border-header);
+
   border-top-right-radius: 15px;
   border-top-left-radius: 15px;
   border-bottom: none;

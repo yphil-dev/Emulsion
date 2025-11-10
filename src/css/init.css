@@ -139,6 +139,11 @@ body {
   transition: background 0.8s ease;
 }
 
+
+h1, h2, h3, h4 {
+  color:var(--color-text-2);
+}
+
 .no-hover * {
   pointer-events: none !important;
 }

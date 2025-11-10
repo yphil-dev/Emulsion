@@ -35,7 +35,7 @@
 .dialog h2,
 .dialog h3,
 .dialog h4 {
-  color:var(--color-selected);
+  color:var(--color-text-2);
 }
 
 .dialog .title,
@@ -165,7 +165,7 @@
 }
 
 .help-dialog .th-content span {
-  color: var(--color-selected);
+  color: var(--color-text-2);
 }
 
 .help-dialog tbody tr {

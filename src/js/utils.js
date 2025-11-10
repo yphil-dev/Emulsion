@@ -275,6 +275,7 @@ const PREDEFINED_TITLES = {
     WIPEOUT3:       'WipEout 3',
     WIPEOUTFUSION:  'WipEout Fusion',
     PROJECTXSE:     'ProjectX SE',
+    DUCKTALES:      'DuckTales',
     SONIC3COMPLETE: 'Sonic 3 Complete',
     NHL94:          'NHL 94',
 };
@@ -573,7 +574,7 @@ export async function executeBatchDownload(games, type, platformName) {
     for (let i = 0; i < games.length; i++) {
 
         const gameContainer = games[i];
-        const gameName = gameContainer.dataset.gameName;
+        const gameName = gameContainer.dataset.cleanName;
 
         if (type === 'image') {
             setFooterProgress(1, (i / games.length) * 100);

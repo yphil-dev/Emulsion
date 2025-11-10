@@ -31,13 +31,6 @@
   backdrop-filter: blur(3px); /* optional if you want a translucent feel */
 }
 
-.dialog h1,
-.dialog h2,
-.dialog h3,
-.dialog h4 {
-  color:var(--color-text-2);
-}
-
 .dialog .title,
 .dialog .dialog-title {
   color: var(--color-text-2);

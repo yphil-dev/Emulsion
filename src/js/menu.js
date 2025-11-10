@@ -1127,7 +1127,7 @@ async function populateGameMenu(menuContainer, gameName, platformName) {
 function buildManualSelectButton(gameName, platformName, imgElem) {
 
     const button = document.createElement('button');
-    button.classList.add('button', 'small', 'manual-select-button');
+    button.classList.add('button', 'very-small', 'manual-select-button');
     button.title = 'Select image';
     // btn.innerHTML = '<i class="fa fa-plus" aria-hidden="true"></i>';
     button.textContent = 'Browse';
@@ -1166,7 +1166,7 @@ function buildManualSelectButton(gameName, platformName, imgElem) {
 function buildRemoveButton(img) {
 
     const button = document.createElement('button');
-    button.classList.add('button', 'small', 'remove-button');
+    button.classList.add('button', 'very-small', 'remove-button');
     button.title = 'Delete image';
     button.textContent = 'Remove';
 
@@ -1217,7 +1217,7 @@ function buildCurrentGameImgContainer(gameName, image, platformName) {
     const dummyGameContainer = document.createElement('div');
     dummyGameContainer.classList.add('menu-game-container', 'dummy-game-container');
     dummyGameContainer.style.height = 'calc(120vw / ' + LB.galleryNumOfCols + ')';
-    dummyGameContainer.innerHTML = `Searching...`;
+    dummyGameContainer.innerHTML = `<h4>Searching...</h4>`;
 
     gameMenuContainer.appendChild(dummyGameContainer);
 

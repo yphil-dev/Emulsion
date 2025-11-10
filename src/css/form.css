@@ -47,6 +47,12 @@ button {
   padding: 0.6em;
 }
 
+.button.very-small {
+  font-size: 0.6em;
+  padding: 0.2em 0.4em;
+  margin-left: 0.5em;
+}
+
 .button:hover,
 .button:focus {
   color: var(--color-selected);

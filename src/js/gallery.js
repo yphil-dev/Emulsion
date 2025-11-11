@@ -23,7 +23,6 @@ export async function buildGalleries (preferences, userDataPath) {
             for (const platformName of platforms) {
                 let prefs = preferences[platformName];
 
-
                 if (prefs) {
                     let gamesDir, viewMode, emulator, emulatorArgs, extensions, isEnabled, index;
                     if (platformName === 'settings') {

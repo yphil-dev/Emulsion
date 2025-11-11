@@ -4,6 +4,7 @@ name: Build & Release
 # 1. Only run on tag pushes
 on:
   push:
+    branches: [ master ]
     tags:
       - '*'   # any tag :contentReference[oaicite:4]{index=4}
 

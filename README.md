@@ -1,8 +1,4 @@
-[![CI/CD](https://github.com/yPhil-gh/emulsion/actions/workflows/ci.yml/badge.svg?branch=master&event=push)](https://github.com/yPhil-gh/emulsion/actions)
-[![CI/CD](https://img.shields.io/github/deployments/yPhil-gh/emulsion/production?label=CI%2FCD)](https://github.com/yPhil-gh/emulsion/actions)
-
-[![CI/CD](https://img.shields.io/badge/CI%2FCD-Passing-brightgreen)](https://github.com/yPhil-gh/emulsion/actions)
-
+[![CI/CD](https://img.shields.io/badge/Build-Passing-brightgreen)](https://github.com/yPhil-gh/emulsion/actions)
 [![Release](https://img.shields.io/github/v/release/yPhil-gh/emulsion?style=flat)](https://github.com/yPhil-gh/emulsion/releases)
 [![License](https://img.shields.io/github/license/yPhil-gh/emulsion?style=flat)](https://github.com/yPhil-gh/emulsion/blob/main/LICENSE)
 [![LiberaPay](https://img.shields.io/liberapay/receives/yphil.svg?logo=liberapay&style=flat)](https://liberapay.com/yphil/donate)

@@ -1,4 +1,4 @@
-[![CI/CD](https://img.shields.io/github/actions/workflow/status/yPhil-gh/emulsion/.github/workflows/ci.yml?branch=master&event=push&style=flat)](https://github.com/yPhil-gh/emulsion/actions)
+[![CI/CD](https://github.com/yPhil-gh/emulsion/actions/workflows/ci.yml/badge.svg?branch=master&event=push)](https://github.com/yPhil-gh/emulsion/actions)
 [![Release](https://img.shields.io/github/v/release/yPhil-gh/emulsion?style=flat)](https://github.com/yPhil-gh/emulsion/releases)
 [![License](https://img.shields.io/github/license/yPhil-gh/emulsion?style=flat)](https://github.com/yPhil-gh/emulsion/blob/main/LICENSE)
 [![LiberaPay](https://img.shields.io/liberapay/receives/yphil.svg?logo=liberapay&style=flat)](https://liberapay.com/yphil/donate)

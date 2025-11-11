@@ -212,7 +212,18 @@ export function buildHomeSlide(platformName, preferences) {
     slide.appendChild(slideContent);
 
     if (platformName !== 'settings' &&
+        platformName !== 'recents' &&
+        platformName !== 'favorites' &&
         ((LB.kioskMode || LB.disabledPlatformsPolicy === 'hide') && !preferences[platformName]?.isEnabled)) {
+        return null;
+    }
+
+    // Special handling for recents and favorites - they have their own policies
+    if (platformName === 'recents' && LB.recentlyPlayedPolicy !== 'show') {
+        return null;
+    }
+
+    if (platformName === 'favorites' && LB.favoritesPolicy !== 'show') {
         return null;
     }
 
@@ -249,14 +260,23 @@ function goToGalleryPage(direction = 1) {
         const nextPage = pages[nextIndex];
         const platform = nextPage.dataset.platform;
 
-        // Check if page is enabled
-        if (platform === 'settings' || platform === 'recents' || platform === 'favorites') {
-            break; // Always allow these pages
-        }
-
-        const isEnabled = LB.preferences[platform]?.isEnabled;
-        if (isEnabled) {
-            break; // Found enabled page
+        // Check if page is enabled based on its specific policy
+        if (platform === 'settings') {
+            break; // Always allow settings
+        } else if (platform === 'recents') {
+            if (LB.recentlyPlayedPolicy === 'show') {
+                break; // Allow recents if policy is 'show'
+            }
+        } else if (platform === 'favorites') {
+            if (LB.favoritesPolicy === 'show') {
+                break; // Allow favorites if policy is 'show'
+            }
+        } else {
+            // For regular platforms, check if enabled
+            const isEnabled = LB.preferences[platform]?.isEnabled;
+            if (isEnabled) {
+                break; // Found enabled page
+            }
         }
     } while (nextIndex !== currentIndex); // Prevent infinite loop
 

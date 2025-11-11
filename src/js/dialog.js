@@ -797,6 +797,176 @@ export function launchGameDialog(gameContainer) {
     okButton.focus();
 }
 
+export function preferencesErrorDialog(errorMessage) {
+    const overlay = document.getElementById('preferences-error-overlay');
+
+    // Create overlay if it doesn't exist
+    if (!overlay) {
+        const newOverlay = document.createElement('div');
+        newOverlay.id = 'preferences-error-overlay';
+        newOverlay.className = 'overlay popup-overlay';
+
+        const dialog = document.createElement('div');
+        dialog.className = 'dialog preferences-error-dialog';
+
+        const title = document.createElement('h2');
+        title.className = 'dialog-title';
+        title.textContent = 'Preferences Error';
+
+        const body = document.createElement('div');
+        body.className = 'dialog-body';
+
+        const message = document.createElement('p');
+        message.className = 'error-message';
+        body.appendChild(message);
+
+        const buttons = document.createElement('div');
+        buttons.className = 'dialog-buttons';
+
+        const resetButton = document.createElement('button');
+        resetButton.className = 'button reset';
+        resetButton.textContent = 'Reset Preferences';
+
+        const quitButton = document.createElement('button');
+        quitButton.className = 'button quit';
+        quitButton.textContent = 'Quit';
+
+        buttons.appendChild(resetButton);
+        buttons.appendChild(quitButton);
+
+        dialog.appendChild(title);
+        dialog.appendChild(body);
+        dialog.appendChild(buttons);
+        newOverlay.appendChild(dialog);
+
+        document.body.appendChild(newOverlay);
+
+        return new Promise((resolve) => {
+            resetButton.addEventListener('click', () => {
+                DialogManager.closeCurrent();
+                resolve('reset');
+            });
+
+            quitButton.addEventListener('click', () => {
+                DialogManager.closeCurrent();
+                resolve('quit');
+            });
+
+            newOverlay.addEventListener('click', (e) => {
+                if (e.target === newOverlay) {
+                    // Don't close on overlay click for error dialogs
+                }
+            });
+
+            DialogManager.open(newOverlay, 'preferencesError');
+            resetButton.focus();
+
+            window.onPreferencesErrorKeyDown = function(event) {
+                event.stopPropagation();
+                event.stopImmediatePropagation();
+
+                switch (event.key) {
+                case 'ArrowLeft':
+                case 'ArrowRight':
+                    simulateTabNavigation(dialog);
+                    break;
+                case 'Enter':
+                    const focused = document.activeElement;
+                    if (focused === resetButton) {
+                        resetButton.click();
+                    } else if (focused === quitButton) {
+                        quitButton.click();
+                    }
+                    break;
+                case 'Escape':
+                    // Don't allow escape for error dialogs
+                    break;
+                }
+            };
+        });
+    } else {
+        // Update existing overlay
+        const message = overlay.querySelector('.error-message');
+        if (message) {
+            message.textContent = errorMessage;
+        }
+
+        return new Promise((resolve) => {
+            const resetButton = overlay.querySelector('.reset');
+            const quitButton = overlay.querySelector('.quit');
+
+            resetButton.addEventListener('click', () => {
+                DialogManager.closeCurrent();
+                resolve('reset');
+            });
+
+            quitButton.addEventListener('click', () => {
+                DialogManager.closeCurrent();
+                resolve('quit');
+            });
+
+            DialogManager.open(overlay, 'preferencesError');
+            resetButton.focus();
+        });
+    }
+}
+
+export function resetPrefsDialog(errorMessage) {
+    const overlay = document.getElementById('reset-prefs-overlay');
+    const dialog = overlay.querySelector('#reset-prefs-dialog');
+    const resetButton = dialog.querySelector('.reset');
+    const quitButton = dialog.querySelector('.quit');
+    const messageElement = dialog.querySelector('.error-message');
+
+    messageElement.textContent = errorMessage;
+
+    function closeDialog() {
+        DialogManager.closeCurrent();
+        DialogManager.restoreMode();
+    }
+
+    resetButton.addEventListener('click', async () => {
+        try {
+            await ipcRenderer.invoke('reset-preferences');
+            closeDialog();
+            // Reload the app to use the new preferences
+            window.location.reload();
+        } catch (error) {
+            console.error('Failed to reset preferences:', error);
+        }
+    });
+
+    quitButton.addEventListener('click', () => {
+        ipcRenderer.invoke('quit');
+    });
+
+    DialogManager.open(overlay, 'resetPrefs');
+    resetButton.focus();
+
+    window.onResetPrefsKeyDown = function(event) {
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+
+        switch (event.key) {
+        case 'ArrowLeft':
+        case 'ArrowRight':
+            simulateTabNavigation(dialog);
+            break;
+        case 'Enter':
+            const focused = document.activeElement;
+            if (focused === resetButton) {
+                resetButton.click();
+            } else if (focused === quitButton) {
+                quitButton.click();
+            }
+            break;
+        case 'Escape':
+            // Don't allow escape for error dialogs
+            break;
+        }
+    };
+}
+
 export function installEmulatorsDialog(emulators) {
     const overlay = document.getElementById('install-emulators-dialog-overlay');
     const dialog = overlay.querySelector('div.dialog');
@@ -1065,4 +1235,3 @@ export function installEmulatorsDialog(emulators) {
     DialogManager.open(overlay, 'installDialog');
     closeButton.focus();
 }
-

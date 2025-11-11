@@ -431,6 +431,52 @@ dd.disabled {
   text-align: center;
 }
 
+/* Preferences Error Dialog */
+.preferences-error-dialog {
+  width: 50vw;
+  min-width: 400px;
+  max-width: 600px;
+}
+
+.preferences-error-dialog .error-message {
+  margin: 1em 0;
+  padding: 1em;
+  background: var(--color-bg-header);
+  border: 1px solid var(--color-border-header);
+  border-radius: 4px;
+  color: var(--color-text-1);
+}
+
+.preferences-error-dialog .dialog-buttons {
+  display: flex;
+  gap: 1em;
+  justify-content: center;
+  margin-top: 1em;
+}
+
+.preferences-error-dialog .dialog-buttons button {
+  padding: 0.75em 1.5em;
+  min-width: 120px;
+}
+
+.preferences-error-dialog .reset {
+  background: var(--color-button-off);
+  color: var(--color-text-1);
+}
+
+.preferences-error-dialog .reset:hover {
+  background: var(--color-selected);
+}
+
+.preferences-error-dialog .quit {
+  background: var(--color-error);
+  color: white;
+}
+
+.preferences-error-dialog .quit:hover {
+  background: #d32f2f;
+}
+
 .emulators-table td .buttons {
   display: inline-flex;     /* not flex, inline-flex so it's centered by text-align */
   justify-content: center;

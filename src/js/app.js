@@ -87,6 +87,7 @@ async function initializeApp() {
             recentlyPlayedViewMode: appData.recentlyPlayedViewMode,
             preferences: appData.preferences,
             galleryNumOfCols: appData.preferences.settings.numberOfColumns,
+            preferencesError: appData.preferencesError,
 
             // UI preference properties
             steamGridAPIKey: uiPreferences.settings.steamGridAPIKey,
@@ -113,6 +114,13 @@ async function initializeApp() {
 
         hideCursor();
         resetMouseTimer();
+
+        // Set up IPC listeners
+        ipcRenderer.on('show-reset-prefs-dialog', (event, errorMessage) => {
+            import('./dialog.js').then(({ resetPrefsDialog }) => {
+                resetPrefsDialog(errorMessage);
+            });
+        });
 
         // Set up keyboard shortcuts
         document.addEventListener('keydown', async (event) => {
@@ -149,6 +157,8 @@ async function initializeApp() {
                 window.onDownloadMetaKeyDown(event);
             } else if (LB.mode === 'installDialog' && window.onInstallKeyDown) {
                 window.onInstallKeyDown(event);
+            } else if (LB.mode === 'resetPrefs' && window.onResetPrefsKeyDown) {
+                window.onResetPrefsKeyDown(event);
             }
         });
 
@@ -181,6 +191,14 @@ async function initializeApp() {
                         initGallery(LB.autoSelect);
                     } else {
                         initSlideShow(0);
+                    }
+
+                    // Show preferences error dialog if there was an error
+                    if (LB.preferencesError) {
+                        import('./dialog.js').then(({ resetPrefsDialog }) => {
+                            resetPrefsDialog(LB.preferencesError);
+                        });
+                        return;
                     }
 
                     // Show startup dialog if configured

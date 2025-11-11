@@ -1,19 +1,19 @@
 import { PLATFORMS } from './platforms.js';
-const { ipcRenderer } = require('electron');
-const path = require('path');
 
 async function loadUserData() {
     try {
-        const preferences = await ipcRenderer.invoke('load-preferences');
+        const response = await ipcRenderer.invoke('load-preferences');
 
-        const userDataPath = preferences.userDataPath;
-        const baseDir = path.resolve(preferences.appPath);
-        const versionNumber = preferences.versionNumber;
-        const kioskMode = preferences.kioskMode;
-        const autoSelect = preferences.autoSelect;
-        const recents = preferences.recents;
-        const favorites = preferences.favorites;
+        const userDataPath = response.userDataPath;
+        const baseDir = window.path.resolve(response.appPath);
+        const versionNumber = response.versionNumber;
+        const kioskMode = response.kioskMode;
+        const autoSelect = response.autoSelect;
+        const recents = response.recents;
+        const favorites = response.favorites;
+        const preferencesError = response.preferencesError;
 
+        const preferences = { ...response };
         delete preferences.userDataPath;
         delete preferences.appPath;
         delete preferences.versionNumber;
@@ -21,6 +21,7 @@ async function loadUserData() {
         delete preferences.autoSelect;
         delete preferences.recents;
         delete preferences.favorites;
+        delete preferences.preferencesError;
 
         return {
             preferences,
@@ -30,8 +31,8 @@ async function loadUserData() {
             kioskMode,
             autoSelect,
             recents,
-            favorites
-
+            favorites,
+            preferencesError
         };
     } catch (error) {
         console.error("Failed to load preferences:", error);

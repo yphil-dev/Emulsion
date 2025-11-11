@@ -4,9 +4,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { spawn, exec } from 'child_process';
-import { getAllCoverImageUrls, getGameMetaData } from './src/shared/backends.js';
+import { getAllCoverImageUrls, getGameMetaData } from './src/js/backends.js';
 
-import { PLATFORMS, getPlatformInfo } from './src/shared/platforms.js';
+import { PLATFORMS, getPlatformInfo } from './src/js/platforms.js';
 
 import axios from 'axios';
 import os from 'os';

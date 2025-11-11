@@ -4,12 +4,14 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { spawn, exec } from 'child_process';
-import { getAllCoverImageUrls, getGameMetaData } from './src/js/backends.js';
+import { getAllCoverImageUrls, getGameMetaData } from './src/shared/backends.js';
 
-import { PLATFORMS, getPlatformInfo } from './src/js/platforms.js';
+import { PLATFORMS, getPlatformInfo } from './src/shared/platforms.js';
 
 import axios from 'axios';
 import os from 'os';
+
+
 
 let childProcesses = new Map();
 
@@ -283,7 +285,7 @@ function loadPreferences() {
 
         return preferences;
     } catch (error) {
-        console.error('Error loading preferences:', error);
+        // console.error('Error loading preferences:', error);
         const message = error instanceof SyntaxError
             ? 'The preferences file contains invalid JSON. It will now be reset.'
             : 'An unknown error occurred while loading preferences.';
@@ -754,7 +756,7 @@ PLATFORMS.forEach((platform, index) => {
     };
 });
 
-ipcMain.handle('load-preferences', () => {
+ipcMain.handle('load-preferences', async (event) => {
     const preferences = loadPreferences();
     const recents = loadRecents();
     const favorites = loadFavorites();
@@ -784,37 +786,19 @@ ipcMain.handle('load-preferences', () => {
         }
     }
 
-    if (recents.error) {
-        console.log("recent.message: ", recents.message);
-    }
-
-    if (favorites.error) {
-        console.log("favorite.message: ", favorites.message);
-    }
-
     if (preferences.error && preferences.error === 'INVALID_JSON') {
-
-        const result = dialog.showMessageBoxSync(mainWindow, {
-            type: 'error',
-            message: preferences.message,
-            buttons: ['Reset', 'Quit'],
-            defaultId: 0, // "Reset" (default)
-            cancelId: 1,  // "Quit"
-        });
-
-        if (result === 0) {
-            console.log("Resetting preferences to default...");
-            fs.writeFileSync(preferencesFilePath, JSON.stringify(defaultPreferences, null, 4), 'utf8');
-
-            defaultPreferences.userDataPath = userDataPath;
-            return defaultPreferences;
-        } else {
-            app.quit();
-            return null;
-        }
-
+        // Return default preferences with error flag for renderer to handle
+        const defaultPrefs = { ...defaultPreferences };
+        defaultPrefs.userDataPath = userDataPath;
+        defaultPrefs.appPath = appPath;
+        defaultPrefs.versionNumber = versionNumber;
+        defaultPrefs.kioskMode = process.argv.includes('--kiosk');
+        defaultPrefs.autoSelect = getNamedArg('auto-select');
+        defaultPrefs.recents = recents;
+        defaultPrefs.favorites = favorites;
+        defaultPrefs.preferencesError = preferences.message;
+        return defaultPrefs;
     } else {
-
         preferences.userDataPath = userDataPath;
         preferences.appPath = appPath;
         preferences.versionNumber = versionNumber;
@@ -837,6 +821,12 @@ ipcMain.handle('toggle-fullscreen', () => {
 
 ipcMain.handle('save-preferences', async (event, prefs) => {
     savePreferences(prefs);
+});
+
+ipcMain.handle('reset-preferences', async () => {
+    console.log("Resetting preferences to default...");
+    fs.writeFileSync(preferencesFilePath, JSON.stringify(defaultPreferences, null, 4), 'utf8');
+    return { success: true };
 });
 
 ipcMain.handle('quit', () => {

@@ -122,8 +122,6 @@ function updateFooterControls(section, cardinals, newText, display) {
     }
 }
 
-const path = require('path');
-
 export function applyTheme(theme) {
     const body = document.querySelector('body');
     const menu = document.getElementById('menu');
@@ -134,7 +132,7 @@ export function applyTheme(theme) {
           ? LB.baseDir.slice(0, -1)
           : LB.baseDir;
 
-    const bgPath = path.join(LB.baseDir, 'img', 'themes', theme, 'background.png');
+    const bgPath = window.path.join(LB.baseDir, 'img', 'themes', theme, 'background.png');
     const bgImageUrl = `url("file://${bgPath.replace(/\\/g, '/')}")`;
 
     // elementsToTheme.forEach(element => {
@@ -506,7 +504,7 @@ export async function scanDirectory(gamesDir, extensions, recursive = true, igno
     try {
         const items = await fsp.readdir(gamesDir, { withFileTypes: true });
         for (const item of items) {
-            const fullPath = path.join(gamesDir, item.name);
+            const fullPath = window.path.join(gamesDir, item.name);
 
             if (item.isDirectory()) {
                 if (ignoredDirs.includes(item.name)) continue;
@@ -531,7 +529,7 @@ export function findImageFile(basePath, fileNameWithoutExt) {
     let newestTime = 0;
 
     for (const extension of extensions) {
-        const imagePath = path.join(basePath, `${fileNameWithoutExt}.${extension}`);
+        const imagePath = window.path.join(basePath, `${fileNameWithoutExt}.${extension}`);
         if (fs.existsSync(imagePath)) {
             const stats = fs.statSync(imagePath);
             const mtime = stats.mtimeMs;

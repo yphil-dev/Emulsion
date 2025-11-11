@@ -18,65 +18,66 @@ let menuState = {
     selectedIndex: 1,
 };
 
-window.onMenuKeyDown = function onMenuKeyDown(event) {
-    event.stopPropagation();
-    event.stopImmediatePropagation();
+// Only assign to window if it exists (renderer context)
+if (typeof window !== 'undefined') {
+    window.onMenuKeyDown = function onMenuKeyDown(event) {
+        event.stopPropagation();
+        event.stopImmediatePropagation();
 
-    const menu = document.getElementById('menu');
-    const active = document.activeElement;
+        const menu = document.getElementById('menu');
+        const active = document.activeElement;
 
-    const isTextInput = (el) =>
-          el.tagName === 'INPUT' && el.type === 'text' ||
-          el.tagName === 'TEXTAREA';
+        const isTextInput = (el) =>
+              el.tagName === 'INPUT' && el.type === 'text' ||
+              el.tagName === 'TEXTAREA';
 
-    switch (event.key) {
-    case 'ArrowRight':
-    case 'ArrowLeft':
-        if (!isTextInput(active)) {
-            simulateTabNavigation(menu, event.key === 'ArrowLeft');
+        switch (event.key) {
+        case 'ArrowRight':
+        case 'ArrowLeft':
+            if (!isTextInput(active)) {
+                simulateTabNavigation(menu, event.key === 'ArrowLeft');
+                event.preventDefault();
+            }
+            break;
+
+        case 'ArrowDown':
+            simulateTabNavigation(menu);
             event.preventDefault();
+            break;
+
+        case 'ArrowUp':
+            simulateTabNavigation(menu, true);
+            event.preventDefault();
+            break;
+
+        case 's':
+            if (event.ctrlKey) {
+                menu.querySelector('button.save')?.click();
+            }
+            break;
+
+        case 'i':
+            if (event.ctrlKey) {
+                menu.querySelector('button.install')?.click();
+            }
+            break;
+
+        case 'Escape':
+            menu.querySelector('button.cancel')?.click();
+            break;
+
+        case '/':
+            systemDialog('quit');
+            break;
+
+        case '?':
+            helpDialog('shortcuts');
+            break;
+
         }
-        break;
+    };
 
-    case 'ArrowDown':
-        simulateTabNavigation(menu);
-        event.preventDefault();
-        break;
-
-    case 'ArrowUp':
-        simulateTabNavigation(menu, true);
-        event.preventDefault();
-        break;
-
-    case 's':
-        if (event.ctrlKey) {
-            menu.querySelector('button.save')?.click();
-        }
-        break;
-
-    case 'i':
-        if (event.ctrlKey) {
-            menu.querySelector('button.install')?.click();
-        }
-        break;
-
-    case 'Escape':
-        menu.querySelector('button.cancel')?.click();
-        break;
-
-    case '/':
-        systemDialog('quit');
-        break;
-
-    case '?':
-        helpDialog('shortcuts');
-        break;
-
-    }
-};
-
-
-window.onGameMenuKeyDown = function onGameMenuKeyDown(event) {
+    window.onGameMenuKeyDown = function onGameMenuKeyDown(event) {
 
     console.log("event: ", event);
 
@@ -159,6 +160,7 @@ window.onGameMenuKeyDown = function onGameMenuKeyDown(event) {
     }
 
 };
+}
 
 function onGameMenuClick(event) {
     const img = event.target.closest('img');

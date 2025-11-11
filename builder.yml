@@ -36,14 +36,3 @@ linux:
     - rpm
   icon: "img/icon.png"
   category: Utility
-
-win:
-  target:
-    - nsis
-  icon: "img/icon.png"
-
-nsis:
-  oneClick: false
-  allowToChangeInstallationDirectory: true
-  createDesktopShortcut: true
-  createStartMenuShortcut: true

@@ -406,7 +406,12 @@ function createWindows() {
 
     let initColor;
 
-    switch (loadPreferences().settings.theme) {
+    const preferences = loadPreferences();
+
+    // Prefs file doesn't exist or is invalid
+    const theme = preferences.error ? 'default' : (preferences.settings?.theme || 'default');
+
+    switch (theme) {
     case 'day':
         initColor = '#bdd9ff';
         break;

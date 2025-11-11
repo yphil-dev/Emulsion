@@ -42,3 +42,24 @@ jobs:
 
       - name: Build Linux packages
         run: npx electron-builder --config builder.yml --linux
+
+  # 5. Build Windows (NSIS .exe) and auto-publish on tag
+  build_windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci --ignore-optional
+
+      - name: Build Windows package
+        run: npx electron-builder --config builder.yml --win nsis --x64
+        # this will auto-publish `.exe` to the GitHub Release :contentReference[oaicite:8]{index=8}
+
+# No separate "release" job needed—electron-builder will create or update the GitHub Release for you.

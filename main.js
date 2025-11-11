@@ -183,7 +183,8 @@ function loadFavorites() {
                 return { error: 'INVALID_JSON', message: 'The favorites file contains invalid JSON. It will now be reset.' };
             }
         } else {
-            return { error: 'FILE_NOT_FOUND', message: 'No favorites file found.' };
+            // Fresh install - silently return empty array
+            return [];
         }
     } catch (error) {
         console.error('Error loading favorites:', error);
@@ -218,7 +219,7 @@ function loadRecents() {
                 // Optionally overwrite the file if invalid entries were removed
                 if (validRecords.length !== recent.length) {
                     fs.writeFileSync(recentFilePath, JSON.stringify(validRecords, null, 2), 'utf8');
-                    console.warn(`Removed ${recent.length - validRecords.length} invalid entries from recents file.`);
+                    console.warn(`Removed ${recent.length - recent.length} invalid entries from recents file.`);
                 }
 
                 return validRecords;
@@ -228,7 +229,8 @@ function loadRecents() {
                 return { error: 'INVALID_JSON', message: 'The recent file contains invalid JSON. It will now be reset.' };
             }
         } else {
-            return { error: 'FILE_NOT_FOUND', message: 'No recent file found. Using default recent.' };
+            // Fresh install - silently return empty array
+            return [];
         }
     } catch (error) {
         console.error('Error loading recent:', error);
@@ -239,7 +241,10 @@ function loadRecents() {
 function loadPreferences() {
     try {
         if (!fs.existsSync(preferencesFilePath)) {
-            return { error: 'FILE_NOT_FOUND', message: 'No preferences file found. Using default preferences.' };
+            // Fresh install - silently create default preferences
+            console.log('No preferences file found. Creating default preferences.');
+            fs.writeFileSync(preferencesFilePath, JSON.stringify(defaultPreferences, null, 4), 'utf8');
+            return { ...defaultPreferences };
         }
 
         const preferencesFileContent = fs.readFileSync(preferencesFilePath, 'utf8');
@@ -807,14 +812,6 @@ ipcMain.handle('load-preferences', () => {
             app.quit();
             return null;
         }
-
-    } else if (preferences.error && preferences.error === 'FILE_NOT_FOUND') {
-
-        console.log("Setting preferences to default...");
-        fs.writeFileSync(preferencesFilePath, JSON.stringify(defaultPreferences, null, 4), 'utf8');
-
-        defaultPreferences.userDataPath = userDataPath;
-        return defaultPreferences;
 
     } else {
 

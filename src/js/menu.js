@@ -969,7 +969,7 @@ export function openPlatformMenu(platformName, context, eltToFocus) {
     menu.style.display = 'flex';
     menu.style.height = '100vh';
 
-    updateHeader(platformName);
+    updateHeader(platformName, 'settings');
     toggleHeaderNavLinks('hide');
 
     if (platformName === 'settings' && eltToFocus) {

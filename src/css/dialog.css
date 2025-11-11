@@ -419,12 +419,17 @@ dd.disabled {
 }
 
 .dialog.install-emulators table th,
-.dialog.install-emulators table td.name {
+.dialog.install-emulators table td.name,
+.dialog.install-emulators table td.status {
   text-align: left;
 }
 
 .dialog.install-emulators table td.action {
   text-align: right;
+}
+
+.dialog.install-emulators div.flathub-status {
+  padding-bottom: 0.5em;
 }
 
 .dialog.install-emulators table th.center {

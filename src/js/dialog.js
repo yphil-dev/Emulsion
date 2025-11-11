@@ -1000,6 +1000,7 @@ export function installEmulatorsDialog(emulators) {
 
     // Store row data for easy access
     const rowData = new Map();
+    let isFlatpakOK = false;
 
     async function checkFlathubStatus() {
         try {
@@ -1007,13 +1008,15 @@ export function installEmulatorsDialog(emulators) {
             const flathubConfigured = await ipcRenderer.invoke('is-flathub-configured');
 
             if (!flatpakAvailable) {
-                flathubStatus.textContent = '<i class="fa fa-close error" aria-hidden="true"></i> Flatpak not installed on system';
+                flathubStatus.innerHTML = '<i class="fa fa-close error" aria-hidden="true"></i> Flatpak not installed on system';
             } else if (!flathubConfigured) {
                 flathubStatus.textContent = '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Flathub remote not configured (will be added automatically during installation)';
             } else {
+                isFlatpakOK = true;
                 flathubStatus.innerHTML = '<i class="fa fa-check success" aria-hidden="true"></i> Flatpak and Flathub configured';
             }
         } catch (error) {
+            isFlatpakOK = true;
             flathubStatus.textContent = '<i class="fa fa-close error" aria-hidden="true"></i> Error checking Flatpak status';
         }
     }
@@ -1025,11 +1028,11 @@ export function installEmulatorsDialog(emulators) {
         for (const [flatpakId, data] of rowData) {
             const { statusCell, selectButton, checkButton, installButton } = data;
 
-            if (!flatpakAvailable) {
-                statusCell.textContent = 'Flatpak not available';
-                installButton.disabled = true;
-                continue;
-            }
+            // if (!flatpakAvailable) {
+            //     statusCell.innerHTML = `<i class="fa fa-close error" aria-hidden="true"></i> Flatpak not available`;
+            //     installButton.disabled = true;
+            //     continue;
+            // }
 
             try {
                 const isInstalled = await ipcRenderer.invoke('is-flatpak-installed', flatpakId);
@@ -1067,14 +1070,14 @@ export function installEmulatorsDialog(emulators) {
 
     // Build rows
     emulators.forEach(emulator => {
-        const { name, flatpak, args, url } = emulator;
+        const { name, flatpak: flatpakId, args, url } = emulator;
 
         const row = document.createElement('tr');
 
         // Name cell
         const nameCell = document.createElement('td');
         nameCell.classList.add('name');
-        nameCell.innerHTML = `<strong title="${flatpak}">${name}</strong>`;
+        nameCell.innerHTML = `<strong title="${flatpakId}">${name}</strong>`;
 
         const loader = document.createElement('span');
         loader.className = 'loader';
@@ -1122,27 +1125,26 @@ export function installEmulatorsDialog(emulators) {
         tbody.appendChild(row);
 
         // Disable if no flatpak
-        if (!flatpak) {
+        if (!flatpakId || !isFlatpakOK) {
             console.log("no flatpak: ");
             statusCell.textContent = 'No FlatPak available yet';
-            selectButton.disabled = true;
             installButton.textContent = 'Manual install';
             // return;
         }
 
         // Store row data for status checking
-        rowData.set(flatpak, { statusCell, selectButton, checkButton, installButton });
+        rowData.set(flatpakId, { statusCell, selectButton, checkButton, installButton });
 
         selectButton.addEventListener('click', () => {
-            console.log(`Selected emulator: ${name} (${flatpak}) args: ${args}`);
-            emulatorInput.value = `flatpak run ${flatpak}`;
+            console.log(`Selected emulator: ${name} (${flatpakId}) args: ${args}`);
+            emulatorInput.value = `flatpak run ${flatpakId}`;
             argsInput.value = args;
             closeDialog();
         });
 
         checkButton.addEventListener('click', async () => {
             const isInstalled = await ipcRenderer.invoke('is-flatpak-installed', checkButton.dataset.flatpakId);
-            if (isInstalled) {
+            if (isInstalled && isFlatpakOK) {
                 statusCell.innerHTML = '<i class="fa fa-check success" aria-hidden="true"></i> Installed';
                 installButton.textContent = 'Install';
             } else {
@@ -1155,7 +1157,7 @@ export function installEmulatorsDialog(emulators) {
         });
 
         installButton.addEventListener('click', async () => {
-            if (!flatpak) {
+            if (!flatpakId) {
                 ipcRenderer.invoke('go-to-url', url);
                 closeDialog();
                 return;
@@ -1171,7 +1173,7 @@ export function installEmulatorsDialog(emulators) {
             // statusCell.append(loader, hiddenText);
 
             try {
-                await ipcRenderer.invoke('install-flatpak', flatpak);
+                await ipcRenderer.invoke('install-flatpak', flatpakId);
                 statusCell.innerHTML = '<i class="fa fa-check success" aria-hidden="true"></i> Installed';
                 installButton.style.display = 'none';
                 selectButton.style.display = 'inline-block';

@@ -964,7 +964,7 @@ ipcMain.handle('install-flatpak', async (event, appId) => {
 ipcMain.handle('is-flatpak-available', async () => {
   return new Promise((resolve) => {
     exec('which flatpak', (error) => {
-      resolve(!error);
+      resolve(false);
     });
   });
 });

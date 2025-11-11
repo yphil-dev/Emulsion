@@ -474,7 +474,13 @@ export function updateHeader(platformName, gameName) {
     header.querySelector('.vendor-name').textContent = vendor;
     header.querySelector('.item-number').textContent = count;
     header.querySelector('.item-type').textContent = pluralize(count, itemType);
-    header.querySelector('.platform-image').style.backgroundImage = `url('../../img/platforms/${platformName}.png')`;
+    let headerImage;
+    if (gameName && gameName === 'settings') {
+        headerImage = 'settings.png';
+    } else {
+        headerImage = `${platformName}.png`;
+    }
+    header.querySelector('.platform-image').style.backgroundImage = `url('../../img/platforms/${headerImage}')`;
 }
 
 export function toggleFullScreen(elem = document.documentElement) {

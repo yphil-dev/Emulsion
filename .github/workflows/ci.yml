@@ -1,19 +1,23 @@
 # .github/workflows/ci.yml
 name: Build & Release
 
+# 1. Only run on tag pushes
 on:
   push:
     tags:
-      - '*'
+      - '*'   # any tag :contentReference[oaicite:4]{index=4}
 
+# 2. Grant GITHUB_TOKEN write permissions so Electron Builder can publish releases
 permissions:
-  contents: write
-  packages: write
+  contents: write    # allow Releases API write access :contentReference[oaicite:5]{index=5}
+  packages: write    # if you ever auto-publish to GitHub Packages :contentReference[oaicite:6]{index=6}
 
+# 3. Make GITHUB_TOKEN available as GH_TOKEN for Electron Builder
 env:
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
+  # 4. Build Linux (.deb + AppImage) and auto-publish on tag
   build_linux:
     runs-on: ubuntu-latest
     steps:
@@ -32,42 +36,29 @@ jobs:
       - name: DLoad & Install Linux dependencies
         run: |
           sudo snap install snapcraft --classic
-          sudo apt-get install -y dpkg fakeroot jq npm bash fuse cmake libsdl2-dev curl
+          sudo apt-get install -y dpkg fakeroot jq npm bash fuse cmake libsdl2-dev
           npm install
 
       - name: Build Linux packages
         run: npx electron-builder --config builder.yml --linux
 
-      - name: Extract AppImage to create linux-unpacked
-        run: |
-          cd dist
-          # Make AppImage executable and extract it
-          chmod +x emulsion_x86_64.AppImage
-          ./emulsion_x86_64.AppImage --appimage-extract
+  # 5. Build Windows (NSIS .exe) and auto-publish on tag
+  build_windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-          # Rename to match what Flatpak expects
-          mv squashfs-root linux-unpacked
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
 
-          # Create the tarball for Flatpak
-          tar -czf linux-unpacked.tar.gz linux-unpacked/
+      - name: Install dependencies
+        run: npm ci --ignore-optional
 
-          echo "Created linux-unpacked.tar.gz:"
-          ls -la linux-unpacked.tar.gz
+      - name: Build Windows package
+        run: npx electron-builder --config builder.yml --win nsis --x64
+        # this will auto-publish `.exe` to the GitHub Release :contentReference[oaicite:8]{index=8}
 
-      - name: Upload linux-unpacked archive via curl
-        run: |
-          TAG=${GITHUB_REF#refs/tags/}
-          echo "Uploading linux-unpacked.tar.gz to release: $TAG"
-
-          # Get the release ID first
-          RELEASE_ID=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG" | jq -r .id)
-
-          echo "Release ID: $RELEASE_ID"
-
-          # Upload the asset
-          curl -X POST \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Content-Type: application/gzip" \
-            --data-binary @dist/linux-unpacked.tar.gz \
-            "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=linux-unpacked.tar.gz"
+# No separate "release" job needed—electron-builder will create or update the GitHub Release for you.

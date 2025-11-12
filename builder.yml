@@ -6,7 +6,7 @@ artifactName: "emulsion_${arch}.${ext}"
 asar: true
 compression: store
 
-# Unpack the native binaries from the ASAR into this folder so they stay executable
+# Unpack the native binaries from the ASAR into this executable
 asarUnpack:
   - "bin/**"
 
@@ -34,6 +34,7 @@ linux:
     - AppImage
     - deb
     - rpm
+    - dir
   icon: "img/icon.png"
   category: Utility
 

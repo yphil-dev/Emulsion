@@ -1,23 +1,19 @@
 # .github/workflows/ci.yml
 name: Build & Release
 
-# 1. Only run on tag pushes
 on:
   push:
     tags:
-      - '*'   # any tag :contentReference[oaicite:4]{index=4}
+      - '*'
 
-# 2. Grant GITHUB_TOKEN write permissions so Electron Builder can publish releases
 permissions:
-  contents: write    # allow Releases API write access :contentReference[oaicite:5]{index=5}
-  packages: write    # if you ever auto-publish to GitHub Packages :contentReference[oaicite:6]{index=6}
+  contents: write
+  packages: write
 
-# 3. Make GITHUB_TOKEN available as GH_TOKEN for Electron Builder
 env:
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  # 4. Build Linux (.deb + AppImage) and auto-publish on tag
   build_linux:
     runs-on: ubuntu-latest
     steps:
@@ -42,7 +38,14 @@ jobs:
       - name: Build Linux packages
         run: npx electron-builder --config builder.yml --linux
 
-  # 5. Build Windows (NSIS .exe) and auto-publish on tag
+      - name: Create and upload linux-unpacked archive
+        run: |
+          cd dist
+          tar -czf linux-unpacked.tar.gz linux-unpacked/
+          gh release upload ${{ github.ref_name }} linux-unpacked.tar.gz
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   build_windows:
     runs-on: windows-latest
     steps:
@@ -59,6 +62,3 @@ jobs:
 
       - name: Build Windows package
         run: npx electron-builder --config builder.yml --win nsis --x64
-        # this will auto-publish `.exe` to the GitHub Release :contentReference[oaicite:8]{index=8}
-
-# No separate "release" job needed—electron-builder will create or update the GitHub Release for you.

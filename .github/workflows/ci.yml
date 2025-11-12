@@ -1,23 +1,18 @@
 # .github/workflows/ci.yml
 name: Build & Release
 
-# 1. Only run on tag pushes
 on:
   push:
     tags:
-      - '*'   # any tag :contentReference[oaicite:4]{index=4}
+      - '*'
 
-# 2. Grant GITHUB_TOKEN write permissions so Electron Builder can publish releases
 permissions:
-  contents: write    # allow Releases API write access :contentReference[oaicite:5]{index=5}
-  packages: write    # if you ever auto-publish to GitHub Packages :contentReference[oaicite:6]{index=6}
+  contents: write
 
-# 3. Make GITHUB_TOKEN available as GH_TOKEN for Electron Builder
 env:
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  # 4. Build Linux (.deb + AppImage) and auto-publish on tag
   build_linux:
     runs-on: ubuntu-latest
     steps:
@@ -29,36 +24,31 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Update the system
+      - name: Install Linux dependencies
         run: |
           sudo apt-get update
-
-      - name: DLoad & Install Linux dependencies
-        run: |
-          sudo snap install snapcraft --classic
-          sudo apt-get install -y dpkg fakeroot jq npm bash fuse cmake libsdl2-dev
+          sudo apt-get install -y dpkg fakeroot fuse cmake libsdl2-dev
           npm install
 
-      - name: Build Linux packages
-        run: npx electron-builder --config builder.yml --linux
+      - name: Build without publishing
+        run: npx electron-builder --config builder.yml --linux --publish=never
 
-  # 5. Build Windows (NSIS .exe) and auto-publish on tag
-  build_windows:
-    runs-on: windows-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Extract AppImage to create linux-unpacked
+        run: |
+          cd dist
+          chmod +x emulsion_x86_64.AppImage
+          ./emulsion_x86_64.AppImage --appimage-extract
+          mv squashfs-root linux-unpacked
+          tar -czf linux-unpacked.tar.gz linux-unpacked/
+          echo "Created linux-unpacked.tar.gz:"
+          ls -la *.tar.gz
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - name: Create Release with all assets
+        uses: softprops/action-gh-release@v1
         with:
-          node-version: '20'
-
-      - name: Install dependencies
-        run: npm ci --ignore-optional
-
-      - name: Build Windows package
-        run: npx electron-builder --config builder.yml --win nsis --x64
-        # this will auto-publish `.exe` to the GitHub Release :contentReference[oaicite:8]{index=8}
-
-# No separate "release" job needed—electron-builder will create or update the GitHub Release for you.
+          files: |
+            dist/*.deb
+            dist/*.AppImage
+            dist/*.rpm
+            dist/linux-unpacked.tar.gz
+          generate_release_notes: true

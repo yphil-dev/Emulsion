@@ -46,19 +46,31 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  build_windows:
-    runs-on: windows-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Build Linux packages
+        run: npx electron-builder --config builder.yml --linux
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
+      - name: Extract AppImage to create linux-unpacked
+        run: |
+          cd dist
+          # Make AppImage executable and extract it
+          chmod +x emulsion_x86_64.AppImage
+          ./emulsion_x86_64.AppImage --appimage-extract
 
-      - name: Install dependencies
-        run: npm ci --ignore-optional
+          # Rename to match what Flatpak expects
+          mv squashfs-root linux-unpacked
 
-      - name: Build Windows package
-        run: npx electron-builder --config builder.yml --win nsis --x64
+          # Create the tarball for Flatpak
+          tar -czf linux-unpacked.tar.gz linux-unpacked/
+
+          echo "Created linux-unpacked.tar.gz:"
+          ls -la linux-unpacked.tar.gz
+
+      - name: Upload linux-unpacked archive
+        run: |
+          # Get the tag name
+          TAG=${GITHUB_REF#refs/tags/}
+
+          # Upload using GitHub CLI
+          gh release upload "$TAG" dist/linux-unpacked.tar.gz
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

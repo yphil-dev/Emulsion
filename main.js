@@ -994,6 +994,86 @@ ipcMain.handle('is-flathub-configured', async () => {
   });
 });
 
+ipcMain.handle('scan-directory', async (event, gamesDir, extensions, recursive = true, ignoredDirs = ['PS3_EXTRA', 'PKGDIR', 'freezer', 'tmp']) => {
+    let files = [];
+    const sortedExts = [...new Set(extensions)].sort((a, b) => b.length - a.length);
+
+    if (!gamesDir || typeof gamesDir !== 'string') {
+        return files;
+    }
+
+    try {
+        const items = await fs.readdir(gamesDir, { withFileTypes: true });
+
+        for (const item of items) {
+            const fullPath = path.join(gamesDir, item.name);
+
+            if (item.isDirectory()) {
+                if (ignoredDirs.includes(item.name)) continue;
+                if (recursive) files.push(...await scanDirectoryRecursive(fullPath, extensions, recursive, ignoredDirs));
+            } else {
+                const lowerName = item.name.toLowerCase();
+                const match = sortedExts.find(ext => lowerName.endsWith(ext.toLowerCase()));
+                if (match) files.push(fullPath);
+            }
+        }
+    } catch (err) {
+        console.warn("Error reading directory:", gamesDir, err);
+    }
+
+    return files;
+});
+
+async function scanDirectoryRecursive(gamesDir, extensions, recursive, ignoredDirs) {
+    let files = [];
+    const sortedExts = [...new Set(extensions)].sort((a, b) => b.length - a.length);
+
+    try {
+        const items = await fs.readdir(gamesDir, { withFileTypes: true });
+
+        for (const item of items) {
+            const fullPath = path.join(gamesDir, item.name);
+
+            if (item.isDirectory()) {
+                if (ignoredDirs.includes(item.name)) continue;
+                if (recursive) files.push(...await scanDirectoryRecursive(fullPath, extensions, recursive, ignoredDirs));
+            } else {
+                const lowerName = item.name.toLowerCase();
+                const match = sortedExts.find(ext => lowerName.endsWith(ext.toLowerCase()));
+                if (match) files.push(fullPath);
+            }
+        }
+    } catch (err) {
+        console.warn("Error reading directory:", gamesDir, err);
+    }
+
+    return files;
+}
+
+ipcMain.handle('find-image-file', async (event, basePath, fileNameWithoutExt) => {
+    const extensions = ['png', 'jpg', 'webp'];
+    let newestImage = null;
+    let newestTime = 0;
+
+    for (const extension of extensions) {
+        const imagePath = path.join(basePath, `${fileNameWithoutExt}.${extension}`);
+        try {
+            if (fs.existsSync(imagePath)) {
+                const stats = fs.statSync(imagePath);
+                const mtime = stats.mtimeMs;
+                if (mtime > newestTime) {
+                    newestTime = mtime;
+                    newestImage = imagePath;
+                }
+            }
+        } catch (err) {
+            // Ignore errors
+        }
+    }
+
+    return newestImage;
+});
+
 ipcMain.handle('get-flatpak-download-size', async (event, appId) => {
   return new Promise((resolve) => {
     exec(`flatpak install --user --assumeyes --dry-run flathub ${appId}`, (error, stdout, stderr) => {

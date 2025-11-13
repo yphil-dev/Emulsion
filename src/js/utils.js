@@ -4,6 +4,10 @@ import { downloadMetaDialog } from './dialog.js';
 import { getMeta } from './metadata.js';
 import { updateGamePane } from './slideshow.js';
 
+const fs = require('fs');
+const path = require('path');
+const fsp = fs.promises;
+
 export function initFooterControls() {
     updateFooterControls('dpad', 'ew', 'Platforms', 'on');
     updateFooterControls('shoulders', 'same', 'same', 'off');
@@ -498,29 +502,123 @@ export async function scanDirectory(gamesDir, extensions, recursive = true, igno
     console.log('Input gamesDir:', gamesDir);
     console.log('Input extensions:', extensions);
 
+    // Try IPC first (for Flatpak), fall back to direct access (for non-Flatpak)
+    try {
+        const files = await ipcRenderer.invoke('scan-directory', gamesDir, extensions, recursive, ignoredDirs);
+        console.log('IPC succeeded, files found:', files.length);
+        if (files.length === 0) {
+            console.log('IPC returned 0 files, forcing fallback...');
+            throw new Error('IPC returned empty array, forcing fallback');
+        }
+        console.log('Final files found:', files);
+        console.log('=== END SCAN DIRECTORY DEBUG ===');
+        return files;
+    } catch (ipcErr) {
+        console.log('IPC scan failed, trying direct filesystem access:', ipcErr.message);
+        console.log('Extensions passed to fallback:', extensions);
+
+        // Fallback to direct filesystem access for non-Flatpak environments
+        let files = [];
+        const sortedExts = [...new Set(extensions)].sort((a, b) => b.length - a.length);
+        console.log('Sorted extensions:', sortedExts);
+
+        if (!gamesDir || typeof gamesDir !== 'string') {
+            console.warn("scanDirectory: Invalid directory path provided:", gamesDir);
+            return files;
+        }
+
+        try {
+            const items = await fsp.readdir(gamesDir, { withFileTypes: true });
+            console.log('Directory items found:', items.length, 'items');
+            console.log('Items:', items.map(item => ({name: item.name, isDir: item.isDirectory()})));
+
+            for (const item of items) {
+                const fullPath = path.join(gamesDir, item.name);
+                console.log('Processing:', fullPath, 'isDir:', item.isDirectory());
+
+                if (item.isDirectory()) {
+                    if (ignoredDirs.includes(item.name)) {
+                        console.log('Skipping ignored dir:', item.name);
+                        continue;
+                    }
+                    if (recursive) {
+                        console.log('Recursing into:', item.name);
+                        files.push(...await scanDirectoryRecursiveFallback(fullPath, extensions, recursive, ignoredDirs));
+                    }
+                } else {
+                    const lowerName = item.name.toLowerCase();
+                    console.log('Checking file:', item.name, 'lowerName:', lowerName);
+                    const match = sortedExts.find(ext => {
+                        const endsWith = lowerName.endsWith(ext.toLowerCase());
+                        console.log(`  Checking if "${lowerName}" ends with "${ext.toLowerCase()}": ${endsWith}`);
+                        return endsWith;
+                    });
+                    console.log(`File: ${item.name}, match result: ${match}`);
+                    if (match) {
+                        console.log('Adding file:', fullPath);
+                        files.push(fullPath);
+                    }
+                }
+            }
+        } catch (fsErr) {
+            console.warn("Error reading directory:", gamesDir, fsErr);
+        }
+
+        console.log('Final files found (direct):', files.length, 'files');
+        console.log('Files:', files);
+        console.log('=== END SCAN DIRECTORY DEBUG ===');
+        return files;
+    }
+}
+
+export async function findImageFile(basePath, fileNameWithoutExt) {
+    // Try IPC first (for Flatpak), fall back to direct access (for non-Flatpak)
+    try {
+        return await ipcRenderer.invoke('find-image-file', basePath, fileNameWithoutExt);
+    } catch (ipcErr) {
+        console.log('IPC find-image-file failed, trying direct filesystem access:', ipcErr.message);
+
+        // Fallback to direct filesystem access for non-Flatpak environments
+        const extensions = ['png', 'jpg', 'webp'];
+        let newestImage = null;
+        let newestTime = 0;
+
+        for (const extension of extensions) {
+            const imagePath = window.path.join(basePath, `${fileNameWithoutExt}.${extension}`);
+            try {
+                if (fs.existsSync(imagePath)) {
+                    const stats = fs.statSync(imagePath);
+                    const mtime = stats.mtimeMs;
+                    if (mtime > newestTime) {
+                        newestTime = mtime;
+                        newestImage = imagePath;
+                    }
+                }
+            } catch (err) {
+                // Ignore errors
+            }
+        }
+
+        return newestImage;
+    }
+}
+
+async function scanDirectoryRecursiveFallback(gamesDir, extensions, recursive, ignoredDirs) {
     let files = [];
     const sortedExts = [...new Set(extensions)].sort((a, b) => b.length - a.length);
 
-    if (!gamesDir || typeof gamesDir !== 'string') {
-        console.warn("scanDirectory: Invalid directory path provided:", gamesDir);
-        return files;
-    }
-
     try {
         const items = await fsp.readdir(gamesDir, { withFileTypes: true });
-        console.log('Directory items found:', items.map(item => ({name: item.name, isDir: item.isDirectory()})));
 
         for (const item of items) {
-            const fullPath = path.join(gamesDir, item.name); // ← FIXED
-            console.log('Processing:', fullPath);
+            const fullPath = path.join(gamesDir, item.name);
 
             if (item.isDirectory()) {
                 if (ignoredDirs.includes(item.name)) continue;
-                if (recursive) files.push(...await scanDirectory(fullPath, extensions, recursive, ignoredDirs));
+                if (recursive) files.push(...await scanDirectoryRecursiveFallback(fullPath, extensions, recursive, ignoredDirs));
             } else {
                 const lowerName = item.name.toLowerCase();
                 const match = sortedExts.find(ext => lowerName.endsWith(ext.toLowerCase()));
-                console.log(`File: ${item.name}, match: ${match}`);
                 if (match) files.push(fullPath);
             }
         }
@@ -528,29 +626,7 @@ export async function scanDirectory(gamesDir, extensions, recursive = true, igno
         console.warn("Error reading directory:", gamesDir, err);
     }
 
-    console.log('Final files found:', files);
-    console.log('=== END SCAN DIRECTORY DEBUG ===');
     return files;
-}
-
-export function findImageFile(basePath, fileNameWithoutExt) {
-    const extensions = ['png', 'jpg', 'webp'];
-    let newestImage = null;
-    let newestTime = 0;
-
-    for (const extension of extensions) {
-        const imagePath = window.path.join(basePath, `${fileNameWithoutExt}.${extension}`);
-        if (fs.existsSync(imagePath)) {
-            const stats = fs.statSync(imagePath);
-            const mtime = stats.mtimeMs;
-            if (mtime > newestTime) {
-                newestTime = mtime;
-                newestImage = imagePath;
-            }
-        }
-    }
-
-    return newestImage;
 }
 
 function setFooterProgress(barIndex, percent) {

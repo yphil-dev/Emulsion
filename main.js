@@ -962,6 +962,15 @@ ipcMain.handle('install-flatpak', async (event, appId) => {
   });
 });
 
+ipcMain.handle('is-command-available', async (event, commandName) => {
+  return new Promise((resolve) => {
+    exec(`command -v ${commandName}`, (error, stdout) => {
+      // if stdout is non-empty, command exists
+      resolve(!error && stdout.trim().length > 0);
+    });
+  });
+});
+
 ipcMain.handle('is-flatpak-available', async () => {
   return new Promise((resolve) => {
     exec('which flatpak', (error) => {
@@ -970,7 +979,7 @@ ipcMain.handle('is-flatpak-available', async () => {
   });
 });
 
-ipcMain.handle('is-flatpak-installed', async (event, appId) => {
+ipcMain.handle('is-flatpak-package-installed', async (event, appId) => {
   return new Promise((resolve) => {
     // Check both user and system installations
     exec('flatpak list --app --all', (error, stdout) => {

@@ -246,7 +246,7 @@ export async function buildGallery(params) {
     return page;
 }
 
-export function buildGameContainer({
+export async function buildGameContainer({
     platform,
     emulator,
     emulatorArgs,
@@ -257,7 +257,7 @@ export function buildGameContainer({
     const container = document.createElement('div');
     const gamesDir = LB.preferences[platform].gamesDir;
     const cleanName = cleanFileName(gameName);
-    const coverPath = findImageFile(path.join(gamesDir, 'images'), gameName);
+    const coverPath = await findImageFile(path.join(gamesDir, 'images'), gameName);
     const platformBadge = document.createElement('div');
     platformBadge.className = 'platform-badge';
     platformBadge.textContent = platform;
@@ -323,7 +323,7 @@ async function buildFavoritesGallery({ index }) {
     for (const [i, favorite] of favorites.entries()) {
         try {
 
-            const gameContainer = buildGameContainer({
+            const gameContainer = await buildGameContainer({
                 platform: favorite.platform,
                 emulator: favorite.emulator,
                 emulatorArgs: favorite.emulatorArgs,
@@ -373,7 +373,7 @@ async function buildRecentGallery({ index }) {
     for (const [i, recent] of sortedRecents.entries()) {
         try {
 
-            const gameContainer = buildGameContainer({
+            const gameContainer = await buildGameContainer({
                 platform: recent.platform,
                 emulator: recent.emulator,
                 emulatorArgs: recent.emulatorArgs,

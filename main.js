@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain, shell, dialog, globalShortcut, Menu, session } from 'electron';
-import fs from 'fs';
+import fs from 'fs/promises';
+import fsSync from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
@@ -151,8 +152,8 @@ if (process.argv.includes('--help')) {
 
 function loadFavorites() {
     try {
-        if (fs.existsSync(favoritesFilePath)) {
-            const favoritesFileContent = fs.readFileSync(favoritesFilePath, 'utf8');
+        if (fsSync.existsSync(favoritesFilePath)) {
+            const favoritesFileContent = fsSync.readFileSync(favoritesFilePath, 'utf8');
 
             try {
                 const favorites = JSON.parse(favoritesFileContent);
@@ -174,7 +175,7 @@ function loadFavorites() {
 
                 // Optionally overwrite the file if invalid entries were removed
                 if (validRecords.length !== favorites.length) {
-                    fs.writeFileSync(favoritesFilePath, JSON.stringify(validRecords, null, 2), 'utf8');
+                    fsSync.writeFileSync(favoritesFilePath, JSON.stringify(validRecords, null, 2), 'utf8');
                     console.warn(`Removed ${favorites.length - validRecords.length} invalid entries from favorites file.`);
                 }
 
@@ -196,8 +197,8 @@ function loadFavorites() {
 
 function loadRecents() {
     try {
-        if (fs.existsSync(recentFilePath)) {
-            const recentFileContent = fs.readFileSync(recentFilePath, 'utf8');
+        if (fsSync.existsSync(recentFilePath)) {
+            const recentFileContent = fsSync.readFileSync(recentFilePath, 'utf8');
 
             try {
                 const recent = JSON.parse(recentFileContent);
@@ -220,7 +221,7 @@ function loadRecents() {
 
                 // Optionally overwrite the file if invalid entries were removed
                 if (validRecords.length !== recent.length) {
-                    fs.writeFileSync(recentFilePath, JSON.stringify(validRecords, null, 2), 'utf8');
+                    fsSync.writeFileSync(recentFilePath, JSON.stringify(validRecords, null, 2), 'utf8');
                     console.warn(`Removed ${recent.length - recent.length} invalid entries from recents file.`);
                 }
 
@@ -242,14 +243,14 @@ function loadRecents() {
 
 function loadPreferences() {
     try {
-        if (!fs.existsSync(preferencesFilePath)) {
+        if (!fsSync.existsSync(preferencesFilePath)) {
             // Fresh install - silently create default preferences
             console.log('No preferences file found. Creating default preferences.');
-            fs.writeFileSync(preferencesFilePath, JSON.stringify(defaultPreferences, null, 4), 'utf8');
+            fsSync.writeFileSync(preferencesFilePath, JSON.stringify(defaultPreferences, null, 4), 'utf8');
             return { ...defaultPreferences };
         }
 
-        const preferencesFileContent = fs.readFileSync(preferencesFilePath, 'utf8');
+        const preferencesFileContent = fsSync.readFileSync(preferencesFilePath, 'utf8');
         const preferences = JSON.parse(preferencesFileContent);
 
         for (const [platform, platformPreferences] of Object.entries(preferences)) {
@@ -296,7 +297,7 @@ function loadPreferences() {
 function savePreferences(preferences) {
     try {
         const data = JSON.stringify(preferences, null, 4);
-        fs.writeFileSync(preferencesFilePath, data, 'utf8');
+        fsSync.writeFileSync(preferencesFilePath, data, 'utf8');
         console.log('Preferences saved successfully to', preferencesFilePath);
         return 'Preferences saved successfully. to: ' + preferencesFilePath;
     } catch (error) {
@@ -306,8 +307,8 @@ function savePreferences(preferences) {
 }
 
 const createDirectoryIfNeeded = (dirPath) => {
-    if (!fs.existsSync(dirPath)) {
-        fs.mkdirSync(dirPath, { recursive: true });
+    if (!fsSync.existsSync(dirPath)) {
+        fsSync.mkdirSync(dirPath, { recursive: true });
     }
 };
 
@@ -525,13 +526,13 @@ ipcMain.on('read-meta', (event, params) => {
         const filePath = path.join(metadataDir, `${params.gameFileName}.json`);
 
         // Check if file exists
-        if (!fs.existsSync(filePath)) {
+        if (!fsSync.existsSync(filePath)) {
             console.log(`❌ Metadata file not found: ${filePath}`);
             event.reply('game-data', '');
         }
 
         // Read and parse the file
-        const fileContent = fs.readFileSync(filePath, 'utf8');
+        const fileContent = fsSync.readFileSync(filePath, 'utf8');
         const parsedData = JSON.parse(fileContent);
 
         event.reply('game-meta-data', parsedData.gameMetaData);
@@ -553,8 +554,8 @@ function saveMetaToFile(params, data) {
         const filePath = path.join(metadataDir, `${params.gameFileName}.json`);
 
         // Ensure metadata directory exists (gamesDir should exist already)
-        if (!fs.existsSync(metadataDir)) {
-            fs.mkdirSync(metadataDir);
+        if (!fsSync.existsSync(metadataDir)) {
+            fsSync.mkdirSync(metadataDir);
             console.log(`✅ Created metadata directory: ${metadataDir}`);
         }
 
@@ -564,7 +565,7 @@ function saveMetaToFile(params, data) {
             gameMetaData: data
         };
 
-        fs.writeFileSync(filePath, JSON.stringify(fileData, null, 2));
+        fsSync.writeFileSync(filePath, JSON.stringify(fileData, null, 2));
         console.log(`✅ Game metadata saved to: ${filePath}`);
         return { success: true, filePath };
     } catch (error) {
@@ -609,9 +610,9 @@ ipcMain.handle('add-favorite', async (event, favoriteEntry) => {
     const favoriteFilePath = getUserConfigFile('favorites.json');
     let favorites = [];
 
-    if (fs.existsSync(favoriteFilePath)) {
+    if (fsSync.existsSync(favoriteFilePath)) {
         try {
-            const fileData = fs.readFileSync(favoriteFilePath, 'utf8');
+            const fileData = fsSync.readFileSync(favoriteFilePath, 'utf8');
             favorites = JSON.parse(fileData);
         } catch (readErr) {
             console.error("Error reading favorites.json:", readErr);
@@ -628,7 +629,7 @@ ipcMain.handle('add-favorite', async (event, favoriteEntry) => {
     }
 
     try {
-        fs.writeFileSync(favoriteFilePath, JSON.stringify(favorites, null, 4), 'utf8');
+        fsSync.writeFileSync(favoriteFilePath, JSON.stringify(favorites, null, 4), 'utf8');
         console.log("Updated favorites.json with new/updated entry.");
         return { success: true, path: favoriteFilePath };
     } catch (writeErr) {
@@ -641,9 +642,9 @@ ipcMain.handle('remove-favorite', async (event, favoriteEntry) => {
     const favoriteFilePath = getUserConfigFile('favorites.json');
     let favorites = [];
 
-    if (fs.existsSync(favoriteFilePath)) {
+    if (fsSync.existsSync(favoriteFilePath)) {
         try {
-            const fileData = fs.readFileSync(favoriteFilePath, 'utf8');
+            const fileData = fsSync.readFileSync(favoriteFilePath, 'utf8');
             favorites = JSON.parse(fileData);
         } catch (readErr) {
             console.error("Error reading favorites.json:", readErr);
@@ -660,7 +661,7 @@ ipcMain.handle('remove-favorite', async (event, favoriteEntry) => {
     }
 
     try {
-        fs.writeFileSync(favoriteFilePath, JSON.stringify(favorites, null, 4), 'utf8');
+        fsSync.writeFileSync(favoriteFilePath, JSON.stringify(favorites, null, 4), 'utf8');
         console.log("Updated favorites.json - removed entry.");
         return { success: true, path: favoriteFilePath };
     } catch (writeErr) {
@@ -687,9 +688,9 @@ ipcMain.on('run-command', (event, data) => {
     const recentFilePath = getUserConfigFile('recently_played.json');
     let recents = [];
 
-    if (fs.existsSync(recentFilePath)) {
+    if (fsSync.existsSync(recentFilePath)) {
         try {
-            const fileData = fs.readFileSync(recentFilePath, 'utf8');
+            const fileData = fsSync.readFileSync(recentFilePath, 'utf8');
             recents = JSON.parse(fileData);
         } catch (readErr) {
             console.error("Error reading recently_played.json:", readErr);
@@ -710,7 +711,7 @@ ipcMain.on('run-command', (event, data) => {
     }
 
     try {
-        fs.writeFileSync(recentFilePath, JSON.stringify(recents, null, 4), 'utf8');
+        fsSync.writeFileSync(recentFilePath, JSON.stringify(recents, null, 4), 'utf8');
     } catch (writeErr) {
         console.error("Error writing recently_played.json:", writeErr);
     }
@@ -825,7 +826,7 @@ ipcMain.handle('save-preferences', async (event, prefs) => {
 
 ipcMain.handle('reset-preferences', async () => {
     console.log("Resetting preferences to default...");
-    fs.writeFileSync(preferencesFilePath, JSON.stringify(defaultPreferences, null, 4), 'utf8');
+    fsSync.writeFileSync(preferencesFilePath, JSON.stringify(defaultPreferences, null, 4), 'utf8');
     return { success: true };
 });
 
@@ -1058,8 +1059,8 @@ ipcMain.handle('find-image-file', async (event, basePath, fileNameWithoutExt) =>
     for (const extension of extensions) {
         const imagePath = path.join(basePath, `${fileNameWithoutExt}.${extension}`);
         try {
-            if (fs.existsSync(imagePath)) {
-                const stats = fs.statSync(imagePath);
+            if (fsSync.existsSync(imagePath)) {
+                const stats = fsSync.statSync(imagePath);
                 const mtime = stats.mtimeMs;
                 if (mtime > newestTime) {
                     newestTime = mtime;

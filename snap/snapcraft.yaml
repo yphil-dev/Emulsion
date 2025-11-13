@@ -1,13 +1,22 @@
 name: emulsion
+title: Emulsion
 version: '0.9.31'
-summary: A retro game launcher
+summary: Better gaming through chemistry
 description: |
   Emulsion is a retro game launcher that scans your game directories
   and provides a beautiful interface to launch your favorite games.
-
+website: https://yphil.gitlab.io/emulsion/
+source-code: https://gitlab.com/yphil/emulsion
+issues: https://gitlab.com/yphil/emulsion/-/issues
+license: GPL-3.0+
+donation: https://yphil.gitlab.io/ext/support.html
+contact:
+  - xaccrocheur@gmail.com
+  - https://yphil.gitlab.io/
 grade: stable
 confinement: classic
 base: core22
+icon: settings.svg
 
 apps:
   emulsion:

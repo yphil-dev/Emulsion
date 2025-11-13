@@ -1,0 +1,40 @@
+name: emulsion
+version: '0.9.31'
+summary: A retro game launcher
+description: |
+  Emulsion is a retro game launcher that scans your game directories
+  and provides a beautiful interface to launch your favorite games.
+
+grade: stable
+confinement: classic
+base: core22
+
+apps:
+  emulsion:
+    command: bin/emulsion
+    desktop: usr/share/applications/io.gitlab.yphil.emulsion.desktop
+
+parts:
+  emulsion:
+    plugin: dump
+    source: https://github.com/yPhil-gh/Emulsion/releases/download/0.9.31/linux-unpacked.tar.gz
+    source-checksum: sha256/c290dd687d20f62a833e965f2fe9cf7ba30777e51388486e8b356a0c0bf4c737
+    organize:
+      '*': usr/lib/emulsion/
+    stage:
+      - usr/lib/emulsion/
+    prime:
+      - usr/lib/emulsion/
+
+  local-files:
+    source: .
+    source-type: local
+    plugin: nil
+    override-build: |
+      mkdir -p $SNAPCRAFT_PART_INSTALL/bin
+      mkdir -p $SNAPCRAFT_PART_INSTALL/usr/share/applications
+      cp local/emulsion-wrapper $SNAPCRAFT_PART_INSTALL/bin/emulsion
+      cp local/io.gitlab.yphil.emulsion.desktop $SNAPCRAFT_PART_INSTALL/usr/share/applications/
+    prime:
+      - bin/emulsion
+      - usr/share/applications/io.gitlab.yphil.emulsion.desktop

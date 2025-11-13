@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Emulsion
+Comment=A retro game launcher
+Exec=emulsion %U
+Icon=io.gitlab.yphil.emulsion
+Terminal=false
+Type=Application
+Categories=Game;Utility;
+StartupWMClass=Emulsion

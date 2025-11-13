@@ -478,12 +478,7 @@ export function updateHeader(platformName, gameName) {
     header.querySelector('.vendor-name').textContent = vendor;
     header.querySelector('.item-number').textContent = count;
     header.querySelector('.item-type').textContent = pluralize(count, itemType);
-    let headerImage;
-    if (gameName && gameName === 'settings') {
-        headerImage = 'settings.png';
-    } else {
-        headerImage = `${platformName}.png`;
-    }
+    const headerImage = LB.mode === 'menu' ? 'settings.png' : `${platformName}.png`;
     header.querySelector('.platform-image').style.backgroundImage = `url('../../img/platforms/${headerImage}')`;
 }
 
@@ -502,61 +497,32 @@ export async function scanDirectory(gamesDir, extensions, recursive = true, igno
     console.log('Input gamesDir:', gamesDir);
     console.log('Input extensions:', extensions);
 
-    let files = [];
-    const sortedExts = [...new Set(extensions)].sort((a, b) => b.length - a.length);
-
     if (!gamesDir || typeof gamesDir !== 'string') {
         console.warn("scanDirectory: Invalid directory path provided:", gamesDir);
-        return files;
+        return [];
     }
 
     try {
-        const items = await fsp.readdir(gamesDir, { withFileTypes: true });
-        console.log('Directory items found:', items.length, 'items');
-
-        for (const item of items) {
-            const fullPath = path.join(gamesDir, item.name);
-
-            if (item.isDirectory()) {
-                if (ignoredDirs.includes(item.name)) continue;
-                if (recursive) files.push(...await scanDirectoryRecursive(fullPath, extensions, recursive, ignoredDirs));
-            } else {
-                const lowerName = item.name.toLowerCase();
-                const match = sortedExts.find(ext => lowerName.endsWith(ext.toLowerCase()));
-                if (match) files.push(fullPath);
-            }
-        }
-    } catch (fsErr) {
-        console.warn("Error reading directory:", gamesDir, fsErr);
+        // Use IPC to call the main process scanDirectory handler
+        const files = await ipcRenderer.invoke('scan-directory', gamesDir, extensions, recursive, ignoredDirs);
+        console.log('Final files found:', files.length, 'files');
+        console.log('=== END SCAN DIRECTORY DEBUG ===');
+        return files;
+    } catch (err) {
+        console.warn("Error scanning directory:", gamesDir, err);
+        console.log('=== END SCAN DIRECTORY DEBUG ===');
+        return [];
     }
-
-    console.log('Final files found:', files.length, 'files');
-    console.log('=== END SCAN DIRECTORY DEBUG ===');
-    return files;
 }
 
 export async function findImageFile(basePath, fileNameWithoutExt) {
-    const extensions = ['png', 'jpg', 'webp'];
-    let newestImage = null;
-    let newestTime = 0;
-
-    for (const extension of extensions) {
-        const imagePath = path.join(basePath, `${fileNameWithoutExt}.${extension}`);
-        try {
-            if (fs.existsSync(imagePath)) {
-                const stats = fs.statSync(imagePath);
-                const mtime = stats.mtimeMs;
-                if (mtime > newestTime) {
-                    newestTime = mtime;
-                    newestImage = imagePath;
-                }
-            }
-        } catch (err) {
-            // Ignore errors
-        }
+    try {
+        // Use IPC to call the main process findImageFile handler
+        return await ipcRenderer.invoke('find-image-file', basePath, fileNameWithoutExt);
+    } catch (err) {
+        console.warn("Error finding image file:", err);
+        return null;
     }
-
-    return newestImage;
 }
 
 

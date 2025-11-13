@@ -493,14 +493,13 @@ export function toggleFullScreen(elem = document.documentElement) {
     }
 }
 
-// Recursively scan a directory for files with specific extensions.
-// If recursive is false, only the top-level directory is scanned.
-// If gamesDir is invalid, it returns an empty array.
 export async function scanDirectory(gamesDir, extensions, recursive = true, ignoredDirs = ['PS3_EXTRA', 'PKGDIR', 'freezer', 'tmp']) {
-    let files = [];
+    console.log('=== SCAN DIRECTORY DEBUG ===');
+    console.log('Input gamesDir:', gamesDir);
+    console.log('Input extensions:', extensions);
 
-    // Sort extensions by longest first to prioritize multi-part matches
-    const sortedExts = [...new Set(extensions)].sort((a, b) => b.length - a.length); // Dedupe and sort
+    let files = [];
+    const sortedExts = [...new Set(extensions)].sort((a, b) => b.length - a.length);
 
     if (!gamesDir || typeof gamesDir !== 'string') {
         console.warn("scanDirectory: Invalid directory path provided:", gamesDir);
@@ -509,16 +508,19 @@ export async function scanDirectory(gamesDir, extensions, recursive = true, igno
 
     try {
         const items = await fsp.readdir(gamesDir, { withFileTypes: true });
+        console.log('Directory items found:', items.map(item => ({name: item.name, isDir: item.isDirectory()})));
+
         for (const item of items) {
-            const fullPath = window.path.join(gamesDir, item.name);
+            const fullPath = path.join(gamesDir, item.name); // ← FIXED
+            console.log('Processing:', fullPath);
 
             if (item.isDirectory()) {
                 if (ignoredDirs.includes(item.name)) continue;
                 if (recursive) files.push(...await scanDirectory(fullPath, extensions, recursive, ignoredDirs));
             } else {
-                // Check if filename ENDS WITH any allowed extension (case-insensitive)
                 const lowerName = item.name.toLowerCase();
                 const match = sortedExts.find(ext => lowerName.endsWith(ext.toLowerCase()));
+                console.log(`File: ${item.name}, match: ${match}`);
                 if (match) files.push(fullPath);
             }
         }
@@ -526,6 +528,8 @@ export async function scanDirectory(gamesDir, extensions, recursive = true, igno
         console.warn("Error reading directory:", gamesDir, err);
     }
 
+    console.log('Final files found:', files);
+    console.log('=== END SCAN DIRECTORY DEBUG ===');
     return files;
 }
 

@@ -1,6 +1,6 @@
 {
     "name": "emulsion",
-    "version": "0.9.30",
+    "version": "0.9.29",
     "description": "Better gaming throught chemistry",
     "homepage": "https://yphil.gitlab.io/emulsion",
     "license": "GPLv3",
@@ -26,9 +26,8 @@
     },
     "dependencies": {
         "axios": "^1.12.0",
-        "fs": "^0.0.1-security",
+        "fs-extra": "^11.2.0",
         "node-fetch": "^3.3.2",
-        "path": "^0.12.7",
         "steamgriddb": "^2.2.1",
         "tree-kill": "^1.2.2"
     },

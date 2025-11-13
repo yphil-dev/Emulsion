@@ -488,11 +488,7 @@ ipcMain.handle('get-user-data', () => {
 
 ipcMain.handle('select-file-or-directory', async (event, property) => {
 
-    const result = await dialog.showOpenDialog({
-        properties: [property],
-        dontUsePortal: true,
-        title: 'Select directory (use /media for external drives)'
-    });
+    const result = await dialog.showOpenDialog({ properties: [property] });
 
     if (!result.canceled && result.filePaths.length > 0) {
         return result.filePaths[0];

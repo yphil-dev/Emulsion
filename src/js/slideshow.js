@@ -875,6 +875,7 @@ export function initGamepad() {
 
         switch (buttonIndex) {
         case 0:
+            document.activeElement.click();
             simulateKeyDown('Enter');
             break;
         case 1:

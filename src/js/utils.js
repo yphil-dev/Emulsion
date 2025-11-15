@@ -226,6 +226,7 @@ export function simulateTabNavigation(container, shiftKey = false) {
 }
 
 export function simulateKeyDown(key, modifiers = {}) {
+    console.log("key: ", key);
     const keyCodes = {
         ArrowLeft: 37,
         ArrowRight: 39,
@@ -234,7 +235,8 @@ export function simulateKeyDown(key, modifiers = {}) {
         Shift: 16,
         Enter: 13,
         Escape: 27,
-        Tab: 9
+        Tab: 9,
+        Space: 32
     };
 
     const keyboardEvent = new KeyboardEvent('keydown', {
@@ -246,9 +248,11 @@ export function simulateKeyDown(key, modifiers = {}) {
         ctrlKey: modifiers.ctrl || false,
         altKey: modifiers.alt || false,
         metaKey: modifiers.meta || false,
-        bubbles: true
+        bubbles: true,
+        cancelable: true
     });
 
+    console.log("keyboardEvent: ", keyboardEvent);
     document.dispatchEvent(keyboardEvent);
 }
 

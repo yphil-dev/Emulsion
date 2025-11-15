@@ -875,14 +875,13 @@ export function initGamepad() {
 
         switch (buttonIndex) {
         case 0:
-            document.activeElement.click();
             simulateKeyDown('Enter');
             break;
         case 1:
             simulateKeyDown('Escape');
             break;
         case 2:
-            simulateKeyDown('i');
+            batchDownload();
             break;
         case 3:
             simulateKeyDown('+');
@@ -1209,3 +1208,4 @@ async function toggleFavorite(container) {
         await addFavorite(container);
     }
 }
+

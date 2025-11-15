@@ -380,8 +380,11 @@ export async function helpDialog(defaultTabId = null) {
             break;
 
         case 'Escape':
-        case 'Enter':
             closeDialog();
+            break;
+
+        case 'Enter':
+            document.activeElement.click();
             break;
 
         default:
@@ -444,9 +447,7 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
                     resolve(null);
                     break;
                 case 'Enter':
-                    if (!cancelButton.matches(':focus')) {
-                        onOk();
-                    }
+                    document.activeElement.click();
                     break;
                 case '/':
                     systemDialog('quit');
@@ -669,26 +670,15 @@ export function systemDialog(focusButton = 'cancel') {
         case 'ArrowUp':
             simulateTabNavigation(dialog, true);
             break;
-        case '?':
-        case 'Enter':
-            const focusedButton = document.activeElement;
-            if (focusedButton === quitButton) {
-                ipcRenderer.invoke('quit');
-            } else if (focusedButton === cancelButton) {
-                closeDialog();
-            } else if (focusedButton === restartButton) {
-                window.location.reload();
-            } else if (focusedButton === configButton) {
-                closeDialog();
-                initGallery('settings');
-            }
-            break;
 
         case '?':
             helpDialog('shortcuts');
             break;
 
         case '/':
+        case 'Enter':
+            document.activeElement.click();
+            break;
         case 'Escape':
             closeDialog();
             break;
@@ -696,6 +686,9 @@ export function systemDialog(focusButton = 'cancel') {
     };
 
     restartButton.addEventListener('click', () => window.location.reload());
+    quitButton.addEventListener('click', () => ipcRenderer.invoke('quit'));
+    cancelButton.addEventListener('click', () => closeDialog());
+    configButton.addEventListener('click', () => initGallery('settings'));
 
     if (!LB.kioskMode) {
         configButton.addEventListener('click', () => {
@@ -705,9 +698,6 @@ export function systemDialog(focusButton = 'cancel') {
     } else {
         configButton.style.display = 'none';
     }
-
-    quitButton.addEventListener('click', () => ipcRenderer.invoke('quit'));
-    cancelButton.addEventListener('click', closeDialog);
 
     helpButton.addEventListener('click', (e) => {
         closeDialog();
@@ -770,7 +760,9 @@ export function launchGameDialog(gameContainer) {
         case '?':
             helpDialog('shortcuts');
             break;
-
+        case 'Enter':
+            document.activeElement.click();
+            break;
         }
     };
 
@@ -871,12 +863,7 @@ export function preferencesErrorDialog(errorMessage) {
                     simulateTabNavigation(dialog);
                     break;
                 case 'Enter':
-                    const focused = document.activeElement;
-                    if (focused === resetButton) {
-                        resetButton.click();
-                    } else if (focused === quitButton) {
-                        quitButton.click();
-                    }
+                    document.activeElement.click();
                     break;
                 case 'Escape':
                     // Don't allow escape for error dialogs
@@ -953,12 +940,7 @@ export function resetPrefsDialog(errorMessage) {
             simulateTabNavigation(dialog);
             break;
         case 'Enter':
-            const focused = document.activeElement;
-            if (focused === resetButton) {
-                resetButton.click();
-            } else if (focused === quitButton) {
-                quitButton.click();
-            }
+            document.activeElement.click();
             break;
         case 'Escape':
             // Don't allow escape for error dialogs

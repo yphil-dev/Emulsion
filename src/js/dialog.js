@@ -1,7 +1,7 @@
 import { initSlideShow, initGallery } from './slideshow.js';
 import { displayMetaData } from './metadata.js';
 import { PLATFORMS, getPlatformInfo } from './platforms.js';
-import { simulateTabNavigation, launchGame } from './utils.js';
+import { simulateTabNavigation, simulateKeyDown, launchGame } from './utils.js';
 import { updatePreference } from './preferences.js';
 import { openPlatformMenu } from './menu.js';
 
@@ -735,6 +735,7 @@ export function launchGameDialog(gameContainer) {
     const dialog = overlay.querySelector('div.dialog');
     const okButton = dialog.querySelector('.ok');
     const cancelButton = dialog.querySelector('.cancel');
+    const checkbox = document.getElementById('open-dialog-at-launch');
 
     // Set dialog content
     dialog.querySelector('img').src = gameContainer.querySelector('img').src;
@@ -766,7 +767,6 @@ export function launchGameDialog(gameContainer) {
         case '/':
             systemDialog('quit');
             break;
-
         case '?':
             helpDialog('shortcuts');
             break;
@@ -785,7 +785,7 @@ export function launchGameDialog(gameContainer) {
         if (gameContainer) {
             launchGame(gameContainer);
         }
-        if (!document.getElementById('open-dialog-at-launch').checked) {
+        if (!checkbox.checked) {
             updatePreference('settings', 'launchDialogPolicy', 'hide');
             LB.launchDialogPolicy = 'hide';
         }

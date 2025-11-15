@@ -183,12 +183,19 @@ export async function buildGallery(params) {
 
     // Force synchronous operation for debugging
     const gameFiles = await scanDirectory(gamesDir, extensions, true);
-    console.log('Sync scan complete, files:', gameFiles.length);
 
     gameFiles.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
 
+    // if (gameFiles.length === 0) {
+    //     console.log('WHY IS THIS HITTING? gameFiles has length but condition thinks it\'s 0');
+    //     const emptyContainer = buildEmptyPageGameContainer(platform, gamesDir);
+    //     page.dataset.empty = true;
+    //     pageContent.appendChild(emptyContainer);
+    //     page.appendChild(pageContent);
+    //     return page;
+    // }
+
     if (gameFiles.length === 0) {
-        console.log('WHY IS THIS HITTING? gameFiles has length but condition thinks it\'s 0');
         const emptyContainer = buildEmptyPageGameContainer(platform, gamesDir);
         page.dataset.empty = true;
         pageContent.appendChild(emptyContainer);

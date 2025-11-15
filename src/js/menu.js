@@ -73,6 +73,9 @@ if (typeof window !== 'undefined') {
         case '?':
             helpDialog('shortcuts');
             break;
+        case 'Enter':
+            document.activeElement.click();
+            break;
         }
     };
 

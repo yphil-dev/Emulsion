@@ -497,9 +497,8 @@ export function toggleFullScreen(elem = document.documentElement) {
 }
 
 export async function scanDirectory(gamesDir, extensions, recursive = true, ignoredDirs = ['PS3_EXTRA', 'PKGDIR', 'freezer', 'tmp']) {
-    console.log('=== SCAN DIRECTORY DEBUG ===');
-    console.log('Input gamesDir:', gamesDir);
-    console.log('Input extensions:', extensions);
+
+    console.log("gamesDir: ", gamesDir);
 
     if (!gamesDir || typeof gamesDir !== 'string') {
         console.warn("scanDirectory: Invalid directory path provided:", gamesDir);
@@ -509,12 +508,8 @@ export async function scanDirectory(gamesDir, extensions, recursive = true, igno
     try {
         // Use IPC to call the main process scanDirectory handler
         const files = await ipcRenderer.invoke('scan-directory', gamesDir, extensions, recursive, ignoredDirs);
-        console.log('Final files found:', files.length, 'files');
-        console.log('=== END SCAN DIRECTORY DEBUG ===');
         return files;
     } catch (err) {
-        console.warn("Error scanning directory:", gamesDir, err);
-        console.log('=== END SCAN DIRECTORY DEBUG ===');
         return [];
     }
 }

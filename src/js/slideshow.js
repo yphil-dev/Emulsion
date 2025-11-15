@@ -508,22 +508,26 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
         }
     });
 
-    document.getElementById('prev-link').addEventListener('click', goToPrevPage);
-    document.getElementById('next-link').addEventListener('click', goToNextPage);
+    document.getElementById('prev-link').addEventListener('click', () => {
+        simulateKeyDown('ArrowLeft', { shift: true });
+    });
 
-    document.getElementById('view-mode-toggle-button').addEventListener('click', function() {
+    document.getElementById('next-link').addEventListener('click', () => {
+        simulateKeyDown('ArrowRight', { shift: true });
+    });
+
+    document.getElementById('view-mode-toggle-button').addEventListener('click', () => {
         setGalleryViewMode(this.classList.contains('fa-th') ? 'grid' : 'list', true);
     });
 
-    document.getElementById('config-platform-button').addEventListener('click', function() {
+    document.getElementById('config-platform-button').addEventListener('click', () => {
         openPlatformMenu(LB.currentPlatform, 'gallery');
     });
 
-    document.getElementById('platform-covers-button').addEventListener('click', function() {
+    document.getElementById('platform-covers-button').addEventListener('click', () => {
         batchDownload();
     });
 
-    // Set initial active page
     pages.forEach(p => p.classList.remove('active'));
     targetPage.classList.add('active');
     updateGallery();

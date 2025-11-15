@@ -341,7 +341,7 @@ const downloadAndSaveImage = async (imgSrc, platform, gameName, gamesDir) => {
             }),
         });
 
-        const writer = fs.createWriteStream(savePath);
+        const writer = fsSync.createWriteStream(savePath);
 
         response.data.pipe(writer);
 

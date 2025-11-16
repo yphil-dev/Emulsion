@@ -924,7 +924,7 @@ function buildPlatformMenuForm(platformName) {
         if (!isFirst) {
             const removeBtn = document.createElement('button');
             removeBtn.classList.add('button');
-            removeBtn.innerHTML = '<svg class="medium icon"><use href="#xmark"></use></svg>';
+            removeBtn.innerHTML = '<svg class="icon"><use href="#xmark"></use></svg>';
             removeBtn.addEventListener('click', () => row.remove());
             row.appendChild(removeBtn);
         }

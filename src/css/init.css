@@ -221,3 +221,33 @@ p {
 .error {
   color:red
 }
+
+svg.icon {
+  width: 0.9em;
+  height: 0.9em;
+  fill: currentColor;
+  vertical-align: middle;
+}
+
+svg.icon:hover {
+  fill: var(--color-selected);
+}
+
+svg.medium {
+  width: 1.8em;
+  height: 1.8em;
+}
+
+svg.big {
+  width: 3em;
+  height: 3em;
+}
+
+svg.huge {
+  width: 12em;
+  height: 12em;
+}
+
+svg.help {
+  fill: var(--color-selected);
+}

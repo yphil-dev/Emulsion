@@ -275,7 +275,8 @@ function buildPrefsFormItem(name, iconName, type, description, shortDescription,
 
     const icon = document.createElement('div');
     icon.classList.add('form-icon');
-    icon.innerHTML = `<i class="form-icon fa fa-2x fa-${iconName}" aria-hidden="true"></i>`;
+    // icon.innerHTML = `<i class="form-icon fa fa-2x fa-${iconName}" aria-hidden="true"></i>`;
+    icon.innerHTML = `<svg class="medium icon"><use href="#${iconName}"></use></svg>`;
 
     const label = document.createElement('label');
     label.textContent = shortDescription;
@@ -315,31 +316,31 @@ function buildSettingsMenu() {
     platformMenuImageCtn.appendChild(platformMenuImage);
 
     // Rows
-    const numberOfColumns = buildPrefsFormItem('numberOfColumns', 'th', 'range', 'The number of columns in each platform gallery', 'Number of columns', LB.galleryNumOfCols);
+    const numberOfColumns = buildPrefsFormItem('numberOfColumns', 'grid', 'range', 'The number of columns in each platform gallery', 'Number of columns', LB.galleryNumOfCols);
     const numberOfColumnsGroup = numberOfColumns.group;
     const numberOfColumnsInput = numberOfColumns.input;
 
-    const footerSize = buildPrefsFormItem('footerSize', 'arrows', ['small', 'medium', 'big'], '', 'Footer size', LB.footerSize, setFooterSize);
+    const footerSize = buildPrefsFormItem('footerSize', 'size', ['small', 'medium', 'big'], '', 'Footer size', LB.footerSize, setFooterSize);
     const footerSizeGroup = footerSize.group;
     const footerSizeRadios = footerSize.radios;
 
-    const theme = buildPrefsFormItem('theme', 'eyedropper', ['default', 'day', 'night'], '', 'Theme', LB.theme, applyTheme);
+    const theme = buildPrefsFormItem('theme', 'swatchbook', ['default', 'day', 'night'], '', 'Theme', LB.theme, applyTheme);
     const themeGroup = theme.group;
     const themeRadios = theme.radios;
 
-    const disabledPlatformsPolicy = buildPrefsFormItem('disabledPlatformsPolicy', 'check-square-o', ['show', 'hide'], '', 'Disabled Platforms', LB.disabledPlatformsPolicy);
+    const disabledPlatformsPolicy = buildPrefsFormItem('disabledPlatformsPolicy', 'check', ['show', 'hide'], '', 'Disabled Platforms', LB.disabledPlatformsPolicy);
     const disabledPlatformsPolicyGroup = disabledPlatformsPolicy.group;
     const disabledPlatformsPolicyRadios = disabledPlatformsPolicy.radios;
 
-    const recentlyPlayedPolicy = buildPrefsFormItem('recentlyPlayedPolicy', 'clock-o', ['show', 'hide'], '', 'Recently Played', LB.recentlyPlayedPolicy);
+    const recentlyPlayedPolicy = buildPrefsFormItem('recentlyPlayedPolicy', 'clock', ['show', 'hide'], '', 'Recently Played', LB.recentlyPlayedPolicy);
     const recentlyPlayedPolicyGroup = recentlyPlayedPolicy.group;
     const recentlyPlayedPolicyRadios = recentlyPlayedPolicy.radios;
 
-    const favoritesPolicy = buildPrefsFormItem('favoritesPolicy', 'thumbs-o-up', ['show', 'hide'], '', 'Favorites', LB.favoritesPolicy);
+    const favoritesPolicy = buildPrefsFormItem('favoritesPolicy', 'like', ['show', 'hide'], '', 'Favorites', LB.favoritesPolicy);
     const favoritesPolicyGroup = favoritesPolicy.group;
     const favoritesPolicyRadios = favoritesPolicy.radios;
 
-    const steamGridAPIKey = buildPrefsFormItem('steamGridAPIKey', 'steam-square', 'text', 'Your SteamGrid API Key', 'SteamGrid API Key', LB.steamGridAPIKey || '');
+    const steamGridAPIKey = buildPrefsFormItem('steamGridAPIKey', 'steam', 'text', 'Your SteamGrid API Key', 'SteamGrid API Key', LB.steamGridAPIKey || '');
     const steamGridAPIKeyGroup = steamGridAPIKey.group;
     const steamGridAPIKeyInput = steamGridAPIKey.input;
 
@@ -534,7 +535,7 @@ function buildPlatformMenuForm(platformName) {
 
     const gamesDirIcon = document.createElement('div');
     gamesDirIcon.classList.add('form-icon');
-    gamesDirIcon.innerHTML = '<i class="form-icon fa fa-2x fa-folder-open-o" aria-hidden="true"></i>';
+    gamesDirIcon.innerHTML = '<svg class="medium icon"><use href="#folder-open"></use></svg>';
 
     gamesDirCtn.appendChild(gamesDirIcon);
     gamesDirCtn.appendChild(gamesDirInput);
@@ -548,7 +549,7 @@ function buildPlatformMenuForm(platformName) {
 
     const emulatorIcon = document.createElement('div');
     emulatorIcon.classList.add('form-icon');
-    emulatorIcon.innerHTML = '<i class="form-icon fa fa-2x fa-cube" aria-hidden="true"></i>';
+    emulatorIcon.innerHTML = '<svg class="medium icon"><use href="#cubes"></use></svg>';
 
     const emulatorInputLabel = document.createElement('label');
     emulatorInputLabel.textContent = "Emulator";
@@ -600,7 +601,7 @@ function buildPlatformMenuForm(platformName) {
     // Icon
     const extensionsIcon = document.createElement('div');
     extensionsIcon.classList.add('form-icon');
-    extensionsIcon.innerHTML = '<i class="form-icon fa fa-2x fa-file-archive-o" aria-hidden="true"></i>';
+    extensionsIcon.innerHTML = '<svg class="medium icon"><use href="#file-zipper"></use></svg>';
 
     // Inputs wrapper
     const extensionsInputsContainer = document.createElement('div');
@@ -617,7 +618,7 @@ function buildPlatformMenuForm(platformName) {
     // Create the “Select +” button wired to add a new row
     const addExtensionBtn = document.createElement('button');
     addExtensionBtn.classList.add('button');
-    addExtensionBtn.innerHTML = '<i class="form-icon emulator-args-icon fa fa-plus" aria-hidden="true"></i>';
+    addExtensionBtn.innerHTML = '<svg class="icon"><use href="#plus"></use></svg>';
     addExtensionBtn.addEventListener('click', () => {
         // Guard so we never exceed 3
         if (extensionsInputsContainer.children.length - 1 < 3) {
@@ -657,7 +658,7 @@ function buildPlatformMenuForm(platformName) {
 
     const emulatorArgsIcon = document.createElement('div');
     emulatorArgsIcon.classList.add('form-icon');
-    emulatorArgsIcon.innerHTML = '<i class="form-icon emulator-args-icon fa fa-2x fa-terminal" aria-hidden="true"></i>';
+    emulatorArgsIcon.innerHTML = '<svg class="medium icon"><use href="#terminal"></use></svg>';
 
     const emulatorArgsLabel = document.createElement('label');
     emulatorArgsLabel.textContent = 'Emulator Arguments';
@@ -923,7 +924,7 @@ function buildPlatformMenuForm(platformName) {
         if (!isFirst) {
             const removeBtn = document.createElement('button');
             removeBtn.classList.add('button');
-            removeBtn.innerHTML = '<i class="form-icon emulator-args-icon fa fa-remove" aria-hidden="true"></i>';
+            removeBtn.innerHTML = '<svg class="medium icon"><use href="#xmark"></use></svg>';
             removeBtn.addEventListener('click', () => row.remove());
             row.appendChild(removeBtn);
         }
@@ -1110,6 +1111,7 @@ async function populateGameMenu(menuContainer, gameName, platformName) {
                     iconClass = 'fa-steam';
                     break;
                 }
+
 
                 sourceIcon.innerHTML = `<i class="fa ${iconClass}" aria-hidden="true"></i>`;
                 sourceIcon.title = `Source: ${source}`;

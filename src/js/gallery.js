@@ -3,7 +3,8 @@ import { cleanFileName,
          stripExtensions,
          scanDirectory,
          getPs3GameName,
-         findImageFile } from './utils.js';
+         findImageFile,
+         buildIcon } from './utils.js';
 import { incrementNbGames } from './preferences.js';
 import { openPlatformMenu } from './menu.js';
 
@@ -462,7 +463,6 @@ function buildSettingsPageContent(platforms) {
     return pageContent;
 }
 
-
 export function buildEmptyPageGameContainer(platform, gamesDir) {
     const container = document.createElement('div');
     container.classList.add('empty-platform-game-container');
@@ -471,7 +471,6 @@ export function buildEmptyPageGameContainer(platform, gamesDir) {
     const iconP = document.createElement('p');
     const titleP = document.createElement('p');
     const subTitleP = document.createElement('p');
-    const icon = document.createElement('i');
     let confButton = null;
 
     if (platform && gamesDir) {
@@ -481,19 +480,19 @@ export function buildEmptyPageGameContainer(platform, gamesDir) {
         titleP.textContent = 'No game files found in ';
         titleP.appendChild(textCode);
 
-        icon.className = 'fa fa-folder-open-o fa-5x';
-        icon.setAttribute('aria-hidden', 'true');
+        const icon = buildIcon("folder-open", "huge");
         iconP.appendChild(icon);
 
         confButton = document.createElement('button');
         confButton.classList.add('button');
-        confButton.textContent = `Configure ${getPlatformInfo(platform).vendor} ${getPlatformInfo(platform).name}`;
+        confButton.textContent =
+            `Configure ${getPlatformInfo(platform).vendor} ${getPlatformInfo(platform).name}`;
         confButton.addEventListener('click', () => openPlatformMenu(platform));
     } else {
         titleP.textContent = 'No favorites yet — go add some!';
         subTitleP.textContent = 'Press □ to add the selected game to favorites';
 
-        icon.className = 'fa fa-thumbs-o-down fa-5x';
+        const icon = buildIcon("dislike", "huge");
         iconP.appendChild(icon);
     }
 
@@ -502,3 +501,4 @@ export function buildEmptyPageGameContainer(platform, gamesDir) {
 
     return container;
 }
+

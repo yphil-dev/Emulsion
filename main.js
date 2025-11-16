@@ -136,10 +136,11 @@ ${pjson.name.toLowerCase()} ${pjson.version}
 Usage: ${pjson.name.toLowerCase()} [options]
 
 Options:
-  --kiosk                        Read-only / kids mode: No config / settings, disabled platforms hidden.
-  --full-screen                  Start Emulsion in full screen mode.
-  --auto-select=[platform_name]  Auto-select [platform_name].
   --help                         Show this help message.
+  --full-screen                  Start Emulsion in full screen mode.
+  --kiosk                        Read-only / kids mode: No config / settings, disabled platforms hidden.
+  --auto-select=[platform_name]  Auto-select [platform_name].
+  --verbose                      Show main process messages.
 
 Platform names: ${PLATFORMS.map(platform => platform.name).join(', ')}
     `);
@@ -1028,7 +1029,9 @@ ipcMain.handle('scan-directory', async (event, gamesDir, extensions, recursive =
             }
         }
     } catch (err) {
-        console.warn("Error reading directory:", gamesDir, err);
+        if (process.argv.includes('--verbose')) {
+            console.warn("Error reading directory:", gamesDir, err);
+        }
     }
 
     return files;

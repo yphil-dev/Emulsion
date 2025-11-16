@@ -233,6 +233,10 @@ svg.icon:hover {
   fill: var(--color-selected);
 }
 
+svg.small {
+  margin-bottom: 0.2em;
+}
+
 svg.medium {
   width: 1.8em;
   height: 1.8em;

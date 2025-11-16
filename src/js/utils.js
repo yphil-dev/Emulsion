@@ -936,3 +936,18 @@ export function launchGame(gameContainer) {
         platform: gameContainer.dataset.platform
     });
 }
+
+export function switchIcon (svgElement, newId) {
+  const use = svgElement.querySelector('use');
+  if (!use) return;
+  use.setAttribute('href', `#${newId}`);
+}
+
+export function buildIcon (symbolId, className) {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("class", `icon ${className || ''}`);
+    const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+    use.setAttribute("href", `#${symbolId}`);
+    svg.appendChild(use);
+    return svg;
+};

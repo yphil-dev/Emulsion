@@ -7,7 +7,9 @@ import { updateFooterControlsFor,
          batchDownload,
          launchGame,
          simulateKeyDown,
-         toggleHeaderNavLinks } from './utils.js';
+         toggleHeaderNavLinks,
+         buildIcon,
+         switchIcon } from './utils.js';
 import { updatePreference } from './preferences.js';
 import { getMeta, displayMetaData } from './metadata.js';
 import { editMetaDialog, toggleFavDialog, launchGameDialog, systemDialog, helpDialog } from './dialog.js';
@@ -517,7 +519,7 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
     });
 
     document.getElementById('view-mode-toggle-button').addEventListener('click', function() {
-        setGalleryViewMode(this.classList.contains('fa-th') ? 'grid' : 'list', true);
+        setGalleryViewMode(this.classList.contains('list') ? 'list' : 'grid', true);
     });
 
     document.getElementById('config-platform-button').addEventListener('click', function() {
@@ -920,14 +922,17 @@ export function initGamepad() {
 
 async function setGalleryViewMode(viewMode, save) {
 
-    const viewToggleBtn = document.getElementById('view-mode-toggle-button');
+    console.log("viewMode, save: ", viewMode, save);
+
+    const toggleIcon = document.getElementById('view-mode-toggle-button');
     const page = document.querySelector('.page.active');
     const pageContent = page.querySelector('.page-content');
     const gamePane = page.querySelector('.game-pane');
     const selectedContainer = pageContent.querySelector('.game-container.selected') || pageContent.querySelector('.game-container');
 
+    // console.log("page.dataset.viewMode: ", page.dataset.viewMode);
     page.dataset.viewMode = viewMode;
-    // pageContent.classList.remove('list');
+    // console.log("page.dataset.viewMode: ", page.dataset.viewMode);
 
     if (save) {
         if (LB.currentPlatform === 'favorites') {
@@ -941,9 +946,10 @@ async function setGalleryViewMode(viewMode, save) {
 
     if (viewMode === 'list') {
         pageContent.classList.add('list');
-        viewToggleBtn.classList.remove('fa-list');
-        viewToggleBtn.classList.add('fa-th');
-        viewToggleBtn.title = 'Grid mode';
+        toggleIcon.classList.remove('list');
+        toggleIcon.classList.add('grid');
+        toggleIcon.title = 'Grid mode';
+        switchIcon(toggleIcon, 'grid');
         if (gamePane) {
             gamePane.style.display = 'flex';
         }
@@ -956,9 +962,10 @@ async function setGalleryViewMode(viewMode, save) {
     } else {
         pageContent.classList.remove('list');
         pageContent.classList.add('grid');
-        viewToggleBtn.title = 'List mode';
-        viewToggleBtn.classList.remove('fa-th');
-        viewToggleBtn.classList.add('fa-list');
+        toggleIcon.title = 'List mode';
+        toggleIcon.classList.remove('grid');
+        toggleIcon.classList.add('list');
+        switchIcon(toggleIcon, 'list');
         if (gamePane) {
             gamePane.style.display = 'none';
         }
@@ -1004,24 +1011,23 @@ function buildGamePane(params) {
     fetchMetaButton.classList.add('fetch-meta-button', 'button');
     fetchMetaButton.id = 'fetch-meta-button';
 
-    const metaIcon = document.createElement('i');
-    metaIcon.className = 'fa fa-wikidata';
+    // const metaIcon = document.createElement('i');
+    const metaIcon = buildIcon('database', 'small');
     fetchMetaButton.appendChild(metaIcon);
 
     const coverArtButton = document.createElement('button');
     coverArtButton.classList.add('edit-cover-art-button', 'button');
     coverArtButton.id = 'edit-cover-art-button';
 
-    const coverArtIcon = document.createElement('i');
-    coverArtIcon.className = 'fa fa-image';
+    const coverArtIcon = buildIcon('image', 'small');
     coverArtButton.appendChild(coverArtIcon);
 
     const webLinkButton = document.createElement('button');
     webLinkButton.classList.add('web-link-button', 'button');
     webLinkButton.id = 'web-link-button';
 
-    const webLinkIcon = document.createElement('i');
-    webLinkIcon.className = 'fa fa-external-link';
+    // const webLinkIcon = document.createElement('i');
+    const webLinkIcon = buildIcon('extlink', 'small');
     webLinkButton.appendChild(webLinkIcon);
 
     const editMetaButton = document.createElement('button');
@@ -1029,7 +1035,6 @@ function buildGamePane(params) {
     editMetaButton.id = 'edit-meta-button';
 
     const editMetaIcon = document.createElement('i');
-    editMetaIcon.className = 'fa fa-pencil';
     editMetaButton.appendChild(editMetaIcon);
 
     coverArtButton.addEventListener('click', () => {

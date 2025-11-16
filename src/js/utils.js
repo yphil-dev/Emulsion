@@ -443,8 +443,10 @@ export function updateHeader(platformName, gameName) {
     const header = document.getElementById("header");
     const headerControls = document.getElementById("header-controls");
 
+    console.log("LB.mode: ", LB.mode);
+
     const showHeader = platformName !== 'hide';
-    const showControls = !(LB.mode === 'menu' || platformName === 'settings');
+    const showControls = !(LB.mode === 'gameMenu' || LB.mode === 'menu' || platformName === 'settings');
 
     header.style.display = showHeader ? 'flex' : 'none';
     headerControls.style.display = showControls ? 'flex' : 'none';

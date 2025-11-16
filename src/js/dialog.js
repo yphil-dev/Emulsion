@@ -990,17 +990,13 @@ export function installEmulatorsDialog(emulators) {
 
             if (!flatpakAvailable) {
                 flathubStatus.innerHTML = `<svg class="icon"><use href="#xmark"></use></svg> Flatpak not installed on system`;
-                // flathubStatus.textContent = '<i class="fa fa-close error" aria-hidden="true"></i> Flatpak not installed on system';
             } else if (!flathubConfigured) {
                 flathubStatus.innerHTML = `<svg class="icon"><use href="#warning"></use></svg> Flathub remote not configured (will be added automatically during installation)`;
-                // flathubStatus.textContent = '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Flathub remote not configured (will be added automatically during installation)';
             } else {
                 flathubStatus.innerHTML = `<svg class="icon success"><use href="#checkmark"></use></svg> Flatpak and Flathub configured`;
-                // flathubStatus.innerHTML = '<i class="fa fa-check success" aria-hidden="true"></i> Flatpak and Flathub configured';
             }
         } catch (error) {
             flathubStatus.innerHTML = `<svg class="icon"><use href="#xmark"></use></svg> Error checking Flatpak status`;
-            // flathubStatus.textContent = '<i class="fa fa-close error" aria-hidden="true"></i> Error checking Flatpak status';
         }
     }
 

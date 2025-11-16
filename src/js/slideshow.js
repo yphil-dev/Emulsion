@@ -1026,7 +1026,6 @@ function buildGamePane(params) {
     webLinkButton.classList.add('web-link-button', 'button');
     webLinkButton.id = 'web-link-button';
 
-    // const webLinkIcon = document.createElement('i');
     const webLinkIcon = buildIcon('extlink', 'small');
     webLinkButton.appendChild(webLinkIcon);
 
@@ -1034,7 +1033,7 @@ function buildGamePane(params) {
     editMetaButton.classList.add('edit-meta-button', 'button');
     editMetaButton.id = 'edit-meta-button';
 
-    const editMetaIcon = document.createElement('i');
+    const editMetaIcon = buildIcon('edit', 'small');
     editMetaButton.appendChild(editMetaIcon);
 
     coverArtButton.addEventListener('click', () => {

@@ -1,6 +1,6 @@
 name: emulsion
 title: Emulsion
-version: '0.9.42'
+version: '0.9.43'
 summary: Better gaming throught chemistry
 description: |
   Emulsion is a modern, responsive game launcher that organizes platforms into galleries, manages game metadata and cover art, and launches titles through configured emulators.

@@ -1,6 +1,6 @@
 {
     "name": "emulsion",
-    "version": "0.9.38",
+    "version": "0.9.39",
     "summary": "Better gaming throught chemistry",
     "description": "Emulsion scans local game directories, normalizes metadata, and exposes a structured interface for launching titles. It manages emulator installation based on the user’s selected platforms.",
     "homepage": "https://yphil.gitlab.io/emulsion",

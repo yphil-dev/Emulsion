@@ -10,7 +10,7 @@
 
 ### *Better gaming throught chemistry*
 
-**One interface. All your emulators. Zero hassle.**
+**All the games. All the emulators. One place.**
 
 [Website](https://yphil.gitlab.io/emulsion) • [Download](https://github.com/yPhil-gh/emulsion/releases/latest) • [Documentation](#configuration) • [Cracktro](https://yphil.gitlab.io/ext/emulsion.html)
 

@@ -45,6 +45,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           name: Emulsion ${{ github.ref_name }}
+          draft: false
+          prerelease: false
           files: |
             dist/emulsion-unpacked.tar.gz
             dist/*.deb

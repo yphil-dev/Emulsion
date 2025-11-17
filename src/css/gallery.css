@@ -365,6 +365,7 @@ i.disabled { pointer-events: none; opacity: 0.5; }
   flex: 1;
   margin: 2px;
   padding: 1px;
+  border: 1px solid #667;
 }
 
 .meta-container {

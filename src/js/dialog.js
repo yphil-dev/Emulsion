@@ -1014,12 +1014,10 @@ export function installEmulatorsDialog(emulators) {
             }
 
             try {
-                const isInstalled = await ipcRenderer.invoke('is-flatpak-package-installed', flatpakId);
-                const isInstalling = await ipcRenderer.invoke('is-flatpak-installing', flatpakId);
+                const isFlatpakPackageInstalled = await ipcRenderer.invoke('is-flatpak-package-installed', flatpakId);
+                const isFlatpakPackageInstalling = await ipcRenderer.invoke('is-flatpak-installing', flatpakId);
 
-                console.log("isInstalling: ", isInstalling, flatpakId);
-
-                if (isInstalled) {
+                if (isFlatpakPackageInstalled) {
                     // statusCell.innerHTML = `<i class="fa fa-check success" aria-hidden="true"></i> Installed`;
                     statusCell.innerHTML = `<svg class="icon success"><use href="#checkmark"></use></svg> Installed`;
 
@@ -1032,9 +1030,9 @@ export function installEmulatorsDialog(emulators) {
                     const notInstalled = `<svg class="icon error"><use href="#xmark"></use></svg> Not installed`;
                     const installing = `<svg class="icon success"><use href="#clock"></use></svg> Installing`;
 
-                    statusCell.innerHTML = isInstalling ? installing : notInstalled;
+                    statusCell.innerHTML = isFlatpakPackageInstalling ? installing : notInstalled;
 
-                    if (isInstalling) {
+                    if (isFlatpakPackageInstalling) {
                         checkButton.style.display = 'inline-block';
                         checkButton.dataset.flatpakId = flatpakId;
                         installButton.style.display = 'none';

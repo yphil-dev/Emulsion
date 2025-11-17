@@ -30,7 +30,7 @@ jobs:
           sudo apt-get install -y dpkg fakeroot fuse cmake libsdl2-dev
           npm install
 
-      - name: Build without publishing
+      - name: Build
         run: npx electron-builder --config builder.yml --linux --publish=never
 
       - name: Extract AppImage to create linux-unpacked
@@ -41,13 +41,13 @@ jobs:
           mv squashfs-root linux-unpacked
           tar -czf emulsion-unpacked.tar.gz linux-unpacked/
 
-      - name: Create Release with all assets
+      - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           name: Emulsion ${{ github.ref_name }}
           files: |
+            dist/emulsion-unpacked.tar.gz
             dist/*.deb
             dist/*.AppImage
             dist/*.rpm
-            dist/emulsion-unpacked.tar.gz
           generate_release_notes: true

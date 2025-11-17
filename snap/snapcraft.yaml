@@ -15,7 +15,7 @@ contact:
 grade: stable
 confinement: classic
 base: core22
-icon: settings.svg
+icon: emulsion.svg
 
 apps:
   emulsion:

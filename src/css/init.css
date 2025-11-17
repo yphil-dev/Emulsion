@@ -255,3 +255,7 @@ svg.huge {
 svg.help {
   fill: var(--color-selected);
 }
+
+svg.normal {
+  fill: var(--color-text-1);
+}

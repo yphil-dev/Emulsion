@@ -38,6 +38,10 @@
   margin-top: 0;
 }
 
+.dialog .title-name {
+  color: var(--color-selected);
+}
+
 .dialog-body {
   color: var(--color-text-1);
 }

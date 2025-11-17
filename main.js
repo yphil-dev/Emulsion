@@ -963,7 +963,7 @@ ipcMain.handle('install-flatpak', async (event, appId) => {
   });
 });
 
-ipcMain.handle('is-command-available', async (event, commandName) => {
+ipcMain.handle('is-command-available', async (_event, commandName) => {
   return new Promise((resolve) => {
     exec(`command -v ${commandName}`, (error, stdout) => {
       // if stdout is non-empty, command exists

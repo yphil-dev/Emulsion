@@ -35,7 +35,7 @@
 
   --color-text-game-label: rgb(41, 241, 234);
 
-  --color-selected: rgb(67, 231, 116);
+  --color-selected: rgb(37, 131, 16);
 
   --color-selected-rgb: 35, 197, 83;
 
@@ -45,10 +45,10 @@
 
   --color-text-badge: rgba(41, 241, 234, 1);
   --color-bg-badge: rgba(67, 97, 187);
-  --color-bg-controls: #B0D7DA;
+  --color-bg-controls: #b0dbe8;
 
   --color-button-on: rgb(255, 107, 0);
-  --color-button-off: rgb(67, 97, 187);
+  --color-button-off: rgb(167, 197, 287);
   --color-border-on: rgb(255, 107, 0);
   --color-border-off: rgb(149, 175, 204);
 

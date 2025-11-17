@@ -1,9 +1,0 @@
-#!/bin/bash
-# Emulsion Snap wrapper script
-
-# Set up environment
-export PATH="$SNAP/usr/lib/emulsion:$PATH"
-export LD_LIBRARY_PATH="$SNAP/usr/lib/emulsion:$LD_LIBRARY_PATH"
-
-# Execute Emulsion
-exec "$SNAP/usr/lib/emulsion/emulsion" --no-sandbox "$@"

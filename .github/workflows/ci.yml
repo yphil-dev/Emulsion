@@ -46,8 +46,8 @@ jobs:
         with:
           name: Emulsion ${{ github.ref_name }}
           files: |
-            dist/emulsion_amd64.deb
-            dist/emulsion_x86_64.AppImage
-            dist/emulsion_amd64.rpm
             dist/emulsion-unpacked.tar.gz
+            dist/*.deb
+            dist/*.AppImage
+            dist/*.rpm
           generate_release_notes: true

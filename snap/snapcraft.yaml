@@ -3,7 +3,7 @@ title: Emulsion
 version: '0.9.41'
 summary: Better gaming throught chemistry
 description: |
-  Emulsion scans local game directories, normalizes metadata, and exposes a structured interface for launching titles. It manages emulator installation based on the user’s selected platforms.
+  Emulsion is a modern, responsive game launcher that organizes platforms into galleries, manages game metadata and cover art, and launches titles through configured emulators.
 website: https://yphil.gitlab.io/emulsion/
 source-code: https://gitlab.com/yphil/emulsion
 issues: https://gitlab.com/yphil/emulsion/-/issues

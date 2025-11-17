@@ -91,7 +91,6 @@ header .platform-image {
     white-space: nowrap;
     z-index: 10;
 
-    color: white;
     font-size: 0.5em;
 
     color: var(--color-text-badge);

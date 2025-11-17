@@ -39,9 +39,7 @@ jobs:
           chmod +x emulsion_x86_64.AppImage
           ./emulsion_x86_64.AppImage --appimage-extract
           mv squashfs-root linux-unpacked
-          tar -czf linux-unpacked.tar.gz linux-unpacked/
-          echo "Created linux-unpacked.tar.gz:"
-          ls -la *.tar.gz
+          tar -czf emulsion-unpacked.tar.gz linux-unpacked/
 
       - name: Create Release with all assets
         uses: softprops/action-gh-release@v1
@@ -51,5 +49,5 @@ jobs:
             dist/*.deb
             dist/*.AppImage
             dist/*.rpm
-            dist/linux-unpacked.tar.gz
+            dist/emulsion-unpacked.tar.gz
           generate_release_notes: true

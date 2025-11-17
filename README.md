@@ -45,15 +45,9 @@ Only Emulsion does it this way ; Seriously, look it up!
 
 ### Pre-built Packages (Recommended)
 
-#### Linux
-
 - [**Debian / Ubuntu Package**](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_amd64.deb)
 - [**RPM Package**](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_x86_64.rpm)
 - [**AppImage**](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_x86_64.AppImage)
-
-#### Windows
-
-- [**Executable**](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_x64.exe)
 
 
 👉 [**All Releases**](https://github.com/yphil-gh/emulsion/releases/latest)

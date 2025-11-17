@@ -1,6 +1,6 @@
 name: emulsion
 title: Emulsion
-version: '0.9.31'
+version: '0.9.34'
 summary: Better gaming through chemistry
 description: |
   Emulsion is a retro game launcher that scans your game directories
@@ -26,7 +26,7 @@ apps:
 parts:
   emulsion:
     plugin: dump
-    source: https://github.com/yPhil-gh/Emulsion/releases/download/0.9.31/linux-unpacked.tar.gz
+    source: https://github.com/yPhil-gh/Emulsion/releases/download/0.9.34/linux-unpacked.tar.gz
     source-checksum: sha256/c290dd687d20f62a833e965f2fe9cf7ba30777e51388486e8b356a0c0bf4c737
     organize:
       '*': usr/lib/emulsion/

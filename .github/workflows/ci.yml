@@ -46,6 +46,7 @@ jobs:
       - name: Create Release with all assets
         uses: softprops/action-gh-release@v1
         with:
+          name: Emulsion ${{ github.ref_name }}
           files: |
             dist/*.deb
             dist/*.AppImage

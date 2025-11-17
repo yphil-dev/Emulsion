@@ -511,11 +511,27 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
     });
 
     document.getElementById('prev-link').addEventListener('click', function() {
-        simulateKeyDown('ArrowLeft', { shift: true });
+        goToGalleryPage(-1);
+        selectedIndex = 1;
+
+        const activePage = document.querySelector('.page.active');
+        const containers = activePage.querySelectorAll('.game-container');
+
+        containers.forEach((container, index) =>
+            container.classList.toggle('selected', index === selectedIndex)
+        );
     });
 
     document.getElementById('next-link').addEventListener('click', function() {
-        simulateKeyDown('ArrowRight', { shift: true });
+        goToGalleryPage(1);
+        selectedIndex = 0;
+
+        const activePage = document.querySelector('.page.active');
+        const containers = activePage.querySelectorAll('.game-container');
+
+        containers.forEach((container, index) =>
+            container.classList.toggle('selected', index === selectedIndex)
+        );
     });
 
     document.getElementById('view-mode-toggle-button').addEventListener('click', function() {
@@ -1217,4 +1233,3 @@ async function toggleFavorite(container) {
         await addFavorite(container);
     }
 }
-

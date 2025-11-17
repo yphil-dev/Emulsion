@@ -1,6 +1,6 @@
 name: emulsion
 title: Emulsion
-version: '0.9.41'
+version: '0.9.42'
 summary: Better gaming throught chemistry
 description: |
   Emulsion is a modern, responsive game launcher that organizes platforms into galleries, manages game metadata and cover art, and launches titles through configured emulators.
@@ -25,7 +25,7 @@ apps:
 parts:
   emulsion:
     plugin: dump
-    source: https://github.com/yPhil-gh/Emulsion/releases/download/0.9.41/linux-unpacked.tar.gz
+    source: https://github.com/yPhil-gh/Emulsion/releases/download/0.9.42/linux-unpacked.tar.gz
     source-checksum: sha256/c290dd687d20f62a833e965f2fe9cf7ba30777e51388486e8b356a0c0bf4c737
     organize:
       '*': usr/lib/emulsion/

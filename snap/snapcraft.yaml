@@ -13,7 +13,7 @@ contact:
   - xaccrocheur@gmail.com
   - https://yphil.gitlab.io/
 grade: stable
-confinement: classic
+confinement: strict
 base: core22
 icon: emulsion.svg
 

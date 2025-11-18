@@ -479,7 +479,7 @@ function buildPlatformMenuForm(platformName) {
     const platformMenuImageCtn = document.createElement('div');
     platformMenuImageCtn.classList.add('platform-menu-image-ctn');
     platformMenuImageCtn.style.backgroundImage = `url("file://${path.join(LB.baseDir, 'img', 'platforms', `${platformName}.png`)}")`;
-    platformMenuImageCtn.style.backgroundSize = 'cover';
+    // platformMenuImageCtn.style.backgroundSize = 'cover';
     platformMenuImageCtn.style.backgroundRepeat = 'no-repeat';
     platformMenuImageCtn.style.backgroundPosition = 'center';
 

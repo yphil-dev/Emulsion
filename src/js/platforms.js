@@ -20,7 +20,9 @@ export const PLATFORMS = [
         name: "amstrad",
         extensions: [".dsk", ".cpr"],
         emulators: [
-            { name: "Caprice32", flatpak: null, args: "", url: "https://github.com/ColinPitrat/caprice32" }
+            { name: "Caprice32", flatpak: null, args: "", url: "https://github.com/ColinPitrat/caprice32" },
+            { name: "Caprice33", flatpak: null, args: "", url: "https://github.com/ColinPitrat/caprice32" },
+            { name: "xcpc", flatpak: null, args: "--keyboard=english", url: "https://www.xcpc-emulator.net/" }
 
         ]
     },

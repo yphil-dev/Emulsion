@@ -96,11 +96,11 @@ button {
   gap: 0.3em;
   justify-content: center;
 
-  width: 50vw;
-  max-width: 800px;
+  width: 80vw;
+  max-width: 1200px;
+
 }
 
-/* Rows (flex containers) */
 #platform-form > div {
   display: flex;
   align-items: center;
@@ -109,11 +109,15 @@ button {
 }
 
 .platform-menu-image-ctn {
-  text-align: center;
   height: 40vh;
-  /* min-height: 300px; */
-
+  background-size: cover;
   filter: var(--filter-glow-platform);
+}
+
+@media (max-width: 1000px) {
+  .platform-menu-image-ctn {
+    background-size: contain;
+  }
 }
 
 /* Details text div */

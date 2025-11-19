@@ -8,6 +8,7 @@ import { spawn, exec } from 'child_process';
 import { getAllCoverImageUrls, getGameMetaData } from './src/js/backends.js';
 
 import { PLATFORMS, getPlatformInfo } from './src/js/platforms.js';
+import { pickFolderPersist } from "./src/js/portal-picker.js";
 
 import axios from 'axios';
 import os from 'os';
@@ -356,6 +357,7 @@ const downloadAndSaveImage = async (imgSrc, platform, gameName, gamesDir) => {
     }
 };
 
+
 // delete cover from covers directory (with existence check)
 ipcMain.handle('delete-image', async (_event, imagePath) => {
   return new Promise(resolve => {
@@ -486,16 +488,6 @@ ipcMain.handle('get-user-data', () => {
     return {
         path: app.getPath('userData')
     };
-});
-
-ipcMain.handle('select-file-or-directory', async (event, property) => {
-
-    const result = await dialog.showOpenDialog({ properties: [property] });
-
-    if (!result.canceled && result.filePaths.length > 0) {
-        return result.filePaths[0];
-    }
-    return null;
 });
 
 ipcMain.handle('go-to-url', async (event, link) => {
@@ -1115,4 +1107,47 @@ ipcMain.handle('get-flatpak-download-size', async (event, appId) => {
       resolve(null); // Size not found in output
     });
   });
+});
+
+
+ipcMain.handle('ping', () => {
+    console.log("🌍 Ping handler called - IPC is working!");
+    return 'pong';
+});
+
+ipcMain.handle("select-file-or-directory", async (event, property) => {
+    console.log("🌍 IPC handler CALLED for:", property);
+    const isFlatpak = !!process.env.FLATPAK_ID;
+    console.log("🌍 Running in Flatpak?", isFlatpak);
+
+    try {
+        if (property === "openDirectory" && isFlatpak) {
+            console.log("🔍 Using portal picker for directory (Flatpak)...");
+            try {
+                const result = await pickFolderPersist();
+                console.log("🔄 Portal picker result:", result);
+                return result?.path || null;
+            } catch (portalError) {
+                console.error("🔄 Portal picker failed:", portalError);
+                console.log("❌ Portal error - falling back to native dialog");
+            }
+        }
+
+        // Fallback to Electron native dialogs (always for file picker, and fallback for directories)
+        console.log("🔍 Using Electron native dialog for", property);
+        const result = await dialog.showOpenDialog({
+            title: property === 'openDirectory' ? 'Choose a folder' : 'Choose a file',
+            properties: [property],
+            modal: true
+        });
+        console.log("🔄 Dialog result:", result);
+        if (result.canceled || result.filePaths.length === 0) {
+            return null;
+        }
+        return result.filePaths[0];
+
+    } catch (e) {
+        console.error("IPC handler error:", e);
+        return null;
+    }
 });

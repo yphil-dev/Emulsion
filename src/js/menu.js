@@ -709,16 +709,38 @@ function buildPlatformMenuForm(platformName) {
         });
 
 
-    gamesDirButton.addEventListener('click', _gamesDirButtonClick);
-    emulatorButton.addEventListener('click', _emulatorButtonClick);
-
-    async function _gamesDirButtonClick(event) {
-        event.stopPropagation();
-        const selectedPath = await ipcRenderer.invoke('select-file-or-directory', 'openDirectory');
-        if (selectedPath) {
-            gamesDirInput.value = selectedPath;
+    // Test basic IPC communication first
+    console.log("🔧 Testing IPC communication...");
+    (async () => {
+        try {
+            const testResult = await ipcRenderer.invoke('ping');
+            console.log("🔧 IPC test result:", testResult);
+        } catch (e) {
+            console.error("🔧 IPC test failed:", e);
         }
-    }
+    })();
+
+    gamesDirButton.addEventListener('click', async (event) => {
+        console.log("_gamesDirButtonClick: ENTERED");
+        console.log("event: ", event);
+        event.stopPropagation();
+
+        console.log("About to call portal picker...");
+        // Try portal picker first (required for Flatpak persistence)
+        try {
+            const selectedPath = await ipcRenderer.invoke('select-file-or-directory', 'openDirectory');
+            console.log("Portal result:", selectedPath);
+            if (selectedPath) {
+                gamesDirInput.value = selectedPath;
+            } else {
+                console.log("No path returned by portal");
+            }
+        } catch (error) {
+            console.log("Portal picker failed:", error.message);
+            // In Flatpak, portals MUST work - this shouldn't happen
+            console.log("CRITICAL: Portal picker failed in Flatpak environment!");
+        }
+    });
 
     async function _emulatorButtonClick(event) {
         event.stopPropagation();

@@ -11,7 +11,8 @@ import { getSelectedGameContainer,
          batchDownload,
          simulateTabNavigation,
          setFooterSize,
-         toggleHeaderNavLinks } from './utils.js';
+         toggleHeaderNavLinks,
+         fadeOut } from './utils.js';
 import { helpDialog, installEmulatorsDialog, systemDialog } from './dialog.js';
 
 let menuState = {
@@ -770,10 +771,12 @@ function buildPlatformMenuForm(platformName) {
 
         if (isEnabling) {
             if (!gamesDirInput.value) {
-                gamesDirSubLabel.textContent = 'Please enter a game directory';
+                gamesDirSubLabel.innerHTML = `Select where your <span class="accent">${LB.currentPlatform}</span> games live`;
+                fadeOut(gamesDirSubLabel);
             }
             if (!emulatorInput.value) {
-                emulatorSubLabel.textContent = 'Please enter an emulator (name or path)';
+                emulatorSubLabel.innerHTML = `Select a <span class="accent">${LB.currentPlatform}</span> emulator, or enter a name/path`;
+                fadeOut(emulatorSubLabel);
             }
         }
 

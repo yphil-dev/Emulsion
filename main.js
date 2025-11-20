@@ -275,7 +275,6 @@ function loadPreferences() {
                     platformPreferences === null ||
                     typeof platformPreferences.isEnabled !== 'boolean' ||
                     typeof platformPreferences.viewMode !== 'string' ||
-                    typeof platformPreferences.gamesDir !== 'string' ||
                     typeof platformPreferences.emulator !== 'string' ||
                     typeof platformPreferences.emulatorArgs !== 'string' ||
                     !Array.isArray(platformPreferences.extensions)
@@ -742,7 +741,6 @@ const defaultPreferences = {
 PLATFORMS.forEach((platform, index) => {
     defaultPreferences[platform.name] = {
         isEnabled: false,
-        gamesDir: "",
         viewMode: "grid",
         emulator: "",
         emulatorArgs: "",
@@ -1121,19 +1119,9 @@ ipcMain.handle("select-file-or-directory", async (event, property) => {
     console.log("🌍 Running in Flatpak?", isFlatpak);
 
     try {
-        if (property === "openDirectory" && isFlatpak) {
-            console.log("🔍 Using portal picker for directory (Flatpak)...");
-            try {
-                const result = await pickFolderPersist();
-                console.log("🔄 Portal picker result:", result);
-                return result?.path || null;
-            } catch (portalError) {
-                console.error("🔄 Portal picker failed:", portalError);
-                console.log("❌ Portal error - falling back to native dialog");
-            }
-        }
+        // Flatpak with working portals would be ideal, but crashes with V8 sandbox
+        // For now, just use Electron dialogs with available filesystem permissions
 
-        // Fallback to Electron native dialogs (always for file picker, and fallback for directories)
         console.log("🔍 Using Electron native dialog for", property);
         const result = await dialog.showOpenDialog({
             title: property === 'openDirectory' ? 'Choose a folder' : 'Choose a file',

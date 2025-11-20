@@ -1,6 +1,8 @@
 // src/js/backends/giantbomb.js
 import axios from 'axios';
 
+// Note: Removed unused 'import os from 'os';' line that was causing module resolution errors
+
 export const fetchImages = async (gameName, apiKey) => {
 
     if (!apiKey) {

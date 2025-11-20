@@ -4,7 +4,7 @@ export const PLATFORMS = [
     {
         nbGames: 0,
         display: "grid",
-        displayName: "2600+",
+        displayName: "2600 / +",
         vendor: "Atari",
         name: "atari",
         extensions: [".zip"],
@@ -29,7 +29,7 @@ export const PLATFORMS = [
     {
         nbGames: 0,
         display: "grid",
-        displayName: "ZX Spectrum",
+        displayName: "ZX / Spectrum",
         vendor: "Sinclair",
         name: "spectrum",
         extensions: [".zip"],
@@ -41,7 +41,7 @@ export const PLATFORMS = [
     {
         nbGames: 0,
         display: "grid",
-        displayName: "C-64",
+        displayName: "C / 64",
         vendor: "Commodore",
         name: "c64",
         extensions: [".zip"],

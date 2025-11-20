@@ -109,7 +109,7 @@ button {
 }
 
 .platform-menu-image-ctn {
-  height: 50vh;
+  height: 40vh;
   background-size: cover;
   filter: var(--filter-glow-platform);
 }

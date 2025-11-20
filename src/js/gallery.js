@@ -33,7 +33,7 @@ export async function buildGalleries (preferences, userDataPath) {
                         extensions = 'none';
                         index = 0; // Settings is always index 0
                     } else {
-                        gamesDir = path.join(require('os').homedir(), 'Documents', 'Games', platformName);
+                        gamesDir = prefs.gamesDir;
                         viewMode = prefs.viewMode;
                         emulator = prefs.emulator;
                         emulatorArgs = prefs.emulatorArgs;
@@ -263,7 +263,7 @@ export async function buildGameContainer({
     index
 }) {
     const container = document.createElement('div');
-    const gamesDir = path.join(require('os').homedir(), 'Documents', 'Games', platform);
+    const gamesDir = LB.preferences[platform].gamesDir;
     const cleanName = cleanFileName(gameName);
     const coverPath = await findImageFile(path.join(gamesDir, 'images'), gameName);
     const platformBadge = document.createElement('div');
@@ -279,17 +279,7 @@ export async function buildGameContainer({
     container.dataset.gameName = gameName;
     container.dataset.cleanName = cleanName;
     container.dataset.platform = platform;
-    // For Flatpak, translate portal paths back to Documents paths for emulator commands
-    const isFlatpak = !!window.LB && window.LB.flatpakEnv;
-    let commandFilePath = filePath;
-    if (isFlatpak && filePath.includes('/run/user/')) {
-        // Portal mount path: /run/user/1000/doc/DOCID/platform/filename.zip
-        // Real Documents path: ~/Documents/Games/platform/filename.zip
-        const realGamesDir = path.join(require('os').homedir(), 'Documents', 'Games', platform);
-        const filename = path.basename(filePath);
-        commandFilePath = path.join(realGamesDir, filename);
-    }
-    container.dataset.command = `${emulator} ${emulatorArgs} ${commandFilePath}`;
+    container.dataset.command = `${emulator} ${emulatorArgs} ${filePath}`;
     container.dataset.emulator = emulator;
     container.dataset.emulatorArgs = emulatorArgs;
     container.dataset.gamePath = filePath;
@@ -511,3 +501,4 @@ export function buildEmptyPageGameContainer(platform, gamesDir) {
 
     return container;
 }
+

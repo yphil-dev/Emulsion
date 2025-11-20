@@ -4,15 +4,12 @@ export const PLATFORMS = [
     {
         nbGames: 0,
         display: "grid",
-        displayName: "2600 / +",
+        displayName: "2600+",
         vendor: "Atari",
         name: "atari",
         extensions: [".zip"],
         emulators: [
-            { name: "Atari800", flatpak: null, url: "https://atari800.github.io/", args: "--fullscreen" },
-            { name: "ARES", flatpak: "dev.ares.ares", url: "https://ares-emu.net/", args: "--fullscreen" },
-            { name: "Hatari", flatpak: "org.tuxfamily.hatari", url: "https://www.hatari-emu.org/", args: "--fullscreen" },
-            { name: "Stella", flatpak: "io.github.stella_emu.Stella", url: "https://stella-emu.github.io/", args: "-fullscreen" }
+            { name: "ARES", flatpak: "dev.ares.ares", url: "https://ares-emu.net/", args: "--fullscreen" }
         ]
     },
     {
@@ -21,10 +18,10 @@ export const PLATFORMS = [
         displayName: "GX4000 / CPC",
         vendor: "Amstrad",
         name: "amstrad",
-        extensions: [".dsk", ".dsk.gz", ".dsk.bz2", ".cpr", ".sna"],
+        extensions: [".dsk", ".cpr"],
         emulators: [
-            { name: "Arnold", flatpak: null, args: "", url: "https://github.com/rofl0r/arnold" },
             { name: "Caprice32", flatpak: null, args: "", url: "https://github.com/ColinPitrat/caprice32" },
+            { name: "Caprice33", flatpak: null, args: "", url: "https://github.com/ColinPitrat/caprice32" },
             { name: "xcpc", flatpak: null, args: "--keyboard=english", url: "https://www.xcpc-emulator.net/" }
 
         ]
@@ -32,7 +29,7 @@ export const PLATFORMS = [
     {
         nbGames: 0,
         display: "grid",
-        displayName: "ZX / Spectrum",
+        displayName: "ZX Spectrum",
         vendor: "Sinclair",
         name: "spectrum",
         extensions: [".zip"],

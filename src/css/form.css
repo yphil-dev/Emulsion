@@ -110,13 +110,13 @@ button {
 
 .platform-menu-image-ctn {
   height: 40vh;
-  background-size: cover;
+  background-size: 64vh;
   filter: var(--filter-glow-platform);
 }
 
-@media (max-width: 1000px) {
+@media (max-height: 940px) {
   .platform-menu-image-ctn {
-    background-size: contain;
+    display: none;
   }
 }
 

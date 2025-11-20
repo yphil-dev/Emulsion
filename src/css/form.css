@@ -39,7 +39,14 @@ button {
   font-size: 16px;
   font-weight: bold;
   padding: 12px 14px;
+}
+
+.button:not(.extension) {
   margin-left: 1em;
+}
+
+.button.extension {
+  margin-bottom: 1em;
 }
 
 .button.small {
@@ -114,7 +121,7 @@ button {
   filter: var(--filter-glow-platform);
 }
 
-@media (max-height: 940px) {
+@media (max-height: 1000px) {
   .platform-menu-image-ctn {
     display: none;
   }
@@ -299,7 +306,7 @@ input[type="checkbox"]:focus {
 .dual-ctn {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
 }
 
 div.form-icon {
@@ -314,16 +321,18 @@ div.form-icon {
 .extensions-inputs-container {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
 }
 
 .extension-input-row {
     display: flex;
-    gap: 0.5rem;
-    align-items: center;
+    gap: 0.5em;
+    align-items: flex-start;
 }
 
 .extension-input-row input {
-    width: 80px;
+  width: 80px;
+  margin-right: 1em;
 }
 
 /* Source icon overlay for game menu images */

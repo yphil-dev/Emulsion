@@ -617,16 +617,14 @@ function buildPlatformMenuForm(platformName) {
 
     // Create the “Select +” button wired to add a new row
     const addExtensionBtn = document.createElement('button');
-    addExtensionBtn.classList.add('button');
+    addExtensionBtn.classList.add('button', 'extension');
     addExtensionBtn.innerHTML = '<svg class="icon"><use href="#plus"></use></svg>';
     addExtensionBtn.addEventListener('click', () => {
-        // Guard so we never exceed 3
-        if (extensionsInputsContainer.children.length - 1 < 3) {
-            const newRow = _createExtensionInputRow('', false);
-            // Insert before the button
-            extensionsInputsContainer.insertBefore(newRow, addExtensionBtn);
-            updateAddExtensionBtn();
-        }
+        console.log("click: ");
+        const newRow = _createExtensionInputRow('', false);
+        // Insert before the button
+        extensionsInputsContainer.insertBefore(newRow, addExtensionBtn);
+        updateAddExtensionBtn();
     });
 
     // Load existing extensions from preferences
@@ -923,7 +921,7 @@ function buildPlatformMenuForm(platformName) {
 
         if (!isFirst) {
             const removeBtn = document.createElement('button');
-            removeBtn.classList.add('button');
+            removeBtn.classList.add('button', 'extension');
             removeBtn.innerHTML = '<svg class="icon"><use href="#xmark"></use></svg>';
             removeBtn.addEventListener('click', () => row.remove());
             row.appendChild(removeBtn);

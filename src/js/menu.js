@@ -478,12 +478,24 @@ function buildPlatformMenuForm(platformName) {
 
     const platformMenuImageCtn = document.createElement('div');
     platformMenuImageCtn.classList.add('platform-menu-image-ctn');
+
     platformMenuImageCtn.style.backgroundImage = `url("file://${path.join(LB.baseDir, 'img', 'platforms', `${platformName}.png`)}")`;
-    // platformMenuImageCtn.style.backgroundSize = 'cover';
     platformMenuImageCtn.style.backgroundRepeat = 'no-repeat';
     platformMenuImageCtn.style.backgroundPosition = 'center';
 
-    // platformMenuImageCtn.appendChild(platformMenuImage);
+    // // create the <img>
+    // const img = document.createElement('img');
+    // img.src = `file://${path.join(LB.baseDir, 'img', 'platforms', `${platformName}.png`)}`;
+    // img.alt = platformName;
+
+    // // optionally control sizing via CSS class instead of inline
+    // img.style.display = 'block';
+    // img.style.maxWidth = '100%';
+    // img.style.maxHeight = '100%';
+    // img.style.objectFit = 'contain';
+
+    // // append image into container
+    // platformMenuImageCtn.appendChild(img);
 
     const statusCheckBox = document.createElement('input');
     statusCheckBox.type = 'checkbox';

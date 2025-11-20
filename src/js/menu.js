@@ -541,7 +541,7 @@ function buildPlatformMenuForm(platformName) {
     gamesDirCtn.appendChild(gamesDirInput);
     gamesDirCtn.appendChild(gamesDirButton);
 
-    gamesDirGroup.appendChild(gamesDirLabel);
+    gamesDirGroup.style.display = 'none';
     gamesDirGroup.appendChild(gamesDirCtn);
 
     const emulatorGroup = document.createElement('div');
@@ -1167,7 +1167,7 @@ function buildManualSelectButton(gameName, platformName, imgElem) {
         const srcPath = await ipcRenderer.invoke('pick-image');
         if (!srcPath) return;  // user cancelled
 
-        const gamesDir = window.LB.preferences[platformName].gamesDir;
+        const gamesDir = (typeof os !== 'undefined' ? require('os').homedir() : require('os').homedir()) + '/Documents/Games/' + platformName;
 
         const extension = srcPath.split('.').pop();
 

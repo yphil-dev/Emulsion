@@ -33,7 +33,7 @@ export async function buildGalleries (preferences, userDataPath) {
                         extensions = 'none';
                         index = 0; // Settings is always index 0
                     } else {
-                        gamesDir = prefs.gamesDir;
+                        gamesDir = path.join(require('os').homedir(), 'Documents', 'Games', platformName);
                         viewMode = prefs.viewMode;
                         emulator = prefs.emulator;
                         emulatorArgs = prefs.emulatorArgs;
@@ -263,7 +263,7 @@ export async function buildGameContainer({
     index
 }) {
     const container = document.createElement('div');
-    const gamesDir = LB.preferences[platform].gamesDir;
+    const gamesDir = path.join(require('os').homedir(), 'Documents', 'Games', platform);
     const cleanName = cleanFileName(gameName);
     const coverPath = await findImageFile(path.join(gamesDir, 'images'), gameName);
     const platformBadge = document.createElement('div');
@@ -501,4 +501,3 @@ export function buildEmptyPageGameContainer(platform, gamesDir) {
 
     return container;
 }
-

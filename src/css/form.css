@@ -105,7 +105,7 @@ button {
 
   width: 80vw;
   max-width: 1200px;
-
+  /* margin-top: 100px; */
 }
 
 #platform-form > div {
@@ -322,6 +322,8 @@ div.form-icon {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    max-height: 110px;
+    overflow: auto;
 }
 
 .extension-input-row {

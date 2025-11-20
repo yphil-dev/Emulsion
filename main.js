@@ -8,7 +8,6 @@ import { spawn, exec } from 'child_process';
 import { getAllCoverImageUrls, getGameMetaData } from './src/js/backends.js';
 
 import { PLATFORMS, getPlatformInfo } from './src/js/platforms.js';
-import { pickFolderPersist } from "./src/js/portal-picker.js";
 
 import axios from 'axios';
 import os from 'os';
@@ -275,6 +274,7 @@ function loadPreferences() {
                     platformPreferences === null ||
                     typeof platformPreferences.isEnabled !== 'boolean' ||
                     typeof platformPreferences.viewMode !== 'string' ||
+                    typeof platformPreferences.gamesDir !== 'string' ||
                     typeof platformPreferences.emulator !== 'string' ||
                     typeof platformPreferences.emulatorArgs !== 'string' ||
                     !Array.isArray(platformPreferences.extensions)
@@ -355,7 +355,6 @@ const downloadAndSaveImage = async (imgSrc, platform, gameName, gamesDir) => {
         throw error;
     }
 };
-
 
 // delete cover from covers directory (with existence check)
 ipcMain.handle('delete-image', async (_event, imagePath) => {
@@ -487,6 +486,16 @@ ipcMain.handle('get-user-data', () => {
     return {
         path: app.getPath('userData')
     };
+});
+
+ipcMain.handle('select-file-or-directory', async (event, property) => {
+
+    const result = await dialog.showOpenDialog({ properties: [property] });
+
+    if (!result.canceled && result.filePaths.length > 0) {
+        return result.filePaths[0];
+    }
+    return null;
 });
 
 ipcMain.handle('go-to-url', async (event, link) => {
@@ -741,6 +750,7 @@ const defaultPreferences = {
 PLATFORMS.forEach((platform, index) => {
     defaultPreferences[platform.name] = {
         isEnabled: false,
+        gamesDir: "",
         viewMode: "grid",
         emulator: "",
         emulatorArgs: "",
@@ -1105,37 +1115,4 @@ ipcMain.handle('get-flatpak-download-size', async (event, appId) => {
       resolve(null); // Size not found in output
     });
   });
-});
-
-
-ipcMain.handle('ping', () => {
-    console.log("🌍 Ping handler called - IPC is working!");
-    return 'pong';
-});
-
-ipcMain.handle("select-file-or-directory", async (event, property) => {
-    console.log("🌍 IPC handler CALLED for:", property);
-    const isFlatpak = !!process.env.FLATPAK_ID;
-    console.log("🌍 Running in Flatpak?", isFlatpak);
-
-    try {
-        // Flatpak with working portals would be ideal, but crashes with V8 sandbox
-        // For now, just use Electron dialogs with available filesystem permissions
-
-        console.log("🔍 Using Electron native dialog for", property);
-        const result = await dialog.showOpenDialog({
-            title: property === 'openDirectory' ? 'Choose a folder' : 'Choose a file',
-            properties: [property],
-            modal: true
-        });
-        console.log("🔄 Dialog result:", result);
-        if (result.canceled || result.filePaths.length === 0) {
-            return null;
-        }
-        return result.filePaths[0];
-
-    } catch (e) {
-        console.error("IPC handler error:", e);
-        return null;
-    }
 });

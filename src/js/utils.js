@@ -957,3 +957,10 @@ export function buildIcon (symbolId, className) {
     svg.appendChild(use);
     return svg;
 };
+
+export function fadeOut(element, fadeDurationMs = 1000) {
+    setTimeout(() => {
+        element.style.transition = `opacity ${fadeDurationMs}ms ease-out`;
+        element.style.opacity = "0";
+    }, 2000);
+}

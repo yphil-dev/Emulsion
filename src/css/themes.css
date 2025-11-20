@@ -8,7 +8,7 @@
     #87CEEB 100%
   );
 
-  --color-text-1: rgb(41, 48, 53);
+  --color-text-1: rgb(20, 130, 220);
   --color-text-2: rgb(48, 57, 133);
 
   --color-text-1-rgb: 41, 48, 53;
@@ -35,11 +35,11 @@
 
   --color-text-game-label: rgb(41, 241, 234);
 
-  --color-selected: rgb(37, 131, 16);
+  --color-selected: rgb(230, 250, 110);
 
   --color-selected-rgb: 35, 197, 83;
 
-  --color-bg-selected: rgb(191, 199, 227);
+  --color-bg-selected: rgb(153, 193, 239);
 
   --color-hr: rgb(120, 160, 210);
 

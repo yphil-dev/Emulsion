@@ -187,17 +187,14 @@ export async function buildGallery(params) {
 
     gameFiles.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
 
-    // if (gameFiles.length === 0) {
-    //     console.log('WHY IS THIS HITTING? gameFiles has length but condition thinks it\'s 0');
-    //     const emptyContainer = buildEmptyPageGameContainer(platform, gamesDir);
-    //     page.dataset.empty = true;
-    //     pageContent.appendChild(emptyContainer);
-    //     page.appendChild(pageContent);
-    //     return page;
-    // }
-
     if (gameFiles.length === 0) {
-        const emptyContainer = buildEmptyPageGameContainer(platform, gamesDir);
+
+        const emptyContainer = buildEmptyPageGameContainer({
+            platform: platform,
+            gamesDir: gamesDir,
+            context: "no-games",
+        });
+
         page.dataset.empty = true;
         pageContent.appendChild(emptyContainer);
         page.appendChild(pageContent);
@@ -348,9 +345,13 @@ async function buildFavoritesGallery({ index }) {
     }
 
     if (noFavorites) {
-        const emptyContainer = buildEmptyPageGameContainer();
-        pageContent.appendChild(emptyContainer);
 
+        const emptyContainer = buildEmptyPageGameContainer({
+            context: "no-favorites",
+        });
+
+        page.dataset.empty = true;
+        pageContent.appendChild(emptyContainer);
     }
 
     page.appendChild(pageContent);
@@ -362,12 +363,7 @@ async function buildRecentGallery({ index }) {
     document.getElementById('loading-platform-name').textContent = 'recents';
 
     const recents = LB.recents;
-    if (!recents || recents.length === 0 || recents.error) {
-        console.log("No recent entries found.");
-        return null;
-    }
-
-    const sortedRecents = [...recents].sort((a, b) => new Date(b.date) - new Date(a.date));
+    const noRecents = (!recents || recents.length === 0 || recents.error);
 
     const page = document.createElement('div');
     page.classList.add('page');
@@ -378,23 +374,37 @@ async function buildRecentGallery({ index }) {
     pageContent.classList.add('page-content');
     pageContent.style.gridTemplateColumns = `repeat(${LB.galleryNumOfCols}, 1fr)`;
 
-    for (const [i, recent] of sortedRecents.entries()) {
-        try {
+    if (!noRecents) {
+        const sortedRecents = [...recents].sort((a, b) => new Date(b.date) - new Date(a.date));
 
-            const gameContainer = await buildGameContainer({
-                platform: recent.platform,
-                emulator: recent.emulator,
-                emulatorArgs: recent.emulatorArgs,
-                filePath: recent.filePath,
-                gameName: recent.fileName,
-                index: i
-            });
+        for (const [i, recent] of sortedRecents.entries()) {
+            try {
 
-            pageContent.appendChild(gameContainer);
+                const gameContainer = await buildGameContainer({
+                    platform: recent.platform,
+                    emulator: recent.emulator,
+                    emulatorArgs: recent.emulatorArgs,
+                    filePath: recent.filePath,
+                    gameName: recent.fileName,
+                    index: i
+                });
 
-        } catch (err) {
-            console.error('Failed to get platform preference:', err);
+                pageContent.appendChild(gameContainer);
+
+            } catch (err) {
+                console.error('Failed to get platform preference:', err);
+            }
         }
+    }
+
+    if (noRecents) {
+
+        const emptyContainer = buildEmptyPageGameContainer({
+            context: "no-recents",
+        });
+
+        page.dataset.empty = true;
+        pageContent.appendChild(emptyContainer);
     }
 
     page.appendChild(pageContent);
@@ -463,7 +473,12 @@ function buildSettingsPageContent(platforms) {
     return pageContent;
 }
 
-export function buildEmptyPageGameContainer(platform, gamesDir) {
+export function buildEmptyPageGameContainer({
+    platform = null,
+    gamesDir = null,
+    context = "none",   // "no-games" | "no-favorites" | "no-recents"
+} = {}) {
+
     const container = document.createElement('div');
     container.classList.add('empty-platform-game-container');
     container.style.gridColumn = `1 / span ${LB.galleryNumOfCols}`;
@@ -473,7 +488,7 @@ export function buildEmptyPageGameContainer(platform, gamesDir) {
     const subTitleP = document.createElement('p');
     let confButton = null;
 
-    if (platform && gamesDir) {
+    if (context === "no-games") {
         const textCode = document.createElement('code');
         textCode.textContent = gamesDir;
 
@@ -488,11 +503,16 @@ export function buildEmptyPageGameContainer(platform, gamesDir) {
         confButton.textContent =
             `Configure ${getPlatformInfo(platform).vendor} ${getPlatformInfo(platform).name}`;
         confButton.addEventListener('click', () => openPlatformMenu(platform));
-    } else {
+    } else if (context === "no-favorites") {
         titleP.textContent = 'No favorites yet — go add some!';
         subTitleP.textContent = 'Press □ to add the selected game to favorites';
 
-        const icon = buildIcon("dislike", "huge");
+        const icon = buildIcon("like", "huge");
+        iconP.appendChild(icon);
+    } else {
+        titleP.textContent = 'No recents yet — go play!';
+
+        const icon = buildIcon("clock", "huge");
         iconP.appendChild(icon);
     }
 
@@ -501,4 +521,3 @@ export function buildEmptyPageGameContainer(platform, gamesDir) {
 
     return container;
 }
-

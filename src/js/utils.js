@@ -715,8 +715,12 @@ export async function removeFavorite(container) {
                 favorite.remove();
                 const remaining = favPage.querySelectorAll('.game-container').length;
                 if (remaining === 0) {
-                    const emptyPageGameContainer = buildEmptyPageGameContainer();
-                    favPage.appendChild(emptyPageGameContainer);
+
+                    const emptyContainer = buildEmptyPageGameContainer({
+                        context: "no-favorites",
+                    });
+
+                    favPage.appendChild(emptyContainer);
                 }
             }
 

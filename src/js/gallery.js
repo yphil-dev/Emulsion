@@ -279,7 +279,17 @@ export async function buildGameContainer({
     container.dataset.gameName = gameName;
     container.dataset.cleanName = cleanName;
     container.dataset.platform = platform;
-    container.dataset.command = `${emulator} ${emulatorArgs} ${filePath}`;
+    // For Flatpak, translate portal paths back to Documents paths for emulator commands
+    const isFlatpak = !!window.LB && window.LB.flatpakEnv;
+    let commandFilePath = filePath;
+    if (isFlatpak && filePath.includes('/run/user/')) {
+        // Portal mount path: /run/user/1000/doc/DOCID/platform/filename.zip
+        // Real Documents path: ~/Documents/Games/platform/filename.zip
+        const realGamesDir = path.join(require('os').homedir(), 'Documents', 'Games', platform);
+        const filename = path.basename(filePath);
+        commandFilePath = path.join(realGamesDir, filename);
+    }
+    container.dataset.command = `${emulator} ${emulatorArgs} ${commandFilePath}`;
     container.dataset.emulator = emulator;
     container.dataset.emulatorArgs = emulatorArgs;
     container.dataset.gamePath = filePath;

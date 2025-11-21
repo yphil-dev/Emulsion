@@ -10,7 +10,7 @@
 
 ### *Better gaming throught chemistry*
 
-**All the games. All the emulators. One place.**
+**Display your games collection into responsive galleries, manage game metadata, cover art and emulator configuration. Launch your games in style.**
 
 [Website](https://yphil.gitlab.io/emulsion) • [Download](https://github.com/yPhil-gh/emulsion/releases/latest) • [Documentation](#configuration) • [Cracktro](https://yphil.gitlab.io/ext/emulsion.html)
 

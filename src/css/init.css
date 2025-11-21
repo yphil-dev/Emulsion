@@ -250,6 +250,11 @@ svg.big {
 svg.huge {
   width: 12em;
   height: 12em;
+  fill: var(--color-selected);
+}
+
+svg.icon.disabled {
+  fill: #555;
 }
 
 svg.help {

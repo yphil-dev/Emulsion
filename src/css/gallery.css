@@ -234,6 +234,14 @@ div.dummy-game-container {
   padding: 1em;
 }
 
+div.empty-platform-game-container {
+  margin-top: 10vh;
+}
+
+div.empty-platform-game-container p {
+  color: var(--color-text-2);
+}
+
 .page-content.grid .loading {
   border: 3px solid var(--color-border-on);
   animation: pulse-glow 1s infinite ease-in-out;

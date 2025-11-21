@@ -443,8 +443,6 @@ export function updateHeader(platformName, gameName) {
     const header = document.getElementById("header");
     const headerControls = document.getElementById("header-controls");
 
-    console.log("LB.mode: ", LB.mode);
-
     const showHeader = platformName !== 'hide';
     const showControls = !(LB.mode === 'gameMenu' || LB.mode === 'menu' || platformName === 'settings');
 
@@ -499,8 +497,6 @@ export function toggleFullScreen(elem = document.documentElement) {
 }
 
 export async function scanDirectory(gamesDir, extensions, recursive = true, ignoredDirs = ['PS3_EXTRA', 'PKGDIR', 'freezer', 'tmp']) {
-
-    console.log("gamesDir: ", gamesDir);
 
     if (!gamesDir || typeof gamesDir !== 'string') {
         console.warn("scanDirectory: Invalid directory path provided:", gamesDir);

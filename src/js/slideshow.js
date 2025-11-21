@@ -480,7 +480,6 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
         }
 
         if (pageDataset.platform === 'recents' || pageDataset.platform === 'favorites') {
-            configPlatformButton.classList.add('disabled');
             metaDataButton.classList.add('disabled');
         }
     }
@@ -937,8 +936,6 @@ export function initGamepad() {
 }
 
 async function setGalleryViewMode(viewMode, save) {
-
-    console.log("viewMode, save: ", viewMode, save);
 
     const toggleIcon = document.getElementById('view-mode-toggle-button');
     const page = document.querySelector('.page.active');

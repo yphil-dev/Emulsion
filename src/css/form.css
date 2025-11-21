@@ -41,7 +41,7 @@ button {
   padding: 12px 14px;
 }
 
-.button:not(.extension) {
+.button:not(.extension):not(.pane-button) {
   margin-left: 1em;
 }
 

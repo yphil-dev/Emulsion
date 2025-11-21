@@ -542,7 +542,8 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
                 setupButton.addEventListener('click', () => {
                     closeDialog();
                     resolve(null);
-                    openPlatformMenu('settings', 'gallery', sourceName);
+                    const eltToFocus = sourceName === 'GiantBomb' ? 'giantBombAPIKey' : 'steamGridAPIKey';
+                    openPlatformMenu('settings', 'gallery', eltToFocus);
                 });
 
                 if (!isEnabled) {

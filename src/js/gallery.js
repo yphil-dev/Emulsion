@@ -504,13 +504,13 @@ export function buildEmptyPageGameContainer({
             `Configure ${getPlatformInfo(platform).vendor} ${getPlatformInfo(platform).name}`;
         confButton.addEventListener('click', () => openPlatformMenu(platform));
     } else if (context === "no-favorites") {
-        titleP.textContent = 'No favorites yet — go add some!';
+        titleP.innerHTML = 'No <span class="accent">Favorites</span> yet — go add some!';
         subTitleP.textContent = 'Press □ to add the selected game to favorites';
 
         const icon = buildIcon("like", "huge");
         iconP.appendChild(icon);
     } else {
-        titleP.textContent = 'No recents yet — go play!';
+        titleP.innerHTML = 'No <span class="accent">Recents</span> yet — go play!';
 
         const icon = buildIcon("clock", "huge");
         iconP.appendChild(icon);

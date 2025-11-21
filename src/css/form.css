@@ -65,6 +65,10 @@ button {
   outline: 2px solid var(--color-selected);
 }
 
+.input-ctn.focused {
+  outline: 2px solid var(--color-selected);
+}
+
 .button:active {
   transform: translateY(1px);
 }

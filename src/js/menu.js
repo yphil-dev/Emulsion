@@ -196,7 +196,7 @@ function buildPrefsFormItem(name, iconName, type, description, shortDescription,
         const types = type;
 
         const inputCtn = document.createElement('div');
-        inputCtn.classList.add('input-ctn');
+        inputCtn.classList.add('input-ctn', name);
 
         const radiosContainer = document.createElement('div');
         radiosContainer.classList.add('radio-container');
@@ -956,8 +956,12 @@ function buildPlatformMenuForm(platformName) {
 }
 
 export function openPlatformMenu(platformName, context, eltToFocus) {
-
     console.log("platformName, context, eltToFocus: ", platformName, context, eltToFocus);
+
+    if (platformName === 'favorites' || platformName === 'recents') {
+        eltToFocus = platformName === 'recents' ? 'recentlyPlayedPolicy' : 'favoritesPolicy';
+        platformName = 'settings';
+    }
 
     LB.mode = 'menu';
     LB.currentPlatform = platformName;
@@ -989,10 +993,28 @@ export function openPlatformMenu(platformName, context, eltToFocus) {
     toggleHeaderNavLinks('hide');
 
     if (platformName === 'settings' && eltToFocus) {
-        const fieldToFocus = document.getElementById(eltToFocus === 'GiantBomb' ? 'giantBombAPIKey' : 'steamGridAPIKey');
-        if (fieldToFocus) {
+        setTimeout(() => focusElement(eltToFocus, menu), 50);
+    }
+}
+
+function focusElement(eltToFocus, menu) {
+    let fieldToFocus = document.getElementById(eltToFocus);
+
+    if (fieldToFocus) {
+        console.log("Found by ID:", fieldToFocus);
+        if (fieldToFocus.tagName === 'INPUT' ||
+            fieldToFocus.tagName === 'TEXTAREA' ||
+            fieldToFocus.tagName === 'SELECT') {
             fieldToFocus.focus();
+            return;
         }
+    }
+
+    fieldToFocus = menu.querySelector('.' + eltToFocus);
+    if (fieldToFocus) {
+        console.log("Found by class:", fieldToFocus);
+        fieldToFocus.classList.add('focused');
+        if (fieldToFocus.focus) fieldToFocus.focus();
     }
 }
 

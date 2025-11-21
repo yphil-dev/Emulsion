@@ -399,6 +399,7 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
         if (!page.dataset.listenersAttached) {
             gameContainers.forEach(container => {
                 container.addEventListener('click', (event) => {
+                    console.log("event: ", event);
                     event.stopPropagation();
                     event.stopImmediatePropagation();
 

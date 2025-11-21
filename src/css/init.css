@@ -51,6 +51,9 @@
   --font-second: 'Saira', sans-serif;
   --font-third: "Inter", "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
   --font-fourth: "MeromSans", sans-serif;
+
+  --font-size-gallery-label: 16px;
+
   --color-succes: rgb(0, 255, 24);
   --color-icon: rgb(0, 123, 255);
 

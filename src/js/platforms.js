@@ -100,7 +100,7 @@ export const PLATFORMS = [
     {
         nbGames: 0,
         display: "grid",
-        displayName: "Mega Drive",
+        displayName: "MegaDrive",
         vendor: "Sega",
         name: "megadrive",
         extensions: [".md"],

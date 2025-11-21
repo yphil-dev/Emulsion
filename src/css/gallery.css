@@ -454,13 +454,13 @@ div.menu-current-image-container {
   font-weight: bold;
 }
 
-.game.launching::after {
+.launching::after {
     content: "";
     position: absolute;
     inset: 0;
     background: linear-gradient(120deg,
         transparent 0%,
-        rgba(255,255,255,0.6) 50%,
+        var(--color-selected) 50%,
         transparent 100%
     );
     animation: sweep 350ms ease forwards;

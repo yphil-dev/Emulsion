@@ -526,13 +526,11 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
     });
 
     document.getElementById('prev-link').addEventListener('click', function() {
-        goToGalleryPage(-1);
-        selectedIndex = 1;
+        goToPrevPage();
     });
 
     document.getElementById('next-link').addEventListener('click', function() {
-        goToGalleryPage(1);
-        selectedIndex = 0;
+        goToNextPage();
     });
 
     document.getElementById('view-mode-toggle-button').addEventListener('click', function() {

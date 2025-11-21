@@ -327,6 +327,9 @@ div.form-icon {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+
+    padding: 2px;
+
     max-height: 110px;
     overflow: auto;
 }

@@ -6,7 +6,7 @@ const axios = require('axios');
 
 import * as preferences from './preferences.js';
 import { systemDialog, helpDialog } from './dialog.js';
-import { applyTheme, setFooterSize, initFooterControls } from './utils.js';
+import { applyTheme, setFooterSize, initFooterControls, updateLabelFontSize } from './utils.js';
 import { buildHomeSlide, initSlideShow, initGallery, initGamepad } from './slideshow.js';
 import { loadPreferences } from './preferences.js';
 import { buildGalleries } from './gallery.js';
@@ -186,6 +186,8 @@ async function initializeApp() {
                     document.getElementById("splash").remove();
                     document.getElementById("main").style.display = 'flex';
                     document.getElementById("footer").style.display = 'flex';
+
+                    updateLabelFontSize(LB.galleryNumOfCols);
 
                     if (LB.autoSelect && LB.enabledPlatforms.some(platform => platform === LB.autoSelect)) {
                         initGallery(LB.autoSelect);

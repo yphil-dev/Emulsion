@@ -959,3 +959,10 @@ export function fadeOut(element, fadeDurationMs = 1000) {
         element.style.opacity = "0";
     }, 2000);
 }
+
+export function updateLabelFontSize(numOfCols) {
+    const factor = 8 / numOfCols;
+    const fontSize = `clamp(10px, ${factor}vw, 28px)`;
+    document.documentElement.style.setProperty("--font-size-gallery-label", fontSize);
+}
+

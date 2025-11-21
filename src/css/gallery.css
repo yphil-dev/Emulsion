@@ -174,7 +174,11 @@ div.menu-game-container {
 .game-label {
   width: 100%;
 
-  font-size: 0.68vw;
+  /* font-size: 0.86vw; */
+
+  /* font-size: clamp(10px, 1vw, 28px); */
+  font-size: var(--font-size-gallery-label);
+
   -webkit-hyphens: auto;
   -ms-hyphens: auto;
   text-align: center;
@@ -289,7 +293,7 @@ div.platform-container {
 }
 
 div.platform-info .name {
-  font-size: clamp(14px, 1.4vw, 24px);
+  font-size: clamp(10px, 1vw, 20px);
   color: var(--color-text-1);
 }
 

@@ -65,7 +65,8 @@ button {
   outline: 2px solid var(--color-selected);
 }
 
-.input-ctn.focused {
+.input-ctn.focused,
+.empty-platform-game-container button.focused {
   outline: 2px solid var(--color-selected);
 }
 

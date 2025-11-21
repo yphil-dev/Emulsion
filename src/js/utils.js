@@ -252,7 +252,6 @@ export function simulateKeyDown(key, modifiers = {}) {
         cancelable: true
     });
 
-    console.log("keyboardEvent: ", keyboardEvent);
     document.dispatchEvent(keyboardEvent);
 }
 

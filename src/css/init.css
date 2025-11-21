@@ -148,9 +148,9 @@ h3 {
   color:var(--color-text-1);
 }
 
-.no-hover * {
-  pointer-events: none !important;
-}
+/* .no-hover * { */
+/*   pointer-events: none !important; */
+/* } */
 
 a:link {
   color: red;

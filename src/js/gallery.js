@@ -499,7 +499,7 @@ export function buildEmptyPageGameContainer({
         iconP.appendChild(icon);
 
         confButton = document.createElement('button');
-        confButton.classList.add('button');
+        confButton.classList.add('button', 'focused');
         confButton.textContent =
             `Configure ${getPlatformInfo(platform).vendor} ${getPlatformInfo(platform).name}`;
         confButton.addEventListener('click', () => openPlatformMenu(platform));

@@ -435,6 +435,8 @@ function createWindows() {
     mainWindow = new BrowserWindow({
         show: false,
         backgroundColor: initColor,
+        width: 1100,
+        height: 700,
         fullscreen: process.argv.includes('--full-screen'),
         icon: path.join(__dirname, 'img/icon.png'),
         webPreferences: {

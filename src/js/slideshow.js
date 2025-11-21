@@ -703,7 +703,7 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         if (event.ctrlKey) {
             const viewModeToggleButton = document.getElementById('view-mode-toggle-button');
             if (viewModeToggleButton) {
-                viewModeToggleButton.click();
+                viewModeToggleButton.dispatchEvent(new MouseEvent('click'));
             }
         }
         break;
@@ -1021,7 +1021,7 @@ function buildGamePane(params) {
     gameTitle.classList.add('game-title');
 
     const fetchMetaButton = document.createElement('button');
-    fetchMetaButton.classList.add('fetch-meta-button', 'button');
+    fetchMetaButton.classList.add('fetch-meta-button', 'button', 'pane-button');
     fetchMetaButton.id = 'fetch-meta-button';
 
     // const metaIcon = document.createElement('i');
@@ -1029,21 +1029,21 @@ function buildGamePane(params) {
     fetchMetaButton.appendChild(metaIcon);
 
     const coverArtButton = document.createElement('button');
-    coverArtButton.classList.add('edit-cover-art-button', 'button');
+    coverArtButton.classList.add('edit-cover-art-button', 'button', 'pane-button');
     coverArtButton.id = 'edit-cover-art-button';
 
     const coverArtIcon = buildIcon('image', 'small');
     coverArtButton.appendChild(coverArtIcon);
 
     const webLinkButton = document.createElement('button');
-    webLinkButton.classList.add('web-link-button', 'button');
+    webLinkButton.classList.add('web-link-button', 'button', 'pane-button');
     webLinkButton.id = 'web-link-button';
 
     const webLinkIcon = buildIcon('extlink', 'small');
     webLinkButton.appendChild(webLinkIcon);
 
     const editMetaButton = document.createElement('button');
-    editMetaButton.classList.add('edit-meta-button', 'button');
+    editMetaButton.classList.add('edit-meta-button', 'button', 'pane-button');
     editMetaButton.id = 'edit-meta-button';
 
     const editMetaIcon = buildIcon('edit', 'small');

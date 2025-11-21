@@ -91,6 +91,7 @@ export function initSlideShow(platformToDisplay) {
             if (slideDiv.classList.contains('active')) {
                 simulateKeyDown('Enter');
             } else {
+                // console.log("yo: ");
                 initSlideShow(slideDiv.dataset.platform);
             };
         });
@@ -100,6 +101,20 @@ export function initSlideShow(platformToDisplay) {
         event.preventDefault();
         event.deltaY > 0 ? nextSlide() : prevSlide();
     });
+
+   // // Click to select adjacent slides
+   //  slides.forEach((slide, index) => {
+   //      slide.addEventListener('click', (event) => {
+   //          event.stopPropagation();
+   //          if (slide.classList.contains('prev') || slide.classList.contains('next')) {
+   //              currentIndex = index; // Set the clicked slide as the current slide
+   //              console.log("yo: ");
+   //              updateSlideShow();
+   //          } else if (slide.classList.contains('active')) {
+   //              simulateKeyDown('Enter');
+   //          }
+   //      });
+   //  });
 
     window.onSlideShowKeyDown = function(event) {
         event.stopPropagation();
@@ -512,25 +527,11 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
     document.getElementById('prev-link').addEventListener('click', function() {
         goToGalleryPage(-1);
         selectedIndex = 1;
-
-        const activePage = document.querySelector('.page.active');
-        const containers = activePage.querySelectorAll('.game-container');
-
-        containers.forEach((container, index) =>
-            container.classList.toggle('selected', index === selectedIndex)
-        );
     });
 
     document.getElementById('next-link').addEventListener('click', function() {
         goToGalleryPage(1);
         selectedIndex = 0;
-
-        const activePage = document.querySelector('.page.active');
-        const containers = activePage.querySelectorAll('.game-container');
-
-        containers.forEach((container, index) =>
-            container.classList.toggle('selected', index === selectedIndex)
-        );
     });
 
     document.getElementById('view-mode-toggle-button').addEventListener('click', function() {
@@ -668,10 +669,14 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
 
         const selectedContainer = containers[selectedIndex];
 
+        if (!selectedContainer) {
+            openPlatformMenu(activePage.dataset.platform, 'gallery');
+        }
+
         if (isGallery) {
             if (activePage.dataset.platform === 'settings') {
                 openPlatformMenu(selectedContainer.dataset.platform, 'settings');
-            } else if (!selectedContainer.classList.contains('empty-platform-game-container')) {
+            } else if (selectedContainer) {
                 if (LB.launchDialogPolicy === 'show') {
                     launchGameDialog(selectedContainer);
                 } else {

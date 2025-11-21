@@ -926,7 +926,9 @@ function explodeGameContainer(gameContainer) {
 }
 
 export function launchGame(gameContainer) {
-    explodeGameContainer(gameContainer);
+    // explodeGameContainer(gameContainer);
+
+    gameContainer.classList.add('launching');
 
     ipcRenderer.send('run-command', {
         fileName: gameContainer.dataset.gameName,

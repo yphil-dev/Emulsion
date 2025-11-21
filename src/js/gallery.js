@@ -429,17 +429,16 @@ export function buildPlatformContainer({
     const infoDiv = document.createElement('div');
     infoDiv.classList.add('platform-info');
 
-    const vendorSpan = document.createElement('span');
-    vendorSpan.classList.add('vendor');
-    vendorSpan.textContent = platformInfo.vendor;
+    const vendorDiv = document.createElement('div');
+    vendorDiv.classList.add('vendor');
+    vendorDiv.textContent = platformInfo.vendor;
 
-    const nameSpan = document.createElement('span');
-    nameSpan.classList.add('name');
-    nameSpan.textContent = platformInfo.name;
+    const nameDiv = document.createElement('div');
+    nameDiv.classList.add('name');
+    nameDiv.textContent = platformInfo.name;
 
-    infoDiv.appendChild(vendorSpan);
-    infoDiv.appendChild(document.createElement('br'));
-    infoDiv.appendChild(nameSpan);
+    infoDiv.appendChild(vendorDiv);
+    infoDiv.appendChild(nameDiv);
 
     const image = document.createElement('img');
     image.src = path.join(LB.baseDir, 'img', 'platforms', `${platformName}.png`);

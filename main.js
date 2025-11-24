@@ -9,12 +9,14 @@ import { getAllCoverImageUrls, getGameMetaData } from './src/js/backends.js';
 
 import { PLATFORMS, getPlatformInfo } from './src/js/platforms.js';
 
-import axios from 'axios';
-import os from 'os';
-
 // Auto-updater
 import pkg from 'electron-updater';
 const { autoUpdater } = pkg;
+
+import axios from 'axios';
+import os from 'os';
+
+
 
 
 
@@ -903,7 +905,6 @@ ipcMain.handle('get-versions', async () => {
     return {current: pjson.version, latest: latestVersion};
 });
 
-// Manual update handlers
 ipcMain.handle('check-for-updates', async () => {
     try {
         await autoUpdater.checkForUpdates();
@@ -1129,8 +1130,8 @@ ipcMain.handle('get-flatpak-download-size', async (event, appId) => {
   });
 });
 
-// Manual update system - no auto-check on startup
 app.whenReady().then(() => {
+    // Auto-updater events
     autoUpdater.on('checking-for-update', () => {
         mainWindow.webContents.send('update-status', { status: 'checking' });
     });
@@ -1142,8 +1143,8 @@ app.whenReady().then(() => {
         }).show();
         mainWindow.webContents.send('update-status', {
             status: 'available',
-            info: info,
-            version: info.version
+            version: info.version,
+            info
         });
     });
 
@@ -1183,7 +1184,7 @@ app.whenReady().then(() => {
             title: 'Update Downloaded',
             body: 'Restart Emulsion to apply the update'
         }).show();
-        mainWindow.webContents.send('update-status', { status: 'downloaded', info: info });
+        mainWindow.webContents.send('update-status', { status: 'downloaded' });
     });
 
     session.defaultSession.webRequest.onHeadersReceived((details, callback) => {

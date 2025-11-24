@@ -266,100 +266,95 @@ export async function helpDialog(defaultTabId = null) {
 
     const upgradeButton = dialog.querySelector('button.upgrade');
 
-    // Update status tracking
-    let updateStatus = 'idle'; // idle, checking, available, downloading, downloaded, error
+    // Create a new element for update status messages under the button
+    const updateStatusElement = document.createElement('div');
+    updateStatusElement.id = 'update-status-dialog';
+    updateStatusElement.style.marginTop = '10px';
+    updateStatusElement.style.fontSize = '0.9em';
+    updateStatusElement.style.color = 'var(--accent, #3b82f6)';
+    upgradeButton.insertAdjacentElement('afterend', updateStatusElement);
 
-    // Listen for update status changes from main process
-    ipcRenderer.on('update-status', (event, status) => {
-        updateStatus = status.status;
-        const progressContainer = dialog.querySelector('.update-progress');
-        const progressBar = dialog.querySelector('.update-progress-bar');
-        const progressText = dialog.querySelector('.update-progress-text');
-
-        switch (status.status) {
-            case 'checking':
-                upgradeButton.textContent = 'Checking...';
-                upgradeButton.disabled = true;
-                if (progressContainer) progressContainer.style.display = 'none';
-                break;
-            case 'available':
-                upgradeButton.textContent = `Download Update ${status.version}`;
-                upgradeButton.disabled = false;
-                if (progressContainer) {
-                    progressContainer.className = 'update-progress available';
-                    progressContainer.style.display = 'block';
-                    progressBar.style.width = '0%';
-                    progressText.textContent = 'Update available for download';
-                }
-                break;
-            case 'up-to-date':
-                upgradeButton.textContent = 'Up to Date';
-                upgradeButton.disabled = true;
-                if (progressContainer) progressContainer.style.display = 'none';
-                break;
-            case 'downloading':
-                upgradeButton.textContent = `Downloading... ${status.progress}%`;
-                upgradeButton.disabled = true;
-                if (progressContainer) {
-                    progressContainer.className = 'update-progress downloading';
-                    progressContainer.style.display = 'block';
-                    progressBar.style.width = `${status.progress}%`;
-                    progressText.textContent = `${status.progress}% (${status.downloaded}/${status.total} MB @ ${status.speed} MB/s)`;
-                }
-                break;
-            case 'downloaded':
-                upgradeButton.textContent = 'Install & Restart';
-                upgradeButton.disabled = false;
-                if (progressContainer) {
-                    progressContainer.style.display = 'none';
-                }
-                break;
-            case 'error':
-                upgradeButton.textContent = 'Check for Updates';
-                upgradeButton.disabled = false;
-                if (progressContainer) {
-                    progressContainer.className = 'update-progress error';
-                    progressContainer.style.display = 'block';
-                    progressBar.style.width = '0%';
-                    progressText.textContent = `Error: ${status.error}`;
-                }
-                console.error('Update error:', status.error);
-                break;
+    upgradeButton.textContent = 'Check for Updates';
+    upgradeButton.addEventListener('click', async () => {
+        try {
+            const result = await ipcRenderer.invoke('check-for-updates');
+            if (!result.success) {
+                updateStatusElement.textContent = `Error: ${result.error}`;
+                updateStatusElement.style.color = 'var(--error, #ef4444)';
+            } else {
+                updateStatusElement.textContent = 'Checking for updates...';
+                updateStatusElement.style.color = 'var(--accent, #3b82f6)';
+            }
+        } catch (error) {
+            updateStatusElement.textContent = `Error: ${error.message}`;
+            updateStatusElement.style.color = 'var(--error, #ef4444)';
         }
     });
 
-    upgradeButton.addEventListener('click', async () => {
-        try {
-            switch (updateStatus) {
-                case 'idle':
-                case 'up-to-date':
-                case 'error':
-                    // Check for updates
-                    const result = await ipcRenderer.invoke('check-for-updates');
-                    if (!result.success) {
-                        console.error('Failed to check for updates:', result.error);
-                        upgradeButton.textContent = 'Check Failed - Try Again';
+    // Listen for update status changes from main process
+    ipcRenderer.on('update-status', (event, status) => {
+        switch (status.status) {
+            case 'checking':
+                updateStatusElement.textContent = 'Checking for updates...';
+                updateStatusElement.style.color = 'var(--accent, #3b82f6)';
+                upgradeButton.disabled = true;
+                break;
+            case 'available':
+                updateStatusElement.textContent = `Update ${status.version} available! Click to download.`;
+                updateStatusElement.style.color = 'var(--success, #10b981)';
+                upgradeButton.textContent = 'Download Update';
+                upgradeButton.disabled = false;
+                upgradeButton.onclick = async () => {
+                    try {
+                        const downloadResult = await ipcRenderer.invoke('download-update');
+                        if (!downloadResult.success) {
+                            updateStatusElement.textContent = `Download failed: ${downloadResult.error}`;
+                            updateStatusElement.style.color = 'var(--error, #ef4444)';
+                            upgradeButton.disabled = false;
+                        } else {
+                            updateStatusElement.textContent = 'Starting download...';
+                            updateStatusElement.style.color = 'var(--accent, #3b82f6)';
+                            upgradeButton.disabled = true;
+                        }
+                    } catch (error) {
+                        updateStatusElement.textContent = `Download error: ${error.message}`;
+                        updateStatusElement.style.color = 'var(--error, #ef4444)';
                         upgradeButton.disabled = false;
                     }
-                    break;
-                case 'available':
-                    // Start download
-                    const downloadResult = await ipcRenderer.invoke('download-update');
-                    if (!downloadResult.success) {
-                        console.error('Failed to download update:', downloadResult.error);
-                        upgradeButton.textContent = 'Download Failed - Try Again';
-                        upgradeButton.disabled = false;
+                };
+                break;
+            case 'up-to-date':
+                updateStatusElement.textContent = 'You are running the latest version.';
+                updateStatusElement.style.color = 'var(--success, #10b981)';
+                upgradeButton.disabled = false;
+                upgradeButton.textContent = 'Check for Updates';
+                break;
+            case 'downloading':
+                updateStatusElement.textContent = `Downloading... ${status.progress}% (${status.downloaded}/${status.total} MB @ ${status.speed} MB/s)`;
+                updateStatusElement.style.color = 'var(--accent, #3b82f6)';
+                upgradeButton.disabled = true;
+                upgradeButton.textContent = 'Downloading...';
+                break;
+            case 'downloaded':
+                updateStatusElement.textContent = 'Download complete! Restart to install.';
+                updateStatusElement.style.color = 'var(--success, #10b981)';
+                upgradeButton.textContent = 'Install & Restart';
+                upgradeButton.disabled = false;
+                upgradeButton.onclick = async () => {
+                    try {
+                        await ipcRenderer.invoke('quit-and-install');
+                    } catch (error) {
+                        updateStatusElement.textContent = `Install error: ${error.message}`;
+                        updateStatusElement.style.color = 'var(--error, #ef4444)';
                     }
-                    break;
-                case 'downloaded':
-                    // Install and restart
-                    await ipcRenderer.invoke('quit-and-install');
-                    break;
-            }
-        } catch (error) {
-            console.error('Update operation failed:', error);
-            upgradeButton.textContent = 'Error - Try Again';
-            upgradeButton.disabled = false;
+                };
+                break;
+            case 'error':
+                updateStatusElement.textContent = `Update error: ${status.error}`;
+                updateStatusElement.style.color = 'var(--error, #ef4444)';
+                upgradeButton.disabled = false;
+                upgradeButton.textContent = 'Check for Updates';
+                break;
         }
     });
 

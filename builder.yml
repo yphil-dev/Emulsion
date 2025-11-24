@@ -27,6 +27,7 @@ extraResources:
 publish:
   provider: github
   publishAutoUpdate: true
+  releaseType: release
 
 linux:
   executableName: emulsion
@@ -36,13 +37,3 @@ linux:
     - rpm
   icon: "img/icon.png"
   category: Utility
-
-win:
-  target:
-    - nsis
-  icon: "img/icon.png"
-
-nsis:
-  oneClick: false
-  allowToChangeInstallationDirectory: true
-  createDesktopShortcut: true

@@ -27,6 +27,7 @@ extraResources:
 publish:
   provider: github
   publishAutoUpdate: true
+  name: "Emulsion ${version}"
 
 linux:
   executableName: emulsion
@@ -46,4 +47,3 @@ nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
   createDesktopShortcut: true
-  createStartMenuShortcut: true

@@ -12,6 +12,14 @@ import { PLATFORMS, getPlatformInfo } from './src/js/platforms.js';
 import axios from 'axios';
 import os from 'os';
 
+// Auto-updater
+import { autoUpdater } from 'electron-updater';
+import log from 'electron-log';
+
+// Enable logging
+autoUpdater.logger = log;
+autoUpdater.logger.transports.file.level = 'info';
+
 
 
 let childProcesses = new Map();
@@ -900,6 +908,35 @@ ipcMain.handle('get-versions', async () => {
 });
 
 app.whenReady().then(() => {
+    // Check for updates on startup
+    autoUpdater.checkForUpdatesAndNotify();
+
+    autoUpdater.on('checking-for-update', () => {
+        log.info('Checking for update...');
+    });
+
+    autoUpdater.on('update-available', (info) => {
+        log.info('Update available.', info);
+    });
+
+    autoUpdater.on('update-not-available', (info) => {
+        log.info('Update not available.', info);
+    });
+
+    autoUpdater.on('error', (err) => {
+        log.error('Error in auto-updater.', err);
+    });
+
+    autoUpdater.on('download-progress', (progressObj) => {
+        let log_message = "Download speed: " + progressObj.bytesPerSecond;
+        log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
+        log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+        log.info(log_message);
+    });
+
+    autoUpdater.on('update-downloaded', (info) => {
+        log.info('Update downloaded', info);
+    });
 
     session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
         callback({

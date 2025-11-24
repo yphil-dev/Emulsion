@@ -13,7 +13,8 @@ import axios from 'axios';
 import os from 'os';
 
 // Auto-updater
-import { autoUpdater } from 'electron-updater';
+import pkg from 'electron-updater';
+const { autoUpdater } = pkg;
 
 
 

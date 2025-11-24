@@ -14,11 +14,6 @@ import os from 'os';
 
 // Auto-updater
 import { autoUpdater } from 'electron-updater';
-import log from 'electron-log';
-
-// Enable logging
-autoUpdater.logger = log;
-autoUpdater.logger.transports.file.level = 'info';
 
 
 
@@ -912,30 +907,30 @@ app.whenReady().then(() => {
     autoUpdater.checkForUpdatesAndNotify();
 
     autoUpdater.on('checking-for-update', () => {
-        log.info('Checking for update...');
+        console.log('Checking for update...');
     });
 
     autoUpdater.on('update-available', (info) => {
-        log.info('Update available.', info);
+        console.log('Update available.', info);
     });
 
     autoUpdater.on('update-not-available', (info) => {
-        log.info('Update not available.', info);
+        console.log('Update not available.', info);
     });
 
     autoUpdater.on('error', (err) => {
-        log.error('Error in auto-updater.', err);
+        console.error('Error in auto-updater.', err);
     });
 
     autoUpdater.on('download-progress', (progressObj) => {
         let log_message = "Download speed: " + progressObj.bytesPerSecond;
         log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
         log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
-        log.info(log_message);
+        console.log(log_message);
     });
 
     autoUpdater.on('update-downloaded', (info) => {
-        log.info('Update downloaded', info);
+        console.log('Update downloaded', info);
     });
 
     session.defaultSession.webRequest.onHeadersReceived((details, callback) => {

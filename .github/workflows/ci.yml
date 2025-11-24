@@ -33,14 +33,6 @@ jobs:
       - name: Build
         run: npx electron-builder --config builder.yml --linux --publish=never
 
-      - name: Extract AppImage to create linux-unpacked
-        run: |
-          cd dist
-          chmod +x emulsion_x86_64.AppImage
-          ./emulsion_x86_64.AppImage --appimage-extract
-          mv squashfs-root linux-unpacked
-          tar -czf emulsion-unpacked.tar.gz linux-unpacked/
-
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
@@ -48,7 +40,6 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            dist/emulsion-unpacked.tar.gz
             dist/*.deb
             dist/*.AppImage
             dist/*.rpm

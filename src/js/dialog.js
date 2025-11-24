@@ -264,8 +264,103 @@ export async function helpDialog(defaultTabId = null) {
         dialog.querySelector('.update-available').style.display = 'block';
     }
 
-    dialog.querySelector('button.upgrade').addEventListener('click', () => {
-        ipcRenderer.invoke('go-to-url', 'https://github.com/yPhil-gh/Emulsion/releases');
+    const upgradeButton = dialog.querySelector('button.upgrade');
+
+    // Update status tracking
+    let updateStatus = 'idle'; // idle, checking, available, downloading, downloaded, error
+
+    // Listen for update status changes from main process
+    ipcRenderer.on('update-status', (event, status) => {
+        updateStatus = status.status;
+        const progressContainer = dialog.querySelector('.update-progress');
+        const progressBar = dialog.querySelector('.update-progress-bar');
+        const progressText = dialog.querySelector('.update-progress-text');
+
+        switch (status.status) {
+            case 'checking':
+                upgradeButton.textContent = 'Checking...';
+                upgradeButton.disabled = true;
+                if (progressContainer) progressContainer.style.display = 'none';
+                break;
+            case 'available':
+                upgradeButton.textContent = `Download Update ${status.version}`;
+                upgradeButton.disabled = false;
+                if (progressContainer) {
+                    progressContainer.className = 'update-progress available';
+                    progressContainer.style.display = 'block';
+                    progressBar.style.width = '0%';
+                    progressText.textContent = 'Update available for download';
+                }
+                break;
+            case 'up-to-date':
+                upgradeButton.textContent = 'Up to Date';
+                upgradeButton.disabled = true;
+                if (progressContainer) progressContainer.style.display = 'none';
+                break;
+            case 'downloading':
+                upgradeButton.textContent = `Downloading... ${status.progress}%`;
+                upgradeButton.disabled = true;
+                if (progressContainer) {
+                    progressContainer.className = 'update-progress downloading';
+                    progressContainer.style.display = 'block';
+                    progressBar.style.width = `${status.progress}%`;
+                    progressText.textContent = `${status.progress}% (${status.downloaded}/${status.total} MB @ ${status.speed} MB/s)`;
+                }
+                break;
+            case 'downloaded':
+                upgradeButton.textContent = 'Install & Restart';
+                upgradeButton.disabled = false;
+                if (progressContainer) {
+                    progressContainer.style.display = 'none';
+                }
+                break;
+            case 'error':
+                upgradeButton.textContent = 'Check for Updates';
+                upgradeButton.disabled = false;
+                if (progressContainer) {
+                    progressContainer.className = 'update-progress error';
+                    progressContainer.style.display = 'block';
+                    progressBar.style.width = '0%';
+                    progressText.textContent = `Error: ${status.error}`;
+                }
+                console.error('Update error:', status.error);
+                break;
+        }
+    });
+
+    upgradeButton.addEventListener('click', async () => {
+        try {
+            switch (updateStatus) {
+                case 'idle':
+                case 'up-to-date':
+                case 'error':
+                    // Check for updates
+                    const result = await ipcRenderer.invoke('check-for-updates');
+                    if (!result.success) {
+                        console.error('Failed to check for updates:', result.error);
+                        upgradeButton.textContent = 'Check Failed - Try Again';
+                        upgradeButton.disabled = false;
+                    }
+                    break;
+                case 'available':
+                    // Start download
+                    const downloadResult = await ipcRenderer.invoke('download-update');
+                    if (!downloadResult.success) {
+                        console.error('Failed to download update:', downloadResult.error);
+                        upgradeButton.textContent = 'Download Failed - Try Again';
+                        upgradeButton.disabled = false;
+                    }
+                    break;
+                case 'downloaded':
+                    // Install and restart
+                    await ipcRenderer.invoke('quit-and-install');
+                    break;
+            }
+        } catch (error) {
+            console.error('Update operation failed:', error);
+            upgradeButton.textContent = 'Error - Try Again';
+            upgradeButton.disabled = false;
+        }
     });
 
     dialog.querySelector('button.btn-liberapay').addEventListener('click', () => {

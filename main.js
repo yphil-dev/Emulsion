@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, shell, dialog, globalShortcut, Menu, session } from 'electron';
+import { app, BrowserWindow, ipcMain, shell, dialog, globalShortcut, Menu, session, Notification } from 'electron';
 import fs from 'fs/promises';
 import fsSync from 'fs';
 import path from 'path';
@@ -903,53 +903,30 @@ ipcMain.handle('get-versions', async () => {
     return {current: pjson.version, latest: latestVersion};
 });
 
-app.whenReady().then(() => {
-    // Check for updates on startup
-    autoUpdater.checkForUpdatesAndNotify();
+// Manual update handlers
+ipcMain.handle('check-for-updates', async () => {
+    try {
+        await autoUpdater.checkForUpdates();
+        return { success: true };
+    } catch (error) {
+        console.error('Manual update check failed:', error);
+        return { success: false, error: error.message };
+    }
+});
 
-    autoUpdater.on('checking-for-update', () => {
-        console.log('Checking for update...');
-    });
+ipcMain.handle('download-update', async () => {
+    try {
+        await autoUpdater.downloadUpdate();
+        return { success: true };
+    } catch (error) {
+        console.error('Update download failed:', error);
+        return { success: false, error: error.message };
+    }
+});
 
-    autoUpdater.on('update-available', (info) => {
-        console.log('Update available.', info);
-    });
-
-    autoUpdater.on('update-not-available', (info) => {
-        console.log('Update not available.', info);
-    });
-
-    autoUpdater.on('error', (err) => {
-        console.error('Error in auto-updater.', err);
-    });
-
-    autoUpdater.on('download-progress', (progressObj) => {
-        let log_message = "Download speed: " + progressObj.bytesPerSecond;
-        log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
-        log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
-        console.log(log_message);
-    });
-
-    autoUpdater.on('update-downloaded', (info) => {
-        console.log('Update downloaded', info);
-    });
-
-    session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-        callback({
-            responseHeaders: {
-                ...details.responseHeaders,
-                "Access-Control-Allow-Origin": ["*"], // Allow all origins
-                "Access-Control-Allow-Methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-                "Access-Control-Allow-Headers": ["*"]
-            }
-        });
-    });
-
-    createWindows();
-
-    globalShortcut.register('Ctrl+Shift+K', () => {
-        killChildProcesses(childProcesses);
-    });
+ipcMain.handle('quit-and-install', async () => {
+    app.relaunch({ args: process.argv.slice(1).concat(['--restarted']) });
+    autoUpdater.quitAndInstall();
 });
 
 ipcMain.handle('install-flatpak', async (event, appId) => {
@@ -1150,4 +1127,79 @@ ipcMain.handle('get-flatpak-download-size', async (event, appId) => {
       resolve(null); // Size not found in output
     });
   });
+});
+
+// Manual update system - no auto-check on startup
+app.whenReady().then(() => {
+    autoUpdater.on('checking-for-update', () => {
+        mainWindow.webContents.send('update-status', { status: 'checking' });
+    });
+
+    autoUpdater.on('update-available', (info) => {
+        new Notification({
+            title: 'Update Available',
+            body: `Emulsion ${info.version} is available for download`
+        }).show();
+        mainWindow.webContents.send('update-status', {
+            status: 'available',
+            info: info,
+            version: info.version
+        });
+    });
+
+    autoUpdater.on('update-not-available', (info) => {
+        new Notification({
+            title: 'No Updates Available',
+            body: 'You are running the latest version of Emulsion'
+        }).show();
+        mainWindow.webContents.send('update-status', { status: 'up-to-date' });
+    });
+
+    autoUpdater.on('error', (err) => {
+        new Notification({
+            title: 'Update Error',
+            body: `Failed to check for updates: ${err.message}`
+        }).show();
+        mainWindow.webContents.send('update-status', { status: 'error', error: err.message });
+    });
+
+    autoUpdater.on('download-progress', (progressObj) => {
+        const progress = Math.round(progressObj.percent);
+        const speedMBs = (progressObj.bytesPerSecond / 1024 / 1024).toFixed(2);
+        const downloadedMB = (progressObj.transferred / 1024 / 1024).toFixed(2);
+        const totalMB = (progressObj.total / 1024 / 1024).toFixed(2);
+
+        mainWindow.webContents.send('update-status', {
+            status: 'downloading',
+            progress: progress,
+            speed: speedMBs,
+            downloaded: downloadedMB,
+            total: totalMB
+        });
+    });
+
+    autoUpdater.on('update-downloaded', (info) => {
+        new Notification({
+            title: 'Update Downloaded',
+            body: 'Restart Emulsion to apply the update'
+        }).show();
+        mainWindow.webContents.send('update-status', { status: 'downloaded', info: info });
+    });
+
+    session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+        callback({
+            responseHeaders: {
+                ...details.responseHeaders,
+                "Access-Control-Allow-Origin": ["*"], // Allow all origins
+                "Access-Control-Allow-Methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+                "Access-Control-Allow-Headers": ["*"]
+            }
+        });
+    });
+
+    createWindows();
+
+    globalShortcut.register('Ctrl+Shift+K', () => {
+        killChildProcesses(childProcesses);
+    });
 });

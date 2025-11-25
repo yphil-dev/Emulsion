@@ -31,9 +31,3 @@ jobs:
 
       - name: Build and post-process Linux packages
         run: npm run build
-
-      - name: Rename Release Title
-        run: gh release edit "$TAG" -t "Emulsion $TAG"
-        env:
-          TAG: ${{ github.ref_name }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

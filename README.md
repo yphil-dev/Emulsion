@@ -129,6 +129,10 @@ Want more options and higher-quality covers? Add free API keys to expand Emulsio
 
 All images and metadata are saved alongside your platform games / ROMs, keeping your collection organized.
 
+## Global settings
+
+![Global settings](https://yphil.gitlab.io/images/emulsion-settings.png?cache=x)
+
 ## Controls
 
 ### Home

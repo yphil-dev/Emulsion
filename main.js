@@ -926,8 +926,39 @@ ipcMain.handle('download-update', async () => {
 });
 
 ipcMain.handle('quit-and-install', async () => {
+    const { exec } = require('child_process');
+    const cachePath = path.join(app.getPath('userData'), '../../../../.cache/emulsion-updater/pending/emulsion_amd64.deb'); // assuming the path
+
+    try {
+        await new Promise((resolve, reject) => {
+            exec('which gksudo >/dev/null 2>&1', (error) => {
+                const installCmd = `dpkg -i ${cachePath} || apt-get install -f -y -q`;
+                let cmd;
+                if (!error) {
+                    cmd = `gksudo "${installCmd}"`;
+                } else {
+                    cmd = `pkexec /bin/bash -c "${installCmd}"`;
+                }
+                exec(cmd, (installError, stdout, stderr) => {
+                    if (installError) {
+                        console.error('Install error:', installError, stderr);
+                        reject(installError);
+                    } else {
+                        resolve();
+                    }
+                });
+            });
+        });
+    } catch (error) {
+        // Show notification for manual install
+        new Notification({
+            title: 'Install Failed',
+            body: 'Please install update manually: sudo dpkg -i ' + cachePath + ' && sudo apt-get install -f -y'
+        }).show();
+    }
+
     app.relaunch({ args: process.argv.slice(1).concat(['--restarted']) });
-    autoUpdater.quitAndInstall();
+    app.exit(0);
 });
 
 ipcMain.handle('install-flatpak', async (event, appId) => {

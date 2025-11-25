@@ -39,7 +39,7 @@ Only Emulsion does it this way ; Seriously, look it up!
 - **Reproducible** - One config file = instant gaming PC setup
 - **Arcade Ready** - Perfect for driving an arcade cabinet
 
-![Emulsion Hero](https://yphil.gitlab.io/images/emulsion-screenshot_03.png?cache=x)
+![Emulsion Hero](https://yphil.gitlab.io/images/emulsion-list-pce.png?cache=x)
 
 ## Installation
 
@@ -77,7 +77,7 @@ npm install && npm start
 
 ## Configuration
 
-![Settings Screenshot](https://yphil.gitlab.io/images/emulsion-01-platform_config.png?xxx)
+![Settings Screenshot](https://yphil.gitlab.io/images/emulsion-prefs-snes.png?xxx)
 
 ### Per-Platform Settings
 
@@ -89,30 +89,46 @@ npm install && npm start
 | **Get all cover images** | Batch download of all this platform's game covers artwork (you can close the menu and do something else - like play a game - while it downloads and refreshes your games gallery in real time) |
 | **Extensions**           | File types to scan for (e.g., `.zip`, `.iso`)                                                                                                                                                  |
 
-## Cover Art
+## Emulators management
 
-Press <kbd>□</kbd> or <kbd>I</kbd> to select the cover art for the selected game.
+Emulsion finds your emulators, helps you install the ones you don’t have, and sets them up with sensible defaults (file extensions and CLI arguments) — all configurable. Emulsion is *flexible*: You can put all your Vic20 games in the C64 page if you want.
 
-### API Keys (Optional but Recommended)
+![Emulators management](https://yphil.gitlab.io/images/emulsion-emulators-n64.png?cache=x)
 
-Get **way more images** by adding these free API keys:
+Up-to-date on Linux emulators and the way they work ; Smart, [DWIM](https://en.wikipedia.org/wiki/DWIM) & and hassle-free.
+
+## Game Metadata & Cover Art
+
+Press <kbd>□</kbd> or <kbd>I</kbd> to select the cover art for the selected platform / game.
+
+By default, Emulsion uses Wikipedia to fetch cover images and game metadata — so even without any setup, you get images, release info, and other useful text details automatically.
+
+### Optional: Add API Keys for More Images & Data
+
+Want more options and higher-quality covers? Add free API keys to expand Emulsion’s reach:
 
 #### SteamGridDB
-1. Login at [steamgriddb.com](https://www.steamgriddb.com/)
-2. Get your key from Preferences
-3. Paste into Emulsion Settings
+
+- Login at steamgriddb.com
+- Get your API key from Preferences
+- Paste it into Emulsion Settings
 
 #### GiantBomb
-1. Get your free key at [giantbomb.com/api](https://www.giantbomb.com/api/)
-2. Paste into Emulsion Settings
 
-### All Image Sources
+- Register at giantbomb.com/api
+- Paste your free key into Emulsion Settings
 
-- [SteamGridDB](https://www.steamgriddb.com/) (API - Best coverage)
-- [GiantBomb](https://www.giantbomb.com/api/) (API - Great metadata)
-- [Wikipedia](https://en.wikipedia.org/) (API - Surprising)
+#### Text Sources
 
-Images are saved to the platform games / roms directory.
+- Wikipedia – default, text metadata (title, release date, description, etc.)
+
+#### Image Sources
+
+- Wikipedia – default, finds both images and basic text metadata (title, release date, description, etc.)
+- SteamGridDB – API, best coverage for high-quality images
+- GiantBomb – API, actually quite poor, thinking of removing it.
+
+All images and metadata are saved alongside your platform games / ROMs, keeping your collection organized.
 
 ## Controls
 

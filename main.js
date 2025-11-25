@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, shell, dialog, globalShortcut, Menu, session, Notification } from 'electron';
+import { app, BrowserWindow, ipcMain, shell, dialog, globalShortcut, Menu, session } from 'electron';
 import fs from 'fs/promises';
 import fsSync from 'fs';
 import path from 'path';
@@ -9,14 +9,8 @@ import { getAllCoverImageUrls, getGameMetaData } from './src/js/backends.js';
 
 import { PLATFORMS, getPlatformInfo } from './src/js/platforms.js';
 
-// Auto-updater
-import pkg from 'electron-updater';
-const { autoUpdater } = pkg;
-
 import axios from 'axios';
 import os from 'os';
-
-
 
 
 
@@ -905,60 +899,24 @@ ipcMain.handle('get-versions', async () => {
     return {current: pjson.version, latest: latestVersion};
 });
 
-ipcMain.handle('check-for-updates', async () => {
-    try {
-        await autoUpdater.checkForUpdates();
-        return { success: true };
-    } catch (error) {
-        console.error('Manual update check failed:', error);
-        return { success: false, error: error.message };
-    }
-});
+app.whenReady().then(() => {
 
-ipcMain.handle('download-update', async () => {
-    try {
-        await autoUpdater.downloadUpdate();
-        return { success: true };
-    } catch (error) {
-        console.error('Update download failed:', error);
-        return { success: false, error: error.message };
-    }
-});
-
-ipcMain.handle('quit-and-install', async () => {
-    const { exec } = require('child_process');
-    const cachePath = path.join(app.getPath('userData'), '../../../../.cache/emulsion-updater/pending/emulsion_amd64.deb'); // assuming the path
-
-    try {
-        await new Promise((resolve, reject) => {
-            exec('which gksudo >/dev/null 2>&1', (error) => {
-                const installCmd = `dpkg -i ${cachePath} || apt-get install -f -y -q`;
-                let cmd;
-                if (!error) {
-                    cmd = `gksudo "${installCmd}"`;
-                } else {
-                    cmd = `pkexec /bin/bash -c "${installCmd}"`;
-                }
-                exec(cmd, (installError, stdout, stderr) => {
-                    if (installError) {
-                        console.error('Install error:', installError, stderr);
-                        reject(installError);
-                    } else {
-                        resolve();
-                    }
-                });
-            });
+    session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+        callback({
+            responseHeaders: {
+                ...details.responseHeaders,
+                "Access-Control-Allow-Origin": ["*"], // Allow all origins
+                "Access-Control-Allow-Methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+                "Access-Control-Allow-Headers": ["*"]
+            }
         });
-    } catch (error) {
-        // Show notification for manual install
-        new Notification({
-            title: 'Install Failed',
-            body: 'Please install update manually: sudo dpkg -i ' + cachePath + ' && sudo apt-get install -f -y'
-        }).show();
-    }
+    });
 
-    app.relaunch({ args: process.argv.slice(1).concat(['--restarted']) });
-    app.exit(0);
+    createWindows();
+
+    globalShortcut.register('Ctrl+Shift+K', () => {
+        killChildProcesses(childProcesses);
+    });
 });
 
 ipcMain.handle('install-flatpak', async (event, appId) => {
@@ -1159,79 +1117,4 @@ ipcMain.handle('get-flatpak-download-size', async (event, appId) => {
       resolve(null); // Size not found in output
     });
   });
-});
-
-app.whenReady().then(() => {
-    // Auto-updater events
-    autoUpdater.on('checking-for-update', () => {
-        mainWindow.webContents.send('update-status', { status: 'checking' });
-    });
-
-    autoUpdater.on('update-available', (info) => {
-        new Notification({
-            title: 'Update Available',
-            body: `Emulsion ${info.version} is available for download`
-        }).show();
-        mainWindow.webContents.send('update-status', {
-            status: 'available',
-            version: info.version,
-            info
-        });
-    });
-
-    autoUpdater.on('update-not-available', (info) => {
-        new Notification({
-            title: 'No Updates Available',
-            body: 'You are running the latest version of Emulsion'
-        }).show();
-        mainWindow.webContents.send('update-status', { status: 'up-to-date' });
-    });
-
-    autoUpdater.on('error', (err) => {
-        new Notification({
-            title: 'Update Error',
-            body: `Failed to check for updates: ${err.message}`
-        }).show();
-        mainWindow.webContents.send('update-status', { status: 'error', error: err.message });
-    });
-
-    autoUpdater.on('download-progress', (progressObj) => {
-        const progress = Math.round(progressObj.percent);
-        const speedMBs = (progressObj.bytesPerSecond / 1024 / 1024).toFixed(2);
-        const downloadedMB = (progressObj.transferred / 1024 / 1024).toFixed(2);
-        const totalMB = (progressObj.total / 1024 / 1024).toFixed(2);
-
-        mainWindow.webContents.send('update-status', {
-            status: 'downloading',
-            progress: progress,
-            speed: speedMBs,
-            downloaded: downloadedMB,
-            total: totalMB
-        });
-    });
-
-    autoUpdater.on('update-downloaded', (info) => {
-        new Notification({
-            title: 'Update Downloaded',
-            body: 'Restart Emulsion to apply the update'
-        }).show();
-        mainWindow.webContents.send('update-status', { status: 'downloaded' });
-    });
-
-    session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-        callback({
-            responseHeaders: {
-                ...details.responseHeaders,
-                "Access-Control-Allow-Origin": ["*"], // Allow all origins
-                "Access-Control-Allow-Methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-                "Access-Control-Allow-Headers": ["*"]
-            }
-        });
-    });
-
-    createWindows();
-
-    globalShortcut.register('Ctrl+Shift+K', () => {
-        killChildProcesses(childProcesses);
-    });
 });

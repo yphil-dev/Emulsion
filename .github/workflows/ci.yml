@@ -1,3 +1,4 @@
+# .github/workflows/ci.yml
 name: Build & Release
 
 on:
@@ -7,7 +8,6 @@ on:
 
 permissions:
   contents: write
-  packages: write
 
 env:
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -27,7 +27,24 @@ jobs:
       - name: Install Linux dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y dpkg fakeroot jq npm bash fuse cmake libsdl2-dev
+          sudo apt-get install -y dpkg fakeroot fuse cmake libsdl2-dev jq
+          npm install
+          curl -L -o appimagetool-x86_64.AppImage https://github.com/AppImage/AppImageKit/releases/latest/download/appimagetool-x86_64.AppImage
+          chmod +x appimagetool-x86_64.AppImage
+          chmod +x build.sh
+          source build.sh
 
-      - name: Build and post-process Linux packages
-        run: npm run build
+      - name: Build
+        run: npx electron-builder --config builder.yml --linux --publish=never
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Emulsion ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          files: |
+            dist/*.deb
+            dist/*.AppImage
+            dist/*.rpm
+          generate_release_notes: true

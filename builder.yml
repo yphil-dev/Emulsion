@@ -26,8 +26,7 @@ extraResources:
 
 publish:
   provider: github
-  publishAutoUpdate: true
-  releaseType: release
+  publishAutoUpdate: false
 
 linux:
   executableName: emulsion

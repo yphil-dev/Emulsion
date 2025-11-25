@@ -39,7 +39,7 @@ Only Emulsion does it this way ; Seriously, look it up!
 - **Reproducible** - One config file = instant gaming PC setup
 - **Arcade Ready** - Perfect for driving an arcade cabinet
 
-![Emulsion Hero](https://yphil.gitlab.io/images/emulsion-list-pce.png?cache=x)
+![emulsion-list-pce](https://yphil.gitlab.io/images/emulsion-list-pce.png?cache=xx)
 
 ## Installation
 
@@ -77,17 +77,16 @@ npm install && npm start
 
 ## Configuration
 
-![Settings Screenshot](https://yphil.gitlab.io/images/emulsion-prefs-snes.png?xxx)
+![Settings Screenshot](https://yphil.gitlab.io/images/emulsion-prefs-n64.png?cache=x)
 
 ### Per-Platform Settings
 
-| Setting                  | Description                                                                                                                                                                                    |
-|--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Games Directory**      | Where your ROMs are for this platform                                                                                                                                                          |
-| **Emulator**             | The emulator executable (name of installed emulator, or or full path to executable)                                                                                                            |
-| **Emulator Arguments**   | Optional flags (most emulators don't need any)                                                                                                                                                 |
-| **Get all cover images** | Batch download of all this platform's game covers artwork (you can close the menu and do something else - like play a game - while it downloads and refreshes your games gallery in real time) |
-| **Extensions**           | File types to scan for (e.g., `.zip`, `.iso`)                                                                                                                                                  |
+| Setting                | Description                                                                   |
+|------------------------|-------------------------------------------------------------------------------|
+| **Games Directory**    | Where your ROMs are for this platform                                         |
+| **Emulator**           | The emulator executable (use the install button to install / select emulator) |
+| **Emulator Arguments** | Optional flags (most emulators don't need any)                                |
+| **Extensions**         | File types to scan for (e.g., `.zip`, `.iso`)                                 |
 
 ## Emulators management
 
@@ -157,11 +156,12 @@ The games gallery
 ### Global Shortcuts
 They work everywhere
 
-| Action                             | Keyboard                | Controller                       |
-|------------------------------------|-------------------------|----------------------------------|
-| Kill emulator (return to Emulsion) | <kbd>Ctrl+Shift+K</kbd> | Select + <kbd>▼</kbd> D-Pad Down |
-| Reload Emulsion                    | <kbd>F5</kbd>           | -                                |
-| Restart Emulsion                   | <kbd>Shift+F5</kbd>     | Select + <kbd>▲</kbd> D-Pad Up   |
+| Action                                        | Keyboard                | Controller                       |
+|-----------------------------------------------|-------------------------|----------------------------------|
+| Display Emulation menu                        | <kbd>/</kbd>            | Start                            |
+| **Exit emulator / Game** (return to Emulsion) | <kbd>Ctrl+Shift+K</kbd> | Select + <kbd>▼</kbd> D-Pad Down |
+| Reload Emulsion                               | <kbd>F5</kbd>           | -                                |
+| Restart Emulsion                              | <kbd>Shift+F5</kbd>     | Select + <kbd>▲</kbd> D-Pad Up   |
 
 ### Mouse Support
 

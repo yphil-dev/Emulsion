@@ -35,7 +35,8 @@ jobs:
           source build.sh
 
       - name: Build
-        run: npx electron-builder --config builder.yml --linux --publish=never
+        run: |
+          source build.sh
 
       - name: Create Release
         uses: softprops/action-gh-release@v1

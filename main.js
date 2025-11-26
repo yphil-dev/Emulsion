@@ -966,56 +966,53 @@ ipcMain.handle('install-flatpak', async (event, appId) => {
 });
 
 ipcMain.handle('is-command-available', async (_event, commandName) => {
-  return new Promise((resolve) => {
-    const isWin = process.platform === 'win32';
+    return new Promise((resolve) => {
+        const isWin = process.platform === 'win32';
 
-    if (!isWin) {
-      // Linux / macOS fallback
-      exec(`command -v ${commandName}`, (error, stdout) => {
-        resolve(!error && stdout.trim().length > 0);
-      });
-      return;
-    }
+        if (!isWin) {
+            // Linux / macOS fallback
+            exec(`command -v ${commandName}`, (error, stdout) => {
+                resolve(!error && stdout.trim().length > 0);
+            });
+            return;
+        }
 
-    // WINDOWS PATH CHECK (fast)
-    exec(`where.exe ${commandName}.exe`, (error, stdout) => {
-      if (!error && stdout.trim().length > 0) {
-        resolve(true);
-        return;
-      }
-
-      // WINDOWS MANUAL LOOKUP (common install dirs)
-      const possibleDirs = [
-        process.env["LOCALAPPDATA"] + "\\Programs",
-        process.env["LOCALAPPDATA"],
-        process.env["ProgramFiles"],
-        process.env["ProgramFiles(x86)"],
-      ];
-
-      const fs = require('fs');
-      const path = require('path');
-
-      for (const dir of possibleDirs) {
-        if (!dir) continue;
-
-        try {
-          // Simple directory scan, no recursion
-          const entries = fs.readdirSync(dir, { withFileTypes: true });
-          for (const entry of entries) {
-            if (entry.isDirectory()) {
-              const exePath = path.join(dir, entry.name, `${commandName}.exe`);
-              if (fs.existsSync(exePath)) {
+        // WINDOWS PATH CHECK (fast)
+        exec(`where.exe ${commandName}.exe`, (error, stdout) => {
+            if (!error && stdout.trim().length > 0) {
                 resolve(true);
                 return;
-              }
             }
-          }
-        } catch (_) {}
-      }
 
-      resolve(false); // Not found anywhere
+            // WINDOWS MANUAL LOOKUP (common install dirs)
+            const possibleDirs = [
+                process.env["LOCALAPPDATA"] + "\\Programs",
+                process.env["LOCALAPPDATA"],
+                process.env["ProgramFiles"],
+                process.env["ProgramFiles(x86)"],
+            ];
+
+            for (const dir of possibleDirs) {
+                if (!dir) continue;
+
+                try {
+                    // Simple directory scan, no recursion
+                    const entries = fs.readdirSync(dir, { withFileTypes: true });
+                    for (const entry of entries) {
+                        if (entry.isDirectory()) {
+                            const exePath = path.join(dir, entry.name, `${commandName}.exe`);
+                            if (fs.existsSync(exePath)) {
+                                resolve(true);
+                                return;
+                            }
+                        }
+                    }
+                } catch (_) {}
+            }
+
+            resolve(false); // Not found anywhere
+        });
     });
-  });
 });
 
 

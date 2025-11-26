@@ -47,3 +47,9 @@ nsis:
   allowToChangeInstallationDirectory: true
   createDesktopShortcut: true
   createStartMenuShortcut: true
+
+mac:
+  category: public.app-category.utilities
+  icon: img/icons/emulsion.icns
+  target:
+    - dmg

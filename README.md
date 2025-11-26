@@ -48,9 +48,9 @@ Only Emulsion does it this way ; Seriously, look it up!
 - [**Debian / Ubuntu Package**](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_amd64.deb)
 - [**RPM Package**](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_x86_64.rpm)
 - [**AppImage**](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_x86_64.AppImage)
+- [**Windows**](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_x64.exe)
 
-
-👉 [**All Releases**](https://github.com/yphil-gh/emulsion/releases/latest)
+[**All Releases**](https://github.com/yphil-gh/emulsion/releases/latest)
 
 ### From Source
 

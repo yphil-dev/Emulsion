@@ -63,7 +63,7 @@ jobs:
           name: windows-dist
           path: dist/*
 
- release:
+  release:
     needs: [build_linux, build_windows]
     runs-on: ubuntu-latest
     steps:

@@ -69,8 +69,34 @@ jobs:
           name: windows-dist
           path: dist/*
 
+  build_macos:
+    runs-on: macos-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build macOS package
+        run: |
+          npx electron-builder --config builder.yml --mac dmg --x64
+
+      - name: Upload macOS artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-dist
+          path: dist/*
+
   release:
-    needs: [build_linux, build_windows]
+    needs: [build_linux, build_windows, build_macos]
     runs-on: ubuntu-latest
     steps:
       - name: Download Linux artifacts
@@ -85,6 +111,12 @@ jobs:
           name: windows-dist
           path: dist/
 
+      - name: Download macOS artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-dist
+          path: dist/
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
@@ -96,3 +128,4 @@ jobs:
             dist/*.AppImage
             dist/*.rpm
             dist/*.exe
+            dist/*.dmg

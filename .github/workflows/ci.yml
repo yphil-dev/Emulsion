@@ -1,4 +1,3 @@
-# .github/workflows/ci.yml
 name: Build & Release
 
 on:
@@ -13,7 +12,7 @@ env:
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  build_release_all:
+  build_linux:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

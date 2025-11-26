@@ -38,6 +38,10 @@ jobs:
           ls -la
           source build.sh
 
+      - name: Build Windows package
+        run: |
+          npx electron-builder --config builder.yml --win nsis --x64
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
@@ -48,4 +52,5 @@ jobs:
             dist/*.deb
             dist/*.AppImage
             dist/*.rpm
+            dist/*.exe
           generate_release_notes: true

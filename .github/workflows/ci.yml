@@ -13,7 +13,7 @@ env:
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  build_linux:
+  build_release_all:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -38,10 +38,36 @@ jobs:
           ls -la
           source build.sh
 
+  build_windows:
+    runs-on: windows-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
       - name: Build Windows package
         run: |
           npx electron-builder --config builder.yml --win nsis --x64
 
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-dist
+          path: dist/*
+
+ release:
+    needs: [build_linux, build_windows]
+    runs-on: ubuntu-latest
+    steps:
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:

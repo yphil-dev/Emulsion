@@ -51,6 +51,7 @@ doAppImage() {
             ../bin/appimagetool-x86_64.AppImage squashfs-root "$pkg"
         else
             # We are in GitLab CI/CD
+            echo "In the repo: $(ls -la ../)"
             echo "Using local ../appimagetool-x86_64.AppImage"
             ../appimagetool-x86_64.AppImage squashfs-root "$pkg"
         fi

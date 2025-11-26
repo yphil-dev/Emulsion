@@ -57,12 +57,6 @@ jobs:
         run: |
           npx electron-builder --config builder.yml --win nsis --x64
 
-      - name: Upload Windows artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: windows-dist
-          path: dist/*
-
   release:
     needs: [build_linux, build_windows]
     runs-on: ubuntu-latest

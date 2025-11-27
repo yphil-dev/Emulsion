@@ -1,5 +1,3 @@
-// SINGLE SOURCE OF TRUTH - Platforms definition
-// This is the only place where platforms are defined!
 export const PLATFORMS = [
     {
         nbGames: 0,
@@ -9,7 +7,7 @@ export const PLATFORMS = [
         name: "atari",
         extensions: [".bin", ".a26", ".rom", ".gz", ".xex", ".xfd", ".atr", ".dcm", ".cas" ],
         emulators: [
-            { name: "ARES", flatpak: "dev.ares.ares", url: "https://ares-emu.net/", args: "--fullscreen" }
+            { name: "ARES", flatpak: "dev.ares.ares", scoop: "games/ares", url: "https://ares-emu.net/", args: "--fullscreen" }
         ]
     },
     {
@@ -20,10 +18,9 @@ export const PLATFORMS = [
         name: "amstrad",
         extensions: [".dsk", ".cpr", ".tap", ".cdt", ".m3u"],
         emulators: [
-            { name: "Caprice32", flatpak: null, args: "", url: "https://github.com/ColinPitrat/caprice32" },
-            { name: "Caprice33", flatpak: null, args: "", url: "https://github.com/ColinPitrat/caprice32" },
-            { name: "xcpc", flatpak: null, args: "--keyboard=english", url: "https://www.xcpc-emulator.net/" }
-
+            { name: "Caprice32", flatpak: null, scoop: null, args: "", url: "https://github.com/ColinPitrat/caprice32" },
+            { name: "Caprice33", flatpak: null, scoop: null, args: "", url: "https://github.com/ColinPitrat/caprice32" },
+            { name: "xcpc", flatpak: null, scoop: null, args: "--keyboard=english", url: "https://www.xcpc-emulator.net/" }
         ]
     },
     {
@@ -34,8 +31,8 @@ export const PLATFORMS = [
         name: "spectrum",
         extensions: [".tzx", ".tap", ".z80", ".sna", ".dsk", ".trd", ".scl", ".rom", ".zip"],
         emulators: [
-            { name: "Fuse", flatpak: "net.sourceforge.fuse_emulator.Fuse", url: "https://fuse-emulator.sourceforge.net/", args: "--sound --auto-load" },
-            { name: "ARES", flatpak: "dev.ares.ares", url: "https://ares-emu.net/", args: "--fullscreen" }
+            { name: "Fuse", flatpak: "net.sourceforge.fuse_emulator.Fuse", scoop: "games/fuse", url: "https://fuse-emulator.sourceforge.net/", args: "--sound --auto-load" },
+            { name: "ARES", flatpak: "dev.ares.ares", scoop: "games/ares", url: "https://ares-emu.net/", args: "--fullscreen" }
         ]
     },
     {
@@ -46,7 +43,7 @@ export const PLATFORMS = [
         name: "c64",
         extensions: [".tzx", ".tap", ".z80", ".sna", ".dsk"],
         emulators: [
-            { name: "VICE", flatpak: "net.sf.VICE", url:"https://vice-emu.sourceforge.io/", args: "-fullscreen" }
+            { name: "VICE", flatpak: "net.sf.VICE", scoop: "games/vice", url:"https://vice-emu.sourceforge.io/", args: "-fullscreen" }
         ]
     },
     {
@@ -57,9 +54,9 @@ export const PLATFORMS = [
         name: "nes",
         extensions: [".zip", ".nes", ".fds", ".unif"],
         emulators: [
-            { name: "Nestopia", flatpak: "ca._0ldsk00l.Nestopia", url: "http://0ldsk00l.ca/nestopia/", args: "--fullscreen" },
-            { name: "bsnes", flatpak: "dev.bsnes.bsnes", url:"https://github.com/bsnes-emu/bsnes/", args: "--fullscreen" },
-            { name: "ARES", flatpak: "dev.ares.ares", url: "https://ares-emu.net/", args: "--fullscreen" }
+            { name: "Nestopia", flatpak: "ca._0ldsk00l.Nestopia", scoop: "games/nestopia", url: "http://0ldsk00l.ca/nestopia/", args: "--fullscreen" },
+            { name: "bsnes", flatpak: "dev.bsnes.bsnes", scoop: "games/bsnes", url:"https://github.com/bsnes-emu/bsnes/", args: "--fullscreen" },
+            { name: "ARES", flatpak: "dev.ares.ares", scoop: "games/ares", url: "https://ares-emu.net/", args: "--fullscreen" }
         ]
     },
     {
@@ -70,9 +67,9 @@ export const PLATFORMS = [
         name: "sms",
         extensions: [".sms", ".sg", ".zip"],
         emulators: [
-            { name: "Kega Fusion", flatpak: "com.carpeludum.KegaFusion", url:"https://www.carpeludum.com/kega-fusion/", args: "-fullscreen" },
-            { name: "Blastem", flatpak: "com.retrodev.blastem", url:"https://www.retrodev.com/blastem/", args: "-f" },
-            { name: "ARES", flatpak: "dev.ares.ares", url: "https://ares-emu.net/", args: "--fullscreen" }
+            { name: "Kega Fusion", flatpak: "com.carpeludum.KegaFusion", scoop: "games/kega-fusion", url:"https://www.carpeludum.com/kega-fusion/", args: "-fullscreen" },
+            { name: "Blastem", flatpak: "com.retrodev.blastem", scoop: null, url:"https://www.retrodev.com/blastem/", args: "-f" },
+            { name: "ARES", flatpak: "dev.ares.ares", scoop: "games/ares", url: "https://ares-emu.net/", args: "--fullscreen" }
         ]
     },
     {
@@ -83,7 +80,7 @@ export const PLATFORMS = [
         name: "pcengine",
         extensions: [".pce", ".cue", ".iso", ".bin", ".ccd"],
         emulators: [
-            { name: "ARES", flatpak: "dev.ares.ares", url: "https://ares-emu.net/", args: "--fullscreen" }
+            { name: "ARES", flatpak: "dev.ares.ares", scoop: "games/ares", url: "https://ares-emu.net/", args: "--fullscreen" }
         ]
     },
     {
@@ -94,7 +91,7 @@ export const PLATFORMS = [
         name: "amiga",
         extensions: [".adf", ".adz", ".dms", ".lha", ".zip"],
         emulators: [
-            { name: "amiberry", flatpak: "com.blitterstudio.amiberry", url:"https://amiberry.com/", args: "-s joyport1_amiberry_custom_axis_none_righttrigger='Quit emulator' --autoload" }
+            { name: "amiberry", flatpak: "com.blitterstudio.amiberry", scoop: null, url:"https://amiberry.com/", args: "-s joyport1_amiberry_custom_axis_none_righttrigger='Quit emulator' --autoload" }
         ]
     },
     {
@@ -105,9 +102,9 @@ export const PLATFORMS = [
         name: "megadrive",
         extensions: [".md", ".smd", ".bin", ".gen", ".zip"],
         emulators: [
-            { name: "Kega Fusion", flatpak: "com.carpeludum.KegaFusion", url:"https://www.carpeludum.com/kega-fusion/", args: "-fullscreen" },
-            { name: "Blastem", flatpak: "com.retrodev.blastem", url:"https://www.retrodev.com/blastem/", args: "-f" },
-            { name: "ARES", flatpak: "dev.ares.ares", url: "https://ares-emu.net/", args: "--fullscreen" }
+            { name: "Kega Fusion", flatpak: "com.carpeludum.KegaFusion", scoop: "games/kega-fusion", url:"https://www.carpeludum.com/kega-fusion/", args: "-fullscreen" },
+            { name: "Blastem", flatpak: "com.retrodev.blastem", scoop: null, url:"https://www.retrodev.com/blastem/", args: "-f" },
+            { name: "ARES", flatpak: "dev.ares.ares", scoop: "games/ares", url: "https://ares-emu.net/", args: "--fullscreen" }
         ]
     },
     {
@@ -118,10 +115,10 @@ export const PLATFORMS = [
         name: "gameboy",
         extensions: [".gb", ".gbc", ".zip"],
         emulators: [
-            { name: "mgba", flatpak: "io.mgba.mGBA", url:"https://mgba.io/", args: "-f" },
-            { name: "ARES", flatpak: "dev.ares.ares", url: "https://ares-emu.net/", args: "--fullscreen" },
-            { name: "Sameboy", flatpak: "io.github.sameboy.SameBoy", url:"https://sameboy.github.io/", args: "--fullscreen" },
-            { name: "GB Enhanced+", flatpak: "com.github.shonumi.gbe-plus", url:"https://github.com/shonumi/gbe-plus/releases/latest", args: "" }
+            { name: "mgba", flatpak: "io.mgba.mGBA", scoop: "games/mgba", url:"https://mgba.io/", args: "-f" },
+            { name: "ARES", flatpak: "dev.ares.ares", scoop: "games/ares", url: "https://ares-emu.net/", args: "--fullscreen" },
+            { name: "Sameboy", flatpak: "io.github.sameboy.SameBoy", scoop: "games/sameboy", url:"https://sameboy.github.io/", args: "--fullscreen" },
+            { name: "GB Enhanced+", flatpak: "com.github.shonumi.gbe-plus", scoop: null, url:"https://github.com/shonumi/gbe-plus/releases/latest", args: "" }
         ]
     },
     {
@@ -132,8 +129,8 @@ export const PLATFORMS = [
         name: "lynx",
         extensions: [".lnx", ".zip"],
         emulators: [
-            { name: "Holani", flatpak: null, url:"https://github.com/LLeny/holani", args: "--fullscreen" },
-            { name: "Felix", flatpak: null, url:"https://github.com/laoo/Felix", args: "--fullscreen" }
+            { name: "Holani", flatpak: null, scoop: null, url:"https://github.com/LLeny/holani", args: "--fullscreen" },
+            { name: "Felix", flatpak: null, scoop: null, url:"https://github.com/laoo/Felix", args: "--fullscreen" }
         ]
     },
     {
@@ -144,8 +141,8 @@ export const PLATFORMS = [
         name: "gamegear",
         extensions: [".gg", ".sg", ".zip"],
         emulators: [
-            { name: "Kega Fusion", flatpak: "com.carpeludum.KegaFusion", url:"https://www.carpeludum.com/kega-fusion/", args: "-fullscreen" },
-            { name: "ARES", flatpak: "dev.ares.ares", url: "https://ares-emu.net/", args: "--fullscreen" }
+            { name: "Kega Fusion", flatpak: "com.carpeludum.KegaFusion", scoop: "games/kega-fusion", url:"https://www.carpeludum.com/kega-fusion/", args: "-fullscreen" },
+            { name: "ARES", flatpak: "dev.ares.ares", scoop: "games/ares", url: "https://ares-emu.net/", args: "--fullscreen" }
         ]
     },
     {
@@ -156,10 +153,10 @@ export const PLATFORMS = [
         name: "snes",
         extensions: [".smc", ".sfc", ".fig", ".swc", ".zip"],
         emulators: [
-            { name: "Snes9x", flatpak: "com.snes9x.Snes9x", url:"https://www.snes9x.com/", args: "--fullscreen" },
-            { name: "bsnes", flatpak: "dev.bsnes.bsnes", url:"https://github.com/bsnes-emu/bsnes/", args: "--fullscreen" },
-            { name: "ARES", flatpak: "dev.ares.ares", url: "https://ares-emu.net/", args: "--fullscreen" },
-            { name: "zsnes", flatpak: "io.github.xyproto.zsnes", url:"https://github.com/xyproto/zsnes", args: "-m" }
+            { name: "Snes9x", flatpak: "com.snes9x.Snes9x", scoop: "games/snes9x", url:"https://www.snes9x.com/", args: "--fullscreen" },
+            { name: "bsnes", flatpak: "dev.bsnes.bsnes", scoop: "games/bsnes", url:"https://github.com/bsnes-emu/bsnes/", args: "--fullscreen" },
+            { name: "ARES", flatpak: "dev.ares.ares", scoop: "games/ares", url: "https://ares-emu.net/", args: "--fullscreen" },
+            { name: "zsnes", flatpak: "io.github.xyproto.zsnes", scoop: null, url:"https://github.com/xyproto/zsnes", args: "-m" }
         ]
     },
     {
@@ -170,7 +167,7 @@ export const PLATFORMS = [
         name: "jaguar",
         extensions: [".jag", ".zip"],
         emulators: [
-            { name: "BigPEmu", flatpak: "com.richwhitehouse.BigPEmu", url:"https://richwhitehouse.com/jaguar/", args: "-f" }
+            { name: "BigPEmu", flatpak: "com.richwhitehouse.BigPEmu", scoop: null, url:"https://richwhitehouse.com/jaguar/", args: "-f" }
         ]
     },
     {
@@ -181,8 +178,8 @@ export const PLATFORMS = [
         name: "saturn",
         extensions: [".cue", ".bin", ".iso"],
         emulators: [
-            { name: "Ymir", flatpak: "io.github.strikerx3.ymir", url:"https://github.com/StrikerX3/Ymir", args: "-f" },
-            { name: "Blastem", flatpak: "com.retrodev.blastem", url:"https://www.retrodev.com/blastem/", args: "-f" }
+            { name: "Ymir", flatpak: "io.github.strikerx3.ymir", scoop: null, url:"https://github.com/StrikerX3/Ymir", args: "-f" },
+            { name: "Blastem", flatpak: "com.retrodev.blastem", scoop: null, url:"https://www.retrodev.com/blastem/", args: "-f" }
         ]
     },
     {
@@ -193,8 +190,8 @@ export const PLATFORMS = [
         name: "ps1",
         extensions: [".cue", ".bin", ".iso"],
         emulators: [
-            { name: "ARES", flatpak: "dev.ares.ares", url: "https://ares-emu.net/", args: "--fullscreen" },
-            { name: "PSXE", flatpak: null, url: "http://github.com/allkern/psxe", args: "--fullscreen" },
+            { name: "ARES", flatpak: "dev.ares.ares", scoop: "games/ares", url: "https://ares-emu.net/", args: "--fullscreen" },
+            { name: "PSXE", flatpak: null, scoop: null, url: "http://github.com/allkern/psxe", args: "--fullscreen" },
         ]
     },
     {
@@ -205,9 +202,9 @@ export const PLATFORMS = [
         name: "n64",
         extensions: ["n64", ".v64", ".z64"],
         emulators: [
-            { name: "Rosalie's Mupen GUI", flatpak: "com.github.Rosalie241.RMG", url:"https://github.com/Rosalie241/RMG", args: "--nogui --fullscreen" },
-            { name: "Gopher64", flatpak: "io.github.gopher64.gopher64", url:"https://github.com/gopher64/gopher64", args: "-f" },
-            { name: "M64Py", flatpak: "net.sourceforge.m64py.M64Py", url:"https://m64py.sourceforge.net/", args: "--fullscreen" }
+            { name: "Rosalie's Mupen GUI", flatpak: "com.github.Rosalie241.RMG", scoop: "games/rmg", url:"https://github.com/Rosalie241/RMG", args: "--nogui --fullscreen" },
+            { name: "Gopher64", flatpak: "io.github.gopher64.gopher64", scoop: null, url:"https://github.com/gopher64/gopher64", args: "-f" },
+            { name: "M64Py", flatpak: "net.sourceforge.m64py.M64Py", scoop: null, url:"https://m64py.sourceforge.net/", args: "--fullscreen" }
         ]
     },
     {
@@ -218,7 +215,7 @@ export const PLATFORMS = [
         name: "dreamcast",
         extensions: [".gdi", ".cdi", ".chd", ".bin", ".cue"],
         emulators: [
-            { name: "flycast", flatpak: "org.flycast.Flycast", url:"https://github.com/flyinghead/flycast", args: "--fullscreen" }
+            { name: "flycast", flatpak: "org.flycast.Flycast", scoop: "games/flycast", url:"https://github.com/flyinghead/flycast", args: "--fullscreen" }
         ]
     },
     {
@@ -229,8 +226,8 @@ export const PLATFORMS = [
         name: "ps2",
         extensions: [".iso", ".bin", ".img", ".cue", ".mdf"],
         emulators: [
-            { name: "PCSX2", flatpak: "net.pcsx2.PCSX2", url:"https://pcsx2.net/", args: "--nogui -fullscreen" },
-            { name: "Play!", flatpak: "org.purei.Play", url:"https://purei.org/", args: "--fullscreen" }
+            { name: "PCSX2", flatpak: "net.pcsx2.PCSX2", scoop: "games/pcsx2", url:"https://pcsx2.net/", args: "--nogui -fullscreen" },
+            { name: "Play!", flatpak: "org.purei.Play", scoop: null, url:"https://purei.org/", args: "--fullscreen" }
         ]
     },
     {
@@ -241,7 +238,7 @@ export const PLATFORMS = [
         name: "gamecube",
         extensions: [".iso", ".ciso", ".gcm", ".gcz"],
         emulators: [
-            { name: "dolphin", flatpak: "org.DolphinEmu.dolphin-emu", url:"https://dolphin-emu.org/", args: "-b -e" }
+            { name: "dolphin", flatpak: "org.DolphinEmu.dolphin-emu", scoop: "games/dolphin", url:"https://dolphin-emu.org/", args: "-b -e" }
         ]
     },
     {
@@ -252,7 +249,7 @@ export const PLATFORMS = [
         name: "xbox",
         extensions: [".iso", ".xiso"],
         emulators: [
-            { name: "xemu", flatpak: "app.xemu.xemu", url:"https://xemu.app/", args: "-full-screen -dvd_path" }
+            { name: "xemu", flatpak: "app.xemu.xemu", scoop: "games/xemu", url:"https://xemu.app/", args: "-full-screen -dvd_path" }
         ]
     },
     {
@@ -263,7 +260,7 @@ export const PLATFORMS = [
         name: "psp",
         extensions: [".iso", ".cso", ".pbp"],
         emulators: [
-            { name: "PPSSPP", flatpak: "org.ppsspp.PPSSPP", url:"https://www.ppsspp.org/", args: "--fullscreen" }
+            { name: "PPSSPP", flatpak: "org.ppsspp.PPSSPP", scoop: "games/ppsspp", url:"https://www.ppsspp.org/", args: "--fullscreen" }
         ]
     },
     {
@@ -274,7 +271,7 @@ export const PLATFORMS = [
         name: "ps3",
         extensions: [".SFO"],
         emulators: [
-            { name: "RPCS3", flatpak: "net.rpcs3.RPCS3", url:"https://rpcs3.net/", args: "--no-gui" }
+            { name: "RPCS3", flatpak: "net.rpcs3.RPCS3", scoop: "games/rpcs3", url:"https://rpcs3.net/", args: "--no-gui" }
         ]
     },
     {
@@ -285,7 +282,7 @@ export const PLATFORMS = [
         name: "3ds",
         extensions: [".3ds", ".cci", ".cxi"],
         emulators: [
-            { name: "Azahar", flatpak: "org.azahar_emu.Azahar", url:"https://azahar-emu.org/", args: "-f" }
+            { name: "Azahar", flatpak: "org.azahar_emu.Azahar", scoop: null, url:"https://azahar-emu.org/", args: "-f" }
         ]
     },
     {
@@ -296,7 +293,7 @@ export const PLATFORMS = [
         name: "xbox360",
         extensions: [".iso", ".xex"],
         emulators: [
-            { name: "Xenia Canary", flatpak: null, args: "-f", url:"https://github.com/xenia-canary/xenia-canary-releases"}
+            { name: "Xenia Canary", flatpak: null, scoop: null, args: "-f", url:"https://github.com/xenia-canary/xenia-canary-releases"}
         ]
     },
     {
@@ -307,7 +304,7 @@ export const PLATFORMS = [
         name: "ps4",
         extensions: [".iso"],
         emulators: [
-            { name: "shadPS4", flatpak: "net.shadps4.shadPS4", url:"https://shadps4.net/", args: "--fullscreen" }
+            { name: "shadPS4", flatpak: "net.shadps4.shadPS4", scoop: null, url:"https://shadps4.net/", args: "--fullscreen" }
         ]
     }
 ];

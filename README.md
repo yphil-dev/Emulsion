@@ -8,7 +8,7 @@
 
 # Emulsion
 
-### *Better gaming throught chemistry*
+*Better gaming throught chemistry*
 
 **Display your games collection into responsive galleries, manage game metadata, cover art and emulator configuration. Launch your games in style.**
 
@@ -18,24 +18,25 @@
 
 </div>
 
-## What is Emulsion?
+## Key Features
 
-A portal to your **games** ; It brings everything together in one beautiful, responsive frontend that just-works.
+All your games in one place, even if they're all over your drives.
 
-### Key Features
-
-- **True Unification** - All your emulators, one elegant interface
+- **True Unification** - All your games, all your emulators, one responsive interface
 - **Fast** - Thousands of games realy to launch under the second
 - **Light** - Emulsion is not a gigantic cathedral that also does coffee, or downright its own Operating System 😉
 
-### *Unique* Features ; Why Emulsion?
+### *Unique* Features
+Emulsion is a totally new approach at the "emaulation station / launch box / Retropie / Batocera" conundrum.
+
 Only Emulsion does it this way ; Seriously, look it up!
 
+- **Flexible Storage** - Games across multiple drives? No problem!
 - **Universal Input** - Keyboard, mouse, or any game controller
 - **Responsive UX** - Adapts perfectly to any screen size / orientation
-- **Flexible Storage** - Games across multiple drives? No problem!
-- **Smart Meta data management** - Manually curate your collection with images and text from multiple sources (but always WikiPedia API as a fallback) or batch-download them in real time
-- **Non-Invasive** - Doesn't mess with your emulator configs
+- **Smart emulator management** - Emulsion uses your installed emulator, or install it in a standard way. That way it's always up to date.
+- **Smart Meta data management** - Manually curate your collection with images and text from multiple sources (but always WikiPedia API as a fallback) or batch-download them in real time ; All from the console gallery.
+
 - **Reproducible** - One config file = instant gaming PC setup
 - **Arcade Ready** - Perfect for driving an arcade cabinet
 
@@ -79,7 +80,7 @@ npm install && npm start
 
 ![Settings Screenshot](https://yphil.gitlab.io/images/emulsion-prefs-n64.png?cache=x)
 
-### Per-Platform Settings
+### Per-Console Settings
 
 | Setting                | Description                                                                   |
 |------------------------|-------------------------------------------------------------------------------|
@@ -142,12 +143,12 @@ All images and metadata are saved alongside your platform games / ROMs, keeping 
 ## Controls
 
 ### Home
-The platform carousel
+The console carousel
 
 | Action                        | Keyboard                         | Controller                      |
 |-------------------------------|----------------------------------|---------------------------------|
-| Navigate platforms            | <kbd>←</kbd> <kbd>→</kbd>        | <kbd>◄</kbd> <kbd>►</kbd> D-Pad |
-| Select platform               | <kbd>Enter</kbd>                 | <kbd>⤫</kbd> A/Cross            |
+| Navigate consoles            | <kbd>←</kbd> <kbd>→</kbd>        | <kbd>◄</kbd> <kbd>►</kbd> D-Pad |
+| Select console               | <kbd>Enter</kbd>                 | <kbd>⤫</kbd> A/Cross            |
 | Go to 1st (settings) platform | <kbd>Home</kbd> / <kbd>End</kbd> |                                 |
 | Exit                          | <kbd>Ctrl+Q</kbd>                | <kbd>○</kbd> B/Circle           |
 
@@ -157,7 +158,7 @@ The games gallery
 | Action           | Keyboard                                            | Controller                  |
 |------------------|-----------------------------------------------------|-----------------------------|
 | Browse games     | <kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd> | D-Pad                       |
-| Switch platforms | <kbd>Shift+←</kbd> <kbd>Shift+→</kbd>               | <kbd>L1</kbd> <kbd>R1</kbd> |
+| Switch consoles | <kbd>Shift+←</kbd> <kbd>Shift+→</kbd>               | <kbd>L1</kbd> <kbd>R1</kbd> |
 | Jump 10 rows     | <kbd>PgUp</kbd> <kbd>PgDn</kbd>                     | -                           |
 | **LAUNCH GAME**  | <kbd>Enter</kbd>                                    | <kbd>⤫</kbd> A/Cross        |
 | Cover art menu   | <kbd>I</kbd>                                        | <kbd>□</kbd> X/Square       |
@@ -192,7 +193,7 @@ Options:
   --auto-select=PLATFORM         Jump directly to a platform
   --help                         Show this help
 
-Available platforms:
+Available consoles:
   atari spectrum c64 nes sms pcengine amiga megadrive
   gameboy lynx gamegear snes jaguar saturn psx n64
   dreamcast ps2 gamecube xbox psp ps3 3ds xbox360 ps4

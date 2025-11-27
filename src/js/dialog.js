@@ -984,6 +984,11 @@ export function installEmulatorsDialog(emulators) {
     // Store row data for easy access
     const rowData = new Map();
 
+    async function checkPlatform() {
+        const hostPlatformName = await ipcRenderer.invoke('get-host-platform');
+        console.log("hostPlatformName: ", hostPlatformName);
+    }
+
     async function checkFlathubStatus() {
         try {
             const flatpakAvailable = await ipcRenderer.invoke('is-flatpak-available');

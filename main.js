@@ -1160,3 +1160,7 @@ ipcMain.handle('get-flatpak-download-size', async (event, appId) => {
     });
   });
 });
+
+ipcMain.handle("get-host-platform", () => {
+  return process.platform;
+});

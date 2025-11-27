@@ -468,10 +468,16 @@ function buildSettingsMenu() {
     return formContainer;
 }
 
-function buildPlatformMenuForm(platformName) {
+async function buildPlatformMenuForm(platformName) {
 
     if (platformName === 'settings') {
         return buildSettingsMenu();
+    }
+
+    async function checkHostPlatformName() {
+        const hostPlatformName = await ipcRenderer.invoke('get-host-platform');
+        console.log("hostPlatformName: ", hostPlatformName);
+        return hostPlatformName;
     }
 
     const formContainer = document.createElement('div');
@@ -592,7 +598,11 @@ function buildPlatformMenuForm(platformName) {
 
     emulatorCtn.appendChild(emulatorIcon);
     emulatorCtn.appendChild(emulatorInput);
-    emulatorCtn.appendChild(installEmulatorsButton);
+
+    if ((await checkHostPlatformName()) === 'linux') {
+        emulatorCtn.appendChild(installEmulatorsButton);
+    }
+
     emulatorCtn.appendChild(emulatorButton);
 
     emulatorGroup.appendChild(emulatorInputLabel);
@@ -976,8 +986,7 @@ export function openPlatformMenu(platformName, context, eltToFocus) {
     menu.dataset.menuPlatform = platformName;
     menu.dataset.context = context || null;
 
-    const platformMenuForm = buildPlatformMenuForm(platformName);
-    menu.appendChild(platformMenuForm);
+    buildPlatformMenuForm(platformName).then(platformMenuForm => menu.appendChild(platformMenuForm));
 
     const header = document.getElementById('header');
 

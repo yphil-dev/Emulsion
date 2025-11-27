@@ -53,8 +53,6 @@ npm install && npm start
 
 **Get gaming in 5 minutes:**
 
-1. Open any console page
-
 1. **Get some games** - Let's say [NES](https://duckduckgo.com/?q=vimms+lair+NES) ROMs
 2. **Open Emulsion** → **NES**
    - **Games Directory**: Click **Browse**, navigate to your NES games folder
@@ -62,7 +60,8 @@ npm install && npm start
      - Click **Install**, choose... Let's try `nestopia`.
      - Click **Select**
      - Click **Enable**, click **Save**
-3. **Done!** - 🚀 Start gaming
+3. **Done** - That's it, your NES Platform is set up forever.
+4. When you're done, set "disabled platforms: hide" in the [global setting menu](#global-settings), so you only see the enabled platforms.
 
 > 💡 **Pro Tip**: Your config lives in `~/.config/emulsion/preferences.json` - back it up!
 

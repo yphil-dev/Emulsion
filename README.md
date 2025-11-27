@@ -100,7 +100,7 @@ Emulsion is up-to-date on Linux emulators and the way they work (extensions + ar
 
 #### Other OSes
 
-For Windows, we're thinking of implementing something like [Scoop](https://scoop.sh/), when we find the time. Again, it's not a big deal: Install youe emulator, select it with the "Browse" button, save (optionally tweak the arguments) and you are done.
+For Windows, we're thinking of implementing something like [Scoop](https://scoop.sh/) or [WinGet](https://github.com/microsoft/winget-cli), when we find the time and [motivation](https://mstdn.social/@yPhil/115620906353244396). Again, it's not a big deal: Install youe emulator, select it with the "Browse" button, save (optionally tweak the arguments) and you are done.
 
 ### Game Metadata & Cover Art
 

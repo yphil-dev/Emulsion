@@ -94,7 +94,13 @@ Emulsion finds your emulators, helps you install the ones you don’t have, and 
 
 ![Emulators management](https://yphil.gitlab.io/images/emulsion-emulators-n64.png?cache=x)
 
-Up-to-date on Linux emulators and the way they work ; Smart, [DWIM](https://en.wikipedia.org/wiki/DWIM) & and hassle-free.
+Emulsion is up-to-date on Linux emulators and the way they work (extensions + arguments) ; Smart, [DWIM](https://en.wikipedia.org/wiki/DWIM) & and hassle-free.
+
+> ⚠️ **Note**: Automatic emulator installation / selection is currently only available on Linux. On Windows and macOS, emulators must be installed manually. No biggie, the result is the same anyway: setup and forget.
+
+### Other OSes
+
+For Windows, we're thinking of implementing something like [Scoop](https://scoop.sh/), when we find the time. Again, it's not a big deal: Install youe emulator, select it with the "Browse" button, save (optionally tweak the arguments) and you are done.
 
 ## Game Metadata & Cover Art
 

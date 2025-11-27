@@ -66,11 +66,12 @@ npm install && npm start
 1. Open any console page
 
 1. **Get some games** - Let's say [NES](https://duckduckgo.com/?q=vimms+lair+NES) ROMs
-2. **Open Emulsion** → Settings → NES
-   - **Games Directory**: Browse to your NES games folder
+2. **Open Emulsion** → **NES**
+   - **Games Directory**: Click **Browse**, navigate to your NES games folder
    - **Emulator**:
      - Click **Install**, choose... Let's try `nestopia`.
      - Click **Select**
+     - Click **Enable**, click **Save**
 3. **Done!** - 🚀 Start gaming
 
 > 💡 **Pro Tip**: Your config lives in `~/.config/emulsion/preferences.json` - back it up!

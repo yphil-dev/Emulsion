@@ -12,26 +12,18 @@
 
 **Display your games collection into responsive galleries, manage game metadata, cover art and emulator configuration. Launch your games in style.**
 
-[Website](https://yphil.gitlab.io/emulsion) • [Download](https://github.com/yPhil-gh/emulsion/releases/latest) • [Documentation](#configuration) • [Cracktro](https://yphil.gitlab.io/ext/emulsion.html)
+[Website](https://yphil.gitlab.io/emulsion) • [Download](https://github.com/yPhil-gh/emulsion/releases/latest) • [Documentation](#configuration) • [GitHub mirror (releases)](https://github.com/yPhil-gh/Emulsion) • [Cracktro](https://yphil.gitlab.io/ext/emulsion.html)
 
 ![Emulsion Hero](https://yphil.gitlab.io/images/emulsion-screenshot_01.png?cache=xyzzz)
 
 </div>
 
-## Key Features
-
-All your games in one place, even if they're all over your drives.
-
-- **True Unification** - All your games, all your emulators, one responsive interface
-- **Fast** - Thousands of games realy to launch under the second
-- **Light** - Emulsion is not a gigantic cathedral that also does coffee, or downright its own Operating System 😉
-
-### *Unique* Features
+## Features
 
 - **Flexible Storage** - Your games / ROMs can be anywhere, across multiple drives / NAS, etc.
 - **Universal Input** - Keyboard, mouse, or any game controller
 - **Responsive UX** - Adapts perfectly to any screen size / orientation
-- **Smart emulator management** - Emulsion uses your installed emulator, or installs it. Standard and up to date.
+- **Smart emulator management** - Emulsion uses your installed emulator, or installs it ; Standard and up to date.
 - **Flexible Metadata Management** - Manual curation, and / or batch automation. Downloads from multiple sources, Wikipedia API default ; All manageable from the platform page.
 
 Emulsion is **reproducible** - one single config file - and **arcade ready** ; Perfect for driving an arcade cabinet.

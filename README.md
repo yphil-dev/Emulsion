@@ -27,18 +27,14 @@ All your games in one place, even if they're all over your drives.
 - **Light** - Emulsion is not a gigantic cathedral that also does coffee, or downright its own Operating System 😉
 
 ### *Unique* Features
-Emulsion is a totally new approach at the "emaulation station / launch box / Retropie / Batocera" conundrum.
 
-Only Emulsion does it this way ; Seriously, look it up!
-
-- **Flexible Storage** - Games across multiple drives? No problem!
+- **Flexible Storage** - Your games / ROMs can be anywhere, across multiple drives / NAS, etc.
 - **Universal Input** - Keyboard, mouse, or any game controller
 - **Responsive UX** - Adapts perfectly to any screen size / orientation
-- **Smart emulator management** - Emulsion uses your installed emulator, or install it in a standard way. That way it's always up to date.
-- **Smart Meta data management** - Manually curate your collection with images and text from multiple sources (but always WikiPedia API as a fallback) or batch-download them in real time ; All from the console gallery.
+- **Smart emulator management** - Emulsion uses your installed emulator, or installs it. Standard and up to date.
+- **Flexible Metadata Management** - Manual curation, and / or batch automation. Downloads from multiple sources, Wikipedia API default ; All manageable from the platform page.
 
-- **Reproducible** - One config file = instant gaming PC setup
-- **Arcade Ready** - Perfect for driving an arcade cabinet
+Emulsion is **reproducible** - one single config file - and **arcade ready** ; Perfect for driving an arcade cabinet.
 
 ![emulsion-list-pce](https://yphil.gitlab.io/images/emulsion-list-pce.png?cache=xx)
 

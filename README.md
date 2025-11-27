@@ -57,25 +57,24 @@ Only Emulsion does it this way ; Seriously, look it up!
 ```bash
 npm install && npm start
 ```
+## Configuration
 
-## Quick Start
+### Quick Start
 
 **Get gaming in 5 minutes:**
 
 1. Open any console page
 
 1. **Get some games** - Let's say [NES](https://duckduckgo.com/?q=vimms+lair+NES) ROMs
-2. **Install an emulator**
-3. **Open Emulsion** → Settings → NES
+2. **Open Emulsion** → Settings → NES
    - **Games Directory**: Browse to your NES games folder
-   - **Emulator**: Enter `nestopia`
-   - **Extensions**: `.zip` (already default!)
-   - **Batch cover download**: (optional) click to get the cover of all you new NEW games
-4. **Done!** - 🚀 Start gaming
+   - **Emulator**:
+     - Click **Install**, choose... Let's try `nestopia`.
+     - Click **Select**
+3. **Done!** - 🚀 Start gaming
 
 > 💡 **Pro Tip**: Your config lives in `~/.config/emulsion/preferences.json` - back it up!
 
-## Configuration
 
 ![Settings Screenshot](https://yphil.gitlab.io/images/emulsion-prefs-n64.png?cache=x)
 
@@ -86,9 +85,9 @@ npm install && npm start
 | **Games Directory**    | Where your ROMs are for this platform                                         |
 | **Emulator**           | The emulator executable (use the install button to install / select emulator) |
 | **Emulator Arguments** | Optional flags (most emulators don't need any)                                |
-| **Extensions**         | File types to scan for (e.g., `.zip`, `.iso`)                                 |
+| **Extensions**         | File types to scan for (already set if you use the Install / Select dialog)   |
 
-## Emulators management
+### Emulators management
 
 Emulsion finds your emulators, helps you install the ones you don’t have, and sets them up with sensible defaults (file extensions and CLI arguments) — all configurable. Emulsion is *flexible*: You can put all your Vic20 games in the C64 page if you want.
 
@@ -98,44 +97,44 @@ Emulsion is up-to-date on Linux emulators and the way they work (extensions + ar
 
 > ⚠️ **Note**: Automatic emulator installation / selection is currently only available on Linux. On Windows and macOS, emulators must be installed manually. No biggie, the result is the same anyway: setup and forget.
 
-### Other OSes
+#### Other OSes
 
 For Windows, we're thinking of implementing something like [Scoop](https://scoop.sh/), when we find the time. Again, it's not a big deal: Install youe emulator, select it with the "Browse" button, save (optionally tweak the arguments) and you are done.
 
-## Game Metadata & Cover Art
+### Game Metadata & Cover Art
 
 Press <kbd>□</kbd> or <kbd>I</kbd> to select the cover art for the selected platform / game.
 
 By default, Emulsion uses Wikipedia to fetch cover images and game metadata — so even without any setup, you get images, release info, and other useful text details automatically.
 
-### Optional: Add API Keys for More Images & Data
+#### Optional: Add API Keys for More Images & Data
 
 Want more options and higher-quality covers? Add free API keys to expand Emulsion’s reach:
 
-#### SteamGridDB
+##### SteamGridDB
 
 - Login at steamgriddb.com
 - Get your API key from Preferences
 - Paste it into Emulsion Settings
 
-#### GiantBomb
+##### GiantBomb
 
 - Register at giantbomb.com/api
 - Paste your free key into Emulsion Settings
 
 #### Text Sources
 
-- Wikipedia – default, text metadata (title, release date, description, etc.)
+- Wikipedia – API (default) text metadata (title, release date, description, etc.)
 
 #### Image Sources
 
-- Wikipedia – default, finds both images and basic text metadata (title, release date, description, etc.)
-- SteamGridDB – API, best coverage for high-quality images
+- WikiMedia – API (default) good coverage
+- SteamGridDB – API, best coverage & high-quality images
 - GiantBomb – API, actually quite poor, thinking of removing it.
 
 All images and metadata are saved alongside your platform games / ROMs, keeping your collection organized.
 
-## Global settings
+### Global settings
 
 ![Global settings](https://yphil.gitlab.io/images/emulsion-settings.png?cache=x)
 

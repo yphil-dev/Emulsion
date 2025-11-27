@@ -12,7 +12,7 @@
 
 **Display your games collection into responsive galleries, manage game metadata, cover art and emulator configuration. Launch your games in style.**
 
-[Website](https://yphil.gitlab.io/emulsion) • [Download](https://github.com/yPhil-gh/emulsion/releases/latest) • [Documentation](#configuration) • [GitHub mirror (releases)](https://github.com/yPhil-gh/Emulsion) • [Cracktro](https://yphil.gitlab.io/ext/emulsion.html)
+[Website](https://yphil.gitlab.io/emulsion) • [Download](https://github.com/yPhil-gh/emulsion/releases/latest) • [Documentation](#configuration) • [GitHub mirror (releases)](https://github.com/yPhil-gh/Emulsion) • [Blog](https://yphil.gitlab.io/) • [Cracktro](https://yphil.gitlab.io/ext/emulsion.html)
 
 ![Emulsion Hero](https://yphil.gitlab.io/images/emulsion-screenshot_01.png?cache=xyzzz)
 
@@ -168,8 +168,6 @@ They work everywhere
 - **Left Click**: Launch game / Select cover art
 - **Right Click**: Open game cover menu
 - **Scroll Wheel**: Navigate
-
-*💡 Contextual hints appear in the footer based on current screen*
 
 ## Command Line
 

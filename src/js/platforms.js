@@ -7,7 +7,7 @@ export const PLATFORMS = [
         displayName: "2600 / +",
         vendor: "Atari",
         name: "atari",
-        extensions: [".zip"],
+        extensions: [".bin", ".a26", ".rom", ".gz", ".xex", ".xfd", ".atr", ".dcm", ".cas" ],
         emulators: [
             { name: "ARES", flatpak: "dev.ares.ares", url: "https://ares-emu.net/", args: "--fullscreen" }
         ]
@@ -18,7 +18,7 @@ export const PLATFORMS = [
         displayName: "GX4000 / CPC",
         vendor: "Amstrad",
         name: "amstrad",
-        extensions: [".dsk", ".cpr"],
+        extensions: [".dsk", ".cpr", ".tap", ".cdt", ".m3u"],
         emulators: [
             { name: "Caprice32", flatpak: null, args: "", url: "https://github.com/ColinPitrat/caprice32" },
             { name: "Caprice33", flatpak: null, args: "", url: "https://github.com/ColinPitrat/caprice32" },
@@ -32,7 +32,7 @@ export const PLATFORMS = [
         displayName: "ZX / Spectrum",
         vendor: "Sinclair",
         name: "spectrum",
-        extensions: [".zip"],
+        extensions: [".tzx", ".tap", ".z80", ".sna", ".dsk", ".trd", ".scl", ".rom", ".zip"],
         emulators: [
             { name: "Fuse", flatpak: "net.sourceforge.fuse_emulator.Fuse", url: "https://fuse-emulator.sourceforge.net/", args: "--sound --auto-load" },
             { name: "ARES", flatpak: "dev.ares.ares", url: "https://ares-emu.net/", args: "--fullscreen" }
@@ -44,7 +44,7 @@ export const PLATFORMS = [
         displayName: "C / 64",
         vendor: "Commodore",
         name: "c64",
-        extensions: [".zip"],
+        extensions: [".tzx", ".tap", ".z80", ".sna", ".dsk"],
         emulators: [
             { name: "VICE", flatpak: "net.sf.VICE", url:"https://vice-emu.sourceforge.io/", args: "-fullscreen" }
         ]
@@ -55,7 +55,7 @@ export const PLATFORMS = [
         displayName: "NES",
         vendor: "Nintendo",
         name: "nes",
-        extensions: [".zip"],
+        extensions: [".zip", ".nes", ".fds", ".unif"],
         emulators: [
             { name: "Nestopia", flatpak: "ca._0ldsk00l.Nestopia", url: "http://0ldsk00l.ca/nestopia/", args: "--fullscreen" },
             { name: "bsnes", flatpak: "dev.bsnes.bsnes", url:"https://github.com/bsnes-emu/bsnes/", args: "--fullscreen" },
@@ -68,7 +68,7 @@ export const PLATFORMS = [
         displayName: "Master System",
         vendor: "Sega",
         name: "sms",
-        extensions: [".zip"],
+        extensions: [".sms", ".sg", ".zip"],
         emulators: [
             { name: "Kega Fusion", flatpak: "com.carpeludum.KegaFusion", url:"https://www.carpeludum.com/kega-fusion/", args: "-fullscreen" },
             { name: "Blastem", flatpak: "com.retrodev.blastem", url:"https://www.retrodev.com/blastem/", args: "-f" },
@@ -81,7 +81,7 @@ export const PLATFORMS = [
         displayName: "PC Engine",
         vendor: "NEC",
         name: "pcengine",
-        extensions: [".pce"],
+        extensions: [".pce", ".cue", ".iso", ".bin", ".ccd"],
         emulators: [
             { name: "ARES", flatpak: "dev.ares.ares", url: "https://ares-emu.net/", args: "--fullscreen" }
         ]
@@ -92,7 +92,7 @@ export const PLATFORMS = [
         displayName: "Amiga",
         vendor: "Commodore",
         name: "amiga",
-        extensions: [".lha", ".adf"],
+        extensions: [".adf", ".adz", ".dms", ".lha", ".zip"],
         emulators: [
             { name: "amiberry", flatpak: "com.blitterstudio.amiberry", url:"https://amiberry.com/", args: "-s joyport1_amiberry_custom_axis_none_righttrigger='Quit emulator' --autoload" }
         ]
@@ -103,7 +103,7 @@ export const PLATFORMS = [
         displayName: "MegaDrive",
         vendor: "Sega",
         name: "megadrive",
-        extensions: [".md"],
+        extensions: [".md", ".smd", ".bin", ".gen", ".zip"],
         emulators: [
             { name: "Kega Fusion", flatpak: "com.carpeludum.KegaFusion", url:"https://www.carpeludum.com/kega-fusion/", args: "-fullscreen" },
             { name: "Blastem", flatpak: "com.retrodev.blastem", url:"https://www.retrodev.com/blastem/", args: "-f" },
@@ -116,7 +116,7 @@ export const PLATFORMS = [
         displayName: "Game Boy",
         vendor: "Nintendo",
         name: "gameboy",
-        extensions: [".md"],
+        extensions: [".gb", ".gbc", ".zip"],
         emulators: [
             { name: "mgba", flatpak: "io.mgba.mGBA", url:"https://mgba.io/", args: "-f" },
             { name: "ARES", flatpak: "dev.ares.ares", url: "https://ares-emu.net/", args: "--fullscreen" },
@@ -130,7 +130,7 @@ export const PLATFORMS = [
         displayName: "Lynx",
         vendor: "Atari",
         name: "lynx",
-        extensions: [".md"],
+        extensions: [".lnx", ".zip"],
         emulators: [
             { name: "Holani", flatpak: null, url:"https://github.com/LLeny/holani", args: "--fullscreen" },
             { name: "Felix", flatpak: null, url:"https://github.com/laoo/Felix", args: "--fullscreen" }
@@ -142,7 +142,7 @@ export const PLATFORMS = [
         displayName: "Game Gear",
         vendor: "Sega",
         name: "gamegear",
-        extensions: [".zip"],
+        extensions: [".gg", ".sg", ".zip"],
         emulators: [
             { name: "Kega Fusion", flatpak: "com.carpeludum.KegaFusion", url:"https://www.carpeludum.com/kega-fusion/", args: "-fullscreen" },
             { name: "ARES", flatpak: "dev.ares.ares", url: "https://ares-emu.net/", args: "--fullscreen" }
@@ -154,7 +154,7 @@ export const PLATFORMS = [
         displayName: "SNES",
         vendor: "Nintendo",
         name: "snes",
-        extensions: [".smc"],
+        extensions: [".smc", ".sfc", ".fig", ".swc", ".zip"],
         emulators: [
             { name: "Snes9x", flatpak: "com.snes9x.Snes9x", url:"https://www.snes9x.com/", args: "--fullscreen" },
             { name: "bsnes", flatpak: "dev.bsnes.bsnes", url:"https://github.com/bsnes-emu/bsnes/", args: "--fullscreen" },
@@ -168,7 +168,7 @@ export const PLATFORMS = [
         displayName: "Jaguar",
         vendor: "Atari",
         name: "jaguar",
-        extensions: [".jag"],
+        extensions: [".jag", ".zip"],
         emulators: [
             { name: "BigPEmu", flatpak: "com.richwhitehouse.BigPEmu", url:"https://richwhitehouse.com/jaguar/", args: "-f" }
         ]
@@ -179,7 +179,7 @@ export const PLATFORMS = [
         displayName: "Saturn",
         vendor: "Sega",
         name: "saturn",
-        extensions: [".cue"],
+        extensions: [".cue", ".bin", ".iso"],
         emulators: [
             { name: "Ymir", flatpak: "io.github.strikerx3.ymir", url:"https://github.com/StrikerX3/Ymir", args: "-f" },
             { name: "Blastem", flatpak: "com.retrodev.blastem", url:"https://www.retrodev.com/blastem/", args: "-f" }
@@ -191,7 +191,7 @@ export const PLATFORMS = [
         displayName: "PlayStation",
         vendor: "Sony",
         name: "ps1",
-        extensions: [".cue"],
+        extensions: [".cue", ".bin", ".iso"],
         emulators: [
             { name: "ARES", flatpak: "dev.ares.ares", url: "https://ares-emu.net/", args: "--fullscreen" },
             { name: "PSXE", flatpak: null, url: "http://github.com/allkern/psxe", args: "--fullscreen" },
@@ -203,7 +203,7 @@ export const PLATFORMS = [
         displayName: "Nintendo 64",
         vendor: "Nintendo",
         name: "n64",
-        extensions: [".z64"],
+        extensions: ["n64", ".v64", ".z64"],
         emulators: [
             { name: "Rosalie's Mupen GUI", flatpak: "com.github.Rosalie241.RMG", url:"https://github.com/Rosalie241/RMG", args: "--nogui --fullscreen" },
             { name: "Gopher64", flatpak: "io.github.gopher64.gopher64", url:"https://github.com/gopher64/gopher64", args: "-f" },
@@ -216,7 +216,7 @@ export const PLATFORMS = [
         displayName: "Dreamcast",
         vendor: "Sega",
         name: "dreamcast",
-        extensions: [".gdi", ".cdi"],
+        extensions: [".gdi", ".cdi", ".chd", ".bin", ".cue"],
         emulators: [
             { name: "flycast", flatpak: "org.flycast.Flycast", url:"https://github.com/flyinghead/flycast", args: "--fullscreen" }
         ]
@@ -227,7 +227,7 @@ export const PLATFORMS = [
         displayName: "PlayStation 2",
         vendor: "Sony",
         name: "ps2",
-        extensions: [".bin", ".iso"],
+        extensions: [".iso", ".bin", ".img", ".cue", ".mdf"],
         emulators: [
             { name: "PCSX2", flatpak: "net.pcsx2.PCSX2", url:"https://pcsx2.net/", args: "--nogui -fullscreen" },
             { name: "Play!", flatpak: "org.purei.Play", url:"https://purei.org/", args: "--fullscreen" }
@@ -239,7 +239,7 @@ export const PLATFORMS = [
         displayName: "GameCube",
         vendor: "Nintendo",
         name: "gamecube",
-        extensions: [".iso", ".ciso"],
+        extensions: [".iso", ".ciso", ".gcm", ".gcz"],
         emulators: [
             { name: "dolphin", flatpak: "org.DolphinEmu.dolphin-emu", url:"https://dolphin-emu.org/", args: "-b -e" }
         ]
@@ -250,7 +250,7 @@ export const PLATFORMS = [
         displayName: "Xbox",
         vendor: "Microsoft",
         name: "xbox",
-        extensions: [".iso"],
+        extensions: [".iso", ".xiso"],
         emulators: [
             { name: "xemu", flatpak: "app.xemu.xemu", url:"https://xemu.app/", args: "-full-screen -dvd_path" }
         ]
@@ -261,7 +261,7 @@ export const PLATFORMS = [
         displayName: "PSP",
         vendor: "Sony",
         name: "psp",
-        extensions: [".iso"],
+        extensions: [".iso", ".cso", ".pbp"],
         emulators: [
             { name: "PPSSPP", flatpak: "org.ppsspp.PPSSPP", url:"https://www.ppsspp.org/", args: "--fullscreen" }
         ]
@@ -283,7 +283,7 @@ export const PLATFORMS = [
         displayName: "3DS",
         vendor: "Nintendo",
         name: "3ds",
-        extensions: [".3ds"],
+        extensions: [".3ds", ".cci", ".cxi"],
         emulators: [
             { name: "Azahar", flatpak: "org.azahar_emu.Azahar", url:"https://azahar-emu.org/", args: "-f" }
         ]

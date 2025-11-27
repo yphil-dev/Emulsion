@@ -32,11 +32,11 @@ Emulsion is **reproducible** - one single config file - and **arcade ready** ; P
 
 ## Installation
 
-### Pre-built Packages (Recommended)
+### Packages
 
-- [**Debian / Ubuntu Package**](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_amd64.deb)
-- [**RPM Package**](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_x86_64.rpm)
-- [**AppImage**](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_x86_64.AppImage)
+- [**Linux Debian / Ubuntu**](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_amd64.deb)
+- [**Linux RPM**](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_x86_64.rpm)
+- [**Linux AppImage**](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_x86_64.AppImage)
 - [**Windows**](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_x64.exe)
 - [**Mac OS** (testers needed)](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_x64.dmg)
 

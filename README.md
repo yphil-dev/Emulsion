@@ -59,7 +59,8 @@ npm install && npm start
      - Click **Select**
      - Click **Enable**, click **Save**
 3. **Done** - That's it, your NES Platform is set up forever.
-4. When you're done, set "disabled platforms: hide" in the [global setting menu](#global-settings), so you only see the enabled platforms.
+
+When you're done, optionally set "disabled platforms: hide" in the [global setting menu](#global-settings), so you only see the enabled platforms. Also enable "Recents" and "Favorites" ; I guess we're all set now. You are welcome 🙂
 
 > 💡 **Pro Tip**: Your config lives in `~/.config/emulsion/preferences.json` - back it up!
 

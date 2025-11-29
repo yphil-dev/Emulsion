@@ -929,6 +929,10 @@ export function initGamepad() {
     }
 
     function handleGameControllerButtonPress(buttonIndex) {
+        // Trigger no-hover mode when any gamepad input is detected
+        if (window.hideCursor) {
+            window.hideCursor();
+        }
 
         switch (buttonIndex) {
         case 0:

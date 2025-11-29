@@ -844,6 +844,11 @@ export function initGamepad() {
         16: false, // PS button (Home button)
     };
 
+    const longPressTimeouts = {};
+    const longPressIntervals = {};
+    const repeatDelay = 500;
+    const repeatInterval = 150;
+
     // Listen for gamepad connection events
     window.addEventListener('gamepadconnected', (event) => {
         console.log('Gamepad connected:', event.gamepad.id);
@@ -875,20 +880,46 @@ export function initGamepad() {
             [0,1,2,3,4,5,8,12,13,14,15].forEach((buttonIndex) => {
                 const button = gamepad.buttons[buttonIndex];
                 const wasPressed = buttonStates[buttonIndex];
+                const isDpad = [12,13,14,15].includes(buttonIndex);
 
-                if (button.pressed && !wasPressed) {
-                    buttonStates[buttonIndex] = true;
-                } else if (!button.pressed && wasPressed) {
-                    buttonStates[buttonIndex] = false;
-
-                    if (buttonIndex === 12 && buttonStates[8]) {
-                        console.log('Share + Up combo!');
-                        ipcRenderer.invoke('restart');
-                        return;
+                if (isDpad) {
+                    if (button.pressed && !wasPressed) {
+                        buttonStates[buttonIndex] = true;
+                        handleGameControllerButtonPress(buttonIndex);
+                        longPressTimeouts[buttonIndex] = setTimeout(() => {
+                            longPressIntervals[buttonIndex] = setInterval(() => {
+                                handleGameControllerButtonPress(buttonIndex);
+                            }, repeatInterval);
+                        }, repeatDelay);
+                    } else if (!button.pressed && wasPressed) {
+                        buttonStates[buttonIndex] = false;
+                        if (buttonIndex === 12 && buttonStates[8]) {
+                            console.log('Share + Up combo!');
+                            ipcRenderer.invoke('restart');
+                            return;
+                        }
+                        if (longPressTimeouts[buttonIndex]) {
+                            clearTimeout(longPressTimeouts[buttonIndex]);
+                            delete longPressTimeouts[buttonIndex];
+                        }
+                        if (longPressIntervals[buttonIndex]) {
+                            clearInterval(longPressIntervals[buttonIndex]);
+                            delete longPressIntervals[buttonIndex];
+                        }
                     }
-
-                    // Otherwise handle normally
-                    handleGameControllerButtonPress(buttonIndex);
+                } else {
+                    if (button.pressed && !wasPressed) {
+                        buttonStates[buttonIndex] = true;
+                    } else if (!button.pressed && wasPressed) {
+                        buttonStates[buttonIndex] = false;
+                        if (buttonIndex === 12 && buttonStates[8]) {
+                            console.log('Share + Up combo!');
+                            ipcRenderer.invoke('restart');
+                            return;
+                        }
+                        // Otherwise handle normally
+                        handleGameControllerButtonPress(buttonIndex);
+                    }
                 }
             });
         }

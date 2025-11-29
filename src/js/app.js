@@ -30,6 +30,7 @@ window.LB = LB;
 let mouseBlankerTimer = null;
 let lastInputWasMouse = false;
 const MOUSE_TIMEOUT = 3000;
+let storedTitles = new Map(); // Store title attributes for restoration
 
 function handleMouseInput() {
     lastInputWasMouse = true;
@@ -48,15 +49,39 @@ function resetMouseTimer() {
     mouseBlankerTimer = setTimeout(hideCursor, MOUSE_TIMEOUT);
 }
 
+function removeTitles() {
+    // Store and remove all title attributes
+    const elementsWithTitles = document.querySelectorAll('[title]');
+    elementsWithTitles.forEach(element => {
+        storedTitles.set(element, element.title);
+        element.removeAttribute('title');
+    });
+}
+
+function restoreTitles() {
+    // Restore all stored title attributes
+    storedTitles.forEach((title, element) => {
+        if (element && element.isConnected) { // Check if element still exists in DOM
+            element.title = title;
+        }
+    });
+    storedTitles.clear();
+}
+
 function showCursor() {
     document.body.style.cursor = 'default';
     document.body.classList.remove('no-hover');
+    restoreTitles();
 }
 
 function hideCursor() {
     document.body.style.cursor = 'none';
     document.body.classList.add('no-hover');
+    removeTitles();
 }
+
+// Make hideCursor globally available for gamepad input detection
+window.hideCursor = hideCursor;
 
 async function initializeApp() {
     try {

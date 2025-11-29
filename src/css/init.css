@@ -151,9 +151,61 @@ h3 {
   color:var(--color-text-1);
 }
 
-/* .no-hover * { */
-/*   pointer-events: none !important; */
-/* } */
+.no-hover *,
+.no-hover *::before,
+.no-hover *::after {
+  pointer-events: none !important;
+}
+
+.no-hover .hover:hover {
+  color: inherit !important;
+}
+
+.no-hover svg.icon:hover {
+  fill: inherit !important;
+}
+
+.no-hover .page-content.list .game-container:hover {
+  background-color: inherit !important;
+}
+
+.no-hover .page-content:not(.list) .game-container img:hover,
+.no-hover .page-content:not(.list) .game-container-image:hover {
+  /* Override hover effects for grid view images */
+}
+
+.no-hover .menu-game-container:hover {
+  border-color: inherit !important;
+}
+
+.no-hover .btn:hover {
+  transform: none !important;
+}
+
+.no-hover .preferences-error-dialog .reset:hover {
+  background: inherit !important;
+}
+
+.no-hover .preferences-error-dialog .quit:hover {
+  background: inherit !important;
+}
+
+.no-hover .controls i:hover {
+  color: inherit !important;
+}
+
+.no-hover .button:hover,
+.no-hover .button:focus {
+  /* Override button hover effects */
+}
+
+.no-hover input[type="range"]::-webkit-slider-thumb:hover {
+  background-color: inherit !important;
+}
+
+.no-hover *::-webkit-scrollbar-thumb:hover {
+  background-color: inherit !important;
+}
 
 a:link {
   color: red;

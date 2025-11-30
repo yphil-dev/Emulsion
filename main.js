@@ -888,7 +888,7 @@ ipcMain.handle('parse-sfo', async (_event, filePath) => {
 ipcMain.handle('get-versions', async () => {
     let latestVersion;
     try {
-        const response = await fetch('https://api.github.com/repos/yPhil-gh/Emulsion/releases/latest');
+        const response = await fetch('https://api.github.com/repos/yphil-dev/Emulsion/releases/latest');
         const data = await response.json();
         latestVersion = data.tag_name.replace(/^v/, '');
 

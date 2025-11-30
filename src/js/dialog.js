@@ -265,7 +265,7 @@ export async function helpDialog(defaultTabId = null) {
     }
 
     dialog.querySelector('button.upgrade').addEventListener('click', () => {
-        ipcRenderer.invoke('go-to-url', 'https://github.com/yPhil-gh/Emulsion/releases');
+        ipcRenderer.invoke('go-to-url', 'https://github.com/yphil-dev/Emulsion/releases');
     });
 
     dialog.querySelector('button.btn-liberapay').addEventListener('click', () => {

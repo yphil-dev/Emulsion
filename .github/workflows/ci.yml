@@ -26,16 +26,16 @@ jobs:
       - name: Install Linux dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y dpkg fakeroot fuse cmake libsdl2-dev jq
+          sudo apt-get install -y dpkg fakeroot npm bash fuse cmake libsdl2-dev
           npm install
-          curl -L -o appimagetool-x86_64.AppImage https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
-          chmod +x appimagetool-x86_64.AppImage
-          chmod +x build.sh
 
       - name: Build Linux packages
         run: |
-          ls -la
-          source build.sh
+          npx electron-builder --config builder.yml --linux --publish=never
+
+      - name: Rename AppImage to follow naming convention
+        run: |
+          mv "dist/emulsion_x86_64.AppImage" "dist/Emulsion-${{ github.ref_name }}-x86_64.AppImage"
 
       - name: Upload Linux artifacts
         uses: actions/upload-artifact@v4

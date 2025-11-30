@@ -127,5 +127,6 @@ jobs:
             dist/*.deb
             dist/*.AppImage
             dist/*.rpm
+            dist/*.freebsd
             dist/*.exe
             dist/*.dmg

@@ -35,7 +35,7 @@ jobs:
 
       - name: Rename AppImage to follow naming convention
         run: |
-          mv "dist/emulsion_x86_64.AppImage" "dist/Emulsion-${{ github.ref_name }}-x86_64.AppImage"
+          mv -v "dist/emulsion_x86_64.AppImage" "dist/Emulsion-${{ github.ref_name }}-x86_64.AppImage"
 
       - name: Upload Linux artifacts
         uses: actions/upload-artifact@v4

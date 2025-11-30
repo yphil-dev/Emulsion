@@ -117,6 +117,7 @@ doAppImage() {
             echo "Using local ../appimagetool-x86_64.AppImage"
             ../appimagetool-x86_64.AppImage squashfs-root "$pkg"
         fi
+        rm -f ./emulsion_x86_64.AppImage
         cd ..
     fi
 }

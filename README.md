@@ -1,8 +1,8 @@
 <div align="center">
 
-[![CI/CD](https://img.shields.io/badge/Build-Passing-brightgreen)](https://github.com/yPhil-gh/emulsion/actions)
-[![Release](https://img.shields.io/github/v/release/yPhil-gh/emulsion?style=flat&logo=github&color=brightgreen)](https://github.com/yPhil-gh/emulsion/releases)
-[![License](https://img.shields.io/github/license/yPhil-gh/emulsion?style=flat)](https://github.com/yPhil-gh/emulsion/blob/main/LICENSE)
+[![CI/CD](https://img.shields.io/badge/Build-Passing-brightgreen)](https://github.com/yphil-dev/emulsion/actions)
+[![Release](https://img.shields.io/github/v/release/yphil-dev/emulsion?style=flat&logo=github&color=brightgreen)](https://github.com/yphil-dev/emulsion/releases)
+[![License](https://img.shields.io/github/license/yphil-dev/emulsion?style=flat)](https://github.com/yphil-dev/emulsion/blob/main/LICENSE)
 [![LiberaPay](https://img.shields.io/liberapay/receives/yphil.svg?logo=liberapay&style=flat)](https://liberapay.com/yphil/donate)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Support_Me-FF5E5B?logo=ko-fi&logoColor=white&style=flat)](https://ko-fi.com/yphil)
 
@@ -12,7 +12,7 @@
 
 **Display your games collection into responsive galleries, manage game metadata, cover art and emulator configuration. Launch your games in style.**
 
-[Website](https://yphil.gitlab.io/emulsion) • [Download](https://github.com/yPhil-gh/emulsion/releases/latest) • [Documentation](#configuration) • [GitHub mirror (releases)](https://github.com/yPhil-gh/Emulsion) • [Blog](https://yphil.gitlab.io/) • [Cracktro](https://yphil.gitlab.io/ext/emulsion.html)
+[Website](https://yphil.gitlab.io/emulsion) • [Download](https://github.com/yphil-dev/emulsion/releases/latest) • [Documentation](#configuration) • [GitHub mirror (releases)](https://github.com/yphil-dev/Emulsion) • [Blog](https://yphil.gitlab.io/) • [Cracktro](https://yphil.gitlab.io/ext/emulsion.html)
 
 ![Emulsion Hero](https://yphil.gitlab.io/images/emulsion-screenshot_01.png?cache=xyzzz)
 
@@ -34,13 +34,13 @@ Emulsion is **reproducible** - one single config file - and **arcade ready** ; P
 
 ### Packages
 
-- [**Linux Debian / Ubuntu**](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_amd64.deb)
-- [**Linux RPM**](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_x86_64.rpm)
-- [**Linux AppImage**](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_x86_64.AppImage)
-- [**Windows**](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_x64.exe)
-- [**Mac OS** (testers needed)](https://github.com/yPhil-gh/emulsion/releases/latest/download/emulsion_x64.dmg)
+- [**Linux Debian / Ubuntu**](https://github.com/yphil-dev/emulsion/releases/latest/download/emulsion_amd64.deb)
+- [**Linux RPM**](https://github.com/yphil-dev/emulsion/releases/latest/download/emulsion_x86_64.rpm)
+- [**Linux AppImage**](https://github.com/yphil-dev/emulsion/releases/latest/download/emulsion_x86_64.AppImage)
+- [**Windows**](https://github.com/yphil-dev/emulsion/releases/latest/download/emulsion_x64.exe)
+- [**Mac OS** (testers needed)](https://github.com/yphil-dev/emulsion/releases/latest/download/emulsion_x64.dmg)
 
-[**All Releases**](https://github.com/yphil-gh/emulsion/releases/latest)
+[**All Releases**](https://github.com/yphil-dev/emulsion/releases/latest)
 
 ### From Source
 
@@ -222,9 +222,9 @@ Emulsion is open source under the [GPL V3](LICENSE) and brought to you for free 
 ## Links
 
 - [Website](https://yphil.gitlab.io/emulsion)
-- [Releases](https://github.com/yPhil-gh/emulsion/releases)
+- [Releases](https://github.com/yphil-dev/emulsion/releases)
 - [GitLab (Primary)](https://gitlab.com/yphil/emulsion)
-- [GitHub (Mirror)](https://github.com/yPhil-gh/Emulsion)
+- [GitHub (Mirror)](https://github.com/yphil-dev/Emulsion)
 - [Blog](https://yphil.gitlab.io/)
 
 ---

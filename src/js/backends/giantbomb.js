@@ -11,7 +11,7 @@ export const fetchImages = async (gameName, apiKey) => {
     try {
         const searchUrl = `https://www.giantbomb.com/api/search/?api_key=${apiKey}&format=json&query=${encodeURIComponent(gameName)}&resources=game`;
         const response = await axios.get(searchUrl, {
-            headers: { 'User-Agent': 'EmumE/1.0 (https://github.com/yphil-gh/EmumE)' }
+            headers: { 'User-Agent': 'EmumE/1.0 (https://github.com/yphil-dev/EmumE)' }
         });
 
         if (response.status !== 200 || !response.data?.results?.length) {

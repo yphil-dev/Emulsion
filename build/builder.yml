@@ -37,13 +37,7 @@ linux:
   icon: "img/icon.png"
   category: Utility
 
-afterPack: "scripts/after-pack.js"
-
-appImage:
-  synopsis: "Better gaming throught chemistry"
-  description: "Display your games collection into responsive galleries, manage game metadata, cover art and emulator configuration. Launch your games in style."
-  category: "Utility"
-  license: ./LICENSE
+afterPack: "scripts/app-metadata.js"
 
 win:
   target:

@@ -4,7 +4,6 @@ appId: com.yPhil.Emulsion
 productName: Emulsion
 artifactName: "emulsion_${arch}.${ext}"
 asar: true
-compression: store
 
 # Unpack the native binaries from the ASAR into this folder so they stay executable
 asarUnpack:
@@ -32,11 +31,19 @@ linux:
   executableName: emulsion
   target:
     - AppImage
-    - deb
-    - rpm
-    - freebsd
+    # - deb
+    # - rpm
+    # - freebsd
   icon: "img/icon.png"
   category: Utility
+
+afterPack: "scripts/after-pack.js"
+
+appImage:
+  synopsis: "Better gaming throught chemistry"
+  description: "Display your games collection into responsive galleries, manage game metadata, cover art and emulator configuration. Launch your games in style."
+  category: "Utility"
+  license: ./LICENSE
 
 win:
   target:

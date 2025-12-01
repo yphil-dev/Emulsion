@@ -15,3 +15,27 @@ temp/
 
 # Test files
 **/test.html
+# Build artifacts and extracted files
+extract/
+squashfs-root/
+snap/
+cache/
+cache0/
+cache1/
+
+# Temporary build files
+*.AppImage
+bfg-*.jar
+emulsion_*.tar.gz
+
+# More comprehensive ignores
+**/node_modules/
+**/build/
+**/out/
+**/tmp/
+**/.tmp/
+**/temp/
+
+# Test files
+**/test.html
+**/*.backup

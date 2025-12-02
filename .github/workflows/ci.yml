@@ -26,7 +26,7 @@ jobs:
       - name: Install Linux dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y dpkg fakeroot npm bash fuse cmake libsdl2-dev
+          sudo apt-get install -y npm cmake libsdl2-dev
           npm install
 
       - name: Build Linux packages

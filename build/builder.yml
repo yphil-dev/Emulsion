@@ -32,9 +32,9 @@ linux:
   executableName: emulsion
   target:
     - AppImage
-    # - deb
-    # - rpm
-    # - freebsd
+    - deb
+    - rpm
+    - freebsd
   icon: "img/icon.png"
   category: Utility
 

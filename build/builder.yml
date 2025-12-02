@@ -35,7 +35,6 @@ linux:
     - deb
     - rpm
     - freebsd
-  icon: "img/icon.png"
   category: Utility
 
 afterPack: "build/after-pack.js"
@@ -43,7 +42,7 @@ afterPack: "build/after-pack.js"
 win:
   target:
     - nsis
-  icon: "img/icon.png"
+  icon: "img/icons/emulsion.png"
 
 nsis:
   oneClick: false

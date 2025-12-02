@@ -31,7 +31,7 @@ jobs:
 
       - name: Build Linux packages
         run: |
-          npx electron-builder --config builder.yml --linux --publish=never
+          npx electron-builder --config build/builder.yml --linux --publish=never
 
       - name: Rename AppImage to follow naming convention
         run: |
@@ -61,7 +61,7 @@ jobs:
 
       - name: Build Windows package
         run: |
-          npx electron-builder --config builder.yml --win nsis --x64
+          npx electron-builder --config build/builder.yml --win nsis --x64
 
       - name: Upload Windows artifacts
         uses: actions/upload-artifact@v4
@@ -87,7 +87,7 @@ jobs:
 
       - name: Build macOS package
         run: |
-          npx electron-builder --config builder.yml --mac dmg --x64
+          npx electron-builder --config build/builder.yml --mac dmg --x64
 
       - name: Upload macOS artifacts
         uses: actions/upload-artifact@v4

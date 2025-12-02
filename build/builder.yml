@@ -31,10 +31,11 @@ publish:
 linux:
   executableName: emulsion
   target:
-    - AppImage
-    - deb
-    - rpm
-    - freebsd
+    # - AppImage
+    # - deb
+    # - rpm
+    # - freebsd
+    - pacman
   category: Utility
 
 afterPack: "build/after-pack.js"

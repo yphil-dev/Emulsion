@@ -26,14 +26,14 @@ jobs:
       - name: Install Linux dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y npm cmake libsdl2-dev
+          sudo apt-get install -y npm cmake libsdl2-dev libarchive-tools
           npm install
 
       - name: Build Linux packages
         run: |
           npx electron-builder --config build/builder.yml --linux --publish=never
 
-      - name: Rename AppImage to follow naming convention
+      - name: Rename AppImage
         run: |
           mv -v "dist/emulsion_x86_64.AppImage" "dist/Emulsion-${{ github.ref_name }}-x86_64.AppImage"
 
@@ -127,6 +127,7 @@ jobs:
             dist/*.deb
             dist/*.AppImage
             dist/*.rpm
+            dist/*.pacman
             dist/*.freebsd
             dist/*.exe
             dist/*.dmg

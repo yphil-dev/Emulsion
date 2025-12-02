@@ -6,27 +6,27 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default async (context) => {
-  // Only run for Linux AppImage builds
-  if (context.electronPlatformName !== 'linux' || !context.targets.some(target => target.name === 'appImage')) {
-    return;
-  }
+    // Only run for Linux AppImage builds
+    if (context.electronPlatformName !== 'linux' || !context.targets.some(target => target.name === 'appImage')) {
+        return;
+    }
 
-  console.log('Generating AppStream metadata for AppImage...');
+    console.log('  • Generating AppStream metadata for AppImage...');
 
-  const appOutDir = context.appOutDir;
-  const metainfoDir = path.join(appOutDir, 'usr', 'share', 'metainfo');
-  const targetFile = path.join(metainfoDir, 'emulsion.appdata.xml');
+    const appOutDir = context.appOutDir;
+    const metainfoDir = path.join(appOutDir, 'usr', 'share', 'metainfo');
+    const targetFile = path.join(metainfoDir, 'emulsion.appdata.xml');
 
-  // Read package.json for version
-  const packageJsonPath = path.join(context.outDir, '..', 'package.json');
-  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-  const version = packageJson.version;
+    // Read package.json for version
+    const packageJsonPath = path.join(context.outDir, '..', 'package.json');
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+    const version = packageJson.version;
 
-  // Get current date in YYYY-MM-DD format
-  const currentDate = new Date().toISOString().split('T')[0];
+    // Get current date in YYYY-MM-DD format
+    const currentDate = new Date().toISOString().split('T')[0];
 
-  // Generate XML content
-  const xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+    // Generate XML content
+    const xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
   <id>emulsion.desktop</id>
   <name>Emulsion</name>
@@ -54,13 +54,13 @@ export default async (context) => {
   </releases>
 </component>`;
 
-  // Create metainfo directory if it doesn't exist
-  if (!fs.existsSync(metainfoDir)) {
-    fs.mkdirSync(metainfoDir, { recursive: true });
-    console.log(`Created directory: ${metainfoDir}`);
-  }
+    // Create metainfo directory if it doesn't exist
+    if (!fs.existsSync(metainfoDir)) {
+        fs.mkdirSync(metainfoDir, { recursive: true });
+        console.log(`  • Created directory: ${metainfoDir}`);
+    }
 
-  // Write the XML file
-  fs.writeFileSync(targetFile, xmlContent, 'utf8');
-  console.log(`Generated AppStream metadata: ${targetFile} (version: ${version}, date: ${currentDate})`);
+    // Write the XML file
+    fs.writeFileSync(targetFile, xmlContent, 'utf8');
+    console.log(`  • AppStream metadata OK: ${targetFile} (version: ${version}, date: ${currentDate})`);
 };

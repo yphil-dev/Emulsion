@@ -1,41 +1,10 @@
+# Dependencies
+node_modules/
+scripts/
+
+# Build outputs
+dist/
+
+# Temporary files and directories
 tmp/
-/dist/
-/node_modules/
-/build/
-/repack/
-/out/
-/DEBIAN
-emulsion.desktop
-preferences.json
-# Temporary files
-.tmp/
-tmp/
-temp/
 **/tmp/
-
-# Test files
-**/test.html
-# Build artifacts and extracted files
-extract/
-squashfs-root/
-snap/
-cache/
-cache0/
-cache1/
-
-# Temporary build files
-*.AppImage
-bfg-*.jar
-emulsion_*.tar.gz
-
-# More comprehensive ignores
-**/node_modules/
-**/build/
-**/out/
-**/tmp/
-**/.tmp/
-**/temp/
-
-# Test files
-**/test.html
-**/*.backup

@@ -1,6 +1,6 @@
 # electron-builder.yml
 
-appId: com.yPhil.Emulsion
+appId: io.gitlab.yphil.emulsion
 productName: Emulsion
 artifactName: "emulsion_${arch}.${ext}"
 asar: true
@@ -15,6 +15,7 @@ files:
   - "!**/node_modules/**/*.ts"
   - "!**/**/{test,tests,tmp,example,examples}"
   - "!**/node_modules/**/{CHANGELOG.md,README.md,LICENSE,Makefile}"
+  - "!build/**/*"
 
 # Copy the 'bin' folder verbatim alongside the app
 extraResources:
@@ -37,7 +38,7 @@ linux:
   icon: "img/icon.png"
   category: Utility
 
-afterPack: "scripts/app-metadata.js"
+afterPack: "build/after-pack.js"
 
 win:
   target:

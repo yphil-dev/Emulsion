@@ -38,6 +38,11 @@ linux:
     - pacman
   category: Utility
 
+pacman:
+  # Override auto-detected dependencies to fix Arch Linux pacman issues
+  # Most of these libraries are available in base Arch Linux installations
+  depends: []
+
 afterPack: "build/after-pack.js"
 
 win:

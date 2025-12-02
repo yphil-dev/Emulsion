@@ -40,8 +40,11 @@ linux:
 
 pacman:
   # Override auto-detected dependencies to fix Arch Linux pacman issues
-  # Most of these libraries are available in base Arch Linux installations
-  depends: []
+  # Using minimal dependencies that are commonly available in Arch Linux
+  depends:
+    - gtk3
+    - libnotify
+    - nss
 
 afterPack: "build/after-pack.js"
 

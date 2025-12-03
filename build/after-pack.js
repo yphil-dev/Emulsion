@@ -28,19 +28,26 @@ export default async (context) => {
     // Generate XML content
     const xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>emulsion.desktop</id>
+  <id>io.gitlab.yphil.emulsion</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0+</project_license>
   <name>Emulsion</name>
-  <summary>Game collection manager</summary>
+  <developer_name>yPhil</developer_name>
+  <summary>Better gaming throught chemistry</summary>
+  <releases>
+    <release version="${version}" date="${currentDate}"/>
+  </releases>
   <description>
     <p>Display your games collection into responsive galleries, manage game metadata, cover art and emulator configuration. Launch your games in style.</p>
   </description>
+  <launchable type="desktop-id">io.gitlab.yphil.emulsion.desktop</launchable>
+  <url type="homepage">https://yphil.gitlab.io/emulsion/</url>
+  <url type="help">https://gitlab.com/yphil/emulsion</url>
+  <url type="bugtracker">https://gitlab.com/yphil/emulsion/-/issues</url>
   <categories>
-    <category>Utility</category>
-    <category>Game</category>
+    <category>Games</category>
+    <category>Productivity</category>
   </categories>
-  <developer_name>yPhil</developer_name>
-  <license>GPL-3.0+</license>
-  <homepage>https://yphil.gitlab.io/emulsion</homepage>
   <screenshots>
     <screenshot type="default">
       <image>https://yphil.gitlab.io/images/emulsion-screenshot_01.png</image>
@@ -49,9 +56,6 @@ export default async (context) => {
       <image>https://yphil.gitlab.io/images/emulsion-screenshot_02.png</image>
     </screenshot>
   </screenshots>
-  <releases>
-    <release version="${version}" date="${currentDate}"/>
-  </releases>
 </component>`;
 
     // Create metainfo directory if it doesn't exist
@@ -63,4 +67,41 @@ export default async (context) => {
     // Write the XML file
     fs.writeFileSync(targetFile, xmlContent, 'utf8');
     console.log(`  • AppStream metadata OK: ${targetFile} (version: ${version}, date: ${currentDate})`);
+
+    console.log('  • Generating desktop file for AppImage...');
+
+    const applicationsDir = path.join(appOutDir, 'usr', 'share', 'applications');
+    const desktopFile = path.join(applicationsDir, 'io.gitlab.yphil.emulsion.desktop');
+
+    // Generate desktop file content
+    const desktopContent = `[Desktop Entry]
+Name=Emulsion (AppImage)
+Comment=Display your games collection into responsive galleries, manage game metadata, cover art and emulator configuration. Launch your games in style.
+Exec=emulsion
+Icon=emulsion
+StartupNotify=true
+Terminal=false
+Type=Application
+Categories=Games;Productivity;
+`;
+
+    // Create applications directory if it doesn't exist
+    if (!fs.existsSync(applicationsDir)) {
+        fs.mkdirSync(applicationsDir, { recursive: true });
+        console.log(`  • Created directory: ${applicationsDir}`);
+    }
+
+    // Write the desktop file
+    fs.writeFileSync(desktopFile, desktopContent, 'utf8');
+    console.log(`  • Desktop file OK: ${desktopFile}`);
+
+    // Create symlink in the root directory
+    const symlinkPath = path.join(appOutDir, 'io.gitlab.yphil.emulsion.desktop');
+    try {
+        fs.symlinkSync(desktopFile, symlinkPath);
+        console.log(`  • Symlink created: ${symlinkPath} -> ${desktopFile}`);
+    } catch (error) {
+        // Symlink might already exist or fail on some filesystems
+        console.log(`  • Warning: Could not create symlink: ${error.message}`);
+    }
 };

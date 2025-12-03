@@ -37,10 +37,14 @@ Emulsion is **reproducible** - one single config file - and **arcade ready** ; P
 - [**Linux Debian / Ubuntu**](https://github.com/yphil-dev/emulsion/releases/latest/download/emulsion_amd64.deb)
 - [**Linux RPM**](https://github.com/yphil-dev/emulsion/releases/latest/download/emulsion_x86_64.rpm)
 - [**Linux AppImage**](https://github.com/yphil-dev/emulsion/releases/latest/download/emulsion_x86_64.AppImage)
+- [**Linux Arch**](https://github.com/yphil-dev/emulsion/releases/latest/download/emulsion_x86_64.pacman)
+- [**FreeBSD**](https://github.com/yphil-dev/emulsion/releases/latest/download/emulsion_x86_64.freebsd)
 - [**Windows**](https://github.com/yphil-dev/emulsion/releases/latest/download/emulsion_x64.exe)
 - [**Mac OS** (testers needed)](https://github.com/yphil-dev/emulsion/releases/latest/download/emulsion_x64.dmg)
 
 [**All Releases**](https://github.com/yphil-dev/emulsion/releases/latest)
+
+> ⚠️ **Note**: If your Linux distro uses Wayland you 1-are a very brave person and 2-may have to run Emulsion like this: `emulsion --enable-features=UseOzonePlatform --ozone-platform=x11` until it (Wayland) is finally ready for production.
 
 ### From Source
 

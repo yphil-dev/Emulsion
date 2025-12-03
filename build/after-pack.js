@@ -50,10 +50,7 @@ export default async (context) => {
   </categories>
   <screenshots>
     <screenshot type="default">
-      <image>https://yphil.gitlab.io/images/emulsion-screenshot_01.png</image>
-    </screenshot>
-    <screenshot>
-      <image>https://yphil.gitlab.io/images/emulsion-screenshot_02.png</image>
+      <image>https://yphil.gitlab.io/images/emulsion-screenshot_01-839px.png</image>
     </screenshot>
   </screenshots>
 </component>`;

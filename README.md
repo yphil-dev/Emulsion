@@ -38,7 +38,7 @@ Emulsion is **reproducible** - one single config file - and **arcade ready** ; P
 - [**Linux RPM**](https://github.com/yphil-dev/emulsion/releases/latest/download/emulsion_x86_64.rpm)
 - [**Linux AppImage**](https://github.com/yphil-dev/emulsion/releases/latest/download/emulsion_x86_64.AppImage)
 - [**Linux Arch**](https://github.com/yphil-dev/emulsion/releases/latest/download/emulsion_x86_64.pacman)
-- [**FreeBSD**](https://github.com/yphil-dev/emulsion/releases/latest/download/emulsion_x86_64.freebsd)
+- [**FreeBSD**](https://github.com/yphil-dev/emulsion/releases/latest/download/emulsion_x86_64.freebsd) (untested, working on it)
 - [**Windows**](https://github.com/yphil-dev/emulsion/releases/latest/download/emulsion_x64.exe)
 - [**Mac OS** (testers needed)](https://github.com/yphil-dev/emulsion/releases/latest/download/emulsion_x64.dmg)
 
@@ -86,9 +86,9 @@ Emulsion finds your emulators, helps you install the ones you don’t have, and 
 
 ![Emulators management](https://yphil.gitlab.io/images/emulsion-emulators-n64.png?cache=x)
 
-Emulsion is up-to-date on Linux emulators and the way they work (extensions + arguments) ; Smart, [DWIM](https://en.wikipedia.org/wiki/DWIM) & and hassle-free.
+Emulsion keeps up-to-date on platforms emulators and their extensions and arguments.
 
-> ⚠️ **Note**: Automatic emulator installation / selection is currently only available on Linux. On Windows and macOS, emulators must be installed manually. No biggie, the result is the same anyway: setup and forget.
+> ⚠️ **Note**: Automatic emulator installation / selection is currently only available on Linux. On BSD, macOS and Windows, emulators must be installed manually. No biggie, the result is the same anyway: setup and forget.
 
 #### Other OSes
 

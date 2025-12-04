@@ -130,19 +130,6 @@ export function applyTheme(theme) {
     const body = document.querySelector('body');
     const menu = document.getElementById('menu');
 
-    const elementsToTheme = document.querySelectorAll('.themed-background');
-
-    const baseDir = LB.baseDir.endsWith('/')
-          ? LB.baseDir.slice(0, -1)
-          : LB.baseDir;
-
-    const bgPath = window.path.join(LB.baseDir, 'img', 'themes', theme, 'background.png');
-    const bgImageUrl = `url("file://${bgPath.replace(/\\/g, '/')}")`;
-
-    // elementsToTheme.forEach(element => {
-    //     element.style.backgroundImage = bgImageUrl;
-    // });
-
     menu.style.transition = 'filter 1s';
     menu.style.filter = 'opacity(0.5)';
 
@@ -151,11 +138,6 @@ export function applyTheme(theme) {
 
     menu.style.transition = 'filter 1s, color 1s';
     menu.style.filter = 'opacity(1)';
-
-    // setTimeout(() => {
-    //     menu.style.backgroundImage = bgImageUrl;
-    //     menu.style.filter = 'opacity(1)';
-    // }, 100);
 }
 
 export function setFooterSize(size) {

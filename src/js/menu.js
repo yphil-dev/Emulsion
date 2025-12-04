@@ -19,6 +19,8 @@ let menuState = {
     selectedIndex: 1,
 };
 
+let currentMenuBuild = null;
+
 // Only assign to window if it exists (renderer context)
 if (typeof window !== 'undefined') {
     window.onMenuKeyDown = function onMenuKeyDown(event) {
@@ -973,6 +975,12 @@ export function openPlatformMenu(platformName, context, eltToFocus) {
         platformName = 'settings';
     }
 
+    // Prevent multiple concurrent menu builds
+    if (currentMenuBuild) {
+        console.log("Menu build already in progress, ignoring duplicate call");
+        return;
+    }
+
     LB.mode = 'menu';
     LB.currentPlatform = platformName;
 
@@ -986,7 +994,16 @@ export function openPlatformMenu(platformName, context, eltToFocus) {
     menu.dataset.menuPlatform = platformName;
     menu.dataset.context = context || null;
 
-    buildPlatformMenuForm(platformName).then(platformMenuForm => menu.appendChild(platformMenuForm));
+    currentMenuBuild = buildPlatformMenuForm(platformName).then(platformMenuForm => {
+        // Only append if this is still the current build
+        if (currentMenuBuild) {
+            menu.appendChild(platformMenuForm);
+            currentMenuBuild = null; // Clear the build reference
+        }
+    }).catch(error => {
+        console.error('Failed to build platform menu:', error);
+        currentMenuBuild = null; // Clear on error too
+    });
 
     const header = document.getElementById('header');
 
@@ -1029,9 +1046,19 @@ function focusElement(eltToFocus, menu) {
 
 async function closeSettingsOrPlatformMenu() {
 
+    console.log("closeSettingsOrPlatformMenu: ");
+
+    // Cancel any ongoing menu build
+    if (currentMenuBuild) {
+        currentMenuBuild = null;
+    }
+
     const menu = document.getElementById('menu');
 
     // updateFooterControls('dpad', 'same', 'Browse', 'on');
+
+    menu.innerHTML = '';
+    menu.style.height = '0';
 
     if (menu.dataset.context === 'slideshow') {
         initSlideShow(LB.currentPlatform);
@@ -1041,8 +1068,7 @@ async function closeSettingsOrPlatformMenu() {
         initGallery('settings');
     }
 
-    menu.innerHTML = '';
-    menu.style.height = '0';
+    console.log("menu.innerHTML: ", menu.innerHTML);
 
 }
 

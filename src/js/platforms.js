@@ -191,7 +191,8 @@ export const PLATFORMS = [
         extensions: [".cue", ".bin", ".iso"],
         emulators: [
             { name: "ARES", flatpak: "dev.ares.ares", scoop: "games/ares", url: "https://ares-emu.net/", args: "--fullscreen" },
-            { name: "PSXE", flatpak: null, scoop: null, url: "http://github.com/allkern/psxe", args: "--fullscreen" },
+            { name: "DuckStation", flatpak: null, scoop: null, url: "https://duckstation.org/", args: "-fullscreen -nogui" },
+            { name: "PSXE", flatpak: null, scoop: null, url: "http://github.com/allkern/psxe", args: "--fullscreen" }
         ]
     },
     {

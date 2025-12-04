@@ -226,7 +226,7 @@ export const PLATFORMS = [
         name: "ps2",
         extensions: [".iso", ".bin", ".img", ".cue", ".mdf"],
         emulators: [
-            { name: "PCSX2", flatpak: "net.pcsx2.PCSX2", scoop: "games/pcsx2", url:"https://pcsx2.net/", args: "--nogui -fullscreen" },
+            { name: "PCSX2", flatpak: "net.pcsx2.PCSX2", scoop: "games/pcsx2", url:"https://pcsx2.net/", args: "-nogui -fullscreen" },
             { name: "Play!", flatpak: "org.purei.Play", scoop: null, url:"https://purei.org/", args: "--fullscreen --disc" }
         ]
     },

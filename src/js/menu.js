@@ -19,8 +19,6 @@ let menuState = {
     selectedIndex: 1,
 };
 
-let currentMenuBuild = null;
-
 // Only assign to window if it exists (renderer context)
 if (typeof window !== 'undefined') {
     window.onMenuKeyDown = function onMenuKeyDown(event) {
@@ -470,16 +468,10 @@ function buildSettingsMenu() {
     return formContainer;
 }
 
-async function buildPlatformMenuForm(platformName) {
+function buildPlatformMenuForm(platformName) {
 
     if (platformName === 'settings') {
         return buildSettingsMenu();
-    }
-
-    async function checkHostPlatformName() {
-        const hostPlatformName = await ipcRenderer.invoke('get-host-platform');
-        console.log("hostPlatformName: ", hostPlatformName);
-        return hostPlatformName;
     }
 
     const formContainer = document.createElement('div');
@@ -491,20 +483,6 @@ async function buildPlatformMenuForm(platformName) {
     platformMenuImageCtn.style.backgroundImage = `url("file://${path.join(LB.baseDir, 'img', 'platforms', `${platformName}.png`)}")`;
     platformMenuImageCtn.style.backgroundRepeat = 'no-repeat';
     platformMenuImageCtn.style.backgroundPosition = 'center';
-
-    // // create the <img>
-    // const img = document.createElement('img');
-    // img.src = `file://${path.join(LB.baseDir, 'img', 'platforms', `${platformName}.png`)}`;
-    // img.alt = platformName;
-
-    // // optionally control sizing via CSS class instead of inline
-    // img.style.display = 'block';
-    // img.style.maxWidth = '100%';
-    // img.style.maxHeight = '100%';
-    // img.style.objectFit = 'contain';
-
-    // // append image into container
-    // platformMenuImageCtn.appendChild(img);
 
     const statusCheckBox = document.createElement('input');
     statusCheckBox.type = 'checkbox';
@@ -601,7 +579,9 @@ async function buildPlatformMenuForm(platformName) {
     emulatorCtn.appendChild(emulatorIcon);
     emulatorCtn.appendChild(emulatorInput);
 
-    if ((await checkHostPlatformName()) === 'linux') {
+    // Check host platform synchronously - we can get this from cached info or make it sync
+    // For now, assume we can determine this synchronously or default to showing install button
+    if (process.platform === 'linux') {
         emulatorCtn.appendChild(installEmulatorsButton);
     }
 
@@ -632,7 +612,7 @@ async function buildPlatformMenuForm(platformName) {
     const extensionsInputsContainer = document.createElement('div');
     extensionsInputsContainer.classList.add('extensions-inputs-container');
 
-    // Helper to enable/disable the “+” button based on row count
+    // Helper to enable/disable the "+" button based on row count
     function updateAddExtensionBtn() {
         // Count only the input rows (total children minus the add button itself)
         const rowCount = extensionsInputsContainer.children.length - 1;
@@ -640,7 +620,7 @@ async function buildPlatformMenuForm(platformName) {
         addExtensionBtn.style.opacity = addExtensionBtn.disabled ? '0.5' : '1';
     }
 
-    // Create the “Select +” button wired to add a new row
+    // Create the "Select +" button wired to add a new row
     const addExtensionBtn = document.createElement('button');
     addExtensionBtn.classList.add('button', 'extension');
     addExtensionBtn.innerHTML = '<svg class="icon"><use href="#plus"></use></svg>';
@@ -652,19 +632,15 @@ async function buildPlatformMenuForm(platformName) {
         updateAddExtensionBtn();
     });
 
-    // Load existing extensions from preferences
-    getPreference(platformName, 'extensions')
-        .then(extensions => {
-            const initialExtensions = extensions || ['.iso'];
-            initialExtensions.forEach((ext, index) => {
-                const inputRow = _createExtensionInputRow(ext, index === 0);
-                extensionsInputsContainer.appendChild(inputRow);
-            });
-            // Finally append the add button and update its state
-            extensionsInputsContainer.appendChild(addExtensionBtn);
-            updateAddExtensionBtn();
-        })
-        .catch(console.error);
+    // Load existing extensions from cached preferences
+    const extensions = LB.preferences[platformName]?.extensions || ['.iso'];
+    extensions.forEach((ext, index) => {
+        const inputRow = _createExtensionInputRow(ext, index === 0);
+        extensionsInputsContainer.appendChild(inputRow);
+    });
+    // Finally append the add button and update its state
+    extensionsInputsContainer.appendChild(addExtensionBtn);
+    updateAddExtensionBtn();
 
     // Assemble the full group
     extensionsCtn.appendChild(extensionsIcon);
@@ -707,30 +683,16 @@ async function buildPlatformMenuForm(platformName) {
     cancelButton.classList.add('button', 'cancel');
     cancelButton.textContent = 'Cancel';
 
-    getPreference(platformName, 'gamesDir')
-        .then((value) => {
-            gamesDirInput.value = value;
-        })
-        .catch((error) => {
-            console.error('Failed to get platform preference:', error);
-        });
+    // Set values from cached preferences
+    gamesDirInput.value = LB.preferences[platformName]?.gamesDir || '';
+    emulatorInput.value = LB.preferences[platformName]?.emulator || '';
+    emulatorArgsInput.value = LB.preferences[platformName]?.emulatorArgs || '';
 
-    getPreference(platformName, 'emulator')
-        .then((value) => {
-            emulatorInput.value = value;
-        })
-        .catch((error) => {
-            console.error('Failed to get platform preference:', error);
-        });
-
-    getPreference(platformName, 'emulatorArgs')
-        .then((value) => {
-            emulatorArgsInput.value = value;
-        })
-        .catch((error) => {
-            console.error('Failed to get platform preference:', error);
-        });
-
+    // Set status checkbox from cached preferences
+    const isEnabled = LB.preferences[platformName]?.isEnabled || false;
+    statusCheckBox.checked = isEnabled;
+    statusLabelPlatormStatus.textContent = isEnabled ? 'On' : 'Off';
+    statusLabelPlatormStatus.classList.add(isEnabled ? 'on' : 'off');
 
     gamesDirButton.addEventListener('click', _gamesDirButtonClick);
     emulatorButton.addEventListener('click', _emulatorButtonClick);
@@ -755,7 +717,6 @@ async function buildPlatformMenuForm(platformName) {
     formContainer.appendChild(statusLabel);
     formContainer.appendChild(gamesDirGroup);
     formContainer.appendChild(emulatorGroup);
-    // formContainer.appendChild(batchGroup);
     formContainer.appendChild(emulatorArgsGroup);
     formContainer.appendChild(extensionsGroup);
 
@@ -763,16 +724,6 @@ async function buildPlatformMenuForm(platformName) {
     formContainerButtons.classList.add('bottom-buttons-menu', 'bottom-buttons');
     formContainerButtons.appendChild(cancelButton);
     formContainerButtons.appendChild(saveButton);
-
-    getPreference(platformName, 'isEnabled')
-        .then((value) => {
-            statusCheckBox.checked = value;
-            statusLabelPlatormStatus.textContent = value ? 'On' : 'Off';
-            statusLabelPlatormStatus.classList.add(value ? 'on' : 'off');
-        })
-        .catch((error) => {
-            console.error('Failed to get platform preference:', error);
-        });
 
     statusCheckBox.addEventListener('change', (event) => {
         const isNotEnablable = !gamesDirInput.value || !emulatorInput.value;
@@ -808,13 +759,9 @@ async function buildPlatformMenuForm(platformName) {
     cancelButton.addEventListener('click', closeSettingsOrPlatformMenu);
 
     installEmulatorsButton.addEventListener('click', () => {
-
         const platform = PLATFORMS.find(p => p.name === platformName);
-
         console.log("platform.emulators: ", platform.emulators);
-
         installEmulatorsDialog(platform.emulators);
-        // ipcRenderer.invoke('go-to-url', 'https://gitlab.com/yphil/emulsion/-/blob/master/README.md#usage');
     });
 
     saveButton.addEventListener('click', onPlatformMenuSaveButtonClick);
@@ -855,20 +802,12 @@ async function buildPlatformMenuForm(platformName) {
               .filter(ext => ext.length > 1);
 
         try {
-            // Fetch current preferences in parallel
-            const [
-                prevEnabled,
-                prevGamesDir,
-                prevEmulator,
-                prevExtensions,
-                prevArgs
-            ] = await Promise.all([
-                getPreference(platformName, 'isEnabled').catch(() => false),
-                getPreference(platformName, 'gamesDir').catch(() => ''),
-                getPreference(platformName, 'emulator').catch(() => ''),
-                getPreference(platformName, 'extensions').catch(() => []),
-                getPreference(platformName, 'emulatorArgs').catch(() => '')
-            ]);
+            // Get current preferences for comparison
+            const prevEnabled = LB.preferences[platformName]?.isEnabled || false;
+            const prevGamesDir = LB.preferences[platformName]?.gamesDir || '';
+            const prevEmulator = LB.preferences[platformName]?.emulator || '';
+            const prevExtensions = LB.preferences[platformName]?.extensions || [];
+            const prevArgs = LB.preferences[platformName]?.emulatorArgs || '';
 
             const nextEnabled = statusCheckBox.checked;
             const nextGamesDir = gamesDirInput.value.trim();
@@ -895,7 +834,7 @@ async function buildPlatformMenuForm(platformName) {
                 return;
             }
 
-            // Serialize the updates, not promise all them
+            // Update preferences and reload
             await updatePreference(platformName, 'isEnabled', nextEnabled);
             await updatePreference(platformName, 'gamesDir', nextGamesDir);
             await updatePreference(platformName, 'emulator', nextEmulator);
@@ -975,12 +914,6 @@ export function openPlatformMenu(platformName, context, eltToFocus) {
         platformName = 'settings';
     }
 
-    // Prevent multiple concurrent menu builds
-    if (currentMenuBuild) {
-        console.log("Menu build already in progress, ignoring duplicate call");
-        return;
-    }
-
     LB.mode = 'menu';
     LB.currentPlatform = platformName;
 
@@ -994,16 +927,9 @@ export function openPlatformMenu(platformName, context, eltToFocus) {
     menu.dataset.menuPlatform = platformName;
     menu.dataset.context = context || null;
 
-    currentMenuBuild = buildPlatformMenuForm(platformName).then(platformMenuForm => {
-        // Only append if this is still the current build
-        if (currentMenuBuild) {
-            menu.appendChild(platformMenuForm);
-            currentMenuBuild = null; // Clear the build reference
-        }
-    }).catch(error => {
-        console.error('Failed to build platform menu:', error);
-        currentMenuBuild = null; // Clear on error too
-    });
+    // Build and append the form synchronously
+    const platformMenuForm = buildPlatformMenuForm(platformName);
+    menu.appendChild(platformMenuForm);
 
     const header = document.getElementById('header');
 
@@ -1047,11 +973,6 @@ function focusElement(eltToFocus, menu) {
 async function closeSettingsOrPlatformMenu() {
 
     console.log("closeSettingsOrPlatformMenu: ");
-
-    // Cancel any ongoing menu build
-    if (currentMenuBuild) {
-        currentMenuBuild = null;
-    }
 
     const menu = document.getElementById('menu');
 

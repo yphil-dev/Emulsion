@@ -39,6 +39,14 @@ export default async (context) => {
   </releases>
   <description>
     <p>Display your games collection into responsive galleries, manage game metadata, cover art and emulator configuration. Launch your games in style.</p>
+  <h2>Features</h2>
+  <ul>
+    <li><strong>Flexible Storage</strong> - Your games / ROMs can be anywhere, across multiple drives / NAS, etc.</li>
+    <li><strong>Universal Input</strong> - Keyboard, mouse, or any game controller</li>
+    <li><strong>Responsive UX</strong> - Adapts perfectly to any screen size / orientation</li>
+    <li><strong>Smart emulator management</strong> - Emulsion uses your installed emulator, or installs it; standard and up to date.</li>
+    <li><strong>Flexible Metadata Management</strong> - Manual curation, and / or batch automation. Downloads from multiple sources, Wikipedia API default; all manageable from the platform page.</li>
+  </ul>
   </description>
   <launchable type="desktop-id">io.gitlab.yphil.emulsion.desktop</launchable>
   <url type="homepage">https://yphil.gitlab.io/emulsion/</url>

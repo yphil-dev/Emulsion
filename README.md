@@ -28,7 +28,7 @@
 
 Emulsion is **reproducible** - one single config file - and **arcade ready** ; Perfect for driving an arcade cabinet.
 
-![emulsion-list-pce](https://yphil.gitlab.io/images/emulsion-list-pce.png?cache=xx)
+![emulsion-list-pce](https://yphil.gitlab.io/images/emulsion-screenshot_02?cache=xxx)
 
 ## Installation
 

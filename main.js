@@ -438,7 +438,7 @@ function createWindows() {
         width: 1100,
         height: 700,
         fullscreen: process.argv.includes('--full-screen'),
-        icon: path.join(__dirname, 'img/icon.png'),
+        icon: path.join(__dirname, 'img/icons/emulsion.png'),
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,

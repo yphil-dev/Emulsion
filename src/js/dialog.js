@@ -636,6 +636,12 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
 }
 
 export function systemDialog(focusButton = 'cancel') {
+
+    if (DialogManager.currentDialog && DialogManager.currentDialog.id === 'system-dialog-overlay') {
+        closeDialog();
+        return;
+    }
+
     const overlay = document.getElementById('system-dialog-overlay');
     const dialog = overlay.querySelector('.dialog');
     const restartButton = dialog.querySelector('.restart');
@@ -677,6 +683,10 @@ export function systemDialog(focusButton = 'cancel') {
             break;
 
         case '/':
+            // Close dialog instead of activating current button
+            closeDialog();
+            break;
+
         case 'Enter':
             document.activeElement.click();
             break;

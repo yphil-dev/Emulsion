@@ -86,6 +86,14 @@ async function processAppImage() {
             const newAppImageName = `Emulsion-${version}-x86_64.AppImage`;
             execSync(`"${appimagetoolPath}" squashfs-root "${newAppImageName}"`, { stdio: 'inherit' });
             console.log(`AppImage repackaged as: ${newAppImageName}`);
+
+            // Remove the appimagetool binary after successful repackaging
+            try {
+                fs.unlinkSync(appimagetoolPath);
+                console.log('Removed appimagetool-x86_64.AppImage');
+            } catch (error) {
+                console.warn('Failed to remove appimagetool-x86_64.AppImage:', error.message);
+            }
         } else {
             console.log('appimagetool not found in bin directory, skipping repackaging');
         }

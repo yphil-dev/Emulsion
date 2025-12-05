@@ -76,13 +76,16 @@ async function processAppImage() {
             });
         }
 
-        // Repackage AppImage
+        // Repackage AppImage with proper naming
         console.log('Repackaging AppImage...');
         const appimagetoolPath = path.join(__dirname, '..', 'bin', 'appimagetool-x86_64.AppImage');
 
         if (fs.existsSync(appimagetoolPath)) {
             console.log('Using appimagetool from bin directory');
-            execSync(`"${appimagetoolPath}" squashfs-root "${appImageName}"`, { stdio: 'inherit' });
+            // Create the new filename with proper casing and version
+            const newAppImageName = `Emulsion-${version}-x86_64.AppImage`;
+            execSync(`"${appimagetoolPath}" squashfs-root "${newAppImageName}"`, { stdio: 'inherit' });
+            console.log(`AppImage repackaged as: ${newAppImageName}`);
         } else {
             console.log('appimagetool not found in bin directory, skipping repackaging');
         }

@@ -28,14 +28,16 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y npm cmake libsdl2-dev libarchive-tools
           npm install
+          curl -L -o appimagetool-x86_64.AppImage https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
+          chmod +x appimagetool-x86_64.AppImage
 
       - name: Build Linux packages
         run: |
           npx electron-builder --config build/builder.yml --linux --publish=never
 
-      - name: Rename AppImage
+      - name: Process AppImage
         run: |
-          mv -v "dist/emulsion_x86_64.AppImage" "dist/Emulsion-${{ github.ref_name }}-x86_64.AppImage"
+          node build/after-build.js
 
       - name: Upload Linux artifacts
         uses: actions/upload-artifact@v4

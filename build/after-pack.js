@@ -53,7 +53,7 @@ export default async (context) => {
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0+</project_license>
   <name>Emulsion</name>
-  <developer>
+  <developer id="com.github.yphil">
     <name>yPhil</name>
   </developer>
   <summary>Better gaming through chemistry</summary>

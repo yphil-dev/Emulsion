@@ -36,7 +36,7 @@ Emulsion is **reproducible** - one single config file - and **arcade ready** ; P
 
 - [**Linux Debian / Ubuntu**](https://github.com/yphil-dev/emulsion/releases/latest/download/emulsion_amd64.deb)
 - [**Linux RPM**](https://github.com/yphil-dev/emulsion/releases/latest/download/emulsion_x86_64.rpm)
-- [**Linux AppImage**](https://github.com/yphil-dev/emulsion/releases/latest/download/emulsion_x86_64.AppImage)
+- [**Linux AppImage**](https://github.com/yphil-dev/emulsion/releases/latest/download/Emulsion-no-install_x86_64.AppImage)
 - [**Linux Arch**](https://github.com/yphil-dev/emulsion/releases/latest/download/emulsion_x86_64.pacman)
 - [**FreeBSD**](https://github.com/yphil-dev/emulsion/releases/latest/download/emulsion_x86_64.freebsd) (testers needed)
 - [**Windows**](https://github.com/yphil-dev/emulsion/releases/latest/download/emulsion_x64.exe)

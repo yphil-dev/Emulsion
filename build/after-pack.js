@@ -99,14 +99,4 @@ Categories=Games;Productivity;
     // Write the desktop file
     fs.writeFileSync(desktopFile, desktopContent, 'utf8');
     console.log(`  • Desktop file OK: ${desktopFile}`);
-
-    // Create symlink in the root directory
-    const symlinkPath = path.join(appOutDir, 'io.gitlab.yphil.emulsion.desktop');
-    try {
-        fs.symlinkSync(desktopFile, symlinkPath);
-        console.log(`  • Symlink created: ${symlinkPath} -> ${desktopFile}`);
-    } catch (error) {
-        // Symlink might already exist or fail on some filesystems
-        console.log(`  • Warning: Could not create symlink: ${error.message}`);
-    }
 };

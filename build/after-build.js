@@ -78,10 +78,16 @@ async function processAppImage() {
 
         // Repackage AppImage with proper naming
         console.log('Repackaging AppImage...');
-        const appimagetoolPath = path.join(__dirname, '..', 'bin', 'appimagetool-x86_64.AppImage');
+        let appimagetoolPath = path.join(__dirname, '..', 'bin', 'appimagetool-x86_64.AppImage');
+
+        // Check bin directory first (for local builds), then root directory (for CI)
+        if (!fs.existsSync(appimagetoolPath)) {
+            appimagetoolPath = path.join(__dirname, '..', 'appimagetool-x86_64.AppImage');
+        }
 
         if (fs.existsSync(appimagetoolPath)) {
-            console.log('Using appimagetool from bin directory');
+            const toolLocation = appimagetoolPath.includes('bin') ? 'bin directory' : 'root directory';
+            console.log(`Using appimagetool from ${toolLocation}`);
             // Create the new filename with proper casing and version
             const newAppImageName = `Emulsion-${version}-x86_64.AppImage`;
             execSync(`"${appimagetoolPath}" squashfs-root "${newAppImageName}"`, { stdio: 'inherit' });
@@ -95,7 +101,7 @@ async function processAppImage() {
                 console.warn('Failed to remove appimagetool-x86_64.AppImage:', error.message);
             }
         } else {
-            console.log('appimagetool not found in bin directory, skipping repackaging');
+            console.log('appimagetool not found in bin directory or root directory, skipping repackaging');
         }
 
         console.log('AppImage processing complete');

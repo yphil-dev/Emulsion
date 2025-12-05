@@ -37,7 +37,7 @@ async function processAppImage() {
         execSync(`"./${appImageName}" --appimage-extract`, { stdio: 'inherit' });
 
         // List files to debug desktop file location
-        console.log('Files in squashfs-root:');
+        // console.log('Files in squashfs-root:');
         const listFiles = (dir, prefix = '') => {
             try {
                 const items = fs.readdirSync(dir);
@@ -56,7 +56,7 @@ async function processAppImage() {
                 console.log(`  Error reading ${dir}: ${e.message}`);
             }
         };
-        listFiles('./squashfs-root');
+        // listFiles('./squashfs-root');
 
         // Modify atexit function in AppRun
         // console.log('Modifying AppRun script...');
@@ -152,8 +152,8 @@ function modifyAppRunAtexit(appRunPath) {
     if (atexitIndex !== -1) {
         const start = Math.max(0, atexitIndex - 1);
         const end = Math.min(lines.length, atexitIndex + 10);
-        console.log('Modified atexit function:');
-        console.log(lines.slice(start, end).join('\n'));
+        // console.log('Modified atexit function:');
+        // console.log(lines.slice(start, end).join('\n'));
     }
 }
 

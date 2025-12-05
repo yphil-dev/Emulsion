@@ -82,8 +82,6 @@ if (typeof window !== 'undefined') {
 
     window.onGameMenuKeyDown = function onGameMenuKeyDown(event) {
 
-    console.log("event: ", event);
-
     event.stopPropagation();
     event.stopImmediatePropagation();
 

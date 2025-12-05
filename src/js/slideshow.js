@@ -81,7 +81,6 @@ export function initSlideShow(platformToDisplay) {
     // Slide click
     slides.forEach(slide => {
         slide.addEventListener('click', event => {
-            console.log("event: ", event);
             event.stopPropagation();
             event.stopImmediatePropagation();
             const slideDiv = event.target.closest('div.slide');
@@ -399,7 +398,6 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
         if (!page.dataset.listenersAttached) {
             gameContainers.forEach(container => {
                 container.addEventListener('click', (event) => {
-                    console.log("event: ", event);
                     event.stopPropagation();
                     event.stopImmediatePropagation();
 
@@ -1037,7 +1035,7 @@ export function initGamepad() {
             simulateKeyDown('Escape');
             break;
         case 2:
-            batchDownload();
+            simulateKeyDown('i', { ctrl: true });
             break;
         case 3:
             simulateKeyDown('+');

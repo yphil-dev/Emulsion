@@ -16,8 +16,7 @@ export default async (context) => {
 
     const appOutDir = context.appOutDir;
 
-    // List all files in appOutDir for debugging
-    console.log('  • Contents of appOutDir:');
+    // console.log('  • Contents of appOutDir:');
     const listFilesRecursively = (dir, prefix = '') => {
         const items = fs.readdirSync(dir);
         items.forEach(item => {

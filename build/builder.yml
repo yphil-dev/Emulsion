@@ -32,10 +32,10 @@ linux:
   executableName: emulsion
   target:
     - AppImage
-    # - deb
-    # - rpm
-    # - freebsd
-    # - pacman
+    - deb
+    - rpm
+    - freebsd
+    - pacman
   category: Utility
 
 pacman:

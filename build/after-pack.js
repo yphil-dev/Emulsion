@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { execSync } from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -14,8 +15,28 @@ export default async (context) => {
     console.log('  • Generating AppStream metadata for AppImage...');
 
     const appOutDir = context.appOutDir;
+
+    // List all files in appOutDir for debugging
+    console.log('  • Contents of appOutDir:');
+    const listFilesRecursively = (dir, prefix = '') => {
+        const items = fs.readdirSync(dir);
+        items.forEach(item => {
+            const fullPath = path.join(dir, item);
+            const stat = fs.statSync(fullPath);
+            const relativePath = prefix + item;
+            if (stat.isDirectory()) {
+                console.log(`  • 📁 ${relativePath}/`);
+                listFilesRecursively(fullPath, relativePath + '/');
+            } else {
+                console.log(`  • 📄 ${relativePath} (${stat.size} bytes)`);
+            }
+        });
+    };
+
+    // listFilesRecursively(appOutDir);
+
     const metainfoDir = path.join(appOutDir, 'usr', 'share', 'metainfo');
-    const targetFile = path.join(metainfoDir, 'emulsion.appdata.xml');
+    const targetFile = path.join(metainfoDir, 'io.gitlab.yphil.emulsion.appdata.xml');
 
     // Read package.json for version
     const packageJsonPath = path.join(context.outDir, '..', 'package.json');
@@ -32,30 +53,32 @@ export default async (context) => {
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0+</project_license>
   <name>Emulsion</name>
-  <developer_name>yPhil</developer_name>
-  <summary>Better gaming throught chemistry</summary>
-  <releases>
-    <release version="${version}" date="${currentDate}"/>
-  </releases>
+  <developer>
+    <name>yPhil</name>
+  </developer>
+  <summary>Better gaming through chemistry</summary>
   <description>
     <p>Display your games collection into responsive galleries, manage game metadata, cover art and emulator configuration. Launch your games in style.</p>
-  <h2>Features</h2>
-  <ul>
-    <li><strong>Flexible Storage</strong> - Your games / ROMs can be anywhere, across multiple drives / NAS, etc.</li>
-    <li><strong>Universal Input</strong> - Keyboard, mouse, or any game controller</li>
-    <li><strong>Responsive UX</strong> - Adapts perfectly to any screen size / orientation</li>
-    <li><strong>Smart emulator management</strong> - Emulsion uses your installed emulator, or installs it; standard and up to date.</li>
-    <li><strong>Flexible Metadata Management</strong> - Manual curation, and / or batch automation. Downloads from multiple sources, Wikipedia API default; all manageable from the platform page.</li>
-  </ul>
+    <p>Features:</p>
+    <ul>
+      <li>Flexible Storage - Your games / ROMs can be anywhere, across multiple drives / NAS, etc.</li>
+      <li>Universal Input - Keyboard, mouse, or any game controller</li>
+      <li>Responsive UX - Adapts perfectly to any screen size / orientation</li>
+      <li>Smart emulator management - Emulsion uses your installed emulator, or installs it; standard and up to date.</li>
+      <li>Flexible Metadata Management - Manual curation, and / or batch automation. Downloads from multiple sources, Wikipedia API default; all manageable from the platform page.</li>
+    </ul>
   </description>
-  <launchable type="desktop-id">io.gitlab.yphil.emulsion.desktop</launchable>
+  <launchable type="desktop-id">emulsion.desktop</launchable>
   <url type="homepage">https://yphil.gitlab.io/emulsion/</url>
   <url type="help">https://gitlab.com/yphil/emulsion</url>
   <url type="bugtracker">https://gitlab.com/yphil/emulsion/-/issues</url>
   <categories>
-    <category>Games</category>
-    <category>Productivity</category>
+    <category>Utility</category>
   </categories>
+  <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="${version}" date="${currentDate}"/>
+  </releases>
   <screenshots>
     <screenshot type="default">
       <image>https://yphil.gitlab.io/images/emulsion-screenshot_01-839px.png</image>
@@ -72,31 +95,4 @@ export default async (context) => {
     // Write the XML file
     fs.writeFileSync(targetFile, xmlContent, 'utf8');
     console.log(`  • AppStream metadata OK: ${targetFile} (version: ${version}, date: ${currentDate})`);
-
-    console.log('  • Generating desktop file for AppImage...');
-
-    const applicationsDir = path.join(appOutDir, 'usr', 'share', 'applications');
-    const desktopFile = path.join(applicationsDir, 'io.gitlab.yphil.emulsion.desktop');
-
-    // Generate desktop file content
-    const desktopContent = `[Desktop Entry]
-Name=Emulsion (AppImage)
-Comment=Display your games collection into responsive galleries, manage game metadata, cover art and emulator configuration. Launch your games in style.
-Exec=emulsion
-Icon=emulsion
-StartupNotify=true
-Terminal=false
-Type=Application
-Categories=Games;Productivity;
-`;
-
-    // Create applications directory if it doesn't exist
-    if (!fs.existsSync(applicationsDir)) {
-        fs.mkdirSync(applicationsDir, { recursive: true });
-        console.log(`  • Created directory: ${applicationsDir}`);
-    }
-
-    // Write the desktop file
-    fs.writeFileSync(desktopFile, desktopContent, 'utf8');
-    console.log(`  • Desktop file OK: ${desktopFile}`);
 };

@@ -877,6 +877,49 @@ export function initGamepad() {
         const gamepad = gamepads[0]; // Use the first connected gamepad
 
         if (gamepad) {
+            // Handle analog sticks like dpad
+            const threshold = 0.5;
+            const leftStickX = gamepad.axes[0];
+            const leftStickY = gamepad.axes[1];
+
+            // Left stick horizontal (left/right)
+            if (leftStickX < -threshold) {
+                if (!buttonStates['leftStickLeft']) {
+                    buttonStates['leftStickLeft'] = true;
+                    handleGameControllerButtonPress(14); // Left
+                }
+            } else if (buttonStates['leftStickLeft']) {
+                buttonStates['leftStickLeft'] = false;
+            }
+
+            if (leftStickX > threshold) {
+                if (!buttonStates['leftStickRight']) {
+                    buttonStates['leftStickRight'] = true;
+                    handleGameControllerButtonPress(15); // Right
+                }
+            } else if (buttonStates['leftStickRight']) {
+                buttonStates['leftStickRight'] = false;
+            }
+
+            // Left stick vertical (up/down)
+            if (leftStickY < -threshold) {
+                if (!buttonStates['leftStickUp']) {
+                    buttonStates['leftStickUp'] = true;
+                    handleGameControllerButtonPress(12); // Up
+                }
+            } else if (buttonStates['leftStickUp']) {
+                buttonStates['leftStickUp'] = false;
+            }
+
+            if (leftStickY > threshold) {
+                if (!buttonStates['leftStickDown']) {
+                    buttonStates['leftStickDown'] = true;
+                    handleGameControllerButtonPress(13); // Down
+                }
+            } else if (buttonStates['leftStickDown']) {
+                buttonStates['leftStickDown'] = false;
+            }
+
             [0,1,2,3,4,5,8,12,13,14,15].forEach((buttonIndex) => {
                 const button = gamepad.buttons[buttonIndex];
                 const wasPressed = buttonStates[buttonIndex];

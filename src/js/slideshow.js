@@ -846,8 +846,8 @@ export function initGamepad() {
 
     const longPressTimeouts = {};
     const longPressIntervals = {};
-    const repeatDelay = 500;
-    const repeatInterval = 150;
+    const repeatDelay = 250;
+    const repeatInterval = 50;
 
     // Listen for gamepad connection events
     window.addEventListener('gamepadconnected', (event) => {
@@ -887,18 +887,44 @@ export function initGamepad() {
                 if (!buttonStates['leftStickLeft']) {
                     buttonStates['leftStickLeft'] = true;
                     handleGameControllerButtonPress(14); // Left
+                    longPressTimeouts['leftStickLeft'] = setTimeout(() => {
+                        longPressIntervals['leftStickLeft'] = setInterval(() => {
+                            handleGameControllerButtonPress(14);
+                        }, repeatInterval);
+                    }, repeatDelay);
                 }
             } else if (buttonStates['leftStickLeft']) {
                 buttonStates['leftStickLeft'] = false;
+                if (longPressTimeouts['leftStickLeft']) {
+                    clearTimeout(longPressTimeouts['leftStickLeft']);
+                    delete longPressTimeouts['leftStickLeft'];
+                }
+                if (longPressIntervals['leftStickLeft']) {
+                    clearInterval(longPressIntervals['leftStickLeft']);
+                    delete longPressIntervals['leftStickLeft'];
+                }
             }
 
             if (leftStickX > threshold) {
                 if (!buttonStates['leftStickRight']) {
                     buttonStates['leftStickRight'] = true;
                     handleGameControllerButtonPress(15); // Right
+                    longPressTimeouts['leftStickRight'] = setTimeout(() => {
+                        longPressIntervals['leftStickRight'] = setInterval(() => {
+                            handleGameControllerButtonPress(15);
+                        }, repeatInterval);
+                    }, repeatDelay);
                 }
             } else if (buttonStates['leftStickRight']) {
                 buttonStates['leftStickRight'] = false;
+                if (longPressTimeouts['leftStickRight']) {
+                    clearTimeout(longPressTimeouts['leftStickRight']);
+                    delete longPressTimeouts['leftStickRight'];
+                }
+                if (longPressIntervals['leftStickRight']) {
+                    clearInterval(longPressIntervals['leftStickRight']);
+                    delete longPressIntervals['leftStickRight'];
+                }
             }
 
             // Left stick vertical (up/down)
@@ -906,18 +932,44 @@ export function initGamepad() {
                 if (!buttonStates['leftStickUp']) {
                     buttonStates['leftStickUp'] = true;
                     handleGameControllerButtonPress(12); // Up
+                    longPressTimeouts['leftStickUp'] = setTimeout(() => {
+                        longPressIntervals['leftStickUp'] = setInterval(() => {
+                            handleGameControllerButtonPress(12);
+                        }, repeatInterval);
+                    }, repeatDelay);
                 }
             } else if (buttonStates['leftStickUp']) {
                 buttonStates['leftStickUp'] = false;
+                if (longPressTimeouts['leftStickUp']) {
+                    clearTimeout(longPressTimeouts['leftStickUp']);
+                    delete longPressTimeouts['leftStickUp'];
+                }
+                if (longPressIntervals['leftStickUp']) {
+                    clearInterval(longPressIntervals['leftStickUp']);
+                    delete longPressIntervals['leftStickUp'];
+                }
             }
 
             if (leftStickY > threshold) {
                 if (!buttonStates['leftStickDown']) {
                     buttonStates['leftStickDown'] = true;
                     handleGameControllerButtonPress(13); // Down
+                    longPressTimeouts['leftStickDown'] = setTimeout(() => {
+                        longPressIntervals['leftStickDown'] = setInterval(() => {
+                            handleGameControllerButtonPress(13);
+                        }, repeatInterval);
+                    }, repeatDelay);
                 }
             } else if (buttonStates['leftStickDown']) {
                 buttonStates['leftStickDown'] = false;
+                if (longPressTimeouts['leftStickDown']) {
+                    clearTimeout(longPressTimeouts['leftStickDown']);
+                    delete longPressTimeouts['leftStickDown'];
+                }
+                if (longPressIntervals['leftStickDown']) {
+                    clearInterval(longPressIntervals['leftStickDown']);
+                    delete longPressIntervals['leftStickDown'];
+                }
             }
 
             [0,1,2,3,4,5,8,12,13,14,15].forEach((buttonIndex) => {

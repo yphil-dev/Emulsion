@@ -88,10 +88,10 @@ async function processAppImage() {
         if (fs.existsSync(appimagetoolPath)) {
             const toolLocation = appimagetoolPath.includes('bin') ? 'bin directory' : 'root directory';
             console.log(`Using appimagetool from ${toolLocation}`);
-            // Create the new filename with proper casing and version
-            const newAppImageName = `Emulsion-${version}-x86_64.AppImage`;
-            execSync(`"${appimagetoolPath}" squashfs-root "${newAppImageName}"`, { stdio: 'inherit' });
-            console.log(`AppImage repackaged as: ${newAppImageName}`);
+            // Create the new filename for the processed AppImage
+            const processedAppImageName = `Emulsion-no-install_x86_64.AppImage`;
+            execSync(`"${appimagetoolPath}" squashfs-root "${processedAppImageName}"`, { stdio: 'inherit' });
+            console.log(`AppImage repackaged as: ${processedAppImageName}`);
 
             // Remove the appimagetool binary after successful repackaging
             try {
@@ -106,12 +106,12 @@ async function processAppImage() {
 
         console.log('AppImage processing complete');
 
-        // Rename the untouched AppImage file
-        const renamedAppImageName = 'Emulsion-no-install_x86_64.AppImage';
-        const renamedAppImagePath = path.join(distDir, renamedAppImageName);
+        // Rename the untouched AppImage file to the versioned name
+        const untouchedAppImageName = `Emulsion-${version}-x86_64.AppImage`;
+        const untouchedAppImagePath = path.join(distDir, untouchedAppImageName);
 
-        console.log(`Renaming ${appImageName} to ${renamedAppImageName}`);
-        fs.renameSync(appImagePath, renamedAppImagePath);
+        console.log(`Renaming ${appImageName} to ${untouchedAppImageName}`);
+        fs.renameSync(appImagePath, untouchedAppImagePath);
 
     } catch (error) {
         console.error('Error processing AppImage:', error.message);

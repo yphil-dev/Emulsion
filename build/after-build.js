@@ -59,7 +59,7 @@ async function processAppImage() {
         listFiles('./squashfs-root');
 
         // Modify atexit function in AppRun
-        console.log('Modifying AppRun script...');
+        // console.log('Modifying AppRun script...');
         // modifyAppRunAtexit('./squashfs-root/AppRun');
 
         // Remove locale files
@@ -105,6 +105,13 @@ async function processAppImage() {
         }
 
         console.log('AppImage processing complete');
+
+        // Rename the untouched AppImage file
+        const renamedAppImageName = 'Emulsion-no-install_x86_64.AppImage';
+        const renamedAppImagePath = path.join(distDir, renamedAppImageName);
+
+        console.log(`Renaming ${appImageName} to ${renamedAppImageName}`);
+        fs.renameSync(appImagePath, renamedAppImagePath);
 
     } catch (error) {
         console.error('Error processing AppImage:', error.message);

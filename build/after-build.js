@@ -60,7 +60,7 @@ async function processAppImage() {
 
         // Modify atexit function in AppRun
         // console.log('Modifying AppRun script...');
-        // modifyAppRunAtexit('./squashfs-root/AppRun');
+        modifyAppRunAtexit('./squashfs-root/AppRun');
 
         // Remove locale files
         console.log('Removing locale files...');

@@ -36,6 +36,28 @@ async function processAppImage() {
         console.log('Extracting AppImage...');
         execSync(`"./${appImageName}" --appimage-extract`, { stdio: 'inherit' });
 
+        // List files to debug desktop file location
+        console.log('Files in squashfs-root:');
+        const listFiles = (dir, prefix = '') => {
+            try {
+                const items = fs.readdirSync(dir);
+                items.forEach(item => {
+                    const fullPath = path.join(dir, item);
+                    const stat = fs.statSync(fullPath);
+                    const relativePath = prefix + item;
+                    if (stat.isDirectory()) {
+                        console.log(`  📁 ${relativePath}/`);
+                        // Only go one level deep for debugging
+                    } else {
+                        console.log(`  📄 ${relativePath}`);
+                    }
+                });
+            } catch (e) {
+                console.log(`  Error reading ${dir}: ${e.message}`);
+            }
+        };
+        listFiles('./squashfs-root');
+
         // Modify atexit function in AppRun
         console.log('Modifying AppRun script...');
         modifyAppRunAtexit('./squashfs-root/AppRun');

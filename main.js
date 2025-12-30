@@ -382,11 +382,27 @@ ipcMain.handle('pick-image', async () => {
   const { canceled, filePaths } = await dialog.showOpenDialog({
     title: 'Select cover art',
     properties: ['openFile'],
-    filters: [{ name: 'JPG', extensions: ['jpg'] }]
+    filters: [
+      {
+        name: 'Image Files',
+        extensions: ['jpg', 'jpeg', 'png', 'webp']
+      },
+      {
+        name: 'JPEG Images',
+        extensions: ['jpg', 'jpeg']
+      },
+      {
+        name: 'PNG Images',
+        extensions: ['png']
+      },
+      {
+        name: 'WebP Images',
+        extensions: ['webp']
+      }
+    ]
   });
   return canceled ? null : filePaths[0];
 });
-
 //  copy to covers directory
 ipcMain.handle('save-cover', async (_event, src, dest) => {
   return new Promise(resolve => {
@@ -685,45 +701,67 @@ ipcMain.on('run-command', (event, data) => {
         date: new Date().toISOString()
     };
 
-    const command = `${emulator} ${emulatorArgs || ""} "${filePath}"`;
-
+    // --- recents handling unchanged ---
     const recentFilePath = getUserConfigFile('recently_played.json');
     let recents = [];
 
     if (fsSync.existsSync(recentFilePath)) {
         try {
-            const fileData = fsSync.readFileSync(recentFilePath, 'utf8');
-            recents = JSON.parse(fileData);
-        } catch (readErr) {
-            console.error("Error reading recently_played.json:", readErr);
-            recents = [];
+            recents = JSON.parse(fsSync.readFileSync(recentFilePath, 'utf8'));
+        } catch (err) {
+            console.error("Error reading recently_played.json:", err);
         }
     }
 
-    // Check if an entry already exists with the same fileName.
     const existingIndex = recents.findIndex(entry => entry.fileName === fileName);
-
     if (existingIndex >= 0) {
-        recents[existingIndex] = {
-            ...recents[existingIndex],
-            date: recentEntry.date
-        };
+        recents[existingIndex].date = recentEntry.date;
     } else {
         recents.push(recentEntry);
     }
 
     try {
-        fsSync.writeFileSync(recentFilePath, JSON.stringify(recents, null, 4), 'utf8');
-    } catch (writeErr) {
-        console.error("Error writing recently_played.json:", writeErr);
+        fsSync.writeFileSync(recentFilePath, JSON.stringify(recents, null, 4));
+    } catch (err) {
+        console.error("Error writing recently_played.json:", err);
     }
 
-    const child = spawn(command, {
-        shell: true,
+    // --- command building (FIXED PART) ---
+
+    const romDir = path.dirname(filePath);
+
+    let cmd;
+    let args = [];
+
+    const emulatorParts = emulator.split(/\s+/);
+
+    if (emulatorParts[0] === "flatpak" && emulatorParts[1] === "run") {
+        cmd = "flatpak";
+
+        args = [
+            "run",
+            `--filesystem=${romDir}:ro`,
+            ...emulatorParts.slice(2) // app id + flatpak args
+        ];
+    } else {
+        cmd = emulatorParts[0];
+        args = emulatorParts.slice(1);
+    }
+
+    if (emulatorArgs) {
+        args.push(...emulatorArgs.split(/\s+/));
+    }
+
+    args.push(filePath);
+
+    console.log("cmd, args: ", cmd, args);
+
+    const child = spawn(cmd, args, {
         detached: true,
         stdio: 'ignore'
     });
 
+    child.unref();
     childProcesses.set(child.pid, child);
 
     child.on('exit', () => {

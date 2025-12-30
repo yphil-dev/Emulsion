@@ -205,7 +205,7 @@ export const PLATFORMS = [
         emulators: [
             { name: "Rosalie's Mupen GUI", flatpak: "com.github.Rosalie241.RMG", scoop: "games/rmg", url:"https://github.com/Rosalie241/RMG", args: "--nogui --fullscreen" },
             { name: "Gopher64", flatpak: "io.github.gopher64.gopher64", scoop: null, url:"https://github.com/gopher64/gopher64", args: "-f" },
-            { name: "M64Py", flatpak: "net.sourceforge.m64py.M64Py", scoop: null, url:"https://m64py.sourceforge.net/", args: "--fullscreen" }
+            { name: "M64Py", flatpak: "net.sourceforge.m64py.M64Py", scoop: null, url:"https://m64py.sourceforge.net/", args: "" }
         ]
     },
     {

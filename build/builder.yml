@@ -1,11 +1,8 @@
-# electron-builder.yml
-
 appId: io.gitlab.yphil.emulsion
 productName: Emulsion
 artifactName: "emulsion_${arch}.${ext}"
 asar: true
 
-# Unpack the native binaries from the ASAR into this folder so they stay executable
 asarUnpack:
   - "bin/**"
 
@@ -17,7 +14,6 @@ files:
   - "!**/node_modules/**/{CHANGELOG.md,README.md,LICENSE,Makefile}"
   - "!build/**/*"
 
-# Copy the 'bin' folder verbatim alongside the app
 extraResources:
   - from: "bin"
     to: "bin"

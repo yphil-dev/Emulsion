@@ -577,12 +577,14 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
             selectedIndex = 1;
         } else {
             if (isListMode && LB.mode === 'gallery') {
-                selectedIndex = Math.max(selectedIndex - 1, 0);
+                selectedIndex =
+                    (selectedIndex - 1 + containers.length) % containers.length;
             } else {
                 if (LB.mode === 'gameMenu' && selectedIndex === 1) {
                     return;
                 }
-                selectedIndex = (selectedIndex - 1 + containers.length) % containers.length;
+                selectedIndex =
+                    (selectedIndex - 1 + containers.length) % containers.length;
             }
         }
         break;
@@ -593,16 +595,19 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
             selectedIndex = 0;
         } else {
             if (isListMode && LB.mode === 'gallery') {
-                selectedIndex = Math.min(selectedIndex + 1, containers.length - 1);
+                selectedIndex =
+                    (selectedIndex + 1) % containers.length;
             } else {
-                selectedIndex = (selectedIndex + 1) % containers.length;
+                selectedIndex =
+                    (selectedIndex + 1) % containers.length;
             }
         }
         break;
 
     case 'ArrowUp':
         if (isListMode && LB.mode === 'gallery') {
-            selectedIndex = Math.max(selectedIndex - 1, 0);
+            selectedIndex =
+                (selectedIndex - 1 + containers.length) % containers.length;
         } else {
             if (LB.mode === 'gameMenu' && selectedIndex === LB.galleryNumOfCols) {
                 return;
@@ -613,7 +618,8 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
 
     case 'ArrowDown':
         if (isListMode && LB.mode === 'gallery') {
-            selectedIndex = Math.min(selectedIndex + 1, containers.length - 1);
+            selectedIndex =
+                (selectedIndex + 1) % containers.length;
         } else {
             selectedIndex = _moveRows(selectedIndex, 1);
         }
@@ -621,17 +627,21 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
 
     case 'PageUp':
         if (isListMode && LB.mode === 'gallery') {
-            selectedIndex = Math.max(selectedIndex - 10, 0);
+            selectedIndex =
+                (selectedIndex - 10 + containers.length) % containers.length;
         } else {
-            selectedIndex = _moveRows(selectedIndex, -Math.ceil(10 / LB.galleryNumOfCols));
+            selectedIndex =
+                _moveRows(selectedIndex, -Math.ceil(10 / LB.galleryNumOfCols));
         }
         break;
 
     case 'PageDown':
         if (isListMode && LB.mode === 'gallery') {
-            selectedIndex = Math.min(selectedIndex + 10, containers.length - 1);
+            selectedIndex =
+                (selectedIndex + 10) % containers.length;
         } else {
-            selectedIndex = _moveRows(selectedIndex, Math.ceil(10 / LB.galleryNumOfCols));
+            selectedIndex =
+                _moveRows(selectedIndex, Math.ceil(10 / LB.galleryNumOfCols));
         }
         break;
 

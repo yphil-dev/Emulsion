@@ -126,3 +126,16 @@
 :fullscreen .footer-small { max-height: calc(100vh - 200px) !important; }
 :fullscreen .footer-medium { max-height: calc(100vh - 250px) !important; }
 :fullscreen .footer-big { max-height: calc(100vh - 300px) !important; }
+
+.pulse-loading {
+  animation: blink-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes blink-pulse {
+  0%, 100% {
+    text-shadow: 0 0 0 transparent;
+  }
+  50% {
+    text-shadow: 0 0 6px currentColor;
+  }
+}

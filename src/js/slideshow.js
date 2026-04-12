@@ -1052,10 +1052,18 @@ export function initGamepad() {
             console.log("3 (triangle)");
             break;
         case 4:
-            simulateKeyDown('ArrowLeft', { shift: true });
+            if (LB.autoSelect && LB.autoSelect === "vpx") {
+                simulateKeyDown('ArrowLeft');
+            } else {
+                simulateKeyDown('ArrowLeft', { shift: true });
+            }
             break;
         case 5:
-            simulateKeyDown('ArrowRight', { shift: true });
+            if (LB.autoSelect && LB.autoSelect === "vpx") {
+                simulateKeyDown('ArrowRight');
+            } else {
+                simulateKeyDown('ArrowRight', { shift: true });
+            }
             break;
         case 8:
             simulateKeyDown('/');

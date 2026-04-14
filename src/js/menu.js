@@ -347,6 +347,10 @@ function buildSettingsMenu() {
     const giantBombAPIKeyGroup = giantBombAPIKey.group;
     const giantBombAPIKeyInput = giantBombAPIKey.input;
 
+    const opdbAPIKey = buildPrefsFormItem('opdbAPIKey', 'database', 'text', 'Your OPDB API Key', 'OPDB API Key', LB.opdbAPIKey || '');
+    const opdbAPIKeyGroup = opdbAPIKey.group;
+    const opdbAPIKeyInput = opdbAPIKey.input;
+
     // formContainer.appendChild(platformMenuImageCtn);
     formContainer.appendChild(numberOfColumnsGroup);
     formContainer.appendChild(themeGroup);
@@ -356,6 +360,7 @@ function buildSettingsMenu() {
     formContainer.appendChild(favoritesPolicyGroup);
     formContainer.appendChild(steamGridAPIKeyGroup);
     formContainer.appendChild(giantBombAPIKeyGroup);
+    formContainer.appendChild(opdbAPIKeyGroup);
 
     // Buttons
     const saveButton = document.createElement('button');
@@ -419,7 +424,8 @@ function buildSettingsMenu() {
                 recentlyPlayedPolicy: recentlyPlayedPolicyRadios.find(radio => radio.checked)?.value,
                 favoritesPolicy: favoritesPolicyRadios.find(radio => radio.checked)?.value,
                 steamGridAPIKey: steamGridAPIKeyInput.value,
-                giantBombAPIKey: giantBombAPIKeyInput.value
+                giantBombAPIKey: giantBombAPIKeyInput.value,
+                opdbAPIKey: opdbAPIKeyInput.value
             };
 
             // Save preferences
@@ -431,6 +437,7 @@ function buildSettingsMenu() {
             await updatePreference('settings', 'favoritesPolicy', newPrefs.favoritesPolicy);
             await updatePreference('settings', 'steamGridAPIKey', newPrefs.steamGridAPIKey);
             await updatePreference('settings', 'giantBombAPIKey', newPrefs.giantBombAPIKey);
+            await updatePreference('settings', 'opdbAPIKey', newPrefs.opdbAPIKey);
 
             // Detect changes that require reload
             const somethingImportantChanged =
@@ -439,7 +446,8 @@ function buildSettingsMenu() {
                   newPrefs.recentlyPlayedPolicy !== LB.recentlyPlayedPolicy ||
                   newPrefs.favoritesPolicy !== LB.favoritesPolicy ||
                   newPrefs.steamGridAPIKey !== (LB.steamGridAPIKey || '') ||
-                  newPrefs.giantBombAPIKey !== (LB.giantBombAPIKey || '');
+                  newPrefs.giantBombAPIKey !== (LB.giantBombAPIKey || '') ||
+                  newPrefs.opdbAPIKey !== (LB.opdbAPIKey || '');
 
             // Update LB to reflect changes
             Object.assign(LB, {
@@ -450,7 +458,8 @@ function buildSettingsMenu() {
                 recentlyPlayedPolicy: newPrefs.recentlyPlayedPolicy,
                 favoritesPolicy: newPrefs.favoritesPolicy,
                 steamGridAPIKey: newPrefs.steamGridAPIKey,
-                giantBombAPIKey: newPrefs.giantBombAPIKey
+                giantBombAPIKey: newPrefs.giantBombAPIKey,
+                opdbAPIKey: newPrefs.opdbAPIKey
             });
 
             if (somethingImportantChanged) {
@@ -1038,7 +1047,7 @@ async function populateGameMenu(menuContainer, gameName, platformName) {
     const currentImageElem = menuContainer.querySelector('img.current-image');
     const headerNbOfItems = document.querySelector('header .item-number');
 
-    ipcRenderer.send('fetch-images', gameName, platformName, LB.steamGridAPIKey, LB.giantBombAPIKey);
+    ipcRenderer.send('fetch-images', gameName, platformName, LB.steamGridAPIKey, LB.giantBombAPIKey, LB.opdbAPIKey);
 
     headerNbOfItems.textContent = 0;
 

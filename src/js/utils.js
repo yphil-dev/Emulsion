@@ -561,7 +561,7 @@ export async function executeBatchDownload(games, type, platformName) {
 
             try {
                 const urls = await new Promise((resolve) => {
-                    ipcRenderer.send('fetch-images', cleanName, platformName, LB.steamGridAPIKey, LB.giantBombAPIKey);
+                    ipcRenderer.send('fetch-images', cleanName, platformName, LB.steamGridAPIKey, LB.giantBombAPIKey, LB.opdbAPIKey);
                     ipcRenderer.once('image-urls', (event, urls) => resolve(urls));
                 });
 

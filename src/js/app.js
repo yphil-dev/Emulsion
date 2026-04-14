@@ -117,6 +117,7 @@ async function initializeApp() {
             // UI preference properties
             steamGridAPIKey: uiPreferences.settings.steamGridAPIKey,
             giantBombAPIKey: uiPreferences.settings.giantBombAPIKey,
+            opdbAPIKey: uiPreferences.settings.opdbAPIKey,
             footerSize: uiPreferences.settings.footerSize,
             theme: uiPreferences.settings.theme,
             disabledPlatformsPolicy: uiPreferences.settings.disabledPlatformsPolicy,

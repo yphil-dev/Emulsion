@@ -251,7 +251,7 @@ function buildPrefsFormItem(name, iconName, type, description, shortDescription,
         input.type = type;
         input.id = name;
         input.name = name;
-        input.min = '2';
+        input.min = '1';
         input.max = '24';
         input.placeholder = description;
         input.tabIndex = 0;

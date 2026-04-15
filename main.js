@@ -359,14 +359,14 @@ const downloadAndSaveImage = async (imgSrc, platform, gameName, gamesDir) => {
 ipcMain.handle('delete-image', async (_event, imagePath) => {
   return new Promise(resolve => {
     // Check if file exists first
-    fs.access(imagePath, fs.constants.F_OK, (err) => {
+    fsSync.access(imagePath, fsSync.constants.F_OK, (err) => {
       if (err) {
         // File doesn't exist, consider this a success
         return resolve(true);
       }
 
       // File exists, proceed with deletion
-      fs.unlink(imagePath, err2 => {
+      fsSync.unlink(imagePath, err2 => {
         if (err2) {
           console.error('delete-cover error:', err2);
           return resolve(false);
@@ -406,14 +406,14 @@ ipcMain.handle('pick-image', async () => {
 //  copy to covers directory
 ipcMain.handle('save-cover', async (_event, src, dest) => {
   return new Promise(resolve => {
-    fs.mkdir(path.dirname(dest), { recursive: true }, err => {
+    fsSync.mkdir(path.dirname(dest), { recursive: true }, err => {
       if (err) {
         console.error('save-cover mkdir error:', err);
         return resolve(false);
       }
 
       // once dir is ready, copy the file
-      fs.copyFile(src, dest, err2 => {
+      fsSync.copyFile(src, dest, err2 => {
         if (err2) {
           console.error('save-cover copy error:', err2);
           return resolve(false);

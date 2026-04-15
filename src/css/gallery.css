@@ -258,6 +258,8 @@ div.empty-platform-game-container p {
 
 .dummy-game-container { animation: pulse-glow 2s infinite ease-in-out; }
 
+.pulse { animation: pulse-glow 0.2s infinite ease-in-out; }
+
 div.empty-platform-game-container i,
 div.dummy-game-container i { color: var(--color-border-on); }
 

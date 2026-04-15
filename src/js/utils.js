@@ -561,7 +561,7 @@ export async function executeBatchDownload(games, type, platformName) {
 
             try {
                 const urls = await new Promise((resolve) => {
-                    ipcRenderer.send('fetch-images', cleanName, platformName, LB.steamGridAPIKey, LB.giantBombAPIKey);
+                    ipcRenderer.send('fetch-images', cleanName, platformName, LB.steamGridAPIKey, LB.giantBombAPIKey, LB.opdbAPIKey);
                     ipcRenderer.once('image-urls', (event, urls) => resolve(urls));
                 });
 
@@ -847,6 +847,15 @@ export async function getPs3GameName(filePath) {
 
 export function launchGame(gameContainer) {
 
+    // Remove launching class from ALL game containers
+    document.querySelectorAll('.game-container.launching').forEach(container => {
+        container.classList.remove('launching');
+    });
+
+    // Force reflow to restart the animation
+    void gameContainer.offsetWidth;
+
+    // Add launching class only to the launched game
     gameContainer.classList.add('launching');
 
     ipcRenderer.send('run-command', {

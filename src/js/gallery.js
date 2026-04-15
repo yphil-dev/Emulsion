@@ -163,7 +163,7 @@ export async function buildGallery(params) {
 
     const pageContent = document.createElement('div');
     pageContent.classList.add('page-content');
-    pageContent.style.gridTemplateColumns = `repeat(${platform === "vpx" ? 1 : LB.galleryNumOfCols}, 1fr)`;
+    pageContent.style.gridTemplateColumns = `repeat(${LB.galleryNumOfCols}, 1fr)`;
 
     if (!isEnabled) {
         page.dataset.status = 'disabled';

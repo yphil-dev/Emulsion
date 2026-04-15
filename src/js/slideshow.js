@@ -791,6 +791,13 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         // Manual scroll to replace scrollIntoView
         const scrollContainer = isListMode ? activePage.querySelector('.page-content') : activePage;
         if (scrollContainer) {
+
+            const isSingleColumn = LB.currentPlatform === "vpx";
+
+            if (isSingleColumn && (event.key === 'ArrowLeft' || event.key === 'ArrowRight')) {
+                console.log("LB.currentPlatform: ", LB.currentPlatform);
+            }
+
             const containerRect = scrollContainer.getBoundingClientRect();
             const itemRect = selectedContainer.getBoundingClientRect();
             const scrollTop = scrollContainer.scrollTop;

@@ -307,6 +307,17 @@ export const PLATFORMS = [
         emulators: [
             { name: "shadPS4", flatpak: "net.shadps4.shadPS4", scoop: null, url:"https://shadps4.net/", args: "--fullscreen" }
         ]
+    },
+    {
+        nbGames: 0,
+        display: "grid",
+        displayName: "Visual Pinball X",
+        vendor: "Standalone",
+        name: "vpx",
+        extensions: [".vpx"],
+        emulators: [
+            { name: "VPXStandalone", flatpak: null, scoop: null, url:"https://github.com/vpinball/vpinball", args: "--play" }
+        ]
     }
 ];
 

@@ -1,27 +1,39 @@
 import { fetchImages as steamgridFetch } from './backends/steamgrid.js';
 import { fetchImages as wikipediaFetch } from './backends/wikipedia.js';
 import { fetchImages as giantbombFetch } from './backends/giantbomb.js';
+import { fetchImages as opdbFetch } from './backends/opdb.js';
 import { fetchGameMetaData } from './backends/wikipedia-text.js';
 
 export const getGameMetaData = async (params) => {
-    console.log("params.cleanName: ", params.cleanName);
     return await fetchGameMetaData(params.cleanName, params.platformName);
 };
 
-export const getAllCoverImageUrls = async (gameName, platform, options = {}) => {
-    const { steamGridAPIKey, giantBombAPIKey } = options;
+export const getAllCoverImageUrls = async (gameName, platform, platformName, options = {}) => {
+    const { steamGridAPIKey, giantBombAPIKey, opdbAPIKey } = options;
 
     const backends = [];
 
-    if (steamGridAPIKey) {
-        backends.push(() => steamgridFetch(gameName, steamGridAPIKey));
+    if (platform === 'vpx') {
+        if (opdbAPIKey) {
+            backends.push(() => opdbFetch(gameName, opdbAPIKey));
+        }
+        if (steamGridAPIKey) {
+            backends.push(() => steamgridFetch(gameName, steamGridAPIKey));
+        }
+        if (giantBombAPIKey) {
+            backends.push(() => giantbombFetch(gameName, giantBombAPIKey, platformName));
+        }
+        backends.push(() => wikipediaFetch(gameName, platformName));
+    } else {
+        if (steamGridAPIKey) {
+            backends.push(() => steamgridFetch(gameName, steamGridAPIKey));
+        }
+        if (giantBombAPIKey) {
+            backends.push(() => giantbombFetch(gameName, giantBombAPIKey, platformName));
+        }
+        backends.push(() => opdbFetch(gameName, opdbAPIKey));
+        backends.push(() => wikipediaFetch(gameName, platformName));
     }
-
-    if (giantBombAPIKey) {
-        backends.push(() => giantbombFetch(gameName, giantBombAPIKey, platform));
-    }
-
-    backends.push(() => wikipediaFetch(gameName, platform));
 
     const allResults = await Promise.allSettled(backends.map(fn => fn()));
 

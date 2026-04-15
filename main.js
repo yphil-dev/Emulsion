@@ -526,9 +526,9 @@ ipcMain.handle('restart', async () => {
     return true;
 });
 
-ipcMain.on('fetch-images', (event, gameName, platformName, steamGridAPIKey, giantBombAPIKey) => {
+ipcMain.on('fetch-images', (event, gameName, platformName, steamGridAPIKey, giantBombAPIKey, opdbAPIKey) => {
     console.log("gameName, platformName: ", gameName, platformName);
-    getAllCoverImageUrls(gameName.replace(/\s*[\(\[].*?[\)\]]/g, ''), getPlatformInfo(platformName).name, { steamGridAPIKey, giantBombAPIKey })
+    getAllCoverImageUrls(gameName.replace(/\s*[\(\[].*?[\)\]]/g, ''), platformName, getPlatformInfo(platformName).name, { steamGridAPIKey, giantBombAPIKey, opdbAPIKey })
         .then((urls) => {
             event.reply('image-urls', urls);
         })
@@ -782,7 +782,8 @@ const defaultPreferences = {
         launchDialogPolicy: "show",
         theme: "default",
         steamGridAPIKey: "",
-        giantBombAPIKey: ""
+        giantBombAPIKey: "",
+        opdbAPIKey: ""
     }
 };
 

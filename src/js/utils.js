@@ -165,7 +165,6 @@ export function setFooterSize(size) {
     document.documentElement.style.setProperty('--footer-height', heightValue);
 }
 
-
 export function getSelectedGameContainer(gameContainers, selectedIndex) {
     // Direct access if index is valid
     if (selectedIndex >= 0 && selectedIndex < gameContainers.length) {

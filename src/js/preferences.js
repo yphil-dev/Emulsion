@@ -8,6 +8,7 @@ async function loadUserData() {
         const baseDir = window.path.resolve(response.appPath);
         const versionNumber = response.versionNumber;
         const kioskMode = response.kioskMode;
+        const noUI = response.noUI;
         const autoSelect = response.autoSelect;
         const recents = response.recents;
         const favorites = response.favorites;
@@ -18,6 +19,7 @@ async function loadUserData() {
         delete preferences.appPath;
         delete preferences.versionNumber;
         delete preferences.kioskMode;
+        delete preferences.noUI;
         delete preferences.autoSelect;
         delete preferences.recents;
         delete preferences.favorites;
@@ -29,6 +31,7 @@ async function loadUserData() {
             baseDir,
             versionNumber,
             kioskMode,
+            noUI,
             autoSelect,
             recents,
             favorites,

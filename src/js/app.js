@@ -105,6 +105,7 @@ async function initializeApp() {
             baseDir: appData.baseDir,
             versionNumber: appData.versionNumber,
             kioskMode: appData.kioskMode,
+            noUI: appData.noUI,
             autoSelect: appData.autoSelect,
             recents: appData.recents,
             favorites: appData.favorites,

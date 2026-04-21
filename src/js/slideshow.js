@@ -1004,8 +1004,9 @@ export function initGamepad() {
                 const button = gamepad.buttons[buttonIndex];
                 const wasPressed = buttonStates[buttonIndex];
                 const isDpad = [12,13,14,15].includes(buttonIndex);
+                const shouldRepeat = isDpad || [4,5].includes(buttonIndex);
 
-                if (isDpad) {
+                if (shouldRepeat) {
                     if (button.pressed && !wasPressed) {
                         buttonStates[buttonIndex] = true;
                         handleGameControllerButtonPress(buttonIndex);

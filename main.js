@@ -136,9 +136,10 @@ Usage: ${pjson.name.toLowerCase()} [options]
 
 Options:
   --help                         Show this help message.
-  --full-screen                  Start Emulsion in full screen mode.
+  --full-screen                  Start in full screen mode.
   --kiosk                        Read-only / kids mode: No config / settings, disabled platforms hidden.
-  --auto-select=[platform_name]  Auto-select [platform_name].
+  --auto-select=[platform_name]  Open [platform_name] directly, bypassing the platforms menu.
+  --no-ui                        Only the games, to be used with --kiosk and --auto-select=[platform_name].
   --verbose                      Show main process messages.
 
 Platform names: ${PLATFORMS.map(platform => platform.name).join(', ')}

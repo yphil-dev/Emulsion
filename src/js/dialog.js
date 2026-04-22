@@ -254,14 +254,19 @@ export async function helpDialog(defaultTabId = null) {
     const versions = await ipcRenderer.invoke('get-versions');
 
     dialog.querySelector('.current-version').textContent = versions.current;
-    dialog.querySelector('.latest-version').textContent = versions.latest;
-
-    const isUpToDate = versioncheck(versions.current, versions.latest);
-
-    if (isUpToDate) {
-        dialog.querySelector('.up-to-date').style.display = 'inline-block';
+    
+    // Handle offline case - latest may be null
+    if (versions.latest) {
+        dialog.querySelector('.latest-version').textContent = versions.latest;
+        const isUpToDate = versioncheck(versions.current, versions.latest);
+        if (isUpToDate) {
+            dialog.querySelector('.up-to-date').style.display = 'inline-block';
+        } else {
+            dialog.querySelector('.update-available').style.display = 'block';
+        }
     } else {
-        dialog.querySelector('.update-available').style.display = 'block';
+        dialog.querySelector('.latest-version').textContent = 'Unable to check (offline)';
+        // Don't show update status when offline
     }
 
     dialog.querySelector('button.upgrade').addEventListener('click', () => {

@@ -927,17 +927,22 @@ ipcMain.handle('parse-sfo', async (_event, filePath) => {
 });
 
 ipcMain.handle('get-versions', async () => {
-    let latestVersion;
+    let latestVersion = null;
     try {
-        const response = await fetch('https://api.github.com/repos/yphil-dev/Emulsion/releases/latest');
+        const response = await fetch('https://api.github.com/repos/yphil-dev/Emulsion/releases/latest', {
+            signal: AbortSignal.timeout(5000) // 5 second timeout
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
         const data = await response.json();
         latestVersion = data.tag_name.replace(/^v/, '');
-
     } catch (error) {
-        console.error('Failed to fetch GitHub release:', error);
+        console.log('Could not fetch latest version (offline or network error):', error.message);
+        // latestVersion remains null - caller should handle this
     }
 
-    return {current: pjson.version, latest: latestVersion};
+    return { current: pjson.version, latest: latestVersion };
 });
 
 app.whenReady().then(() => {

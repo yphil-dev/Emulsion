@@ -1,6 +1,6 @@
 {
     "name": "emulsion",
-    "version": "0.12.03",
+    "version": "0.12.06",
     "summary": "Better gaming throught chemistry",
     "description": "Display your games collection into responsive galleries, manage game metadata, cover art and emulator configuration. Launch your games in style.",
     "homepage": "https://yphil.gitlab.io/emulsion",
@@ -21,8 +21,8 @@
         "build": "electron-builder --config build/builder.yml --linux --publish=never"
     },
     "devDependencies": {
-        "electron": "41.2.1",
-        "electron-builder": "26.0.12"
+        "electron": "39.2.4",
+        "electron-builder": "26.8.1"
     },
     "dependencies": {
         "axios": "^1.12.0",

@@ -877,6 +877,11 @@ export function initGamepad() {
     const repeatDelay = 250;
     const repeatInterval = 50;
 
+    // Long press detection for select button (button 0)
+    const LONG_PRESS_THRESHOLD = 5000; // ms to consider as long press
+    let selectButtonPressStartTime = null;
+    let selectButtonLongPressTriggered = false;
+
     // Listen for gamepad connection events
     window.addEventListener('gamepadconnected', (event) => {
         console.log('Gamepad connected:', event.gamepad.id);
@@ -1004,8 +1009,32 @@ export function initGamepad() {
                 const button = gamepad.buttons[buttonIndex];
                 const wasPressed = buttonStates[buttonIndex];
                 const isDpad = [12,13,14,15].includes(buttonIndex);
+                const shouldRepeat = isDpad || [4,5].includes(buttonIndex);
 
-                if (isDpad) {
+                // Special handling for select button (button 0) - long press detection
+                if (buttonIndex === 0) {
+                    if (button.pressed && !wasPressed) {
+                        // Button just pressed
+                        buttonStates[buttonIndex] = true;
+                        selectButtonPressStartTime = Date.now();
+                        selectButtonLongPressTriggered = false;
+                    } else if (!button.pressed && wasPressed) {
+                        // Button released
+                        buttonStates[buttonIndex] = false;
+                        const pressDuration = Date.now() - selectButtonPressStartTime;
+
+                        if (pressDuration >= LONG_PRESS_THRESHOLD && !selectButtonLongPressTriggered) {
+                            // Long press detected
+                            selectButtonLongPressTriggered = true;
+                            handleGameControllerButtonPress(buttonIndex, true);
+                        } else if (!selectButtonLongPressTriggered) {
+                            // Normal press
+                            handleGameControllerButtonPress(buttonIndex, false);
+                        }
+
+                        selectButtonPressStartTime = null;
+                    }
+                } else if (shouldRepeat) {
                     if (button.pressed && !wasPressed) {
                         buttonStates[buttonIndex] = true;
                         handleGameControllerButtonPress(buttonIndex);
@@ -1051,7 +1080,7 @@ export function initGamepad() {
         animationFrameId = requestAnimationFrame(pollGamepad);
     }
 
-    function handleGameControllerButtonPress(buttonIndex) {
+    function handleGameControllerButtonPress(buttonIndex, isLongPress = false) {
         // Trigger no-hover mode when any gamepad input is detected
         if (window.hideCursor) {
             window.hideCursor();
@@ -1059,7 +1088,16 @@ export function initGamepad() {
 
         switch (buttonIndex) {
         case 0:
-            simulateKeyDown('Enter');
+            if (isLongPress) {
+                // Long press on select button - you can customize this action
+                alert('Select button long pressed!');
+                // Example: Open context menu or perform special action
+                // For now, we'll simulate Ctrl+Enter which could trigger a different action
+                // simulateKeyDown('Enter', { ctrl: true });
+            } else {
+                // Normal press - regular Enter
+                simulateKeyDown('Enter');
+            }
             break;
         case 1:
             simulateKeyDown('Escape');

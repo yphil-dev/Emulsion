@@ -879,6 +879,7 @@ export function initGamepad() {
     const BUTTON8_LONG_PRESS_THRESHOLD = 5000; // 5 seconds
     let button8PressStartTime = null;
     let button8LongPressTriggered = false;
+    let button8LongPressTimeout = null;
 
     // Listen for gamepad connection events
     window.addEventListener('gamepadconnected', (event) => {
@@ -958,22 +959,27 @@ export function initGamepad() {
                 // Special handling for button 8 (Share) in VPX mode - long press detection
                 if (buttonIndex === 8 && LB.autoSelect && LB.autoSelect === "vpx") {
                     if (button.pressed && !wasPressed) {
-                        // Button just pressed
+                        // Button just pressed - start timer
                         buttonStates[buttonIndex] = true;
                         button8PressStartTime = Date.now();
                         button8LongPressTriggered = false;
-                        handleGameControllerButtonPress(buttonIndex);
+
+                        // Set timeout to trigger alert after 5 seconds of continuous press
+                        button8LongPressTimeout = setTimeout(() => {
+                            if (buttonStates[buttonIndex] && !button8LongPressTriggered) {
+                                button8LongPressTriggered = true;
+                                alert('Button 8 (Share) long pressed for 5 seconds in VPX mode!');
+                            }
+                        }, BUTTON8_LONG_PRESS_THRESHOLD);
+
+                        // handleGameControllerButtonPress(buttonIndex);
                     } else if (!button.pressed && wasPressed) {
-                        // Button released
+                        // Button released - clear timeout
                         buttonStates[buttonIndex] = false;
-                        const pressDuration = Date.now() - button8PressStartTime;
-                        
-                        if (pressDuration >= BUTTON8_LONG_PRESS_THRESHOLD && !button8LongPressTriggered) {
-                            // Long press detected (5 seconds)
-                            button8LongPressTriggered = true;
-                            alert('Button 8 (Share) long pressed for 5 seconds in VPX mode!');
+                        if (button8LongPressTimeout) {
+                            clearTimeout(button8LongPressTimeout);
+                            button8LongPressTimeout = null;
                         }
-                        
                         button8PressStartTime = null;
                     }
                 } else {

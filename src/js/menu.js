@@ -131,8 +131,11 @@ if (typeof window !== 'undefined') {
     case 'Enter':
         const selectedGameContainer = getSelectedGameContainer(menuGameContainers, menuState.selectedIndex);
         const selectedImg = selectedGameContainer.querySelector('.game-image');
-        closeGameMenu(selectedImg.src);
-        initGallery(LB.currentPlatform);
+        const platformName = selectedGameContainer.dataset.platform;
+        const gameName = selectedGameContainer.dataset.gameName;
+        const activePage = document.querySelector('.page.active');
+        const gameContainer = activePage.querySelector(`.game-container[data-platform="${platformName}"][data-game-name="${gameName}"]`);
+        closeGameMenu(selectedImg.src, gameContainer);
         break;
     case 'Escape':
         closeGameMenu();
@@ -166,7 +169,16 @@ if (typeof window !== 'undefined') {
 function onGameMenuClick(event) {
     const img = event.target.closest('img');
     if (img) {
-        closeGameMenu(img.src);
+        const menuGameContainer = img.closest('.menu-game-container');
+        if (menuGameContainer) {
+            const platformName = menuGameContainer.dataset.platform;
+            const gameName = menuGameContainer.dataset.gameName;
+            const activePage = document.querySelector('.page.active');
+            const gameContainer = activePage.querySelector(`.game-container[data-platform="${platformName}"][data-game-name="${gameName}"]`);
+            closeGameMenu(img.src, gameContainer);
+        } else {
+            closeGameMenu(img.src);
+        }
     }
 }
 
@@ -1255,7 +1267,7 @@ async function closeSettingsMenu() {
 
 }
 
-export async function closeGameMenu(imgSrc) {
+export async function closeGameMenu(imgSrc, gameContainer = null) {
 
     const menu = document.getElementById('menu');
     const menuContainer = document.getElementById('menu');
@@ -1269,16 +1281,22 @@ export async function closeGameMenu(imgSrc) {
     const activePage = document.querySelector('.page.active');
     const gameContainers = Array.from(activePage.querySelectorAll('.game-container'));
 
-    let selectedGame = null;
+    let selectedGame = gameContainer;
     let selectedIndex = -1;
 
-    for (let i = 0; i < gameContainers.length; i++) {
-        const c = gameContainers[i];
-        if (c.classList.contains('selected')) {
-            selectedGame = c;
-            selectedIndex = i;
-            break; // stop immediately — minimal overhead
+    // If gameContainer wasn't passed, try to find it by selected class
+    if (!selectedGame) {
+        for (let i = 0; i < gameContainers.length; i++) {
+            const c = gameContainers[i];
+            if (c.classList.contains('selected')) {
+                selectedGame = c;
+                selectedIndex = i;
+                break;
+            }
         }
+    } else {
+        // Find the index of the passed gameContainer
+        selectedIndex = gameContainers.indexOf(selectedGame);
     }
 
     if (imgSrc) {

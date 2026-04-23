@@ -878,6 +878,44 @@ ipcMain.handle('quit', () => {
     app.quit();
 });
 
+ipcMain.handle('shutdown-system', async () => {
+    console.log("Initiating system shutdown...");
+    try {
+        if (process.platform === 'linux') {
+            // Linux/Ubuntu shutdown
+            exec('sudo shutdown -h now', (error, stdout, stderr) => {
+                if (error) {
+                    console.error('Shutdown error:', error);
+                    // Fallback to poweroff
+                    exec('sudo poweroff', (err2, stdout2, stderr2) => {
+                        if (err2) {
+                            console.error('Poweroff error:', err2);
+                        }
+                    });
+                }
+            });
+        } else if (process.platform === 'win32') {
+            // Windows shutdown
+            exec('shutdown /s /t 0', (error, stdout, stderr) => {
+                if (error) {
+                    console.error('Shutdown error:', error);
+                }
+            });
+        } else if (process.platform === 'darwin') {
+            // macOS shutdown
+            exec('sudo shutdown -h now', (error, stdout, stderr) => {
+                if (error) {
+                    console.error('Shutdown error:', error);
+                }
+            });
+        }
+        return { success: true };
+    } catch (error) {
+        console.error('Shutdown failed:', error);
+        return { success: false, error: error.message };
+    }
+});
+
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
         app.quit();

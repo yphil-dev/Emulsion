@@ -702,7 +702,7 @@ export function systemDialog(focusButton = 'cancel') {
     };
 
     restartButton.addEventListener('click', () => window.location.reload());
-    quitButton.addEventListener('click', () => ipcRenderer.invoke('quit'));
+    quitButton.addEventListener('click', () => ipcRenderer.invoke('shutdown-system'));
     cancelButton.addEventListener('click', () => closeDialog());
     configButton.addEventListener('click', () => initGallery('settings'));
 

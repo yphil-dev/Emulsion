@@ -254,7 +254,7 @@ export async function helpDialog(defaultTabId = null) {
     const versions = await ipcRenderer.invoke('get-versions');
 
     dialog.querySelector('.current-version').textContent = versions.current;
-    
+
     // Handle offline case - latest may be null
     if (versions.latest) {
         dialog.querySelector('.latest-version').textContent = versions.latest;
@@ -702,7 +702,7 @@ export function systemDialog(focusButton = 'cancel') {
     };
 
     restartButton.addEventListener('click', () => window.location.reload());
-    quitButton.addEventListener('click', () => ipcRenderer.invoke('shutdown-system'));
+    quitButton.addEventListener('click', () => ipcRenderer.invoke('quit'));
     cancelButton.addEventListener('click', () => closeDialog());
     configButton.addEventListener('click', () => initGallery('settings'));
 
@@ -738,18 +738,15 @@ export function systemDialog(focusButton = 'cancel') {
 
 export function shutDownDialog(focusButton = 'cancel') {
 
-    if (DialogManager.currentDialog && DialogManager.currentDialog.id === 'quit-confirmation-overlay') {
+    if (DialogManager.currentDialog && DialogManager.currentDialog.id === 'shutdown-overlay') {
         closeDialog();
         return;
     }
 
-    const overlay = document.getElementById('quit-confirmation-overlay');
+    const overlay = document.getElementById('shutdown-overlay');
     const dialog = overlay.querySelector('.dialog');
     const shutDownButton = dialog.querySelector('.ok');
     const cancelButton = dialog.querySelector('.cancel');
-
-    // Update button text to "Shut Down"
-    shutDownButton.textContent = 'Shut Down';
 
     // Map button names to elements
     const buttonMap = {
@@ -796,7 +793,7 @@ export function shutDownDialog(focusButton = 'cancel') {
 
     shutDownButton.addEventListener('click', () => {
         closeDialog();
-        ipcRenderer.invoke('quit');
+        ipcRenderer.invoke('shutdown-system');
     });
     cancelButton.addEventListener('click', () => closeDialog());
 

@@ -882,16 +882,10 @@ ipcMain.handle('shutdown-system', async () => {
     console.log("Initiating system shutdown...");
     try {
         if (process.platform === 'linux') {
-            // Linux/Ubuntu shutdown
-            exec('sudo systemctl poweroff', (error, stdout, stderr) => {
+            // Linux shutdown using systemctl poweroff (no sudo required for active sessions)
+            exec('systemctl poweroff', (error, stdout, stderr) => {
                 if (error) {
-                    console.error('Shutdown error:', error);
-                    // Fallback to poweroff
-                    exec('sudo poweroff', (err2, stdout2, stderr2) => {
-                        if (err2) {
-                            console.error('Poweroff error:', err2);
-                        }
-                    });
+                    console.error('systemctl poweroff failed:', error);
                 }
             });
         } else if (process.platform === 'win32') {
@@ -903,7 +897,7 @@ ipcMain.handle('shutdown-system', async () => {
             });
         } else if (process.platform === 'darwin') {
             // macOS shutdown
-            exec('sudo shutdown -h now', (error, stdout, stderr) => {
+            exec('osascript -e \'tell app "System Events" to shut down\'', (error, stdout, stderr) => {
                 if (error) {
                     console.error('Shutdown error:', error);
                 }

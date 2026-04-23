@@ -872,15 +872,13 @@ export function initGamepad() {
         16: false, // PS button (Home button)
     };
 
-    const longPressTimeouts = {};
-    const longPressIntervals = {};
     const repeatDelay = 250;
     const repeatInterval = 50;
 
-    // Long press detection for select button (button 0)
-    const LONG_PRESS_THRESHOLD = 5000; // ms to consider as long press
-    let selectButtonPressStartTime = null;
-    let selectButtonLongPressTriggered = false;
+    // Long press detection for button 8 (Share) in VPX mode
+    const BUTTON8_LONG_PRESS_THRESHOLD = 5000; // 5 seconds
+    let button8PressStartTime = null;
+    let button8LongPressTriggered = false;
 
     // Listen for gamepad connection events
     window.addEventListener('gamepadconnected', (event) => {
@@ -920,44 +918,18 @@ export function initGamepad() {
                 if (!buttonStates['leftStickLeft']) {
                     buttonStates['leftStickLeft'] = true;
                     handleGameControllerButtonPress(14); // Left
-                    longPressTimeouts['leftStickLeft'] = setTimeout(() => {
-                        longPressIntervals['leftStickLeft'] = setInterval(() => {
-                            handleGameControllerButtonPress(14);
-                        }, repeatInterval);
-                    }, repeatDelay);
                 }
             } else if (buttonStates['leftStickLeft']) {
                 buttonStates['leftStickLeft'] = false;
-                if (longPressTimeouts['leftStickLeft']) {
-                    clearTimeout(longPressTimeouts['leftStickLeft']);
-                    delete longPressTimeouts['leftStickLeft'];
-                }
-                if (longPressIntervals['leftStickLeft']) {
-                    clearInterval(longPressIntervals['leftStickLeft']);
-                    delete longPressIntervals['leftStickLeft'];
-                }
             }
 
             if (leftStickX > threshold) {
                 if (!buttonStates['leftStickRight']) {
                     buttonStates['leftStickRight'] = true;
                     handleGameControllerButtonPress(15); // Right
-                    longPressTimeouts['leftStickRight'] = setTimeout(() => {
-                        longPressIntervals['leftStickRight'] = setInterval(() => {
-                            handleGameControllerButtonPress(15);
-                        }, repeatInterval);
-                    }, repeatDelay);
                 }
             } else if (buttonStates['leftStickRight']) {
                 buttonStates['leftStickRight'] = false;
-                if (longPressTimeouts['leftStickRight']) {
-                    clearTimeout(longPressTimeouts['leftStickRight']);
-                    delete longPressTimeouts['leftStickRight'];
-                }
-                if (longPressIntervals['leftStickRight']) {
-                    clearInterval(longPressIntervals['leftStickRight']);
-                    delete longPressIntervals['leftStickRight'];
-                }
             }
 
             // Left stick vertical (up/down)
@@ -965,103 +937,50 @@ export function initGamepad() {
                 if (!buttonStates['leftStickUp']) {
                     buttonStates['leftStickUp'] = true;
                     handleGameControllerButtonPress(12); // Up
-                    longPressTimeouts['leftStickUp'] = setTimeout(() => {
-                        longPressIntervals['leftStickUp'] = setInterval(() => {
-                            handleGameControllerButtonPress(12);
-                        }, repeatInterval);
-                    }, repeatDelay);
                 }
             } else if (buttonStates['leftStickUp']) {
                 buttonStates['leftStickUp'] = false;
-                if (longPressTimeouts['leftStickUp']) {
-                    clearTimeout(longPressTimeouts['leftStickUp']);
-                    delete longPressTimeouts['leftStickUp'];
-                }
-                if (longPressIntervals['leftStickUp']) {
-                    clearInterval(longPressIntervals['leftStickUp']);
-                    delete longPressIntervals['leftStickUp'];
-                }
             }
 
             if (leftStickY > threshold) {
                 if (!buttonStates['leftStickDown']) {
                     buttonStates['leftStickDown'] = true;
                     handleGameControllerButtonPress(13); // Down
-                    longPressTimeouts['leftStickDown'] = setTimeout(() => {
-                        longPressIntervals['leftStickDown'] = setInterval(() => {
-                            handleGameControllerButtonPress(13);
-                        }, repeatInterval);
-                    }, repeatDelay);
                 }
             } else if (buttonStates['leftStickDown']) {
                 buttonStates['leftStickDown'] = false;
-                if (longPressTimeouts['leftStickDown']) {
-                    clearTimeout(longPressTimeouts['leftStickDown']);
-                    delete longPressTimeouts['leftStickDown'];
-                }
-                if (longPressIntervals['leftStickDown']) {
-                    clearInterval(longPressIntervals['leftStickDown']);
-                    delete longPressIntervals['leftStickDown'];
-                }
             }
 
             [0,1,2,3,4,5,8,12,13,14,15].forEach((buttonIndex) => {
                 const button = gamepad.buttons[buttonIndex];
                 const wasPressed = buttonStates[buttonIndex];
-                const isDpad = [12,13,14,15].includes(buttonIndex);
-                const shouldRepeat = isDpad || [4,5].includes(buttonIndex);
 
-                // Special handling for select button (button 0) - long press detection
-                if (buttonIndex === 0) {
+                // Special handling for button 8 (Share) in VPX mode - long press detection
+                if (buttonIndex === 8 && LB.autoSelect && LB.autoSelect === "vpx") {
                     if (button.pressed && !wasPressed) {
                         // Button just pressed
                         buttonStates[buttonIndex] = true;
-                        selectButtonPressStartTime = Date.now();
-                        selectButtonLongPressTriggered = false;
+                        button8PressStartTime = Date.now();
+                        button8LongPressTriggered = false;
+                        handleGameControllerButtonPress(buttonIndex);
                     } else if (!button.pressed && wasPressed) {
                         // Button released
                         buttonStates[buttonIndex] = false;
-                        const pressDuration = Date.now() - selectButtonPressStartTime;
-
-                        if (pressDuration >= LONG_PRESS_THRESHOLD && !selectButtonLongPressTriggered) {
-                            // Long press detected
-                            selectButtonLongPressTriggered = true;
-                            handleGameControllerButtonPress(buttonIndex, true);
-                        } else if (!selectButtonLongPressTriggered) {
-                            // Normal press
-                            handleGameControllerButtonPress(buttonIndex, false);
+                        const pressDuration = Date.now() - button8PressStartTime;
+                        
+                        if (pressDuration >= BUTTON8_LONG_PRESS_THRESHOLD && !button8LongPressTriggered) {
+                            // Long press detected (5 seconds)
+                            button8LongPressTriggered = true;
+                            alert('Button 8 (Share) long pressed for 5 seconds in VPX mode!');
                         }
-
-                        selectButtonPressStartTime = null;
-                    }
-                } else if (shouldRepeat) {
-                    if (button.pressed && !wasPressed) {
-                        buttonStates[buttonIndex] = true;
-                        handleGameControllerButtonPress(buttonIndex);
-                        longPressTimeouts[buttonIndex] = setTimeout(() => {
-                            longPressIntervals[buttonIndex] = setInterval(() => {
-                                handleGameControllerButtonPress(buttonIndex);
-                            }, repeatInterval);
-                        }, repeatDelay);
-                    } else if (!button.pressed && wasPressed) {
-                        buttonStates[buttonIndex] = false;
-                        if (buttonIndex === 12 && buttonStates[8]) {
-                            console.log('Share + Up combo!');
-                            ipcRenderer.invoke('restart');
-                            return;
-                        }
-                        if (longPressTimeouts[buttonIndex]) {
-                            clearTimeout(longPressTimeouts[buttonIndex]);
-                            delete longPressTimeouts[buttonIndex];
-                        }
-                        if (longPressIntervals[buttonIndex]) {
-                            clearInterval(longPressIntervals[buttonIndex]);
-                            delete longPressIntervals[buttonIndex];
-                        }
+                        
+                        button8PressStartTime = null;
                     }
                 } else {
+                    // Normal handling for all other buttons
                     if (button.pressed && !wasPressed) {
                         buttonStates[buttonIndex] = true;
+                        handleGameControllerButtonPress(buttonIndex);
                     } else if (!button.pressed && wasPressed) {
                         buttonStates[buttonIndex] = false;
                         if (buttonIndex === 12 && buttonStates[8]) {
@@ -1069,8 +988,6 @@ export function initGamepad() {
                             ipcRenderer.invoke('restart');
                             return;
                         }
-                        // Otherwise handle normally
-                        handleGameControllerButtonPress(buttonIndex);
                     }
                 }
             });
@@ -1080,7 +997,7 @@ export function initGamepad() {
         animationFrameId = requestAnimationFrame(pollGamepad);
     }
 
-    function handleGameControllerButtonPress(buttonIndex, isLongPress = false) {
+    function handleGameControllerButtonPress(buttonIndex) {
         // Trigger no-hover mode when any gamepad input is detected
         if (window.hideCursor) {
             window.hideCursor();
@@ -1088,16 +1005,7 @@ export function initGamepad() {
 
         switch (buttonIndex) {
         case 0:
-            if (isLongPress) {
-                // Long press on select button - you can customize this action
-                alert('Select button long pressed!');
-                // Example: Open context menu or perform special action
-                // For now, we'll simulate Ctrl+Enter which could trigger a different action
-                // simulateKeyDown('Enter', { ctrl: true });
-            } else {
-                // Normal press - regular Enter
-                simulateKeyDown('Enter');
-            }
+            simulateKeyDown('Enter');
             break;
         case 1:
             simulateKeyDown('Escape');

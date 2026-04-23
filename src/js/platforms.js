@@ -311,9 +311,31 @@ export const PLATFORMS = [
     {
         nbGames: 0,
         display: "grid",
-        displayName: "Visual Pinball X",
-        vendor: "Standalone",
-        name: "vpx",
+        displayName: "Visual Pinball X 1",
+        vendor: "The Electro-Mechanical Era",
+        name: "vpx1",
+        extensions: [".vpx"],
+        emulators: [
+            { name: "VPXStandalone", flatpak: null, scoop: null, url:"https://github.com/vpinball/vpinball", args: "--play" }
+        ]
+    },
+    {
+        nbGames: 0,
+        display: "grid",
+        displayName: "Visual Pinball X 2",
+        vendor: "The Solid State Era",
+        name: "vpx2",
+        extensions: [".vpx"],
+        emulators: [
+            { name: "VPXStandalone", flatpak: null, scoop: null, url:"https://github.com/vpinball/vpinball", args: "--play" }
+        ]
+    },
+    {
+        nbGames: 0,
+        display: "grid",
+        displayName: "Visual Pinball X 3",
+        vendor: "The Computer Era",
+        name: "vpx3",
         extensions: [".vpx"],
         emulators: [
             { name: "VPXStandalone", flatpak: null, scoop: null, url:"https://github.com/vpinball/vpinball", args: "--play" }

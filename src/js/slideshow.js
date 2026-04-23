@@ -805,12 +805,6 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         const scrollContainer = isListMode ? activePage.querySelector('.page-content') : activePage;
         if (scrollContainer) {
 
-            const isSingleColumn = LB.currentPlatform === "vpx";
-
-            if (isSingleColumn && (event.key === 'ArrowLeft' || event.key === 'ArrowRight')) {
-                console.log("LB.currentPlatform: ", LB.currentPlatform);
-            }
-
             const containerRect = scrollContainer.getBoundingClientRect();
             const itemRect = selectedContainer.getBoundingClientRect();
             const scrollTop = scrollContainer.scrollTop;
@@ -957,7 +951,7 @@ export function initGamepad() {
                 const wasPressed = buttonStates[buttonIndex];
 
                 // Special handling for button 8 (Share) in VPX mode - long press detection
-                if (buttonIndex === 8 && LB.autoSelect && LB.autoSelect === "vpx") {
+                if (buttonIndex === 8 && LB.autoSelect?.startsWith("vpx")) {
                     if (button.pressed && !wasPressed) {
                         // Button just pressed - start timer
                         buttonStates[buttonIndex] = true;
@@ -1024,14 +1018,14 @@ export function initGamepad() {
             console.log("3 (triangle)");
             break;
         case 4:
-            if (LB.autoSelect && LB.autoSelect === "vpx") {
+            if (LB.autoSelect?.startsWith("vpx")) {
                 simulateKeyDown('ArrowLeft');
             } else {
                 simulateKeyDown('ArrowLeft', { shift: true });
             }
             break;
         case 5:
-            if (LB.autoSelect && LB.autoSelect === "vpx") {
+            if (LB.autoSelect?.startsWith("vpx")) {
                 simulateKeyDown('ArrowRight');
             } else {
                 simulateKeyDown('ArrowRight', { shift: true });

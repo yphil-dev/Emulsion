@@ -186,6 +186,8 @@ async function initializeApp() {
                 window.onInstallKeyDown(event);
             } else if (LB.mode === 'resetPrefs' && window.onResetPrefsKeyDown) {
                 window.onResetPrefsKeyDown(event);
+            } else if (LB.mode === 'shutDownDialog' && window.onShutDownDialogKeyDown) {
+                window.onShutDownDialogKeyDown(event);
             }
         });
 

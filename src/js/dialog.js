@@ -736,6 +736,86 @@ export function systemDialog(focusButton = 'cancel') {
     }
 }
 
+export function shutDownDialog(focusButton = 'cancel') {
+
+    if (DialogManager.currentDialog && DialogManager.currentDialog.id === 'quit-confirmation-overlay') {
+        closeDialog();
+        return;
+    }
+
+    const overlay = document.getElementById('quit-confirmation-overlay');
+    const dialog = overlay.querySelector('.dialog');
+    const shutDownButton = dialog.querySelector('.ok');
+    const cancelButton = dialog.querySelector('.cancel');
+
+    // Update button text to "Shut Down"
+    shutDownButton.textContent = 'Shut Down';
+
+    // Map button names to elements
+    const buttonMap = {
+        'cancel': cancelButton,
+        'shutDown': shutDownButton
+    };
+
+    function closeDialog() {
+        DialogManager.closeCurrent();
+        DialogManager.restoreMode();
+    }
+
+    window.onShutDownDialogKeyDown = function onShutDownDialogKeyDown(event) {
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+
+        switch (event.key) {
+        case 'ArrowRight':
+        case 'ArrowDown':
+            simulateTabNavigation(dialog);
+            break;
+        case 'ArrowLeft':
+        case 'ArrowUp':
+            simulateTabNavigation(dialog, true);
+            break;
+
+        case '?':
+            helpDialog('shortcuts');
+            break;
+
+        case '/':
+            // Close dialog instead of activating current button
+            closeDialog();
+            break;
+
+        case 'Enter':
+            document.activeElement.click();
+            break;
+        case 'Escape':
+            closeDialog();
+            break;
+        }
+    };
+
+    shutDownButton.addEventListener('click', () => {
+        closeDialog();
+        ipcRenderer.invoke('quit');
+    });
+    cancelButton.addEventListener('click', () => closeDialog());
+
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeDialog();
+    });
+
+    // Open the dialog using DialogManager
+    DialogManager.open(overlay, 'shutDownDialog');
+
+    // Focus the specified button, fallback to cancel if invalid
+    const buttonToFocus = buttonMap[focusButton] || cancelButton;
+    if (buttonToFocus && buttonToFocus.style.display !== 'none') {
+        buttonToFocus.focus();
+    } else {
+        cancelButton.focus(); // Final fallback
+    }
+}
+
 export function launchGameDialog(gameContainer) {
     const overlay = document.getElementById('launch-game-overlay');
     const dialog = overlay.querySelector('div.dialog');

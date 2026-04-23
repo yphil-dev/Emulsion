@@ -12,7 +12,7 @@ import { updateFooterControlsFor,
          switchIcon } from './utils.js';
 import { updatePreference } from './preferences.js';
 import { getMeta, displayMetaData } from './metadata.js';
-import { editMetaDialog, toggleFavDialog, launchGameDialog, systemDialog, helpDialog } from './dialog.js';
+import { editMetaDialog, toggleFavDialog, launchGameDialog, systemDialog, helpDialog, shutDownDialog } from './dialog.js';
 
 const main = document.querySelector('main');
 const slideshow = document.getElementById("slideshow");
@@ -968,7 +968,7 @@ export function initGamepad() {
                         button8LongPressTimeout = setTimeout(() => {
                             if (buttonStates[buttonIndex] && !button8LongPressTriggered) {
                                 button8LongPressTriggered = true;
-                                alert('Button 8 (Share) long pressed for 5 seconds in VPX mode!');
+                                shutDownDialog();
                             }
                         }, BUTTON8_LONG_PRESS_THRESHOLD);
 

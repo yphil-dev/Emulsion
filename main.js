@@ -883,7 +883,7 @@ ipcMain.handle('shutdown-system', async () => {
     try {
         if (process.platform === 'linux') {
             // Linux/Ubuntu shutdown
-            exec('sudo shutdown -h now', (error, stdout, stderr) => {
+            exec('sudo systemctl poweroff', (error, stdout, stderr) => {
                 if (error) {
                     console.error('Shutdown error:', error);
                     // Fallback to poweroff

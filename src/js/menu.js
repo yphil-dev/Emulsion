@@ -213,7 +213,7 @@ function buildPrefsFormItem(name, iconName, type, description, shortDescription,
 
             const radioBox = document.createElement('div');
             radioBox.classList.add('radio-box');
-            radioBox.textContent = type;
+            radioBox.textContent = type.charAt(0).toUpperCase() + type.slice(1);
 
             if (index === types.length - 1) {
                 radioBox.classList.add('last');
@@ -720,7 +720,7 @@ function buildPlatformMenuForm(platformName) {
         }
     }
 
-    const sortGamesBy = buildPrefsFormItem('sortGamesBy', 'swatchbook', ['name', 'date', 'vendor'], '', 'Sort Games by', LB.preferences[platformName]?.sortGamesBy || 'name');
+    const sortGamesBy = buildPrefsFormItem('sortGamesBy', 'sort-order', ['name', 'date', 'vendor'], 'Order of the games', 'Sort Games by', LB.preferences[platformName]?.sortGamesBy || 'name');
     const sortGamesByGroup = sortGamesBy.group;
     const sortGamesByRadios = sortGamesBy.radios;
 
@@ -729,8 +729,8 @@ function buildPlatformMenuForm(platformName) {
     formContainer.appendChild(gamesDirGroup);
     formContainer.appendChild(emulatorGroup);
     formContainer.appendChild(emulatorArgsGroup);
-    formContainer.appendChild(extensionsGroup);
     formContainer.appendChild(sortGamesByGroup);
+    formContainer.appendChild(extensionsGroup);
 
     const formContainerButtons = document.createElement('div');
     formContainerButtons.classList.add('bottom-buttons-menu', 'bottom-buttons');

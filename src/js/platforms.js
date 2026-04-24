@@ -337,7 +337,7 @@ export const PLATFORMS = [
     {
         nbGames: 0,
         display: "grid",
-        displayName: "Visual Pinball X 1",
+        displayName: "Visual Pinball X",
         vendor: "The Electro-Mechanical Era",
         name: "vpx1",
         extensions: [".vpx"],
@@ -349,7 +349,7 @@ export const PLATFORMS = [
     {
         nbGames: 0,
         display: "grid",
-        displayName: "Visual Pinball X 2",
+        displayName: "Visual Pinball X",
         vendor: "The Solid State Era",
         name: "vpx2",
         extensions: [".vpx"],
@@ -361,7 +361,7 @@ export const PLATFORMS = [
     {
         nbGames: 0,
         display: "grid",
-        displayName: "Visual Pinball X 3",
+        displayName: "Visual Pinball X",
         vendor: "The Computer Era",
         name: "vpx3",
         extensions: [".vpx"],

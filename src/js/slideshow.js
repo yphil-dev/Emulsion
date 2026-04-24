@@ -704,7 +704,7 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
                 }
             }
         } else {
-            closeGameMenu(selectedContainer.querySelector('img').src, selectedContainer);
+            closeGameMenu(selectedContainer.querySelector('img').src);
         }
         break;
 

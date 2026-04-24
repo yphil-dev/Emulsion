@@ -13,7 +13,7 @@ export const getAllCoverImageUrls = async (gameName, platform, platformName, opt
 
     const backends = [];
 
-    if (platform === 'vpx') {
+    if (platform.startsWith("vpx")) {
         if (opdbAPIKey) {
             backends.push(() => opdbFetch(gameName, opdbAPIKey));
         }

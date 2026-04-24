@@ -4,7 +4,8 @@ import { cleanFileName,
          scanDirectory,
          getPs3GameName,
          findImageFile,
-         buildIcon } from './utils.js';
+         buildIcon,
+         extractVpxYear } from './utils.js';
 import { incrementNbGames } from './preferences.js';
 import { openPlatformMenu } from './menu.js';
 
@@ -182,10 +183,23 @@ export async function buildGallery(params) {
         }
     }
 
-    // Force synchronous operation for debugging
     const gameFiles = await scanDirectory(gamesDir, extensions, true);
 
-    gameFiles.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+    // Sort based on sortGamesBy preference
+    const sortGamesBy = LB.preferences[platform]?.sortGamesBy || 'name';
+
+    if (sortGamesBy === 'date') {
+        gameFiles.sort((a, b) => {
+            const yearA = extractVpxYear(path.basename(a));
+            const yearB = extractVpxYear(path.basename(b));
+            if (yearA !== yearB) return yearA - yearB;
+            // Fallback to alphabetical for same year or no year
+            return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+        });
+    } else {
+        // Default: sort by name
+        gameFiles.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+    }
 
     if (gameFiles.length === 0) {
 
@@ -260,7 +274,11 @@ export async function buildGameContainer({
     index
 }) {
     const container = document.createElement('div');
-    const gamesDir = LB.preferences[platform].gamesDir;
+    const gamesDir = LB.preferences[platform]?.gamesDir;
+    if (!gamesDir) {
+        console.warn(`Platform "${platform}" not found in preferences, skipping game: ${gameName}`);
+        return null;
+    }
     const cleanName = cleanFileName(gameName);
     const coverPath = await findImageFile(path.join(gamesDir, 'images'), gameName);
     const platformBadge = document.createElement('div');
@@ -337,7 +355,9 @@ async function buildFavoritesGallery({ index }) {
                 index: i
             });
 
-            pageContent.appendChild(gameContainer);
+            if (gameContainer) {
+                pageContent.appendChild(gameContainer);
+            }
 
         } catch (err) {
             console.error('Failed to get platform preference:', err);
@@ -389,7 +409,9 @@ async function buildRecentGallery({ index }) {
                     index: i
                 });
 
-                pageContent.appendChild(gameContainer);
+                if (gameContainer) {
+                    pageContent.appendChild(gameContainer);
+                }
 
             } catch (err) {
                 console.error('Failed to get platform preference:', err);

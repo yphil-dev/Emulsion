@@ -895,3 +895,13 @@ export function updateLabelFontSize(numOfCols) {
     document.documentElement.style.setProperty("--font-size-gallery-label", fontSize);
 }
 
+export function extractVpxYear(filename) {
+    // Look for 4-digit years (19xx or 20xx) inside parentheses
+    const match = filename.match(/\((?:[^)]*?\s)?(19|20)\d{2}[^)]*\)/);
+    if (match) {
+        const yearMatch = match[0].match(/(19|20)\d{2}/);
+        if (yearMatch) return parseInt(yearMatch[0]);
+    }
+    return 0; // Default for files without a year
+}
+

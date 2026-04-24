@@ -302,7 +302,17 @@ export async function buildGameContainer({
     const coverPath = await findImageFile(path.join(gamesDir, 'images'), gameName);
     const platformBadge = document.createElement('div');
     platformBadge.className = 'platform-badge';
-    platformBadge.textContent = platform;
+
+    // Display vendor/date for VPX* platforms only
+    const isVpxPlatform = platform.startsWith('vpx');
+    if (isVpxPlatform) {
+        const vendor = extractVpxVendor(gameName) || 'N/A';
+        const year = extractVpxYear(gameName) || 'N/A';
+        platformBadge.textContent = `${vendor} ${year}`;
+        platformBadge.style.display = 'block';
+    } else {
+        platformBadge.textContent = platform;
+    }
     container.classList.add('game-container');
     container.title = `${cleanName}
 

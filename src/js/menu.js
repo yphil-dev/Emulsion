@@ -720,12 +720,17 @@ function buildPlatformMenuForm(platformName) {
         }
     }
 
+    const sortGamesBy = buildPrefsFormItem('sortGamesBy', 'swatchbook', ['name', 'date'], '', 'Sort Games by', LB.preferences[platformName]?.sortGamesBy || 'name');
+    const sortGamesByGroup = sortGamesBy.group;
+    const sortGamesByRadios = sortGamesBy.radios;
+
     formContainer.appendChild(platformMenuImageCtn);
     formContainer.appendChild(statusLabel);
     formContainer.appendChild(gamesDirGroup);
     formContainer.appendChild(emulatorGroup);
     formContainer.appendChild(emulatorArgsGroup);
     formContainer.appendChild(extensionsGroup);
+    formContainer.appendChild(sortGamesByGroup);
 
     const formContainerButtons = document.createElement('div');
     formContainerButtons.classList.add('bottom-buttons-menu', 'bottom-buttons');
@@ -815,12 +820,14 @@ function buildPlatformMenuForm(platformName) {
             const prevEmulator = LB.preferences[platformName]?.emulator || '';
             const prevExtensions = LB.preferences[platformName]?.extensions || [];
             const prevArgs = LB.preferences[platformName]?.emulatorArgs || '';
+            const prevSortGamesBy = LB.preferences[platformName]?.sortGamesBy || 'name';
 
             const nextEnabled = statusCheckBox.checked;
             const nextGamesDir = gamesDirInput.value.trim();
             const nextEmulator = emulatorInput.value.trim();
             const nextExtensions = extensions;
             const nextArgs = emulatorArgsInput.value.trim();
+            const nextSortGamesBy = sortGamesByRadios.find(radio => radio.checked)?.value || 'name';
 
             // Compare deep equality for arrays
             const arraysEqual = (a, b) =>
@@ -834,7 +841,8 @@ function buildPlatformMenuForm(platformName) {
                   prevGamesDir !== nextGamesDir ||
                   prevEmulator !== nextEmulator ||
                   !arraysEqual(prevExtensions, nextExtensions) ||
-                prevArgs !== nextArgs;
+                prevArgs !== nextArgs ||
+                prevSortGamesBy !== nextSortGamesBy;
 
             if (!changed) {
                 console.log('No changes detected. Skipping reload.');
@@ -847,6 +855,7 @@ function buildPlatformMenuForm(platformName) {
             await updatePreference(platformName, 'emulator', nextEmulator);
             await updatePreference(platformName, 'extensions', nextExtensions);
             await updatePreference(platformName, 'emulatorArgs', nextArgs);
+            await updatePreference(platformName, 'sortGamesBy', nextSortGamesBy);
 
             // Update DOM status for immediate feedback
             const page = document.querySelector(`.page[data-platform="${platformName}"]`);

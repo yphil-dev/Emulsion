@@ -720,7 +720,7 @@ function buildPlatformMenuForm(platformName) {
         }
     }
 
-    const sortGamesBy = buildPrefsFormItem('sortGamesBy', 'swatchbook', ['name', 'date'], '', 'Sort Games by', LB.preferences[platformName]?.sortGamesBy || 'name');
+    const sortGamesBy = buildPrefsFormItem('sortGamesBy', 'swatchbook', ['name', 'date', 'vendor'], '', 'Sort Games by', LB.preferences[platformName]?.sortGamesBy || 'name');
     const sortGamesByGroup = sortGamesBy.group;
     const sortGamesByRadios = sortGamesBy.radios;
 

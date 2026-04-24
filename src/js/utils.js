@@ -905,3 +905,13 @@ export function extractVpxYear(filename) {
     return 0; // Default for files without a year
 }
 
+export function extractVpxVendor(filename) {
+    // Look for vendor name inside parentheses, before the year
+    // Pattern: (Vendor Year) e.g., (Bally 1995), (Williams 1993)
+    const match = filename.match(/\(([^)]*?)\s+(?:19|20)\d{2}[^)]*\)/);
+    if (match && match[1]) {
+        return match[1].trim();
+    }
+    return ''; // Default for files without a vendor
+}
+

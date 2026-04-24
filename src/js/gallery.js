@@ -5,7 +5,8 @@ import { cleanFileName,
          getPs3GameName,
          findImageFile,
          buildIcon,
-         extractVpxYear } from './utils.js';
+         extractVpxYear,
+         extractVpxVendor } from './utils.js';
 import { incrementNbGames } from './preferences.js';
 import { openPlatformMenu } from './menu.js';
 
@@ -194,6 +195,24 @@ export async function buildGallery(params) {
             const yearB = extractVpxYear(path.basename(b));
             if (yearA !== yearB) return yearA - yearB;
             // Fallback to alphabetical for same year or no year
+            return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+        });
+    } else if (sortGamesBy === 'vendor') {
+        gameFiles.sort((a, b) => {
+            const vendorA = extractVpxVendor(path.basename(a));
+            const vendorB = extractVpxVendor(path.basename(b));
+            // Empty vendors go to the end
+            if (!vendorA && vendorB) return 1;
+            if (vendorA && !vendorB) return -1;
+            if (!vendorA && !vendorB) return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+            // Compare vendors first, then by year if same vendor
+            const vendorCompare = vendorA.localeCompare(vendorB, undefined, { sensitivity: 'base' });
+            if (vendorCompare !== 0) return vendorCompare;
+            // Same vendor: sort by year
+            const yearA = extractVpxYear(path.basename(a));
+            const yearB = extractVpxYear(path.basename(b));
+            if (yearA !== yearB) return yearA - yearB;
+            // Same vendor and year: sort alphabetically
             return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
         });
     } else {

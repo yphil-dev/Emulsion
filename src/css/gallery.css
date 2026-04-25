@@ -148,6 +148,7 @@ div.menu-game-container {
   font-weight: bold;
   overflow: hidden;
   position: relative; /* badges */
+  container-type: inline-size;
 }
 
 div.menu-game-container {
@@ -208,17 +209,17 @@ div.menu-game-container {
   top: 0;
   pointer-events: auto;
   align-self: flex-end;
-  padding: 4px 10px;
+  padding: 0.5cqw 1.5cqw;
   font-family: sans-serif;
-  font-size: 0.8vw;
+  font-size: 10cqw;
   font-weight: 600;
   color: var(--color-text-badge);
   background-color: var(--color-bg-badge);
   opacity: 0.8;
-  border: 1px solid var(--color-outline-control-button);
+  border: 0.25cqw solid var(--color-outline-control-button);
   /* box-shadow: 0 2px 4px rgba(0,0,0,0.2); */
-  border-radius: 5px;
-  margin: 0.4em;
+  border-radius: 0.8cqw;
+  margin: 0.7cqw;
 }
 
 .page-content.list .platform-badge {

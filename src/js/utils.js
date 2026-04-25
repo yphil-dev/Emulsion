@@ -345,10 +345,18 @@ function _moveTrailingArticleToFront(s) {
 }
 
 function _isolateNumericSuffixes(s) {
+    // Handle special version prefix 'v' followed by numbers, remove the v
+    s = s.replace(/([A-Za-z])[vV](\d.*)$/g, '$1 $2');
+    
+    // Isolate loose numeric/version suffix that directly follows text with no space
+    s = s.replace(/([A-Za-z])(\d.*)$/gi, '$1 $2');
+    
+    // Isolate explicit numeric suffix terms
     for (const term of NUMERIC_SUFFIXES) {
         const re = new RegExp(`([A-Za-z])(${term})(\\b|$)`, 'gi');
         s = s.replace(re, '$1 $2');
     }
+    
     return s;
 }
 
@@ -356,7 +364,8 @@ function _titleCase(s) {
     return s
         .split(/\s+/)
         .map(word => {
-            if (/^[0-9]+$/.test(word) || /^[A-Z0-9]+$/.test(word)) {
+            // Keep full uppercase acronyms as they are (4+ chars means intentional allcaps name)
+            if (/^[0-9]+$/.test(word) || /^[A-Z0-9]{3,}$/.test(word)) {
                 return word;
             }
             return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
@@ -896,22 +905,41 @@ export function updateLabelFontSize(numOfCols) {
 }
 
 export function extractVpxYear(filename) {
-    // Look for 4-digit years (19xx or 20xx) inside parentheses
-    const match = filename.match(/\((?:[^)]*?\s)?(19|20)\d{2}[^)]*\)/);
-    if (match) {
-        const yearMatch = match[0].match(/(19|20)\d{2}/);
-        if (yearMatch) return parseInt(yearMatch[0]);
+    // Find last occurring 4-digit year (19xx or 20xx) anywhere in parentheses
+    const allParens = filename.matchAll(/\((.*?)\)/g);
+    let lastYear = 0;
+    
+    for (const match of allParens) {
+        const yearMatch = match[1].match(/(19|20)\d{2}/);
+        if (yearMatch) {
+            lastYear = parseInt(yearMatch[0]);
+        }
     }
-    return 0; // Default for files without a year
+    
+    return lastYear;
 }
 
 export function extractVpxVendor(filename) {
-    // Look for vendor name inside parentheses, before the year
-    // Pattern: (Vendor Year) e.g., (Bally 1995), (Williams 1993)
-    const match = filename.match(/\(([^)]*?)\s+(?:19|20)\d{2}[^)]*\)/);
-    if (match && match[1]) {
-        return match[1].trim();
+    // We are looking for ANY parenthesis that contains only vendor name (no year)
+    // directly followed immediately by parenthesis that contains only the year
+    const vendorYearPattern = /\(([^()0-9]+)\)\s*\((?:\s*(19|20)\d{2}\s*)\)/g;
+    const matches = [...filename.matchAll(vendorYearPattern)];
+    
+    if (matches.length > 0) {
+        const lastMatch = matches[matches.length - 1];
+        return lastMatch[1].trim();
     }
-    return ''; // Default for files without a vendor
+    
+    // Fallback to original pattern when both are in same parenthesis
+    const allParens = filename.matchAll(/\((.*?)\s*(19|20)\d{2}.*?\)/g);
+    let lastVendor = '';
+    
+    for (const match of allParens) {
+        if (match[1] && match[1].trim().length > 0) {
+            lastVendor = match[1].trim();
+        }
+    }
+    
+    return lastVendor;
 }
 

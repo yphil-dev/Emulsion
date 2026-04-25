@@ -82,85 +82,85 @@ if (typeof window !== 'undefined') {
 
     window.onGameMenuKeyDown = function onGameMenuKeyDown(event) {
 
-    event.stopPropagation();
-    event.stopImmediatePropagation();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
 
-    const menu = document.getElementById('menu');
-    const menuGameContainers = Array.from(menu.querySelectorAll('.menu-game-container'));
-    const galleryNumOfCols = LB.galleryNumOfCols;
+        const menu = document.getElementById('menu');
+        const menuGameContainers = Array.from(menu.querySelectorAll('.menu-game-container'));
+        const galleryNumOfCols = LB.galleryNumOfCols;
 
-    switch (event.key) {
-    case 'ArrowRight':
-        if (!event.shiftKey) {
-            menuState.selectedIndex = (menuState.selectedIndex + 1) % menuGameContainers.length;
+        switch (event.key) {
+        case 'ArrowRight':
+            if (!event.shiftKey) {
+                menuState.selectedIndex = (menuState.selectedIndex + 1) % menuGameContainers.length;
+            }
+            break;
+
+        case 'ArrowLeft':
+            if (!event.shiftKey && menuState.selectedIndex !== 1) {
+                menuState.selectedIndex = (menuState.selectedIndex - 1 + menuGameContainers.length) % menuGameContainers.length;
+            }
+            break;
+
+        case 'ArrowUp':
+            if (menuState.selectedIndex > galleryNumOfCols) {
+                menuState.selectedIndex = Math.max(menuState.selectedIndex - galleryNumOfCols, 0);
+            }
+            break;
+
+        case 'ArrowDown':
+            menuState.selectedIndex = Math.min(menuState.selectedIndex + galleryNumOfCols, menuGameContainers.length - 1);
+            break;
+
+        case 'PageUp':
+            menuState.selectedIndex = Math.max(menuState.selectedIndex - galleryNumOfCols * 10, 0);
+            break;
+
+        case 'PageDown':
+            menuState.selectedIndex = Math.min(menuState.selectedIndex + galleryNumOfCols * 10, menuGameContainers.length - 1);
+            break;
+
+        case 'Home':
+            menuState.selectedIndex = 0;
+            break;
+
+        case 'End':
+            menuState.selectedIndex = menuGameContainers.length - 1;
+            break;
+
+        case 'Enter':
+            const selectedGameContainer = getSelectedGameContainer(menuGameContainers, menuState.selectedIndex);
+            const selectedImg = selectedGameContainer.querySelector('.game-image');
+            closeGameMenu(selectedImg.src);
+            initGallery(LB.currentPlatform);
+            break;
+        case 'Escape':
+            closeGameMenu();
+            initGallery(LB.currentPlatform);
+            break;
         }
-        break;
 
-    case 'ArrowLeft':
-        if (!event.shiftKey && menuState.selectedIndex !== 1) {
-            menuState.selectedIndex = (menuState.selectedIndex - 1 + menuGameContainers.length) % menuGameContainers.length;
+        menuGameContainers.forEach((container, index) => {
+            container.classList.toggle('selected', index === menuState.selectedIndex);
+        });
+
+        if (event.key.startsWith('Arrow')) {
+            const selectedContainer = menuGameContainers.find((container, index) => index === menuState.selectedIndex);
+
+            // Manual scroll to replace scrollIntoView
+            if (selectedContainer) {
+                const containerRect = menu.getBoundingClientRect();
+                const itemRect = selectedContainer.getBoundingClientRect();
+                const scrollTop = menu.scrollTop;
+                const itemTop = itemRect.top - containerRect.top + scrollTop;
+                const itemHeight = itemRect.height;
+                const containerHeight = containerRect.height;
+                const newScrollTop = itemTop - (containerHeight / 2) + (itemHeight / 2);
+                menu.scrollTop = Math.max(0, newScrollTop);
+            }
         }
-        break;
 
-    case 'ArrowUp':
-        if (menuState.selectedIndex > galleryNumOfCols) {
-            menuState.selectedIndex = Math.max(menuState.selectedIndex - galleryNumOfCols, 0);
-        }
-        break;
-
-    case 'ArrowDown':
-        menuState.selectedIndex = Math.min(menuState.selectedIndex + galleryNumOfCols, menuGameContainers.length - 1);
-        break;
-
-    case 'PageUp':
-        menuState.selectedIndex = Math.max(menuState.selectedIndex - galleryNumOfCols * 10, 0);
-        break;
-
-    case 'PageDown':
-        menuState.selectedIndex = Math.min(menuState.selectedIndex + galleryNumOfCols * 10, menuGameContainers.length - 1);
-        break;
-
-    case 'Home':
-        menuState.selectedIndex = 0;
-        break;
-
-    case 'End':
-        menuState.selectedIndex = menuGameContainers.length - 1;
-        break;
-
-    case 'Enter':
-        const selectedGameContainer = getSelectedGameContainer(menuGameContainers, menuState.selectedIndex);
-        const selectedImg = selectedGameContainer.querySelector('.game-image');
-        closeGameMenu(selectedImg.src);
-        initGallery(LB.currentPlatform);
-        break;
-    case 'Escape':
-        closeGameMenu();
-        initGallery(LB.currentPlatform);
-        break;
-    }
-
-    menuGameContainers.forEach((container, index) => {
-        container.classList.toggle('selected', index === menuState.selectedIndex);
-    });
-
-    if (event.key.startsWith('Arrow')) {
-        const selectedContainer = menuGameContainers.find((container, index) => index === menuState.selectedIndex);
-
-        // Manual scroll to replace scrollIntoView
-        if (selectedContainer) {
-            const containerRect = menu.getBoundingClientRect();
-            const itemRect = selectedContainer.getBoundingClientRect();
-            const scrollTop = menu.scrollTop;
-            const itemTop = itemRect.top - containerRect.top + scrollTop;
-            const itemHeight = itemRect.height;
-            const containerHeight = containerRect.height;
-            const newScrollTop = itemTop - (containerHeight / 2) + (itemHeight / 2);
-            menu.scrollTop = Math.max(0, newScrollTop);
-        }
-    }
-
-};
+    };
 }
 
 function onGameMenuClick(event) {
@@ -1162,11 +1162,16 @@ function buildManualSelectButton(gameName, platformName, imgElem) {
         // Tell main to copy the file
         const success = await ipcRenderer.invoke('save-cover', srcPath, destPath);
 
-        console.log("imgSrc: ", success);
-
         if (success) {
             imgElem.src = `file://${destPath}?${Date.now()}`;
             console.log(`Cover saved to ${destPath}`);
+
+            imgElem.onload = () => {
+                setTimeout(() => {
+                    closeGameMenu(destPath);
+                }, 1000);
+            };
+
         } else {
             console.log('Failed to save cover');
         }
@@ -1299,11 +1304,19 @@ export async function closeGameMenu(imgSrc) {
 
                 const gameName = selectedGame.dataset.gameName;
 
-                const savedImagePath = await downloadImage(
-                    imgSrc,
-                    selectedGame.dataset.platform,
-                    gameName
-                );
+                const isLocal = !imgSrc.startsWith('http');
+
+                let savedImagePath;
+
+                if (isLocal) {
+                    savedImagePath = imgSrc;
+                } else {
+                    savedImagePath = await downloadImage(
+                        imgSrc,
+                        selectedGame.dataset.platform,
+                        gameName
+                    );
+                }
 
                 if (savedImagePath) {
                     selectedGameImg.src = savedImagePath + '?t=' + new Date().getTime();

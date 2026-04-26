@@ -556,6 +556,8 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
         batchDownload();
     });
 
+    document.querySelector('footer .back').onclick = () => simulateKeyDown('Escape');
+
     // Set initial active page
     pages.forEach(p => p.classList.remove('active'));
     targetPage.classList.add('active');

@@ -207,19 +207,20 @@ div.menu-game-container {
   position: absolute;
   display: none;
   top: 0;
+  right: 0;
   pointer-events: auto;
   align-self: flex-end;
-  padding: 0.5cqw 1.5cqw;
+  padding: 1cqw;
+  margin: 5cqw;
   font-family: sans-serif;
-  font-size: 10cqw;
+  font-size: 8cqw;
   font-weight: 600;
   color: var(--color-text-badge);
   background-color: var(--color-bg-badge);
   opacity: 0.8;
-  border: 0.25cqw solid var(--color-outline-control-button);
+  border: 0.25cqw solid var(--color-badge-border);
   /* box-shadow: 0 2px 4px rgba(0,0,0,0.2); */
-  border-radius: 0.8cqw;
-  margin: 0.7cqw;
+  border-radius: 3px;
 }
 
 .page-content.list .platform-badge {

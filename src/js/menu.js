@@ -1169,7 +1169,7 @@ function buildManualSelectButton(gameName, platformName, imgElem) {
             imgElem.onload = () => {
                 setTimeout(() => {
                     closeGameMenu(destPath);
-                }, 1000);
+                }, 500);
             };
 
         } else {

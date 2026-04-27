@@ -298,9 +298,10 @@ export function cleanFileName(fileName) {
     s = _splitSpecial(s);
     s = _splitCamelCase(s);
     s = _splitAcronym(s);
+    s = _removeAfterClosingParen(s);
     s = _removeParens(s);
     s = _removeBrackets(s);
-    s = _isolateNumericSuffixes(s);   // 👈 NEW STEP
+    s = _isolateNumericSuffixes(s);
     s = _moveTrailingArticleToFront(s);
 
     const result = _titleCase(s);
@@ -335,6 +336,14 @@ function _removeBrackets(s) {
     return s.replace(/\s*\[.*?\]/g, '');
 }
 
+function _removeAfterClosingParen(s) {
+    const index = s.indexOf(')');
+    if (index !== -1) {
+        return s.substring(0, index + 1);
+    }
+    return s;
+}
+
 function _moveTrailingArticleToFront(s) {
     const m = s.match(/^(.*?),\s*(The|An|A)$/i);
     if (m) {
@@ -347,16 +356,16 @@ function _moveTrailingArticleToFront(s) {
 function _isolateNumericSuffixes(s) {
     // Handle special version prefix 'v' followed by numbers, remove the v
     s = s.replace(/([A-Za-z])[vV](\d.*)$/g, '$1 $2');
-    
+
     // Isolate loose numeric/version suffix that directly follows text with no space
     s = s.replace(/([A-Za-z])(\d.*)$/gi, '$1 $2');
-    
+
     // Isolate explicit numeric suffix terms
     for (const term of NUMERIC_SUFFIXES) {
         const re = new RegExp(`([A-Za-z])(${term})(\\b|$)`, 'gi');
         s = s.replace(re, '$1 $2');
     }
-    
+
     return s;
 }
 
@@ -371,6 +380,26 @@ function _titleCase(s) {
             return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
         })
         .join(' ');
+}
+
+export function extractVpxYear(filename) {
+    // Look for 4-digit years (19xx or 20xx) inside parentheses
+    const match = filename.match(/\((?:[^)]*?\s)?(19|20)\d{2}[^)]*\)/);
+    if (match) {
+        const yearMatch = match[0].match(/(19|20)\d{2}/);
+        if (yearMatch) return parseInt(yearMatch[0]);
+    }
+    return 0; // Default for files without a year
+}
+
+export function extractVpxVendor(filename) {
+    // Look for vendor name inside parentheses, before the year
+    // Pattern: (Vendor Year) e.g., (Bally 1995), (Williams 1993)
+    const match = filename.match(/\(([^)]*?)\s+(?:19|20)\d{2}[^)]*\)/);
+    if (match && match[1]) {
+        return match[1].trim();
+    }
+    return ''; // Default for files without a vendor
 }
 
 export function setKeydown(newHandler) {
@@ -903,24 +932,3 @@ export function updateLabelFontSize(numOfCols) {
     const fontSize = `clamp(10px, ${factor}vw, 28px)`;
     document.documentElement.style.setProperty("--font-size-gallery-label", fontSize);
 }
-
-export function extractVpxYear(filename) {
-    // Look for 4-digit years (19xx or 20xx) inside parentheses
-    const match = filename.match(/\((?:[^)]*?\s)?(19|20)\d{2}[^)]*\)/);
-    if (match) {
-        const yearMatch = match[0].match(/(19|20)\d{2}/);
-        if (yearMatch) return parseInt(yearMatch[0]);
-    }
-    return 0; // Default for files without a year
-}
-
-export function extractVpxVendor(filename) {
-    // Look for vendor name inside parentheses, before the year
-    // Pattern: (Vendor Year) e.g., (Bally 1995), (Williams 1993)
-    const match = filename.match(/\(([^)]*?)\s+(?:19|20)\d{2}[^)]*\)/);
-    if (match && match[1]) {
-        return match[1].trim();
-    }
-    return ''; // Default for files without a vendor
-}
-

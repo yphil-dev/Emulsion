@@ -16,6 +16,10 @@ export function toFileUrl(filePath) {
     return pathToFileURL(filePath).href;
 }
 
+export function getImagesDir(gamesDir) {
+    return path.join(gamesDir, 'images');
+}
+
 export function initFooterControls() {
     updateFooterControls('dpad', 'ew', 'Platforms', 'on');
     updateFooterControls('shoulders', 'same', 'same', 'off');
@@ -538,10 +542,10 @@ export async function scanDirectory(gamesDir, extensions, recursive = true, igno
     }
 }
 
-export async function findImageFile(basePaths, fileNameWithoutExt) {
+export async function findImageFile(imagesDir, fileNameWithoutExt) {
     try {
         // Use IPC to call the main process findImageFile handler
-        return await ipcRenderer.invoke('find-image-file', basePaths, fileNameWithoutExt);
+        return await ipcRenderer.invoke('find-image-file', imagesDir, fileNameWithoutExt);
     } catch (err) {
         console.warn("Error finding image file:", err);
         return null;

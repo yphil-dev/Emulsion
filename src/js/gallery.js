@@ -5,6 +5,7 @@ import { cleanFileName,
          getPs3GameName,
          findImageFile,
          toFileUrl,
+         getImagesDir,
          buildIcon,
          extractVpxYear,
          extractVpxVendor } from './utils.js';
@@ -174,8 +175,6 @@ export async function buildGallery(params) {
         return page;
     }
 
-    const imagesDir = path.join(gamesDir, 'images');
-
     async function getPs3GameTitleSafe(filePath) {
         try {
             return await ipcRenderer.invoke('parse-sfo', filePath);
@@ -300,13 +299,7 @@ export async function buildGameContainer({
         return null;
     }
     const cleanName = cleanFileName(gameName);
-    const gameDir = path.dirname(filePath);
-    const coverSearchPaths = [
-        path.join(gamesDir, 'images'),
-        path.join(gameDir, 'images'),
-        gameDir
-    ];
-    const coverPath = await findImageFile(coverSearchPaths, gameName);
+    const coverPath = await findImageFile(getImagesDir(gamesDir), gameName);
     const platformBadge = document.createElement('div');
     platformBadge.className = 'platform-badge';
 

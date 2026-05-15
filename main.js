@@ -313,6 +313,24 @@ const createDirectoryIfNeeded = (dirPath) => {
     }
 };
 
+const COVER_IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'webp'];
+
+function getImagesDir(gamesDir) {
+    return path.join(gamesDir, 'images');
+}
+
+function getImageExtension(imgSrc) {
+    try {
+        const extension = path.extname(new URL(imgSrc).pathname).slice(1).toLowerCase();
+        if (COVER_IMAGE_EXTENSIONS.includes(extension)) return extension;
+    } catch (err) {
+        // Fall back to plain path parsing below.
+    }
+
+    const extension = path.extname(String(imgSrc).split(/[?#]/)[0]).slice(1).toLowerCase();
+    return COVER_IMAGE_EXTENSIONS.includes(extension) ? extension : 'jpg';
+}
+
 function hasPathPrefix(filePath, parentPath) {
     if (!filePath || !parentPath) return false;
 
@@ -442,8 +460,8 @@ async function resolveGameEntry(entry) {
 
 const downloadAndSaveImage = async (imgSrc, platform, gameName, gamesDir) => {
 
-    const extension = imgSrc.split('.').pop();
-    const saveDir = path.join(gamesDir, 'images');
+    const extension = getImageExtension(imgSrc);
+    const saveDir = getImagesDir(gamesDir);
     const savePath = path.join(saveDir, `${gameName}.${extension}`);
     createDirectoryIfNeeded(saveDir);
 
@@ -618,9 +636,9 @@ ipcMain.on('show-context-menu', (event, params) => {
     menu.popup({ window: mainWindow });
 });
 
-ipcMain.handle('download-image', async (event, imgSrc, platform, gameName, imagesDir) => {
+ipcMain.handle('download-image', async (event, imgSrc, platform, gameName, gamesDir) => {
     try {
-        const savedImagePath = await downloadAndSaveImage(imgSrc, platform, gameName, imagesDir);
+        const savedImagePath = await downloadAndSaveImage(imgSrc, platform, gameName, gamesDir);
         return { success: true, path: savedImagePath };
     } catch (error) {
         return { success: false, error: error.message };
@@ -1335,8 +1353,6 @@ async function scanDirectoryRecursive(gamesDir, extensions, recursive, ignoredDi
     return files;
 }
 
-const COVER_IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'webp'];
-
 function updateNewestImage(current, imagePath) {
     try {
         if (!fsSync.existsSync(imagePath)) return current;
@@ -1404,20 +1420,8 @@ function findImageInDirectory(basePath, fileNameWithoutExt) {
     return newestImage?.path || null;
 }
 
-ipcMain.handle('find-image-file', async (event, basePaths, fileNameWithoutExt) => {
-    const searchPaths = Array.isArray(basePaths) ? basePaths : [basePaths];
-    const uniqueSearchPaths = searchPaths.filter((dir, index) => (
-        dir &&
-        typeof dir === 'string' &&
-        searchPaths.indexOf(dir) === index
-    ));
-
-    for (const basePath of uniqueSearchPaths) {
-        const imagePath = findImageInDirectory(basePath, fileNameWithoutExt);
-        if (imagePath) return imagePath;
-    }
-
-    return null;
+ipcMain.handle('find-image-file', async (event, imagesDir, fileNameWithoutExt) => {
+    return findImageInDirectory(imagesDir, fileNameWithoutExt);
 });
 
 ipcMain.handle('get-flatpak-download-size', async (event, appId) => {

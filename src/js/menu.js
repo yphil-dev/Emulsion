@@ -13,6 +13,7 @@ import { getSelectedGameContainer,
          setFooterSize,
          toggleHeaderNavLinks,
          toFileUrl,
+         getImagesDir,
          fadeOut } from './utils.js';
 import { helpDialog, installEmulatorsDialog, systemDialog } from './dialog.js';
 
@@ -1155,10 +1156,10 @@ function buildManualSelectButton(gameName, platformName, imgElem) {
 
         const gamesDir = window.LB.preferences[platformName].gamesDir;
 
-        const extension = srcPath.split('.').pop();
+        const extension = path.extname(srcPath).slice(1).toLowerCase();
 
         // Destination in the platform images folder
-        const destPath = path.join(gamesDir, 'images', `${gameName}.${extension}`);
+        const destPath = path.join(getImagesDir(gamesDir), `${gameName}.${extension}`);
 
         // Tell main to copy the file
         const success = await ipcRenderer.invoke('save-cover', srcPath, destPath);

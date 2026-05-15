@@ -138,8 +138,9 @@ Options:
   --help                         Show this help message.
   --full-screen                  Start in full screen mode.
   --kiosk                        Read-only / kids mode: No config / settings, disabled platforms hidden.
-  --auto-select=[platform_name]  Open [platform_name] directly, bypassing the platforms menu.
-  --no-ui                        Only the games, to be used with --kiosk and --auto-select=[platform_name].
+  --auto-select=[gallery_name]   Open [gallery_name] directly, bypassing the platforms menu.
+                                 Supports platform names, recents, and favorites.
+  --no-ui                        Only the games, to be used with --kiosk and --auto-select=[gallery_name].
   --verbose                      Show main process messages.
 
 Platform names: ${PLATFORMS.map(platform => platform.name).join(', ')}

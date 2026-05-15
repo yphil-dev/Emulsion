@@ -218,7 +218,15 @@ async function initializeApp() {
 
                     updateLabelFontSize(LB.galleryNumOfCols);
 
-                    if (LB.autoSelect && LB.enabledPlatforms.some(platform => platform === LB.autoSelect)) {
+                    const canAutoSelect =
+                          LB.autoSelect &&
+                          (
+                              LB.enabledPlatforms.includes(LB.autoSelect) ||
+                              (LB.autoSelect === 'recents' && platforms.includes('recents')) ||
+                              (LB.autoSelect === 'favorites' && platforms.includes('favorites'))
+                          );
+
+                    if (canAutoSelect) {
                         initGallery(LB.autoSelect);
                     } else {
                         initSlideShow(0);

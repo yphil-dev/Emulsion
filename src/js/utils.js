@@ -6,7 +6,15 @@ import { updateGamePane } from './slideshow.js';
 
 const fs = require('fs');
 const path = require('path');
+const { pathToFileURL } = require('url');
 const fsp = fs.promises;
+
+export function toFileUrl(filePath) {
+    if (!filePath || typeof filePath !== 'string') return filePath;
+    if (/^(file|https?):\/\//i.test(filePath)) return filePath;
+
+    return pathToFileURL(filePath).href;
+}
 
 export function initFooterControls() {
     updateFooterControls('dpad', 'ew', 'Platforms', 'on');
@@ -530,10 +538,10 @@ export async function scanDirectory(gamesDir, extensions, recursive = true, igno
     }
 }
 
-export async function findImageFile(basePath, fileNameWithoutExt) {
+export async function findImageFile(basePaths, fileNameWithoutExt) {
     try {
         // Use IPC to call the main process findImageFile handler
-        return await ipcRenderer.invoke('find-image-file', basePath, fileNameWithoutExt);
+        return await ipcRenderer.invoke('find-image-file', basePaths, fileNameWithoutExt);
     } catch (err) {
         console.warn("Error finding image file:", err);
         return null;
@@ -614,7 +622,7 @@ export async function executeBatchDownload(games, type, platformName) {
                 if (result) {
                     const imgEl = gameContainer.querySelector("img");
                     if (imgEl) {
-                        imgEl.src = result + '?t=' + Date.now();
+                        imgEl.src = toFileUrl(result) + '?t=' + Date.now();
                         gameContainer.removeAttribute('data-missing-image');
                         elementToPulse.classList.remove('loading');
                         if (isListMode) {

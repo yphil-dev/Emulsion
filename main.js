@@ -313,6 +313,133 @@ const createDirectoryIfNeeded = (dirPath) => {
     }
 };
 
+function hasPathPrefix(filePath, parentPath) {
+    if (!filePath || !parentPath) return false;
+
+    const relativePath = path.relative(parentPath, filePath);
+    return relativePath === '' || (
+        relativePath &&
+        !relativePath.startsWith('..') &&
+        !path.isAbsolute(relativePath)
+    );
+}
+
+function stripKnownExtension(fileName, extensions = []) {
+    if (!fileName || typeof fileName !== 'string') return fileName;
+
+    const sortedExtensions = [...extensions].sort((a, b) => b.length - a.length);
+    for (const extension of sortedExtensions) {
+        if (fileName.toLowerCase().endsWith(extension.toLowerCase())) {
+            return fileName.slice(0, -extension.length);
+        }
+    }
+
+    return path.basename(fileName, path.extname(fileName));
+}
+
+function expandHomePath(value) {
+    if (!value || typeof value !== 'string') return value;
+    if (value === '~') return os.homedir();
+    if (value.startsWith('~/')) return path.join(os.homedir(), value.slice(2));
+
+    return value;
+}
+
+function getLaunchablePlatforms(preferences) {
+    return Object.entries(preferences)
+        .filter(([platform, prefs]) => (
+            platform !== 'settings' &&
+            prefs &&
+            typeof prefs.gamesDir === 'string' &&
+            prefs.gamesDir
+        ));
+}
+
+function inferPlatformFromPath(filePath, preferences) {
+    if (!filePath) return null;
+
+    const matches = getLaunchablePlatforms(preferences)
+        .filter(([, prefs]) => hasPathPrefix(filePath, prefs.gamesDir))
+        .sort(([, a], [, b]) => b.gamesDir.length - a.gamesDir.length);
+
+    return matches[0]?.[0] || null;
+}
+
+async function findGameFileInPlatform(platformPrefs, gameName) {
+    if (!platformPrefs?.gamesDir || !Array.isArray(platformPrefs.extensions)) return null;
+
+    const targetName = stripKnownExtension(gameName, platformPrefs.extensions)
+        ?.normalize('NFC')
+        .toLocaleLowerCase();
+    if (!targetName) return null;
+
+    const gameFiles = await scanDirectoryRecursive(
+        platformPrefs.gamesDir,
+        platformPrefs.extensions,
+        true,
+        ['PS3_EXTRA', 'PKGDIR', 'freezer', 'tmp']
+    );
+
+    return gameFiles.find(filePath => (
+        stripKnownExtension(path.basename(filePath), platformPrefs.extensions)
+            .normalize('NFC')
+            .toLocaleLowerCase() === targetName
+    )) || null;
+}
+
+async function resolveGameEntry(entry) {
+    const preferences = loadPreferences();
+    if (preferences.error) {
+        return { ...entry, isLaunchable: fsSync.existsSync(entry.filePath || '') };
+    }
+
+    let platform = preferences[entry.platform] ? entry.platform : null;
+    let filePath = entry.filePath;
+
+    if (!platform) {
+        platform = inferPlatformFromPath(filePath, preferences);
+    }
+
+    if (!fsSync.existsSync(filePath || '')) {
+        const platformSearchOrder = platform
+            ? [[platform, preferences[platform]]]
+            : getLaunchablePlatforms(preferences);
+
+        for (const [candidatePlatform, platformPrefs] of platformSearchOrder) {
+            const foundPath = await findGameFileInPlatform(
+                platformPrefs,
+                entry.gameName || entry.fileName || path.basename(filePath || '')
+            );
+
+            if (foundPath) {
+                platform = candidatePlatform;
+                filePath = foundPath;
+                break;
+            }
+        }
+    }
+
+    if (!platform) {
+        platform = entry.platform;
+    }
+
+    const platformPrefs = preferences[platform];
+    const fileName = filePath && fsSync.existsSync(filePath)
+        ? stripKnownExtension(path.basename(filePath), platformPrefs?.extensions || [])
+        : (entry.fileName || entry.gameName);
+
+    return {
+        ...entry,
+        fileName,
+        gameName: entry.gameName || fileName,
+        filePath,
+        platform,
+        emulator: platformPrefs?.emulator || entry.emulator,
+        emulatorArgs: platformPrefs?.emulatorArgs ?? entry.emulatorArgs,
+        isLaunchable: Boolean(filePath && fsSync.existsSync(filePath))
+    };
+}
+
 const downloadAndSaveImage = async (imgSrc, platform, gameName, gamesDir) => {
 
     const extension = imgSrc.split('.').pop();
@@ -498,6 +625,10 @@ ipcMain.handle('download-image', async (event, imgSrc, platform, gameName, image
     } catch (error) {
         return { success: false, error: error.message };
     }
+});
+
+ipcMain.handle('resolve-game-entry', async (event, entry) => {
+    return await resolveGameEntry(entry);
 });
 
 ipcMain.handle('get-user-data', () => {
@@ -689,8 +820,19 @@ ipcMain.handle('remove-favorite', async (event, favoriteEntry) => {
     }
 });
 
-ipcMain.on('run-command', (event, data) => {
-    const { fileName, filePath, gameName, emulator, emulatorArgs, platform } = data;
+ipcMain.on('run-command', async (event, data) => {
+    const resolvedData = await resolveGameEntry(data);
+    const { fileName, filePath, gameName, emulator, emulatorArgs, platform } = resolvedData;
+
+    if (!resolvedData.isLaunchable) {
+        console.error("Cannot launch recent entry; game file was not found:", data);
+        return;
+    }
+
+    if (!emulator || typeof emulator !== 'string') {
+        console.error("Cannot launch game; no emulator is configured:", resolvedData);
+        return;
+    }
 
     const recentEntry = {
         fileName,
@@ -714,9 +856,12 @@ ipcMain.on('run-command', (event, data) => {
         }
     }
 
-    const existingIndex = recents.findIndex(entry => entry.fileName === fileName);
+    const existingIndex = recents.findIndex(entry => (
+        entry.filePath === filePath ||
+        (entry.fileName === fileName && entry.platform === platform)
+    ));
     if (existingIndex >= 0) {
-        recents[existingIndex].date = recentEntry.date;
+        recents[existingIndex] = { ...recents[existingIndex], ...recentEntry };
     } else {
         recents.push(recentEntry);
     }
@@ -745,7 +890,7 @@ ipcMain.on('run-command', (event, data) => {
             ...emulatorParts.slice(2) // app id + flatpak args
         ];
     } else {
-        cmd = emulatorParts[0];
+        cmd = expandHomePath(emulatorParts[0]);
         args = emulatorParts.slice(1);
     }
 
@@ -767,6 +912,11 @@ ipcMain.on('run-command', (event, data) => {
 
     child.on('exit', () => {
         childProcesses.delete(child.pid);
+    });
+
+    child.on('error', (err) => {
+        childProcesses.delete(child.pid);
+        console.error(`Failed to launch ${fileName}:`, err);
     });
 });
 
@@ -1185,28 +1335,89 @@ async function scanDirectoryRecursive(gamesDir, extensions, recursive, ignoredDi
     return files;
 }
 
-ipcMain.handle('find-image-file', async (event, basePath, fileNameWithoutExt) => {
-    const extensions = ['png', 'jpg', 'webp'];
-    let newestImage = null;
-    let newestTime = 0;
+const COVER_IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'webp'];
 
-    for (const extension of extensions) {
-        const imagePath = path.join(basePath, `${fileNameWithoutExt}.${extension}`);
-        try {
-            if (fsSync.existsSync(imagePath)) {
-                const stats = fsSync.statSync(imagePath);
-                const mtime = stats.mtimeMs;
-                if (mtime > newestTime) {
-                    newestTime = mtime;
-                    newestImage = imagePath;
-                }
-            }
-        } catch (err) {
-            // Ignore errors
+function updateNewestImage(current, imagePath) {
+    try {
+        if (!fsSync.existsSync(imagePath)) return current;
+
+        const stats = fsSync.statSync(imagePath);
+        if (!current || stats.mtimeMs > current.mtimeMs) {
+            return { path: imagePath, mtimeMs: stats.mtimeMs };
+        }
+    } catch (err) {
+        // Ignore unreadable files and keep searching.
+    }
+
+    return current;
+}
+
+function findImageInDirectory(basePath, fileNameWithoutExt) {
+    if (!basePath || typeof basePath !== 'string') return null;
+    if (!fileNameWithoutExt || typeof fileNameWithoutExt !== 'string') return null;
+
+    const normalizedNames = [
+        fileNameWithoutExt,
+        fileNameWithoutExt.normalize('NFC'),
+        fileNameWithoutExt.normalize('NFD')
+    ].filter((name, index, names) => name && names.indexOf(name) === index);
+
+    let newestImage = null;
+
+    for (const name of normalizedNames) {
+        for (const extension of COVER_IMAGE_EXTENSIONS) {
+            newestImage = updateNewestImage(
+                newestImage,
+                path.join(basePath, `${name}.${extension}`)
+            );
         }
     }
 
-    return newestImage;
+    if (newestImage) return newestImage.path;
+
+    try {
+        const targetNames = new Set(
+            normalizedNames.map(name => name.normalize('NFC').toLocaleLowerCase())
+        );
+        const targetExtensions = new Set(COVER_IMAGE_EXTENSIONS.map(extension => `.${extension}`));
+        const items = fsSync.readdirSync(basePath, { withFileTypes: true });
+
+        for (const item of items) {
+            if (!item.isFile()) continue;
+
+            const extension = path.extname(item.name).toLocaleLowerCase();
+            if (!targetExtensions.has(extension)) continue;
+
+            const nameWithoutExt = path
+                .basename(item.name, path.extname(item.name))
+                .normalize('NFC')
+                .toLocaleLowerCase();
+
+            if (targetNames.has(nameWithoutExt)) {
+                newestImage = updateNewestImage(newestImage, path.join(basePath, item.name));
+            }
+        }
+    } catch (err) {
+        // Ignore unreadable or missing directories.
+    }
+
+    return newestImage?.path || null;
+}
+
+ipcMain.handle('find-image-file', async (event, basePaths, fileNameWithoutExt) => {
+    const searchPaths = Array.isArray(basePaths) ? basePaths : [basePaths];
+    const uniqueSearchPaths = searchPaths.filter((dir, index) => (
+        dir &&
+        typeof dir === 'string' &&
+        searchPaths.indexOf(dir) === index
+    ));
+
+    for (const basePath of uniqueSearchPaths) {
+        const imagePath = findImageInDirectory(basePath, fileNameWithoutExt);
+        if (imagePath) return imagePath;
+    }
+
+    return null;
 });
 
 ipcMain.handle('get-flatpak-download-size', async (event, appId) => {

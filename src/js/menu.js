@@ -12,6 +12,7 @@ import { getSelectedGameContainer,
          simulateTabNavigation,
          setFooterSize,
          toggleHeaderNavLinks,
+         toFileUrl,
          fadeOut } from './utils.js';
 import { helpDialog, installEmulatorsDialog, systemDialog } from './dialog.js';
 
@@ -1156,14 +1157,14 @@ function buildManualSelectButton(gameName, platformName, imgElem) {
 
         const extension = srcPath.split('.').pop();
 
-        // Destination in user data covers folder
+        // Destination in the platform images folder
         const destPath = path.join(gamesDir, 'images', `${gameName}.${extension}`);
 
         // Tell main to copy the file
         const success = await ipcRenderer.invoke('save-cover', srcPath, destPath);
 
         if (success) {
-            imgElem.src = `file://${destPath}?${Date.now()}`;
+            imgElem.src = `${toFileUrl(destPath)}?${Date.now()}`;
             console.log(`Cover saved to ${destPath}`);
 
             imgElem.onload = () => {
@@ -1198,13 +1199,11 @@ function buildRemoveButton(img) {
         const confirmed = confirm(`Delete "${decodeURIComponent(fileName)}"?`);
         if (!confirmed) return;
 
-        const success = await ipcRenderer.invoke(
-            'delete-image',
-            decodeURIComponent(img.src.replace('file://', ''))
-        );
+        const imagePath = decodeURIComponent(new URL(img.src).pathname);
+        const success = await ipcRenderer.invoke('delete-image', imagePath);
 
         if (success) {
-            img.src = path.join(LB.baseDir, 'img', 'missing.png');
+            img.src = toFileUrl(path.join(LB.baseDir, 'img', 'missing.png'));
         } else {
             console.log('Failed to delete cover');
         }

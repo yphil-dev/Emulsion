@@ -4,6 +4,7 @@ import { cleanFileName,
          scanDirectory,
          getPs3GameName,
          findImageFile,
+         toFileUrl,
          buildIcon,
          extractVpxYear,
          extractVpxVendor } from './utils.js';
@@ -299,7 +300,13 @@ export async function buildGameContainer({
         return null;
     }
     const cleanName = cleanFileName(gameName);
-    const coverPath = await findImageFile(path.join(gamesDir, 'images'), gameName);
+    const gameDir = path.dirname(filePath);
+    const coverSearchPaths = [
+        path.join(gamesDir, 'images'),
+        path.join(gameDir, 'images'),
+        gameDir
+    ];
+    const coverPath = await findImageFile(coverSearchPaths, gameName);
     const platformBadge = document.createElement('div');
     platformBadge.className = 'platform-badge';
 
@@ -331,7 +338,7 @@ export async function buildGameContainer({
 
     const gameImage = document.createElement('img');
     gameImage.classList.add('game-image');
-    gameImage.src = coverPath ? coverPath : path.join(LB.baseDir, 'img', 'missing.png');
+    gameImage.src = toFileUrl(coverPath ? coverPath : path.join(LB.baseDir, 'img', 'missing.png'));
     if (!coverPath) container.dataset.missingImage = true;
     if (!coverPath) gameImage.classList.add('missing-image');
 
@@ -355,6 +362,15 @@ export async function buildGameContainer({
     return container;
 }
 
+async function resolveGameEntry(entry) {
+    try {
+        return await ipcRenderer.invoke('resolve-game-entry', entry);
+    } catch (err) {
+        console.warn('Failed to resolve game entry:', entry, err);
+        return entry;
+    }
+}
+
 async function buildFavoritesGallery({ index }) {
 
     document.getElementById('loading-platform-name').textContent = 'favorites';
@@ -374,13 +390,21 @@ async function buildFavoritesGallery({ index }) {
 
     for (const [i, favorite] of favorites.entries()) {
         try {
-
-            const gameContainer = await buildGameContainer({
-                platform: favorite.platform,
-                emulator: favorite.emulator,
-                emulatorArgs: favorite.emulatorArgs,
+            const resolved = await resolveGameEntry({
+                fileName: favorite.gameName,
                 filePath: favorite.gamePath,
                 gameName: favorite.gameName,
+                emulator: favorite.emulator,
+                emulatorArgs: favorite.emulatorArgs,
+                platform: favorite.platform
+            });
+
+            const gameContainer = await buildGameContainer({
+                platform: resolved.platform,
+                emulator: resolved.emulator,
+                emulatorArgs: resolved.emulatorArgs,
+                filePath: resolved.filePath,
+                gameName: resolved.fileName || resolved.gameName,
                 index: i
             });
 
@@ -428,13 +452,14 @@ async function buildRecentGallery({ index }) {
 
         for (const [i, recent] of sortedRecents.entries()) {
             try {
+                const resolved = await resolveGameEntry(recent);
 
                 const gameContainer = await buildGameContainer({
-                    platform: recent.platform,
-                    emulator: recent.emulator,
-                    emulatorArgs: recent.emulatorArgs,
-                    filePath: recent.filePath,
-                    gameName: recent.fileName,
+                    platform: resolved.platform,
+                    emulator: resolved.emulator,
+                    emulatorArgs: resolved.emulatorArgs,
+                    filePath: resolved.filePath,
+                    gameName: resolved.fileName || resolved.gameName || recent.fileName,
                     index: i
                 });
 
@@ -492,7 +517,7 @@ export function buildPlatformContainer({
     infoDiv.appendChild(nameDiv);
 
     const image = document.createElement('img');
-    image.src = path.join(LB.baseDir, 'img', 'platforms', `${platformName}.png`);
+    image.src = toFileUrl(path.join(LB.baseDir, 'img', 'platforms', `${platformName}.png`));
     image.classList.add('platform-image', 'game-image');
     image.style.height = `calc(120vw / ${galleryNumOfCols})`;
 

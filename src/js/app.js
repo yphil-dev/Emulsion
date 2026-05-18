@@ -22,6 +22,7 @@ window.axios = axios;
 // As we migrate, we'll remove these and use direct imports instead
 const LB = {
     enabledPlatforms: ['settings'],
+    controlScheme: 'joypad',
 };
 
 // Make LB globally available for backward compatibility
@@ -107,6 +108,7 @@ async function initializeApp() {
             kioskMode: appData.kioskMode,
             noUI: appData.noUI,
             autoSelect: appData.autoSelect,
+            controlScheme: appData.controlScheme,
             recents: appData.recents,
             favorites: appData.favorites,
             favoritesViewMode: appData.favoritesViewMode,

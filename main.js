@@ -140,10 +140,11 @@ Options:
   --kiosk                        Read-only / kids mode: No config / settings, disabled platforms hidden.
   --auto-select=[gallery_name]   Open [gallery_name] directly, bypassing the platforms menu.
                                  Supports platform names, recents, and favorites.
+  --control-scheme=[scheme]      Input control scheme: joypad (default) or pinball.
   --no-ui                        Only the games, to be used with --kiosk and --auto-select=[gallery_name].
   --verbose                      Show main process messages.
 
-Platform names: ${PLATFORMS.map(platform => platform.name).join(', ')}
+Platform names: ${PLATFORMS.map(platform => platform.name).join(', ') + ", favorites, recents."}
     `);
     app.quit();
 }
@@ -830,6 +831,22 @@ ipcMain.handle('load-preferences', async (event) => {
         }
     }
 
+    function getControlSchemeArg() {
+        const controlScheme = getNamedArg('control-scheme');
+
+        if (controlScheme === 'pinball') {
+            return 'pinball';
+        }
+
+        if (controlScheme && controlScheme !== 'joypad') {
+            console.warn(`Unsupported control scheme "${controlScheme}", falling back to "joypad".`);
+        }
+
+        return 'joypad';
+    }
+
+    const controlScheme = getControlSchemeArg();
+
     if (preferences.error && preferences.error === 'INVALID_JSON') {
         // Return default preferences with error flag for renderer to handle
         const defaultPrefs = { ...defaultPreferences };
@@ -839,6 +856,7 @@ ipcMain.handle('load-preferences', async (event) => {
         defaultPrefs.kioskMode = process.argv.includes('--kiosk');
         defaultPrefs.noUI = process.argv.includes('--no-ui');
         defaultPrefs.autoSelect = getNamedArg('auto-select');
+        defaultPrefs.controlScheme = controlScheme;
         defaultPrefs.recents = recents;
         defaultPrefs.favorites = favorites;
         defaultPrefs.preferencesError = preferences.message;
@@ -850,6 +868,7 @@ ipcMain.handle('load-preferences', async (event) => {
         preferences.kioskMode = process.argv.includes('--kiosk');
         preferences.noUI = process.argv.includes('--no-ui');
         preferences.autoSelect = getNamedArg('auto-select');
+        preferences.controlScheme = controlScheme;
         // preferences.autoOpen = getNamedArg('auto-open');
         preferences.recents = recents;
         preferences.favorites = favorites;

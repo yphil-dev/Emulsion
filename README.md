@@ -180,6 +180,7 @@ Options:
   --kiosk                        Read-only mode (perfect for kids/arcade)
   --full-screen                  Start fullscreen
   --auto-select=PLATFORM         Jump directly to a platform
+  --control-scheme=SCHEME        Input controls: joypad (default) or pinball
   --help                         Show this help
 
 Available consoles:
@@ -191,7 +192,7 @@ Available consoles:
 
 **Example:**
 ```bash
-emulsion --kiosk --full-screen --auto-select=snes
+emulsion --kiosk --full-screen --auto-select=snes --control-scheme=pinball
 ```
 
 ## Contributing

@@ -952,8 +952,8 @@ export function initGamepad() {
                 const button = gamepad.buttons[buttonIndex];
                 const wasPressed = buttonStates[buttonIndex];
 
-                // Special handling for button 8 (Share) in VPX mode - long press detection
-                if (buttonIndex === 8 && LB.autoSelect?.startsWith("vpx")) {
+                // Special handling for button 8 (Share) in pinball mode - long press detection
+                if (buttonIndex === 8 && LB.controlScheme === "pinball") {
                     if (button.pressed && !wasPressed) {
                         // Button just pressed - start timer
                         buttonStates[buttonIndex] = true;
@@ -1020,14 +1020,14 @@ export function initGamepad() {
             console.log("3 (triangle)");
             break;
         case 4:
-            if (LB.autoSelect?.startsWith("vpx")) {
+            if (LB.controlScheme === "pinball") {
                 simulateKeyDown('ArrowLeft');
             } else {
                 simulateKeyDown('ArrowLeft', { shift: true });
             }
             break;
         case 5:
-            if (LB.autoSelect?.startsWith("vpx")) {
+            if (LB.controlScheme === "pinball") {
                 simulateKeyDown('ArrowRight');
             } else {
                 simulateKeyDown('ArrowRight', { shift: true });

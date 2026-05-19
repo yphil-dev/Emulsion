@@ -898,38 +898,6 @@ ipcMain.handle('quit', () => {
     app.quit();
 });
 
-ipcMain.handle('shutdown-system', async () => {
-    console.log("Initiating system shutdown...");
-    try {
-        if (process.platform === 'linux') {
-            // Linux shutdown using systemctl poweroff (no sudo required for active sessions)
-            exec('systemctl poweroff', (error, stdout, stderr) => {
-                if (error) {
-                    console.error('systemctl poweroff failed:', error);
-                }
-            });
-        } else if (process.platform === 'win32') {
-            // Windows shutdown
-            exec('shutdown /s /t 0', (error, stdout, stderr) => {
-                if (error) {
-                    console.error('Shutdown error:', error);
-                }
-            });
-        } else if (process.platform === 'darwin') {
-            // macOS shutdown
-            exec('osascript -e \'tell app "System Events" to shut down\'', (error, stdout, stderr) => {
-                if (error) {
-                    console.error('Shutdown error:', error);
-                }
-            });
-        }
-        return { success: true };
-    } catch (error) {
-        console.error('Shutdown failed:', error);
-        return { success: false, error: error.message };
-    }
-});
-
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
         app.quit();

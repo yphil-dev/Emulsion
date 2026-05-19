@@ -12,7 +12,7 @@ import { updateFooterControlsFor,
          switchIcon } from './utils.js';
 import { updatePreference } from './preferences.js';
 import { getMeta, displayMetaData } from './metadata.js';
-import { editMetaDialog, toggleFavDialog, launchGameDialog, systemDialog, helpDialog, shutDownDialog } from './dialog.js';
+import { editMetaDialog, toggleFavDialog, launchGameDialog, systemDialog, helpDialog } from './dialog.js';
 
 const main = document.querySelector('main');
 const slideshow = document.getElementById("slideshow");
@@ -871,12 +871,6 @@ export function initGamepad() {
     const repeatDelay = 250;
     const repeatInterval = 50;
 
-    // Long press detection for button 8 (Share) in VPX mode
-    const BUTTON8_LONG_PRESS_THRESHOLD = 5000; // 5 seconds
-    let button8PressStartTime = null;
-    let button8LongPressTriggered = false;
-    let button8LongPressTimeout = null;
-
     // Listen for gamepad connection events
     window.addEventListener('gamepadconnected', (event) => {
         console.log('Gamepad connected:', event.gamepad.id);
@@ -952,31 +946,12 @@ export function initGamepad() {
                 const button = gamepad.buttons[buttonIndex];
                 const wasPressed = buttonStates[buttonIndex];
 
-                // Special handling for button 8 (Share) in pinball mode - long press detection
+                // Track Share in pinball mode for combos without triggering the '/' shortcut.
                 if (buttonIndex === 8 && LB.controlScheme === "pinball") {
                     if (button.pressed && !wasPressed) {
-                        // Button just pressed - start timer
                         buttonStates[buttonIndex] = true;
-                        button8PressStartTime = Date.now();
-                        button8LongPressTriggered = false;
-
-                        // Set timeout to trigger alert after 5 seconds of continuous press
-                        button8LongPressTimeout = setTimeout(() => {
-                            if (buttonStates[buttonIndex] && !button8LongPressTriggered) {
-                                button8LongPressTriggered = true;
-                                shutDownDialog();
-                            }
-                        }, BUTTON8_LONG_PRESS_THRESHOLD);
-
-                        // handleGameControllerButtonPress(buttonIndex);
                     } else if (!button.pressed && wasPressed) {
-                        // Button released - clear timeout
                         buttonStates[buttonIndex] = false;
-                        if (button8LongPressTimeout) {
-                            clearTimeout(button8LongPressTimeout);
-                            button8LongPressTimeout = null;
-                        }
-                        button8PressStartTime = null;
                     }
                 } else {
                     // Normal handling for all other buttons

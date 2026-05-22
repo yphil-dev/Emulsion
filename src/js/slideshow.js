@@ -934,13 +934,7 @@ export function initGamepad() {
                 const button = gamepad.buttons[buttonIndex];
                 const wasPressed = buttonStates[buttonIndex];
 
-                if (LB.controlScheme === "pinball" && (buttonIndex === 0 || buttonIndex === 1)) {
-                    if (button.pressed && !wasPressed) {
-                        buttonStates[buttonIndex] = true;
-                    } else if (!button.pressed && wasPressed) {
-                        buttonStates[buttonIndex] = false;
-                    }
-                } else if (buttonIndex === 8 && LB.controlScheme === "pinball") {
+                if (buttonIndex === 8 && LB.controlScheme === "pinball") {
                     if (button.pressed && !wasPressed) {
                         buttonStates[buttonIndex] = true;
                     } else if (!button.pressed && wasPressed) {

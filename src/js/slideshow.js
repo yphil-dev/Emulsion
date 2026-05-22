@@ -946,25 +946,15 @@ export function initGamepad() {
                 const button = gamepad.buttons[buttonIndex];
                 const wasPressed = buttonStates[buttonIndex];
 
-                // Track Share in pinball mode for combos without triggering the '/' shortcut.
-                if (buttonIndex === 8 && LB.controlScheme === "pinball") {
-                    if (button.pressed && !wasPressed) {
-                        buttonStates[buttonIndex] = true;
-                    } else if (!button.pressed && wasPressed) {
-                        buttonStates[buttonIndex] = false;
-                    }
-                } else {
-                    // Normal handling for all other buttons
-                    if (button.pressed && !wasPressed) {
-                        buttonStates[buttonIndex] = true;
-                        handleGameControllerButtonPress(buttonIndex);
-                    } else if (!button.pressed && wasPressed) {
-                        buttonStates[buttonIndex] = false;
-                        if (buttonIndex === 12 && buttonStates[8]) {
-                            console.log('Share + Up combo!');
-                            ipcRenderer.invoke('restart');
-                            return;
-                        }
+                if (button.pressed && !wasPressed) {
+                    buttonStates[buttonIndex] = true;
+                    handleGameControllerButtonPress(buttonIndex);
+                } else if (!button.pressed && wasPressed) {
+                    buttonStates[buttonIndex] = false;
+                    if (buttonIndex === 12 && buttonStates[8]) {
+                        console.log('Share + Up combo!');
+                        ipcRenderer.invoke('restart');
+                        return;
                     }
                 }
             });
@@ -995,18 +985,10 @@ export function initGamepad() {
             console.log("3 (triangle)");
             break;
         case 4:
-            if (LB.controlScheme === "pinball") {
-                simulateKeyDown('ArrowLeft');
-            } else {
-                simulateKeyDown('ArrowLeft', { shift: true });
-            }
+            simulateKeyDown('ArrowLeft');
             break;
         case 5:
-            if (LB.controlScheme === "pinball") {
-                simulateKeyDown('ArrowRight');
-            } else {
-                simulateKeyDown('ArrowRight', { shift: true });
-            }
+            simulateKeyDown('ArrowRight');
             break;
         case 8:
             simulateKeyDown('/');

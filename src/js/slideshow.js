@@ -839,13 +839,25 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
 
 
 export function initGamepad() {
-    const gamepads = navigator.getGamepads();
-    const connected = Array.from(gamepads).some(gamepad => gamepad !== null);
+    const logToTerminal = (...args) => {
+        console.log(...args);
+        ipcRenderer.send('renderer-log', ...args);
+    };
 
-    if (connected) {
-        console.log('Gamepad connected at startup:', gamepads[0].id);
+    const gamepads = navigator.getGamepads();
+    const connectedGamepads = Array.from(gamepads).filter(gamepad => gamepad !== null);
+
+    if (connectedGamepads.length > 0) {
+        logToTerminal('Gamepads detected at startup:', connectedGamepads.map(gamepad => ({
+            index: gamepad.index,
+            id: gamepad.id,
+            mapping: gamepad.mapping,
+            buttons: gamepad.buttons.length,
+            axes: gamepad.axes.length,
+            connected: gamepad.connected
+        })));
     } else {
-        console.log('No gamepad connected at startup.');
+        logToTerminal('No gamepads detected at startup. navigator.getGamepads() =', gamepads);
     }
 
     const buttonStates = {
@@ -873,17 +885,26 @@ export function initGamepad() {
 
     // Listen for gamepad connection events
     window.addEventListener('gamepadconnected', (event) => {
-        console.log('Gamepad connected:', event.gamepad.id);
+        logToTerminal('Gamepad connected:', {
+            index: event.gamepad.index,
+            id: event.gamepad.id,
+            mapping: event.gamepad.mapping,
+            buttons: event.gamepad.buttons.length,
+            axes: event.gamepad.axes.length,
+            connected: event.gamepad.connected
+        });
         ipcRenderer.invoke('game-controller-init');
         requestAnimationFrame(pollGamepad);
     });
 
     window.addEventListener('gamepaddisconnected', (event) => {
-        console.log('Gamepad disconnected:', event.gamepad.id);
+        logToTerminal('Gamepad disconnected:', {
+            index: event.gamepad.index,
+            id: event.gamepad.id,
+            mapping: event.gamepad.mapping
+        });
         cancelAnimationFrame(pollGamepad);
     });
-
-    console.log("navigator.getGamepads(): ", navigator.getGamepads());
 
     function pollGamepad() {
         let animationFrameId = null;
@@ -942,7 +963,7 @@ export function initGamepad() {
                 buttonStates['leftStickDown'] = false;
             }
 
-            [0,1,2,3,4,5,8,12,13,14,15].forEach((buttonIndex) => {
+            [0,1,2,3,8,12,13,14,15].forEach((buttonIndex) => {
                 const button = gamepad.buttons[buttonIndex];
                 const wasPressed = buttonStates[buttonIndex];
 
@@ -983,12 +1004,6 @@ export function initGamepad() {
         case 3:
             simulateKeyDown('+');
             console.log("3 (triangle)");
-            break;
-        case 4:
-            simulateKeyDown('ArrowLeft');
-            break;
-        case 5:
-            simulateKeyDown('ArrowRight');
             break;
         case 8:
             simulateKeyDown('/');

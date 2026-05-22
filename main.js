@@ -97,6 +97,10 @@ ipcMain.handle('game-controller-init', async () => {
     return await sdlInit();
 });
 
+ipcMain.on('renderer-log', (_event, ...args) => {
+    console.log('[renderer]', ...args);
+});
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 

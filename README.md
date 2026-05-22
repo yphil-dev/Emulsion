@@ -10,7 +10,7 @@
 
 *Better gaming throught chemistry*
 
-**Display your games collection into responsive galleries, manage game metadata, cover art and emulator configuration. Launch your games in style.**
+**Display your games collection into responsive galleries, manage game metadata, cover art and emulator configuration. Power your arcade / Pinball cabinet. Launch your games in style.**
 
 [Website](https://yphil.gitlab.io/emulsion) • [Download](https://github.com/yphil-dev/emulsion/releases/latest) • [Documentation](#configuration) • [GitHub mirror (releases)](https://github.com/yphil-dev/Emulsion) • [Blog](https://yphil.gitlab.io/) • [Cracktro](https://yphil.gitlab.io/ext/emulsion.html)
 

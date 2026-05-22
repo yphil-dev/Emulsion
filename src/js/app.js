@@ -91,8 +91,7 @@ async function initializeApp() {
         // Load SVG symbols
         fetch('../html/svg-symbols.html').then(res => res.text()).then(html => document.body.insertAdjacentHTML('afterbegin', html)).catch(console.error);
 
-        // Initialize gamepad and footer controls
-        initGamepad();
+        // Initialize footer controls
         initFooterControls();
 
         // Load preferences for UI initialization
@@ -107,6 +106,7 @@ async function initializeApp() {
             kioskMode: appData.kioskMode,
             noUI: appData.noUI,
             autoSelect: appData.autoSelect,
+            controlScheme: appData.controlScheme,
             recents: appData.recents,
             favorites: appData.favorites,
             favoritesViewMode: appData.favoritesViewMode,
@@ -130,6 +130,8 @@ async function initializeApp() {
         });
 
         LB.batchRunning = false;
+
+        initGamepad();
 
         setFooterSize(LB.footerSize);
         applyTheme(LB.theme);

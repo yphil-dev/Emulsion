@@ -97,10 +97,6 @@ ipcMain.handle('game-controller-init', async () => {
     return await sdlInit();
 });
 
-ipcMain.on('renderer-log', (_event, ...args) => {
-    console.log('[renderer]', ...args);
-});
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -844,6 +840,7 @@ ipcMain.handle('load-preferences', async (event) => {
         defaultPrefs.kioskMode = process.argv.includes('--kiosk');
         defaultPrefs.noUI = process.argv.includes('--no-ui');
         defaultPrefs.autoSelect = getNamedArg('auto-select');
+        defaultPrefs.controlScheme = getNamedArg('control-scheme') || 'joypad';
         defaultPrefs.recents = recents;
         defaultPrefs.favorites = favorites;
         defaultPrefs.preferencesError = preferences.message;
@@ -855,6 +852,7 @@ ipcMain.handle('load-preferences', async (event) => {
         preferences.kioskMode = process.argv.includes('--kiosk');
         preferences.noUI = process.argv.includes('--no-ui');
         preferences.autoSelect = getNamedArg('auto-select');
+        preferences.controlScheme = getNamedArg('control-scheme') || 'joypad';
         // preferences.autoOpen = getNamedArg('auto-open');
         preferences.recents = recents;
         preferences.favorites = favorites;

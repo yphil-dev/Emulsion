@@ -10,6 +10,7 @@ async function loadUserData() {
         const kioskMode = response.kioskMode;
         const noUI = response.noUI;
         const autoSelect = response.autoSelect;
+        const controlScheme = response.controlScheme || 'joypad';
         const recents = response.recents;
         const favorites = response.favorites;
         const preferencesError = response.preferencesError;
@@ -21,7 +22,7 @@ async function loadUserData() {
         delete preferences.kioskMode;
         delete preferences.noUI;
         delete preferences.autoSelect;
-        delete preferences.controlScheme; // legacy
+        delete preferences.controlScheme;
         delete preferences.recents;
         delete preferences.favorites;
         delete preferences.preferencesError;
@@ -34,6 +35,7 @@ async function loadUserData() {
             kioskMode,
             noUI,
             autoSelect,
+            controlScheme,
             recents,
             favorites,
             preferencesError

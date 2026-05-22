@@ -839,26 +839,6 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
 
 
 export function initGamepad() {
-    const logToTerminal = (...args) => {
-        console.log(...args);
-        ipcRenderer.send('renderer-log', ...args);
-    };
-
-    const gamepads = navigator.getGamepads();
-    const connectedGamepads = Array.from(gamepads).filter(gamepad => gamepad !== null);
-
-    if (connectedGamepads.length > 0) {
-        logToTerminal('Gamepads detected at startup:', connectedGamepads.map(gamepad => ({
-            index: gamepad.index,
-            id: gamepad.id,
-            mapping: gamepad.mapping,
-            buttons: gamepad.buttons.length,
-            axes: gamepad.axes.length,
-            connected: gamepad.connected
-        })));
-    } else {
-        logToTerminal('No gamepads detected at startup. navigator.getGamepads() =', gamepads);
-    }
 
     const buttonStates = {
         0: false, // Cross /South button (X)
@@ -884,25 +864,12 @@ export function initGamepad() {
     const repeatInterval = 50;
 
     // Listen for gamepad connection events
-    window.addEventListener('gamepadconnected', (event) => {
-        logToTerminal('Gamepad connected:', {
-            index: event.gamepad.index,
-            id: event.gamepad.id,
-            mapping: event.gamepad.mapping,
-            buttons: event.gamepad.buttons.length,
-            axes: event.gamepad.axes.length,
-            connected: event.gamepad.connected
-        });
+    window.addEventListener('gamepadconnected', () => {
         ipcRenderer.invoke('game-controller-init');
         requestAnimationFrame(pollGamepad);
     });
 
-    window.addEventListener('gamepaddisconnected', (event) => {
-        logToTerminal('Gamepad disconnected:', {
-            index: event.gamepad.index,
-            id: event.gamepad.id,
-            mapping: event.gamepad.mapping
-        });
+    window.addEventListener('gamepaddisconnected', () => {
         cancelAnimationFrame(pollGamepad);
     });
 
@@ -963,19 +930,33 @@ export function initGamepad() {
                 buttonStates['leftStickDown'] = false;
             }
 
-            [0,1,2,3,8,12,13,14,15].forEach((buttonIndex) => {
+            [0,1,2,3,4,5,8,12,13,14,15].forEach((buttonIndex) => {
                 const button = gamepad.buttons[buttonIndex];
                 const wasPressed = buttonStates[buttonIndex];
 
-                if (button.pressed && !wasPressed) {
-                    buttonStates[buttonIndex] = true;
-                    handleGameControllerButtonPress(buttonIndex);
-                } else if (!button.pressed && wasPressed) {
-                    buttonStates[buttonIndex] = false;
-                    if (buttonIndex === 12 && buttonStates[8]) {
-                        console.log('Share + Up combo!');
-                        ipcRenderer.invoke('restart');
-                        return;
+                if (LB.controlScheme === "pinball" && (buttonIndex === 0 || buttonIndex === 1)) {
+                    if (button.pressed && !wasPressed) {
+                        buttonStates[buttonIndex] = true;
+                    } else if (!button.pressed && wasPressed) {
+                        buttonStates[buttonIndex] = false;
+                    }
+                } else if (buttonIndex === 8 && LB.controlScheme === "pinball") {
+                    if (button.pressed && !wasPressed) {
+                        buttonStates[buttonIndex] = true;
+                    } else if (!button.pressed && wasPressed) {
+                        buttonStates[buttonIndex] = false;
+                    }
+                } else {
+                    if (button.pressed && !wasPressed) {
+                        buttonStates[buttonIndex] = true;
+                        handleGameControllerButtonPress(buttonIndex);
+                    } else if (!button.pressed && wasPressed) {
+                        buttonStates[buttonIndex] = false;
+                        if (buttonIndex === 12 && buttonStates[8]) {
+                            console.log('Share + Up combo!');
+                            ipcRenderer.invoke('restart');
+                            return;
+                        }
                     }
                 }
             });
@@ -1004,6 +985,20 @@ export function initGamepad() {
         case 3:
             simulateKeyDown('+');
             console.log("3 (triangle)");
+            break;
+        case 4:
+            if (LB.controlScheme === "pinball") {
+                simulateKeyDown('ArrowLeft');
+            } else {
+                simulateKeyDown('ArrowLeft', { shift: true });
+            }
+            break;
+        case 5:
+            if (LB.controlScheme === "pinball") {
+                simulateKeyDown('ArrowRight');
+            } else {
+                simulateKeyDown('ArrowRight', { shift: true });
+            }
             break;
         case 8:
             simulateKeyDown('/');

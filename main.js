@@ -152,6 +152,59 @@ if (process.argv.includes('--help')) {
     showHelp();
 }
 
+function normalizeFavoriteRecord(record) {
+    if (!record || typeof record !== 'object') {
+        return null;
+    }
+
+    if (
+        typeof record.gameName !== 'string' ||
+        typeof record.gamePath !== 'string' ||
+        typeof record.platform !== 'string'
+    ) {
+        return null;
+    }
+
+    return {
+        gameName: record.gameName,
+        gamePath: record.gamePath,
+        platform: record.platform
+    };
+}
+
+function normalizeRecentRecord(record) {
+    if (!record || typeof record !== 'object') {
+        return null;
+    }
+
+    const gameName =
+        typeof record.gameName === 'string' ? record.gameName :
+            typeof record.fileName === 'string' ? record.fileName :
+                null;
+
+    const gamePath =
+        typeof record.gamePath === 'string' ? record.gamePath :
+            typeof record.filePath === 'string' ? record.filePath :
+                null;
+
+    if (
+        typeof gameName !== 'string' ||
+        typeof gamePath !== 'string' ||
+        typeof record.platform !== 'string' ||
+        typeof record.date !== 'string' ||
+        isNaN(Date.parse(record.date))
+    ) {
+        return null;
+    }
+
+    return {
+        gameName,
+        gamePath,
+        platform: record.platform,
+        date: record.date
+    };
+}
+
 function loadFavorites() {
     try {
         if (fsSync.existsSync(favoritesFilePath)) {
@@ -164,17 +217,9 @@ function loadFavorites() {
                     throw new Error("Expected an array");
                 }
 
-                const isValidFavoriteRecord = (record) =>
-                      record &&
-                      typeof record.gameName === 'string' &&
-                      typeof record.gamePath === 'string' &&
-                      typeof record.platform === 'string';
-
-                const normalizedFavoriteRecords = favoriteRecords.filter(isValidFavoriteRecord).map(record => ({
-                    gameName: record.gameName,
-                    gamePath: record.gamePath,
-                    platform: record.platform
-                }));
+                const normalizedFavoriteRecords = favoriteRecords
+                    .map(normalizeFavoriteRecord)
+                    .filter(Boolean);
 
                 if (JSON.stringify(normalizedFavoriteRecords) !== JSON.stringify(favoriteRecords)) {
                     fsSync.writeFileSync(favoritesFilePath, JSON.stringify(normalizedFavoriteRecords, null, 2), 'utf8');
@@ -212,21 +257,9 @@ function loadRecents() {
                     throw new Error("Expected an array");
                 }
 
-                const isValidRecentRecord = (record) =>
-                      record &&
-                      typeof record.fileName === 'string' &&
-                      typeof record.filePath === 'string' &&
-                      typeof record.gameName === 'string' &&
-                      typeof record.platform === 'string' &&
-                      typeof record.date === 'string' && !isNaN(Date.parse(record.date));
-
-                const normalizedRecentRecords = recentRecords.filter(isValidRecentRecord).map(record => ({
-                    fileName: record.fileName,
-                    filePath: record.filePath,
-                    gameName: record.gameName,
-                    platform: record.platform,
-                    date: record.date
-                }));
+                const normalizedRecentRecords = recentRecords
+                    .map(normalizeRecentRecord)
+                    .filter(Boolean);
 
                 if (JSON.stringify(normalizedRecentRecords) !== JSON.stringify(recentRecords)) {
                     fsSync.writeFileSync(recentFilePath, JSON.stringify(normalizedRecentRecords, null, 2), 'utf8');
@@ -649,11 +682,15 @@ ipcMain.handle('add-favorite', async (event, favoriteRecord) => {
         }
     }
 
-    const normalizedFavoriteRecord = {
-        gameName: favoriteRecord.gameName,
-        gamePath: favoriteRecord.gamePath,
-        platform: favoriteRecord.platform
-    };
+    const normalizedFavoriteRecord = normalizeFavoriteRecord(favoriteRecord);
+
+    if (!normalizedFavoriteRecord) {
+        return { success: false, error: "Invalid favorite record" };
+    }
+
+    favoriteRecords = favoriteRecords
+        .map(normalizeFavoriteRecord)
+        .filter(Boolean);
 
     const existingRecordIndex = favoriteRecords.findIndex(record => record.gamePath === normalizedFavoriteRecord.gamePath);
 
@@ -687,8 +724,18 @@ ipcMain.handle('remove-favorite', async (event, favoriteRecord) => {
         }
     }
 
+    const normalizedFavoriteRecord = normalizeFavoriteRecord(favoriteRecord);
+
+    if (!normalizedFavoriteRecord) {
+        return { success: false, error: "Invalid favorite record" };
+    }
+
+    favoriteRecords = favoriteRecords
+        .map(normalizeFavoriteRecord)
+        .filter(Boolean);
+
     const initialLength = favoriteRecords.length;
-    favoriteRecords = favoriteRecords.filter(record => record.gamePath !== favoriteRecord.gamePath);
+    favoriteRecords = favoriteRecords.filter(record => record.gamePath !== normalizedFavoriteRecord.gamePath);
 
     if (favoriteRecords.length === initialLength) {
         return { success: false, error: "Favorite not found" };
@@ -750,13 +797,12 @@ function isCommandAvailable(commandName) {
     });
 }
 
-ipcMain.on('run-command', async (event, data) => {
-    const { fileName, filePath, gameName, emulator, emulatorArgs, platform } = data;
+ipcMain.on('run-command', async (event, launchRequest) => {
+    const { gameName, gamePath, emulator, emulatorArgs, platform } = launchRequest;
 
     const recentRecord = {
-        fileName,
-        filePath,
         gameName,
+        gamePath,
         platform,
         date: new Date().toISOString()
     };
@@ -767,14 +813,15 @@ ipcMain.on('run-command', async (event, data) => {
     if (fsSync.existsSync(recentFilePath)) {
         try {
             recentRecords = JSON.parse(fsSync.readFileSync(recentFilePath, 'utf8'));
+            recentRecords = recentRecords.map(normalizeRecentRecord).filter(Boolean);
         } catch (err) {
             console.error("Error reading recently_played.json:", err);
         }
     }
 
-    const existingRecordIndex = recentRecords.findIndex(record => record.fileName === fileName);
+    const existingRecordIndex = recentRecords.findIndex(record => record.gamePath === gamePath);
     if (existingRecordIndex >= 0) {
-        recentRecords[existingRecordIndex].date = recentRecord.date;
+        recentRecords[existingRecordIndex] = recentRecord;
     } else {
         recentRecords.push(recentRecord);
     }
@@ -790,7 +837,7 @@ ipcMain.on('run-command', async (event, data) => {
         preferences?.settings?.optimize === 'yes' &&
         await isCommandAvailable('gamemoderun');
 
-    const romDir = path.dirname(filePath);
+    const romDir = path.dirname(gamePath);
 
     let cmd;
     let args = [];
@@ -814,7 +861,7 @@ ipcMain.on('run-command', async (event, data) => {
         args.push(...emulatorArgs.split(/\s+/).filter(Boolean));
     }
 
-    args.push(filePath);
+    args.push(gamePath);
 
     if (shouldUseGameMode && cmd !== 'gamemoderun') {
         args = [cmd, ...args];

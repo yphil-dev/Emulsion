@@ -762,8 +762,8 @@ export async function removeFavorite(gameContainer) {
         if (result.success) {
 
             if (favoritesPage) {
-                const favoriteGameContainer = favoritesPage.querySelector(`.game-container[data-game-name="${favoriteRecord.gameName}"]`);
-                favoriteGameContainer.remove();
+                const favoriteGameContainer = favoritesPage.querySelector(`.game-container[data-game-name="${favoriteRecord.gameName}"][data-game-path="${favoriteRecord.gamePath}"]`);
+                favoriteGameContainer?.remove();
                 const remainingFavoritesCount = favoritesPage.querySelectorAll('.game-container').length;
                 if (remainingFavoritesCount === 0) {
 
@@ -934,14 +934,15 @@ export function launchGame(gameContainer) {
 
     const { emulator, emulatorArgs } = syncGameContainerLaunchConfig(gameContainer);
 
-    ipcRenderer.send('run-command', {
-        fileName: gameContainer.dataset.gameName,
-        filePath: gameContainer.dataset.gamePath,
+    const launchRequest = {
         gameName: gameContainer.dataset.gameName,
+        gamePath: gameContainer.dataset.gamePath,
         emulator,
         emulatorArgs,
         platform: gameContainer.dataset.platform
-    });
+    };
+
+    ipcRenderer.send('run-command', launchRequest);
 }
 
 export function switchIcon (svgElement, newId) {

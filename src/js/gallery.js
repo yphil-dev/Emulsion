@@ -236,19 +236,19 @@ export async function buildGallery(params) {
     }
 
     // Process all games in parallel using Promise.all
-    const gameContainerPromises = gameFiles.map(async (gameFilePath, i) => {
-        let fileName = path.basename(gameFilePath);
+    const gameContainerPromises = gameFiles.map(async (gamePath, i) => {
+        let fileName = path.basename(gamePath);
         let fileNameWithoutExt = stripExtensions(fileName, extensions);
 
         // PS3 special handling - fetch PS3 titles in parallel (but limit concurrency to avoid overwhelming IPC)
         if (platform === 'ps3') {
             try {
-                const ps3Title = await getPs3GameName(gameFilePath);
+                const ps3Title = await getPs3GameName(gamePath);
                 if (ps3Title) {
                     fileNameWithoutExt = stripExtensions(ps3Title);
                 }
             } catch (err) {
-                console.warn(`Failed to parse PS3 title for ${gameFilePath}:`, err);
+                console.warn(`Failed to parse PS3 title for ${gamePath}:`, err);
                 // Continue with original filename if parsing fails
             }
         }
@@ -257,7 +257,7 @@ export async function buildGallery(params) {
             platform,
             emulator,
             emulatorArgs,
-            filePath: gameFilePath,
+            gamePath,
             gameName: fileNameWithoutExt,
             index: i
         });
@@ -289,7 +289,7 @@ export async function buildGameContainer({
     platform,
     emulator,
     emulatorArgs,
-    filePath,
+    gamePath,
     gameName,
     index
 }) {
@@ -318,10 +318,10 @@ export async function buildGameContainer({
     container.dataset.gameName = gameName;
     container.dataset.cleanName = cleanName;
     container.dataset.platform = platform;
-    container.dataset.command = `${emulator} ${emulatorArgs} ${filePath}`;
+    container.dataset.command = `${emulator} ${emulatorArgs} ${gamePath}`;
     container.dataset.emulator = emulator;
     container.dataset.emulatorArgs = emulatorArgs;
-    container.dataset.gamePath = filePath;
+    container.dataset.gamePath = gamePath;
     container.dataset.index = index;
 
     syncGameContainerLaunchConfig(container);
@@ -376,7 +376,7 @@ async function buildFavoritesGallery({ index }) {
                 platform: favoriteRecord.platform,
                 emulator: '',
                 emulatorArgs: '',
-                filePath: favoriteRecord.gamePath,
+                gamePath: favoriteRecord.gamePath,
                 gameName: favoriteRecord.gameName,
                 index: i
             });
@@ -430,8 +430,8 @@ async function buildRecentGallery({ index }) {
                     platform: recentRecord.platform,
                     emulator: '',
                     emulatorArgs: '',
-                    filePath: recentRecord.filePath,
-                    gameName: recentRecord.fileName,
+                    gamePath: recentRecord.gamePath,
+                    gameName: recentRecord.gameName,
                     index: i
                 });
 

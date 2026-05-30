@@ -705,31 +705,31 @@ export function syncGameContainerLaunchConfig(gameContainer) {
     return { emulator, emulatorArgs };
 }
 
-export async function addFavorite(container) {
+export async function addFavorite(gameContainer) {
     const galleries = document.getElementById('galleries');
-    const favPage = galleries.querySelector('.page[data-platform="favorites"] .page-content');
+    const favoritesPage = galleries.querySelector('.page[data-platform="favorites"] .page-content');
 
-    syncGameContainerLaunchConfig(container);
+    syncGameContainerLaunchConfig(gameContainer);
 
-    const favoriteEntry = {
-        gameName: container.dataset.gameName,
-        gamePath: container.dataset.gamePath,
-        platform: container.dataset.platform
+    const favoriteRecord = {
+        gameName: gameContainer.dataset.gameName,
+        gamePath: gameContainer.dataset.gamePath,
+        platform: gameContainer.dataset.platform
     };
 
-    const emptyPageGameContainer = favPage.querySelector('.empty-platform-game-container');
+    const emptyPageGameContainer = favoritesPage.querySelector('.empty-platform-game-container');
 
-    if (favPage) {
+    if (favoritesPage) {
         if (emptyPageGameContainer) {
             emptyPageGameContainer.remove();
         }
-        const clone = container.cloneNode(true);
-        clone.classList.remove('selected');
-        favPage.appendChild(clone);
+        const favoriteGameContainer = gameContainer.cloneNode(true);
+        favoriteGameContainer.classList.remove('selected');
+        favoritesPage.appendChild(favoriteGameContainer);
     }
 
     try {
-        const result = await ipcRenderer.invoke('add-favorite', favoriteEntry);
+        const result = await ipcRenderer.invoke('add-favorite', favoriteRecord);
         console.log("result:", result);
         if (result.success) {
             console.info(`Yo, ${result.path}`);
@@ -744,38 +744,38 @@ export async function addFavorite(container) {
     }
 }
 
-export async function removeFavorite(container) {
+export async function removeFavorite(gameContainer) {
     const galleries = document.getElementById('galleries');
-    const favPage = galleries.querySelector('.page[data-platform="favorites"] .page-content');
+    const favoritesPage = galleries.querySelector('.page[data-platform="favorites"] .page-content');
 
-    const favoriteEntry = {
-        gameName: container.dataset.gameName,
-        gamePath: container.dataset.gamePath,
-        platform: container.dataset.platform
+    const favoriteRecord = {
+        gameName: gameContainer.dataset.gameName,
+        gamePath: gameContainer.dataset.gamePath,
+        platform: gameContainer.dataset.platform
     };
 
-    console.log("removeFavorite - favoriteEntry: ", favoriteEntry);
+    console.log("removeFavorite - favoriteRecord: ", favoriteRecord);
 
     try {
-        const result = await ipcRenderer.invoke('remove-favorite', favoriteEntry);
+        const result = await ipcRenderer.invoke('remove-favorite', favoriteRecord);
         console.log("removeFavorite - result: ", result);
         if (result.success) {
 
-            if (favPage) {
-                const favorite = favPage.querySelector(`.game-container[data-game-name="${favoriteEntry.gameName}"]`);
-                favorite.remove();
-                const remaining = favPage.querySelectorAll('.game-container').length;
-                if (remaining === 0) {
+            if (favoritesPage) {
+                const favoriteGameContainer = favoritesPage.querySelector(`.game-container[data-game-name="${favoriteRecord.gameName}"]`);
+                favoriteGameContainer.remove();
+                const remainingFavoritesCount = favoritesPage.querySelectorAll('.game-container').length;
+                if (remainingFavoritesCount === 0) {
 
                     const emptyContainer = buildEmptyPageGameContainer({
                         context: "no-favorites",
                     });
 
-                    favPage.appendChild(emptyContainer);
+                    favoritesPage.appendChild(emptyContainer);
                 }
             }
 
-            console.info(`Removed favorite: ${favoriteEntry.gameName}`);
+            console.info(`Removed favorite: ${favoriteRecord.gameName}`);
             return result.path;
         } else {
             console.error(`Error removing favorite: ${result.error}`);

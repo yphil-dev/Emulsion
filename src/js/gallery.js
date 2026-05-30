@@ -356,9 +356,9 @@ async function buildFavoritesGallery({ index }) {
 
     document.getElementById('loading-platform-name').textContent = 'favorites';
 
-    const favorites = LB.favorites;
+    const favoriteRecords = LB.favorites;
 
-    const noFavorites = (!favorites || favorites.length === 0 || favorites.error);
+    const noFavorites = (!favoriteRecords || favoriteRecords.length === 0 || favoriteRecords.error);
 
     const page = document.createElement('div');
     page.classList.add('page');
@@ -369,15 +369,15 @@ async function buildFavoritesGallery({ index }) {
     pageContent.classList.add('page-content');
     pageContent.style.gridTemplateColumns = `repeat(${LB.galleryNumOfCols}, 1fr)`;
 
-    for (const [i, favorite] of favorites.entries()) {
+    for (const [i, favoriteRecord] of favoriteRecords.entries()) {
         try {
 
             const gameContainer = await buildGameContainer({
-                platform: favorite.platform,
+                platform: favoriteRecord.platform,
                 emulator: '',
                 emulatorArgs: '',
-                filePath: favorite.gamePath,
-                gameName: favorite.gameName,
+                filePath: favoriteRecord.gamePath,
+                gameName: favoriteRecord.gameName,
                 index: i
             });
 
@@ -408,8 +408,8 @@ async function buildRecentGallery({ index }) {
 
     document.getElementById('loading-platform-name').textContent = 'recents';
 
-    const recents = LB.recents;
-    const noRecents = (!recents || recents.length === 0 || recents.error);
+    const recentRecords = LB.recents;
+    const noRecents = (!recentRecords || recentRecords.length === 0 || recentRecords.error);
 
     const page = document.createElement('div');
     page.classList.add('page');
@@ -421,17 +421,17 @@ async function buildRecentGallery({ index }) {
     pageContent.style.gridTemplateColumns = `repeat(${LB.galleryNumOfCols}, 1fr)`;
 
     if (!noRecents) {
-        const sortedRecents = [...recents].sort((a, b) => new Date(b.date) - new Date(a.date));
+        const sortedRecentRecords = [...recentRecords].sort((recentRecordA, recentRecordB) => new Date(recentRecordB.date) - new Date(recentRecordA.date));
 
-        for (const [i, recent] of sortedRecents.entries()) {
+        for (const [i, recentRecord] of sortedRecentRecords.entries()) {
             try {
 
                 const gameContainer = await buildGameContainer({
-                    platform: recent.platform,
+                    platform: recentRecord.platform,
                     emulator: '',
                     emulatorArgs: '',
-                    filePath: recent.filePath,
-                    gameName: recent.fileName,
+                    filePath: recentRecord.filePath,
+                    gameName: recentRecord.fileName,
                     index: i
                 });
 

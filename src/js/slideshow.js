@@ -1269,8 +1269,8 @@ function checkIfFavorite(container) {
     if (!favPage) return false;
 
     // Check if this game exists in favorites page
-    const existingFavorite = favPage.querySelector(`.game-container[data-game-name="${container.dataset.gameName}"][data-game-path="${container.dataset.gamePath}"]`);
-    return existingFavorite !== null;
+    const favoriteGameContainer = favPage.querySelector(`.game-container[data-game-name="${container.dataset.gameName}"][data-game-path="${container.dataset.gamePath}"]`);
+    return favoriteGameContainer !== null;
 }
 
 function handleFavoriteToggle(selectedContainer) {

@@ -342,48 +342,42 @@ export async function buildGameContainer({
     return container;
 }
 
-async function buildFavoritesGallery({ index }) {
-
-    document.getElementById('loading-platform-name').textContent = 'favorites';
-
-    const favoriteRecords = LB.favorites;
-
-    const noFavorites = (!favoriteRecords || favoriteRecords.length === 0 || favoriteRecords.error);
+async function buildRecordGalleryPage({ loadingName, pagePlatform, pageViewMode, gameRecords, emptyContext }) {
+    document.getElementById('loading-platform-name').textContent = loadingName;
 
     const page = document.createElement('div');
     page.classList.add('page');
-    page.dataset.platform = 'favorites';
-    page.dataset.viewMode = LB.favoritesViewMode;
+    page.dataset.platform = pagePlatform;
+    page.dataset.viewMode = pageViewMode;
 
     const pageContent = document.createElement('div');
     pageContent.classList.add('page-content');
     pageContent.style.gridTemplateColumns = `repeat(${LB.galleryNumOfCols}, 1fr)`;
 
-    for (const [i, favoriteRecord] of favoriteRecords.entries()) {
-        try {
+    const hasRecords = Array.isArray(gameRecords) && gameRecords.length > 0;
 
-            const gameContainer = await buildGameContainer({
-                platform: favoriteRecord.platform,
-                emulator: '',
-                emulatorArgs: '',
-                gamePath: favoriteRecord.gamePath,
-                gameName: favoriteRecord.gameName,
-                index: i
-            });
+    if (hasRecords) {
+        for (const [i, gameRecord] of gameRecords.entries()) {
+            try {
+                const gameContainer = await buildGameContainer({
+                    platform: gameRecord.platform,
+                    emulator: '',
+                    emulatorArgs: '',
+                    gamePath: gameRecord.gamePath,
+                    gameName: gameRecord.gameName,
+                    index: i
+                });
 
-            if (gameContainer) {
-                pageContent.appendChild(gameContainer);
+                if (gameContainer) {
+                    pageContent.appendChild(gameContainer);
+                }
+            } catch (err) {
+                console.error('Failed to build record gallery item:', err);
             }
-
-        } catch (err) {
-            console.error('Failed to get platform preference:', err);
         }
-    }
-
-    if (noFavorites) {
-
+    } else {
         const emptyContainer = buildEmptyPageGameContainer({
-            context: "no-favorites",
+            context: emptyContext,
         });
 
         page.dataset.empty = true;
@@ -394,59 +388,30 @@ async function buildFavoritesGallery({ index }) {
     return page;
 }
 
+async function buildFavoritesGallery({ index }) {
+    const favoriteRecords = Array.isArray(LB.favorites) ? LB.favorites : [];
+
+    return buildRecordGalleryPage({
+        loadingName: 'favorites',
+        pagePlatform: 'favorites',
+        pageViewMode: LB.favoritesViewMode,
+        gameRecords: favoriteRecords,
+        emptyContext: 'no-favorites'
+    });
+}
+
 async function buildRecentGallery({ index }) {
+    const recentRecords = Array.isArray(LB.recents)
+        ? [...LB.recents].sort((recentRecordA, recentRecordB) => new Date(recentRecordB.date) - new Date(recentRecordA.date))
+        : [];
 
-    document.getElementById('loading-platform-name').textContent = 'recents';
-
-    const recentRecords = LB.recents;
-    const noRecents = (!recentRecords || recentRecords.length === 0 || recentRecords.error);
-
-    const page = document.createElement('div');
-    page.classList.add('page');
-    page.dataset.platform = 'recents';
-    page.dataset.viewMode = LB.recentlyPlayedViewMode;
-
-    const pageContent = document.createElement('div');
-    pageContent.classList.add('page-content');
-    pageContent.style.gridTemplateColumns = `repeat(${LB.galleryNumOfCols}, 1fr)`;
-
-    if (!noRecents) {
-        const sortedRecentRecords = [...recentRecords].sort((recentRecordA, recentRecordB) => new Date(recentRecordB.date) - new Date(recentRecordA.date));
-
-        for (const [i, recentRecord] of sortedRecentRecords.entries()) {
-            try {
-
-                const gameContainer = await buildGameContainer({
-                    platform: recentRecord.platform,
-                    emulator: '',
-                    emulatorArgs: '',
-                    gamePath: recentRecord.gamePath,
-                    gameName: recentRecord.gameName,
-                    index: i
-                });
-
-                if (gameContainer) {
-                    pageContent.appendChild(gameContainer);
-                }
-
-            } catch (err) {
-                console.error('Failed to get platform preference:', err);
-            }
-        }
-    }
-
-    if (noRecents) {
-
-        const emptyContainer = buildEmptyPageGameContainer({
-            context: "no-recents",
-        });
-
-        page.dataset.empty = true;
-        pageContent.appendChild(emptyContainer);
-    }
-
-    page.appendChild(pageContent);
-    return page;
+    return buildRecordGalleryPage({
+        loadingName: 'recents',
+        pagePlatform: 'recents',
+        pageViewMode: LB.recentlyPlayedViewMode,
+        gameRecords: recentRecords,
+        emptyContext: 'no-recents'
+    });
 }
 
 export function buildPlatformContainer({

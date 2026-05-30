@@ -705,17 +705,35 @@ export function syncGameContainerLaunchConfig(gameContainer) {
     return { emulator, emulatorArgs };
 }
 
-export async function addFavorite(gameContainer) {
+function getFavoritesPageContent() {
     const galleries = document.getElementById('galleries');
-    const favoritesPage = galleries.querySelector('.page[data-platform="favorites"] .page-content');
+    return galleries.querySelector('.page[data-platform="favorites"] .page-content');
+}
 
-    syncGameContainerLaunchConfig(gameContainer);
-
-    const favoriteRecord = {
+export function buildFavoriteRecord(gameContainer) {
+    return {
         gameName: gameContainer.dataset.gameName,
         gamePath: gameContainer.dataset.gamePath,
         platform: gameContainer.dataset.platform
     };
+}
+
+export function findFavoriteGameContainer(favoritesPage, favoriteRecord) {
+    return favoritesPage?.querySelector(`.game-container[data-game-name="${favoriteRecord.gameName}"][data-game-path="${favoriteRecord.gamePath}"]`) || null;
+}
+
+export function isFavoriteGame(gameContainer) {
+    const favoriteRecord = buildFavoriteRecord(gameContainer);
+    const favoritesPage = getFavoritesPageContent();
+    return findFavoriteGameContainer(favoritesPage, favoriteRecord) !== null;
+}
+
+export async function addFavorite(gameContainer) {
+    const favoritesPage = getFavoritesPageContent();
+
+    syncGameContainerLaunchConfig(gameContainer);
+
+    const favoriteRecord = buildFavoriteRecord(gameContainer);
 
     const emptyPageGameContainer = favoritesPage?.querySelector('.empty-platform-game-container');
 
@@ -745,14 +763,9 @@ export async function addFavorite(gameContainer) {
 }
 
 export async function removeFavorite(gameContainer) {
-    const galleries = document.getElementById('galleries');
-    const favoritesPage = galleries.querySelector('.page[data-platform="favorites"] .page-content');
+    const favoritesPage = getFavoritesPageContent();
 
-    const favoriteRecord = {
-        gameName: gameContainer.dataset.gameName,
-        gamePath: gameContainer.dataset.gamePath,
-        platform: gameContainer.dataset.platform
-    };
+    const favoriteRecord = buildFavoriteRecord(gameContainer);
 
     console.log("removeFavorite - favoriteRecord: ", favoriteRecord);
 
@@ -762,7 +775,7 @@ export async function removeFavorite(gameContainer) {
         if (result.success) {
 
             if (favoritesPage) {
-                const favoriteGameContainer = favoritesPage.querySelector(`.game-container[data-game-name="${favoriteRecord.gameName}"][data-game-path="${favoriteRecord.gamePath}"]`);
+                const favoriteGameContainer = findFavoriteGameContainer(favoritesPage, favoriteRecord);
                 favoriteGameContainer?.remove();
                 const remainingFavoritesCount = favoritesPage.querySelectorAll('.game-container').length;
                 if (remainingFavoritesCount === 0) {

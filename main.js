@@ -639,15 +639,9 @@ ipcMain.on('save-meta', async (event, params, metaData) => {
     // event.reply('meta-saved', result);
 });
 
-function getUserConfigFile(file) {
-    const userDataPath = app.getPath('userData');
-    return path.join(userDataPath, file);
-}
-
 // Main process
 ipcMain.handle('add-favorite', async (event, favoriteRecord) => {
-    const favoriteFilePath = getUserConfigFile('favorites.json');
-    let favoriteRecords = readNormalizedRecordFile(favoriteFilePath, normalizeFavoriteRecord, 'favorites');
+    let favoriteRecords = readNormalizedRecordFile(favoritesFilePath, normalizeFavoriteRecord, 'favorites');
 
     const normalizedFavoriteRecord = normalizeFavoriteRecord(favoriteRecord);
 
@@ -664,9 +658,9 @@ ipcMain.handle('add-favorite', async (event, favoriteRecord) => {
     favoriteRecords.push(normalizedFavoriteRecord);
 
     try {
-        writeRecordFile(favoriteFilePath, favoriteRecords);
+        writeRecordFile(favoritesFilePath, favoriteRecords);
         console.log("Updated favorites.json with new/updated entry.");
-        return { success: true, path: favoriteFilePath };
+        return { success: true, path: favoritesFilePath };
     } catch (writeErr) {
         console.error("Error writing favorites.json:", writeErr);
         return { success: false, error: writeErr.message };
@@ -674,8 +668,7 @@ ipcMain.handle('add-favorite', async (event, favoriteRecord) => {
 });
 
 ipcMain.handle('remove-favorite', async (event, favoriteRecord) => {
-    const favoriteFilePath = getUserConfigFile('favorites.json');
-    let favoriteRecords = readNormalizedRecordFile(favoriteFilePath, normalizeFavoriteRecord, 'favorites');
+    let favoriteRecords = readNormalizedRecordFile(favoritesFilePath, normalizeFavoriteRecord, 'favorites');
 
     const normalizedFavoriteRecord = normalizeFavoriteRecord(favoriteRecord);
 
@@ -691,9 +684,9 @@ ipcMain.handle('remove-favorite', async (event, favoriteRecord) => {
     }
 
     try {
-        writeRecordFile(favoriteFilePath, favoriteRecords);
+        writeRecordFile(favoritesFilePath, favoriteRecords);
         console.log("Updated favorites.json - removed entry.");
-        return { success: true, path: favoriteFilePath };
+        return { success: true, path: favoritesFilePath };
     } catch (writeErr) {
         console.error("Error writing favorites.json:", writeErr);
         return { success: false, error: writeErr.message };

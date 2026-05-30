@@ -3,6 +3,7 @@ import { openPlatformMenu, openGameMenu, closeGameMenu } from './menu.js';
 import { updateFooterControlsFor,
          addFavorite,
          removeFavorite,
+         isFavoriteGame,
          updateHeader,
          batchDownload,
          launchGame,
@@ -1263,13 +1264,7 @@ export async function updateGamePane(selectedContainer) {
 }
 
 function checkIfFavorite(gameContainer) {
-    const galleries = document.getElementById('galleries');
-    const favoritesPage = galleries.querySelector('.page[data-platform="favorites"] .page-content');
-
-    if (!favoritesPage) return false;
-
-    const favoriteGameContainer = favoritesPage.querySelector(`.game-container[data-game-name="${gameContainer.dataset.gameName}"][data-game-path="${gameContainer.dataset.gamePath}"]`);
-    return favoriteGameContainer !== null;
+    return isFavoriteGame(gameContainer);
 }
 
 function handleFavoriteToggle(selectedContainer) {

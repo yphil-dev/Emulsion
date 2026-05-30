@@ -11,6 +11,7 @@ async function loadUserData() {
         const noUI = response.noUI;
         const autoSelect = response.autoSelect;
         const controlScheme = response.controlScheme || 'joypad';
+        const hasGameModeRun = response.hasGameModeRun;
         const recents = response.recents;
         const favorites = response.favorites;
         const preferencesError = response.preferencesError;
@@ -23,6 +24,7 @@ async function loadUserData() {
         delete preferences.noUI;
         delete preferences.autoSelect;
         delete preferences.controlScheme;
+        delete preferences.hasGameModeRun;
         delete preferences.recents;
         delete preferences.favorites;
         delete preferences.preferencesError;
@@ -36,6 +38,7 @@ async function loadUserData() {
             noUI,
             autoSelect,
             controlScheme,
+            hasGameModeRun,
             recents,
             favorites,
             preferencesError

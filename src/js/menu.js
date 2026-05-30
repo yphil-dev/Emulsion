@@ -339,6 +339,12 @@ function buildSettingsMenu() {
     const favoritesPolicyGroup = favoritesPolicy.group;
     const favoritesPolicyRadios = favoritesPolicy.radios;
 
+    const optimize = LB.hasGameModeRun
+        ? buildPrefsFormItem('optimize', 'bolt', ['yes', 'no'], '', 'Optimize', LB.optimize || 'no')
+        : null;
+    const optimizeGroup = optimize?.group;
+    const optimizeRadios = optimize?.radios;
+
     const steamGridAPIKey = buildPrefsFormItem('steamGridAPIKey', 'steam', 'text', 'Your SteamGrid API Key', 'SteamGrid API Key', LB.steamGridAPIKey || '');
     const steamGridAPIKeyGroup = steamGridAPIKey.group;
     const steamGridAPIKeyInput = steamGridAPIKey.input;
@@ -358,6 +364,7 @@ function buildSettingsMenu() {
     formContainer.appendChild(disabledPlatformsPolicyGroup);
     formContainer.appendChild(recentlyPlayedPolicyGroup);
     formContainer.appendChild(favoritesPolicyGroup);
+    if (optimizeGroup) formContainer.appendChild(optimizeGroup);
     formContainer.appendChild(steamGridAPIKeyGroup);
     formContainer.appendChild(giantBombAPIKeyGroup);
     formContainer.appendChild(opdbAPIKeyGroup);
@@ -423,6 +430,7 @@ function buildSettingsMenu() {
                 disabledPlatformsPolicy: disabledPlatformsPolicyRadios.find(radio => radio.checked)?.value,
                 recentlyPlayedPolicy: recentlyPlayedPolicyRadios.find(radio => radio.checked)?.value,
                 favoritesPolicy: favoritesPolicyRadios.find(radio => radio.checked)?.value,
+                optimize: optimizeRadios?.find(radio => radio.checked)?.value || 'no',
                 steamGridAPIKey: steamGridAPIKeyInput.value,
                 giantBombAPIKey: giantBombAPIKeyInput.value,
                 opdbAPIKey: opdbAPIKeyInput.value
@@ -435,6 +443,9 @@ function buildSettingsMenu() {
             await updatePreference('settings', 'disabledPlatformsPolicy', newPrefs.disabledPlatformsPolicy);
             await updatePreference('settings', 'recentlyPlayedPolicy', newPrefs.recentlyPlayedPolicy);
             await updatePreference('settings', 'favoritesPolicy', newPrefs.favoritesPolicy);
+            if (LB.hasGameModeRun) {
+                await updatePreference('settings', 'optimize', newPrefs.optimize);
+            }
             await updatePreference('settings', 'steamGridAPIKey', newPrefs.steamGridAPIKey);
             await updatePreference('settings', 'giantBombAPIKey', newPrefs.giantBombAPIKey);
             await updatePreference('settings', 'opdbAPIKey', newPrefs.opdbAPIKey);
@@ -457,6 +468,7 @@ function buildSettingsMenu() {
                 disabledPlatformsPolicy: newPrefs.disabledPlatformsPolicy,
                 recentlyPlayedPolicy: newPrefs.recentlyPlayedPolicy,
                 favoritesPolicy: newPrefs.favoritesPolicy,
+                optimize: newPrefs.optimize,
                 steamGridAPIKey: newPrefs.steamGridAPIKey,
                 giantBombAPIKey: newPrefs.giantBombAPIKey,
                 opdbAPIKey: newPrefs.opdbAPIKey

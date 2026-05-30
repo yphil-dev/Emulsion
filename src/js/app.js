@@ -107,6 +107,7 @@ async function initializeApp() {
             noUI: appData.noUI,
             autoSelect: appData.autoSelect,
             controlScheme: appData.controlScheme,
+            hasGameModeRun: appData.hasGameModeRun,
             recents: appData.recents,
             favorites: appData.favorites,
             favoritesViewMode: appData.favoritesViewMode,
@@ -124,6 +125,7 @@ async function initializeApp() {
             disabledPlatformsPolicy: uiPreferences.settings.disabledPlatformsPolicy,
             recentlyPlayedPolicy: uiPreferences.settings.recentlyPlayedPolicy,
             favoritesPolicy: uiPreferences.settings.favoritesPolicy,
+            optimize: uiPreferences.settings.optimize || 'no',
             favoritePendingAction: null,
             startupDialogPolicy: uiPreferences.settings.startupDialogPolicy,
             launchDialogPolicy: uiPreferences.settings.launchDialogPolicy

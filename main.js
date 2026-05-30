@@ -690,7 +690,53 @@ ipcMain.handle('remove-favorite', async (event, favoriteEntry) => {
     }
 });
 
-ipcMain.on('run-command', (event, data) => {
+function isCommandAvailable(commandName) {
+    return new Promise((resolve) => {
+        const isWin = process.platform === 'win32';
+
+        if (!isWin) {
+            exec(`command -v ${commandName}`, (error, stdout) => {
+                resolve(!error && stdout.trim().length > 0);
+            });
+            return;
+        }
+
+        exec(`where.exe ${commandName}.exe`, (error, stdout) => {
+            if (!error && stdout.trim().length > 0) {
+                resolve(true);
+                return;
+            }
+
+            const possibleDirs = [
+                process.env["LOCALAPPDATA"] + "\\Programs",
+                process.env["LOCALAPPDATA"],
+                process.env["ProgramFiles"],
+                process.env["ProgramFiles(x86)"],
+            ];
+
+            for (const dir of possibleDirs) {
+                if (!dir) continue;
+
+                try {
+                    const entries = fsSync.readdirSync(dir, { withFileTypes: true });
+                    for (const entry of entries) {
+                        if (entry.isDirectory()) {
+                            const exePath = path.join(dir, entry.name, `${commandName}.exe`);
+                            if (fsSync.existsSync(exePath)) {
+                                resolve(true);
+                                return;
+                            }
+                        }
+                    }
+                } catch (_) {}
+            }
+
+            resolve(false);
+        });
+    });
+}
+
+ipcMain.on('run-command', async (event, data) => {
     const { fileName, filePath, gameName, emulator, emulatorArgs, platform } = data;
 
     const recentEntry = {
@@ -728,14 +774,17 @@ ipcMain.on('run-command', (event, data) => {
         console.error("Error writing recently_played.json:", err);
     }
 
-    // --- command building (FIXED PART) ---
+    const preferences = loadPreferences();
+    const shouldUseGameMode =
+        preferences?.settings?.optimize === 'yes' &&
+        await isCommandAvailable('gamemoderun');
 
     const romDir = path.dirname(filePath);
 
     let cmd;
     let args = [];
 
-    const emulatorParts = emulator.split(/\s+/);
+    const emulatorParts = emulator.split(/\s+/).filter(Boolean);
 
     if (emulatorParts[0] === "flatpak" && emulatorParts[1] === "run") {
         cmd = "flatpak";
@@ -743,7 +792,7 @@ ipcMain.on('run-command', (event, data) => {
         args = [
             "run",
             `--filesystem=${romDir}:ro`,
-            ...emulatorParts.slice(2) // app id + flatpak args
+            ...emulatorParts.slice(2)
         ];
     } else {
         cmd = emulatorParts[0];
@@ -751,24 +800,33 @@ ipcMain.on('run-command', (event, data) => {
     }
 
     if (emulatorArgs) {
-        args.push(...emulatorArgs.split(/\s+/));
+        args.push(...emulatorArgs.split(/\s+/).filter(Boolean));
     }
 
     args.push(filePath);
 
+    if (shouldUseGameMode && cmd !== 'gamemoderun') {
+        args = [cmd, ...args];
+        cmd = 'gamemoderun';
+    }
+
     console.log("cmd, args: ", cmd, args);
 
-    const child = spawn(cmd, args, {
-        detached: true,
-        stdio: 'ignore'
-    });
+    try {
+        const child = spawn(cmd, args, {
+            detached: true,
+            stdio: 'ignore'
+        });
 
-    child.unref();
-    childProcesses.set(child.pid, child);
+        child.unref();
+        childProcesses.set(child.pid, child);
 
-    child.on('exit', () => {
-        childProcesses.delete(child.pid);
-    });
+        child.on('exit', () => {
+            childProcesses.delete(child.pid);
+        });
+    } catch (error) {
+        console.error('Error launching game:', error);
+    }
 });
 
 const defaultPreferences = {
@@ -782,6 +840,7 @@ const defaultPreferences = {
         favoritesViewMode: "grid",
         startupDialogPolicy: "show",
         launchDialogPolicy: "show",
+        optimize: "no",
         theme: "default",
         steamGridAPIKey: "",
         giantBombAPIKey: "",
@@ -808,6 +867,7 @@ ipcMain.handle('load-preferences', async (event) => {
     const userDataPath = app.getPath('userData');
     const appPath = app.getAppPath();
     const versionNumber = pjson.version;
+    const hasGameModeRun = await isCommandAvailable('gamemoderun');
 
     function getNamedArg(name) {
         try {
@@ -841,6 +901,7 @@ ipcMain.handle('load-preferences', async (event) => {
         defaultPrefs.noUI = process.argv.includes('--no-ui');
         defaultPrefs.autoSelect = getNamedArg('auto-select');
         defaultPrefs.controlScheme = getNamedArg('control-scheme') || 'joypad';
+        defaultPrefs.hasGameModeRun = hasGameModeRun;
         defaultPrefs.recents = recents;
         defaultPrefs.favorites = favorites;
         defaultPrefs.preferencesError = preferences.message;
@@ -853,6 +914,7 @@ ipcMain.handle('load-preferences', async (event) => {
         preferences.noUI = process.argv.includes('--no-ui');
         preferences.autoSelect = getNamedArg('auto-select');
         preferences.controlScheme = getNamedArg('control-scheme') || 'joypad';
+        preferences.hasGameModeRun = hasGameModeRun;
         // preferences.autoOpen = getNamedArg('auto-open');
         preferences.recents = recents;
         preferences.favorites = favorites;
@@ -1016,53 +1078,7 @@ ipcMain.handle('install-flatpak', async (event, appId) => {
 });
 
 ipcMain.handle('is-command-available', async (_event, commandName) => {
-    return new Promise((resolve) => {
-        const isWin = process.platform === 'win32';
-
-        if (!isWin) {
-            // Linux / macOS fallback
-            exec(`command -v ${commandName}`, (error, stdout) => {
-                resolve(!error && stdout.trim().length > 0);
-            });
-            return;
-        }
-
-        // WINDOWS PATH CHECK (fast)
-        exec(`where.exe ${commandName}.exe`, (error, stdout) => {
-            if (!error && stdout.trim().length > 0) {
-                resolve(true);
-                return;
-            }
-
-            // WINDOWS MANUAL LOOKUP (common install dirs)
-            const possibleDirs = [
-                process.env["LOCALAPPDATA"] + "\\Programs",
-                process.env["LOCALAPPDATA"],
-                process.env["ProgramFiles"],
-                process.env["ProgramFiles(x86)"],
-            ];
-
-            for (const dir of possibleDirs) {
-                if (!dir) continue;
-
-                try {
-                    // Simple directory scan, no recursion
-                    const entries = fs.readdirSync(dir, { withFileTypes: true });
-                    for (const entry of entries) {
-                        if (entry.isDirectory()) {
-                            const exePath = path.join(dir, entry.name, `${commandName}.exe`);
-                            if (fs.existsSync(exePath)) {
-                                resolve(true);
-                                return;
-                            }
-                        }
-                    }
-                } catch (_) {}
-            }
-
-            resolve(false); // Not found anywhere
-        });
-    });
+    return isCommandAvailable(commandName);
 });
 
 

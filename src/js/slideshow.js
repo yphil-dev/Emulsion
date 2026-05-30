@@ -974,7 +974,11 @@ export function initGamepad() {
             simulateKeyDown('Escape');
             break;
         case 2:
-            simulateKeyDown('i', { ctrl: true });
+            if (LB.controlScheme === "pinball") {
+                simulateKeyDown('Enter');
+            } else {
+                simulateKeyDown('i', { ctrl: true });
+            }
             break;
         case 3:
             simulateKeyDown('+');

@@ -126,7 +126,7 @@ async function loadPackageJson() {
 }
 
 const preferencesFilePath = path.join(app.getPath('userData'), "preferences.json");
-const recentFilePath = path.join(app.getPath('userData'), "recently_played.json");
+const recentsFilePath = path.join(app.getPath('userData'), "recently_played.json");
 const favoritesFilePath = path.join(app.getPath('userData'), "favorites.json");
 
 function showHelp() {
@@ -205,84 +205,61 @@ function normalizeRecentRecord(record) {
     };
 }
 
-function loadFavorites() {
+function normalizeRecordArray(records, normalizeRecord) {
+    if (!Array.isArray(records)) {
+        throw new Error('Expected an array');
+    }
+
+    return records.map(normalizeRecord).filter(Boolean);
+}
+
+function writeRecordFile(filePath, records) {
+    fsSync.writeFileSync(filePath, JSON.stringify(records, null, 2), 'utf8');
+}
+
+function loadNormalizedRecordFile(filePath, normalizeRecord, recordTypeLabel) {
     try {
-        if (fsSync.existsSync(favoritesFilePath)) {
-            const favoriteRecordsFileContent = fsSync.readFileSync(favoritesFilePath, 'utf8');
-
-            try {
-                const favoriteRecords = JSON.parse(favoriteRecordsFileContent);
-
-                if (!Array.isArray(favoriteRecords)) {
-                    throw new Error("Expected an array");
-                }
-
-                const normalizedFavoriteRecords = favoriteRecords
-                    .map(normalizeFavoriteRecord)
-                    .filter(Boolean);
-
-                if (JSON.stringify(normalizedFavoriteRecords) !== JSON.stringify(favoriteRecords)) {
-                    fsSync.writeFileSync(favoritesFilePath, JSON.stringify(normalizedFavoriteRecords, null, 2), 'utf8');
-
-                    if (normalizedFavoriteRecords.length !== favoriteRecords.length) {
-                        console.warn(`Removed ${favoriteRecords.length - normalizedFavoriteRecords.length} invalid entries from favorites file.`);
-                    }
-                }
-
-                return normalizedFavoriteRecords;
-
-            } catch (parseError) {
-                console.error('Invalid JSON in favorites file:', parseError);
-                return { error: 'INVALID_JSON', message: 'The favorites file contains invalid JSON. It will now be reset.' };
-            }
-        } else {
-            // Fresh install - silently return empty array
+        if (!fsSync.existsSync(filePath)) {
             return [];
         }
+
+        const fileContent = fsSync.readFileSync(filePath, 'utf8');
+
+        try {
+            const records = JSON.parse(fileContent);
+            const normalizedRecords = normalizeRecordArray(records, normalizeRecord);
+
+            if (JSON.stringify(normalizedRecords) !== JSON.stringify(records)) {
+                writeRecordFile(filePath, normalizedRecords);
+
+                if (normalizedRecords.length !== records.length) {
+                    console.warn(`Removed ${records.length - normalizedRecords.length} invalid entries from ${recordTypeLabel} file.`);
+                }
+            }
+
+            return normalizedRecords;
+
+        } catch (parseError) {
+            console.error(`Invalid JSON in ${recordTypeLabel} file:`, parseError);
+            return { error: 'INVALID_JSON', message: `The ${recordTypeLabel} file contains invalid JSON. It will now be reset.` };
+        }
     } catch (error) {
-        console.error('Error loading favorites:', error);
-        return { error: 'UNKNOWN_ERROR', message: 'An unknown error occurred while loading favorites.' };
+        console.error(`Error loading ${recordTypeLabel}:`, error);
+        return { error: 'UNKNOWN_ERROR', message: `An unknown error occurred while loading ${recordTypeLabel}.` };
     }
 }
 
+function readNormalizedRecordFile(filePath, normalizeRecord, recordTypeLabel) {
+    const records = loadNormalizedRecordFile(filePath, normalizeRecord, recordTypeLabel);
+    return Array.isArray(records) ? records : [];
+}
+
+function loadFavorites() {
+    return loadNormalizedRecordFile(favoritesFilePath, normalizeFavoriteRecord, 'favorites');
+}
+
 function loadRecents() {
-    try {
-        if (fsSync.existsSync(recentFilePath)) {
-            const recentRecordsFileContent = fsSync.readFileSync(recentFilePath, 'utf8');
-
-            try {
-                const recentRecords = JSON.parse(recentRecordsFileContent);
-
-                if (!Array.isArray(recentRecords)) {
-                    throw new Error("Expected an array");
-                }
-
-                const normalizedRecentRecords = recentRecords
-                    .map(normalizeRecentRecord)
-                    .filter(Boolean);
-
-                if (JSON.stringify(normalizedRecentRecords) !== JSON.stringify(recentRecords)) {
-                    fsSync.writeFileSync(recentFilePath, JSON.stringify(normalizedRecentRecords, null, 2), 'utf8');
-
-                    if (normalizedRecentRecords.length !== recentRecords.length) {
-                        console.warn(`Removed ${recentRecords.length - normalizedRecentRecords.length} invalid entries from recents file.`);
-                    }
-                }
-
-                return normalizedRecentRecords;
-
-            } catch (parseError) {
-                console.error('Invalid JSON in recent file:', parseError);
-                return { error: 'INVALID_JSON', message: 'The recent file contains invalid JSON. It will now be reset.' };
-            }
-        } else {
-            // Fresh install - silently return empty array
-            return [];
-        }
-    } catch (error) {
-        console.error('Error loading recent:', error);
-        return { error: 'UNKNOWN_ERROR', message: 'An unknown error occurred while loading recent.' };
-    }
+    return loadNormalizedRecordFile(recentsFilePath, normalizeRecentRecord, 'recents');
 }
 
 function loadPreferences() {
@@ -670,17 +647,7 @@ function getUserConfigFile(file) {
 // Main process
 ipcMain.handle('add-favorite', async (event, favoriteRecord) => {
     const favoriteFilePath = getUserConfigFile('favorites.json');
-    let favoriteRecords = [];
-
-    if (fsSync.existsSync(favoriteFilePath)) {
-        try {
-            const fileData = fsSync.readFileSync(favoriteFilePath, 'utf8');
-            favoriteRecords = JSON.parse(fileData);
-        } catch (readErr) {
-            console.error("Error reading favorites.json:", readErr);
-            favoriteRecords = [];
-        }
-    }
+    let favoriteRecords = readNormalizedRecordFile(favoriteFilePath, normalizeFavoriteRecord, 'favorites');
 
     const normalizedFavoriteRecord = normalizeFavoriteRecord(favoriteRecord);
 
@@ -688,20 +655,16 @@ ipcMain.handle('add-favorite', async (event, favoriteRecord) => {
         return { success: false, error: "Invalid favorite record" };
     }
 
-    favoriteRecords = favoriteRecords
-        .map(normalizeFavoriteRecord)
-        .filter(Boolean);
-
     const existingRecordIndex = favoriteRecords.findIndex(record => record.gamePath === normalizedFavoriteRecord.gamePath);
 
     if (existingRecordIndex >= 0) {
         return { success: false, error: "Already exists" };
-    } else {
-        favoriteRecords.push(normalizedFavoriteRecord);
     }
 
+    favoriteRecords.push(normalizedFavoriteRecord);
+
     try {
-        fsSync.writeFileSync(favoriteFilePath, JSON.stringify(favoriteRecords, null, 4), 'utf8');
+        writeRecordFile(favoriteFilePath, favoriteRecords);
         console.log("Updated favorites.json with new/updated entry.");
         return { success: true, path: favoriteFilePath };
     } catch (writeErr) {
@@ -712,27 +675,13 @@ ipcMain.handle('add-favorite', async (event, favoriteRecord) => {
 
 ipcMain.handle('remove-favorite', async (event, favoriteRecord) => {
     const favoriteFilePath = getUserConfigFile('favorites.json');
-    let favoriteRecords = [];
-
-    if (fsSync.existsSync(favoriteFilePath)) {
-        try {
-            const fileData = fsSync.readFileSync(favoriteFilePath, 'utf8');
-            favoriteRecords = JSON.parse(fileData);
-        } catch (readErr) {
-            console.error("Error reading favorites.json:", readErr);
-            return { success: false, error: "Failed to read favorites file" };
-        }
-    }
+    let favoriteRecords = readNormalizedRecordFile(favoriteFilePath, normalizeFavoriteRecord, 'favorites');
 
     const normalizedFavoriteRecord = normalizeFavoriteRecord(favoriteRecord);
 
     if (!normalizedFavoriteRecord) {
         return { success: false, error: "Invalid favorite record" };
     }
-
-    favoriteRecords = favoriteRecords
-        .map(normalizeFavoriteRecord)
-        .filter(Boolean);
 
     const initialLength = favoriteRecords.length;
     favoriteRecords = favoriteRecords.filter(record => record.gamePath !== normalizedFavoriteRecord.gamePath);
@@ -742,7 +691,7 @@ ipcMain.handle('remove-favorite', async (event, favoriteRecord) => {
     }
 
     try {
-        fsSync.writeFileSync(favoriteFilePath, JSON.stringify(favoriteRecords, null, 4), 'utf8');
+        writeRecordFile(favoriteFilePath, favoriteRecords);
         console.log("Updated favorites.json - removed entry.");
         return { success: true, path: favoriteFilePath };
     } catch (writeErr) {
@@ -807,17 +756,7 @@ ipcMain.on('run-command', async (event, launchRequest) => {
         date: new Date().toISOString()
     };
 
-    const recentFilePath = getUserConfigFile('recently_played.json');
-    let recentRecords = [];
-
-    if (fsSync.existsSync(recentFilePath)) {
-        try {
-            recentRecords = JSON.parse(fsSync.readFileSync(recentFilePath, 'utf8'));
-            recentRecords = recentRecords.map(normalizeRecentRecord).filter(Boolean);
-        } catch (err) {
-            console.error("Error reading recently_played.json:", err);
-        }
-    }
+    let recentRecords = readNormalizedRecordFile(recentsFilePath, normalizeRecentRecord, 'recents');
 
     const existingRecordIndex = recentRecords.findIndex(record => record.gamePath === gamePath);
     if (existingRecordIndex >= 0) {
@@ -827,7 +766,7 @@ ipcMain.on('run-command', async (event, launchRequest) => {
     }
 
     try {
-        fsSync.writeFileSync(recentFilePath, JSON.stringify(recentRecords, null, 4));
+        writeRecordFile(recentsFilePath, recentRecords);
     } catch (err) {
         console.error("Error writing recently_played.json:", err);
     }

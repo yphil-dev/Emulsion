@@ -176,15 +176,6 @@ export async function buildGallery(params) {
 
     const imagesDir = path.join(gamesDir, 'images');
 
-    async function getPs3GameTitleSafe(filePath) {
-        try {
-            return await ipcRenderer.invoke('parse-sfo', filePath);
-        } catch (err) {
-            console.error('Failed to parse SFO:', err);
-            return null;
-        }
-    }
-
     const gameFiles = await scanDirectory(gamesDir, extensions, true);
 
     // Sort based on sortGamesBy preference
@@ -237,15 +228,15 @@ export async function buildGallery(params) {
 
     // Process all games in parallel using Promise.all
     const gameContainerPromises = gameFiles.map(async (gamePath, i) => {
-        let fileName = path.basename(gamePath);
-        let fileNameWithoutExt = stripExtensions(fileName, extensions);
+        const rawGameFileName = path.basename(gamePath);
+        let gameName = stripExtensions(rawGameFileName, extensions);
 
         // PS3 special handling - fetch PS3 titles in parallel (but limit concurrency to avoid overwhelming IPC)
         if (platform === 'ps3') {
             try {
                 const ps3Title = await getPs3GameName(gamePath);
                 if (ps3Title) {
-                    fileNameWithoutExt = stripExtensions(ps3Title);
+                    gameName = stripExtensions(ps3Title);
                 }
             } catch (err) {
                 console.warn(`Failed to parse PS3 title for ${gamePath}:`, err);
@@ -258,7 +249,7 @@ export async function buildGallery(params) {
             emulator,
             emulatorArgs,
             gamePath,
-            gameName: fileNameWithoutExt,
+            gameName,
             index: i
         });
 
@@ -341,7 +332,6 @@ export async function buildGameContainer({
     label.setAttribute('lang', 'en');
 
 
-    const labelText = document.createElement('div');
     label.textContent = cleanName;
 
     imageContainer.appendChild(gameImage);

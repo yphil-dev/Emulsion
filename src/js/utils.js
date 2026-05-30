@@ -471,16 +471,16 @@ export function updateHeader(platformName, gameName) {
 
     const galleries = document.getElementById('galleries');
 
-    const favPage = galleries.querySelector('.page[data-platform="favorites"] .page-content');
+    const favoritesPage = galleries.querySelector('.page[data-platform="favorites"] .page-content');
     const recentsPage = galleries.querySelector('.page[data-platform="recents"] .page-content');
 
     let platform;
     if (platformName === 'settings') {
         platform = { nbGames: PLATFORMS.length, displayName: "Settings", vendor: "Emulsion" };
     } else if (platformName === 'favorites') {
-        platform = { nbGames: favPage.children.length, displayName: "Favorites", vendor: "Emulsion" };
+        platform = { nbGames: favoritesPage?.children.length || 0, displayName: "Favorites", vendor: "Emulsion" };
     } else if (platformName === 'recents') {
-        platform = { nbGames: recentsPage.children.length, displayName: "Recently played", vendor: "Emulsion" };
+        platform = { nbGames: recentsPage?.children.length || 0, displayName: "Recently played", vendor: "Emulsion" };
     } else {
         platform = getPlatformByName(platformName);
     }
@@ -717,7 +717,7 @@ export async function addFavorite(gameContainer) {
         platform: gameContainer.dataset.platform
     };
 
-    const emptyPageGameContainer = favoritesPage.querySelector('.empty-platform-game-container');
+    const emptyPageGameContainer = favoritesPage?.querySelector('.empty-platform-game-container');
 
     if (favoritesPage) {
         if (emptyPageGameContainer) {
@@ -932,13 +932,13 @@ export function launchGame(gameContainer) {
     // Add launching class only to the launched game
     gameContainer.classList.add('launching');
 
-    const { emulator, emulatorArgs } = syncGameContainerLaunchConfig(gameContainer);
+    const launchConfig = syncGameContainerLaunchConfig(gameContainer);
 
     const launchRequest = {
         gameName: gameContainer.dataset.gameName,
         gamePath: gameContainer.dataset.gamePath,
-        emulator,
-        emulatorArgs,
+        emulator: launchConfig.emulator,
+        emulatorArgs: launchConfig.emulatorArgs,
         platform: gameContainer.dataset.platform
     };
 

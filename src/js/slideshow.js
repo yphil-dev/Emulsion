@@ -1262,14 +1262,13 @@ export async function updateGamePane(selectedContainer) {
     await displayMetaData(params, gameMetaData);
 }
 
-function checkIfFavorite(container) {
+function checkIfFavorite(gameContainer) {
     const galleries = document.getElementById('galleries');
-    const favPage = galleries.querySelector('.page[data-platform="favorites"] .page-content');
+    const favoritesPage = galleries.querySelector('.page[data-platform="favorites"] .page-content');
 
-    if (!favPage) return false;
+    if (!favoritesPage) return false;
 
-    // Check if this game exists in favorites page
-    const favoriteGameContainer = favPage.querySelector(`.game-container[data-game-name="${container.dataset.gameName}"][data-game-path="${container.dataset.gamePath}"]`);
+    const favoriteGameContainer = favoritesPage.querySelector(`.game-container[data-game-name="${gameContainer.dataset.gameName}"][data-game-path="${gameContainer.dataset.gamePath}"]`);
     return favoriteGameContainer !== null;
 }
 
@@ -1295,12 +1294,12 @@ function handleFavoriteToggle(selectedContainer) {
     }
 }
 
-async function toggleFavorite(container) {
-    const isFavorite = checkIfFavorite(container);
+async function toggleFavorite(gameContainer) {
+    const isFavorite = checkIfFavorite(gameContainer);
 
     if (isFavorite) {
-        await removeFavorite(container);
+        await removeFavorite(gameContainer);
     } else {
-        await addFavorite(container);
+        await addFavorite(gameContainer);
     }
 }

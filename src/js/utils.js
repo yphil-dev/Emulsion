@@ -664,16 +664,56 @@ export async function executeBatchDownload(games, type, platformName) {
 
 }
 
+export function resolvePlatformLaunchConfig(platform, fallbackEmulator = '', fallbackEmulatorArgs = '') {
+    const platformPrefs = LB.preferences?.[platform];
+
+    if (!platformPrefs) {
+        return {
+            emulator: fallbackEmulator || '',
+            emulatorArgs: fallbackEmulatorArgs || ''
+        };
+    }
+
+    return {
+        emulator: platformPrefs.emulator ?? fallbackEmulator ?? '',
+        emulatorArgs: platformPrefs.emulatorArgs ?? fallbackEmulatorArgs ?? ''
+    };
+}
+
+export function syncGameContainerLaunchConfig(gameContainer) {
+    if (!gameContainer?.dataset?.platform) {
+        return {
+            emulator: gameContainer?.dataset?.emulator || '',
+            emulatorArgs: gameContainer?.dataset?.emulatorArgs || ''
+        };
+    }
+
+    const { emulator, emulatorArgs } = resolvePlatformLaunchConfig(
+        gameContainer.dataset.platform,
+        gameContainer.dataset.emulator,
+        gameContainer.dataset.emulatorArgs
+    );
+
+    gameContainer.dataset.emulator = emulator;
+    gameContainer.dataset.emulatorArgs = emulatorArgs;
+    gameContainer.dataset.command = [emulator, emulatorArgs, gameContainer.dataset.gamePath].filter(Boolean).join(' ');
+
+    if (gameContainer.dataset.cleanName && gameContainer.dataset.gamePath) {
+        gameContainer.title = `${gameContainer.dataset.cleanName}\n\n- File: ${gameContainer.dataset.gamePath}\n- Click to launch with ${emulator || 'the configured emulator'}\n- Right-click to fetch cover art image`;
+    }
+
+    return { emulator, emulatorArgs };
+}
+
 export async function addFavorite(container) {
     const galleries = document.getElementById('galleries');
     const favPage = galleries.querySelector('.page[data-platform="favorites"] .page-content');
 
+    syncGameContainerLaunchConfig(container);
+
     const favoriteEntry = {
         gameName: container.dataset.gameName,
         gamePath: container.dataset.gamePath,
-        command: container.dataset.command,
-        emulator: container.dataset.emulator,
-        emulatorArgs: container.dataset.emulatorArgs,
         platform: container.dataset.platform
     };
 
@@ -711,9 +751,6 @@ export async function removeFavorite(container) {
     const favoriteEntry = {
         gameName: container.dataset.gameName,
         gamePath: container.dataset.gamePath,
-        command: container.dataset.command,
-        emulator: container.dataset.emulator,
-        emulatorArgs: container.dataset.emulatorArgs,
         platform: container.dataset.platform
     };
 
@@ -895,12 +932,14 @@ export function launchGame(gameContainer) {
     // Add launching class only to the launched game
     gameContainer.classList.add('launching');
 
+    const { emulator, emulatorArgs } = syncGameContainerLaunchConfig(gameContainer);
+
     ipcRenderer.send('run-command', {
         fileName: gameContainer.dataset.gameName,
         filePath: gameContainer.dataset.gamePath,
         gameName: gameContainer.dataset.gameName,
-        emulator: gameContainer.dataset.emulator,
-        emulatorArgs: gameContainer.dataset.emulatorArgs,
+        emulator,
+        emulatorArgs,
         platform: gameContainer.dataset.platform
     });
 }

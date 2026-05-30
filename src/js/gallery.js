@@ -6,7 +6,8 @@ import { cleanFileName,
          findImageFile,
          buildIcon,
          extractVpxYear,
-         extractVpxVendor } from './utils.js';
+         extractVpxVendor,
+         syncGameContainerLaunchConfig } from './utils.js';
 import { incrementNbGames } from './preferences.js';
 import { openPlatformMenu } from './menu.js';
 
@@ -314,12 +315,6 @@ export async function buildGameContainer({
         platformBadge.textContent = platform;
     }
     container.classList.add('game-container');
-    container.title = `${cleanName}
-
-- File: ${filePath}
-- Click to launch with ${emulator}
-- Right-click to fetch cover art image`;
-
     container.dataset.gameName = gameName;
     container.dataset.cleanName = cleanName;
     container.dataset.platform = platform;
@@ -328,6 +323,8 @@ export async function buildGameContainer({
     container.dataset.emulatorArgs = emulatorArgs;
     container.dataset.gamePath = filePath;
     container.dataset.index = index;
+
+    syncGameContainerLaunchConfig(container);
 
     const gameImage = document.createElement('img');
     gameImage.classList.add('game-image');
@@ -377,8 +374,8 @@ async function buildFavoritesGallery({ index }) {
 
             const gameContainer = await buildGameContainer({
                 platform: favorite.platform,
-                emulator: favorite.emulator,
-                emulatorArgs: favorite.emulatorArgs,
+                emulator: '',
+                emulatorArgs: '',
                 filePath: favorite.gamePath,
                 gameName: favorite.gameName,
                 index: i
@@ -431,8 +428,8 @@ async function buildRecentGallery({ index }) {
 
                 const gameContainer = await buildGameContainer({
                     platform: recent.platform,
-                    emulator: recent.emulator,
-                    emulatorArgs: recent.emulatorArgs,
+                    emulator: '',
+                    emulatorArgs: '',
                     filePath: recent.filePath,
                     gameName: recent.fileName,
                     index: i

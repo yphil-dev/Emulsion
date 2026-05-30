@@ -1268,17 +1268,8 @@ function checkIfFavorite(container) {
 
     if (!favPage) return false;
 
-    const favoriteEntry = {
-        gameName: container.dataset.gameName,
-        gamePath: container.dataset.gamePath,
-        command: container.dataset.command,
-        emulator: container.dataset.emulator,
-        emulatorArgs: container.dataset.emulatorArgs,
-        platform: container.dataset.platform
-    };
-
     // Check if this game exists in favorites page
-    const existingFavorite = favPage.querySelector(`.game-container[data-game-name="${favoriteEntry.gameName}"][data-game-path="${favoriteEntry.gamePath}"]`);
+    const existingFavorite = favPage.querySelector(`.game-container[data-game-name="${container.dataset.gameName}"][data-game-path="${container.dataset.gamePath}"]`);
     return existingFavorite !== null;
 }
 

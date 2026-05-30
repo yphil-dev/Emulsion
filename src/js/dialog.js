@@ -1,7 +1,7 @@
 import { initSlideShow, initGallery } from './slideshow.js';
 import { displayMetaData } from './metadata.js';
 import { PLATFORMS, getPlatformInfo } from './platforms.js';
-import { simulateTabNavigation, launchGame, buildIcon, switchIcon } from './utils.js';
+import { simulateTabNavigation, launchGame, buildIcon, switchIcon, syncGameContainerLaunchConfig } from './utils.js';
 import { updatePreference } from './preferences.js';
 import { openPlatformMenu } from './menu.js';
 
@@ -744,9 +744,11 @@ export function launchGameDialog(gameContainer) {
     const checkbox = document.getElementById('open-dialog-at-launch');
 
     // Set dialog content
+    const { emulator } = syncGameContainerLaunchConfig(gameContainer);
+
     dialog.querySelector('img').src = gameContainer.querySelector('img').src;
     dialog.querySelector('.dialog-title').textContent = gameContainer.dataset.cleanName || gameContainer.dataset.gameName;
-    dialog.querySelector('.emulator-name').textContent = gameContainer.dataset.emulator;
+    dialog.querySelector('.emulator-name').textContent = emulator;
 
     function closeDialog() {
         DialogManager.closeCurrent();

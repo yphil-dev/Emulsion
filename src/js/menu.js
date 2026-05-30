@@ -340,7 +340,7 @@ function buildSettingsMenu() {
     const favoritesPolicyRadios = favoritesPolicy.radios;
 
     const optimize = LB.hasGameModeRun
-        ? buildPrefsFormItem('optimize', 'bolt', ['yes', 'no'], '', 'Optimize', LB.optimize || 'no')
+        ? buildPrefsFormItem('optimize', 'bolt', ['yes', 'no'], '', 'Optimize (GameMode)', LB.optimize || 'no')
         : null;
     const optimizeGroup = optimize?.group;
     const optimizeRadios = optimize?.radios;

@@ -168,17 +168,20 @@ function loadFavorites() {
                       record &&
                       typeof record.gameName === 'string' &&
                       typeof record.gamePath === 'string' &&
-                      typeof record.command === 'string' &&
-                      typeof record.emulator === 'string' &&
-                      typeof record.emulatorArgs === 'string' && // Can be empty string
                       typeof record.platform === 'string';
 
-                const validRecords = favorites.filter(isValidRecord);
+                const validRecords = favorites.filter(isValidRecord).map(record => ({
+                    gameName: record.gameName,
+                    gamePath: record.gamePath,
+                    platform: record.platform
+                }));
 
-                // Optionally overwrite the file if invalid entries were removed
-                if (validRecords.length !== favorites.length) {
+                if (JSON.stringify(validRecords) !== JSON.stringify(favorites)) {
                     fsSync.writeFileSync(favoritesFilePath, JSON.stringify(validRecords, null, 2), 'utf8');
-                    console.warn(`Removed ${favorites.length - validRecords.length} invalid entries from favorites file.`);
+
+                    if (validRecords.length !== favorites.length) {
+                        console.warn(`Removed ${favorites.length - validRecords.length} invalid entries from favorites file.`);
+                    }
                 }
 
                 return validRecords;
@@ -214,17 +217,23 @@ function loadRecents() {
                       typeof record.fileName === 'string' &&
                       typeof record.filePath === 'string' &&
                       typeof record.gameName === 'string' &&
-                      typeof record.emulator === 'string' &&
-                      typeof record.emulatorArgs === 'string' && // Can be empty string
                       typeof record.platform === 'string' &&
                       typeof record.date === 'string' && !isNaN(Date.parse(record.date));
 
-                const validRecords = recent.filter(isValidRecord);
+                const validRecords = recent.filter(isValidRecord).map(record => ({
+                    fileName: record.fileName,
+                    filePath: record.filePath,
+                    gameName: record.gameName,
+                    platform: record.platform,
+                    date: record.date
+                }));
 
-                // Optionally overwrite the file if invalid entries were removed
-                if (validRecords.length !== recent.length) {
+                if (JSON.stringify(validRecords) !== JSON.stringify(recent)) {
                     fsSync.writeFileSync(recentFilePath, JSON.stringify(validRecords, null, 2), 'utf8');
-                    console.warn(`Removed ${recent.length - recent.length} invalid entries from recents file.`);
+
+                    if (validRecords.length !== recent.length) {
+                        console.warn(`Removed ${recent.length - validRecords.length} invalid entries from recents file.`);
+                    }
                 }
 
                 return validRecords;
@@ -640,12 +649,18 @@ ipcMain.handle('add-favorite', async (event, favoriteEntry) => {
         }
     }
 
-    const existingIndex = favorites.findIndex(entry => entry.gamePath === favoriteEntry.gamePath);
+    const normalizedFavoriteEntry = {
+        gameName: favoriteEntry.gameName,
+        gamePath: favoriteEntry.gamePath,
+        platform: favoriteEntry.platform
+    };
+
+    const existingIndex = favorites.findIndex(entry => entry.gamePath === normalizedFavoriteEntry.gamePath);
 
     if (existingIndex >= 0) {
         return { success: false, error: "Already exists" };
     } else {
-        favorites.push(favoriteEntry);
+        favorites.push(normalizedFavoriteEntry);
     }
 
     try {
@@ -743,8 +758,6 @@ ipcMain.on('run-command', async (event, data) => {
         fileName,
         filePath,
         gameName,
-        emulator,
-        emulatorArgs,
         platform,
         date: new Date().toISOString()
     };

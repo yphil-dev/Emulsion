@@ -21,6 +21,22 @@ const galleries = document.getElementById("galleries");
 
 let confirmationTimeout = null;
 
+function dismissFavoriteConfirmation() {
+    const existingDialog = document.getElementById('favorite-confirmation');
+    if (existingDialog) existingDialog.remove();
+    LB.favoritePendingAction = null;
+    clearTimeout(confirmationTimeout);
+}
+
+function shouldDismissFavoriteConfirmation(event) {
+    if (LB.favoritePendingAction === 'toggle-favorite' && event.key !== '+') {
+        dismissFavoriteConfirmation();
+        return true;
+    }
+
+    return false;
+}
+
 export function initSlideShow(platformToDisplay) {
     LB.mode = 'slideshow';
 
@@ -119,6 +135,10 @@ export function initSlideShow(platformToDisplay) {
     window.onSlideShowKeyDown = function(event) {
         event.stopPropagation();
         event.stopImmediatePropagation();
+
+        if (shouldDismissFavoriteConfirmation(event)) {
+            return;
+        }
 
         switch (event.key) {
         case 'ArrowRight':
@@ -566,6 +586,10 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
 }
 
 window.onGalleryKeyDown = function onGalleryKeyDown(event) {
+
+    if (shouldDismissFavoriteConfirmation(event)) {
+        return;
+    }
 
     const menu = document.getElementById('menu');
 
@@ -1270,10 +1294,7 @@ function checkIfFavorite(gameContainer) {
 function handleFavoriteToggle(selectedContainer) {
     if (LB.favoritePendingAction === 'toggle-favorite') {
         // Second press - execute action
-        const existingDialog = document.getElementById('favorite-confirmation');
-        if (existingDialog) existingDialog.remove();
-        LB.favoritePendingAction = null;
-        clearTimeout(confirmationTimeout);
+        dismissFavoriteConfirmation();
         toggleFavorite(selectedContainer);
     } else {
         // First press - show confirmation

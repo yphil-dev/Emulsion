@@ -514,7 +514,7 @@ export function toggleFullScreen(elem = document.documentElement) {
     }
 }
 
-export async function scanDirectory(gamesDir, extensions, recursive = true, ignoredDirs = ['PS3_EXTRA', 'PKGDIR', 'freezer', 'tmp']) {
+export async function scanDirectory(gamesDir, extensions, recursive = true, ignoredDirs = ['PS3_EXTRA', 'PKGDIR', 'freezer', 'tmp', 'WIP']) {
 
     if (!gamesDir || typeof gamesDir !== 'string') {
         console.warn("scanDirectory: Invalid directory path provided:", gamesDir);

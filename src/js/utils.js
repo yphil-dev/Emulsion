@@ -710,6 +710,37 @@ function getFavoritesPageContent() {
     return galleries.querySelector('.page[data-platform="favorites"] .page-content');
 }
 
+function createFavoriteBadge() {
+    const favoriteBadge = document.createElement('img');
+    favoriteBadge.className = 'favorite-badge';
+    favoriteBadge.src = path.join(LB.baseDir, 'img', 'platforms', 'favorites.png');
+    favoriteBadge.alt = 'Favorite';
+    return favoriteBadge;
+}
+
+function setFavoriteBadge(gameContainer, enabled) {
+    const imageContainer = gameContainer?.querySelector('.game-container-image');
+    if (!imageContainer) return;
+
+    const existingBadge = imageContainer.querySelector('.favorite-badge');
+
+    if (enabled) {
+        if (!existingBadge) {
+            imageContainer.appendChild(createFavoriteBadge());
+        }
+    } else {
+        existingBadge?.remove();
+    }
+}
+
+function updateFavoriteBadgesByPath(gamePath, enabled) {
+    document.querySelectorAll('.game-container').forEach(gameContainer => {
+        if (gameContainer.dataset.gamePath === gamePath) {
+            setFavoriteBadge(gameContainer, enabled);
+        }
+    });
+}
+
 export function buildFavoriteRecord(gameContainer) {
     return {
         gameName: gameContainer.dataset.gameName,
@@ -737,12 +768,15 @@ export async function addFavorite(gameContainer) {
 
     const emptyPageGameContainer = favoritesPage?.querySelector('.empty-platform-game-container');
 
+    updateFavoriteBadgesByPath(favoriteRecord.gamePath, true);
+
     if (favoritesPage) {
         if (emptyPageGameContainer) {
             emptyPageGameContainer.remove();
         }
         const favoriteGameContainer = gameContainer.cloneNode(true);
         favoriteGameContainer.classList.remove('selected');
+        setFavoriteBadge(favoriteGameContainer, true);
         favoritesPage.appendChild(favoriteGameContainer);
     }
 
@@ -773,6 +807,8 @@ export async function removeFavorite(gameContainer) {
         const result = await ipcRenderer.invoke('remove-favorite', favoriteRecord);
         console.log("removeFavorite - result: ", result);
         if (result.success) {
+
+            updateFavoriteBadgesByPath(favoriteRecord.gamePath, false);
 
             if (favoritesPage) {
                 const favoriteGameContainer = findFavoriteGameContainer(favoritesPage, favoriteRecord);

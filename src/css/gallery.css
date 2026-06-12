@@ -227,17 +227,17 @@ div.menu-game-container {
   border-radius: 3px;
 }
 
-.recent-badge {
+.game-container-image .favorite-badge {
   position: absolute;
   left: 8px;
   bottom: 8px;
-  width: 70px;
+  width: 32px;
   height: auto;
   z-index: 2;
   pointer-events: none;
 }
 
-.page[data-platform="recents"] .recent-badge {
+.page[data-platform="favorites"] .favorite-badge {
   display: none;
 }
 

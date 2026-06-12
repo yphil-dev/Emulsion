@@ -11,19 +11,19 @@ import { cleanFileName,
 import { incrementNbGames } from './preferences.js';
 import { openPlatformMenu } from './menu.js';
 
-let recentGamePaths = new Set();
+let favoriteGamePaths = new Set();
 
-function isRecentGamePath(gamePath) {
-    return recentGamePaths.has(gamePath);
+function isFavoriteGamePath(gamePath) {
+    return favoriteGamePaths.has(gamePath);
 }
 
 export async function buildGalleries (preferences, userDataPath) {
     return new Promise(async (resolve, reject) => {
         try {
             const galleriesContainer = document.getElementById('galleries');
-            recentGamePaths = new Set(
-                Array.isArray(LB.recents)
-                    ? LB.recents.map(record => record?.gamePath).filter(Boolean)
+            favoriteGamePaths = new Set(
+                Array.isArray(LB.favorites)
+                    ? LB.favorites.map(record => record?.gamePath).filter(Boolean)
                     : []
             );
             let i = 0;
@@ -337,12 +337,12 @@ export async function buildGameContainer({
     const imageContainer = document.createElement('div');
     imageContainer.classList.add('game-container-image');
 
-    if (isRecentGamePath(gamePath)) {
-        const recentBadge = document.createElement('img');
-        recentBadge.className = 'recent-badge';
-        recentBadge.src = path.join(LB.baseDir, 'img', 'platforms', 'recents.png');
-        recentBadge.alt = 'Recently played';
-        imageContainer.appendChild(recentBadge);
+    if (isFavoriteGamePath(gamePath)) {
+        const favoriteBadge = document.createElement('img');
+        favoriteBadge.className = 'favorite-badge';
+        favoriteBadge.src = path.join(LB.baseDir, 'img', 'platforms', 'favorites.png');
+        favoriteBadge.alt = 'Favorite';
+        imageContainer.appendChild(favoriteBadge);
     }
 
     const label = document.createElement('div');

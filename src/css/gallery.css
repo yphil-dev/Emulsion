@@ -163,6 +163,10 @@ div.menu-game-container {
   height: 30vh;
 }
 
+.game-container-image {
+  position: relative;
+}
+
 .game-container .game-image {
   display: block;
   height: 100%;
@@ -221,6 +225,20 @@ div.menu-game-container {
   border: 0.25cqw solid var(--color-badge-border);
   /* box-shadow: 0 2px 4px rgba(0,0,0,0.2); */
   border-radius: 3px;
+}
+
+.recent-badge {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  width: 70px;
+  height: auto;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.page[data-platform="recents"] .recent-badge {
+  display: none;
 }
 
 .page-content.list .platform-badge {

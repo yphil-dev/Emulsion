@@ -11,10 +11,21 @@ import { cleanFileName,
 import { incrementNbGames } from './preferences.js';
 import { openPlatformMenu } from './menu.js';
 
+let recentGamePaths = new Set();
+
+function isRecentGamePath(gamePath) {
+    return recentGamePaths.has(gamePath);
+}
+
 export async function buildGalleries (preferences, userDataPath) {
     return new Promise(async (resolve, reject) => {
         try {
             const galleriesContainer = document.getElementById('galleries');
+            recentGamePaths = new Set(
+                Array.isArray(LB.recents)
+                    ? LB.recents.map(record => record?.gamePath).filter(Boolean)
+                    : []
+            );
             let i = 0;
             // Ensure consistent order: settings, platforms in PLATFORMS order, recents, favorites
             const platformNames = PLATFORMS.map(p => p.name).filter(name => preferences[name]);
@@ -325,6 +336,14 @@ export async function buildGameContainer({
 
     const imageContainer = document.createElement('div');
     imageContainer.classList.add('game-container-image');
+
+    if (isRecentGamePath(gamePath)) {
+        const recentBadge = document.createElement('img');
+        recentBadge.className = 'recent-badge';
+        recentBadge.src = path.join(LB.baseDir, 'img', 'platforms', 'recents.png');
+        recentBadge.alt = 'Recently played';
+        imageContainer.appendChild(recentBadge);
+    }
 
     const label = document.createElement('div');
     label.classList.add('game-label');

@@ -355,6 +355,7 @@ async function buildRecordGalleryPage({ loadingName, pagePlatform, pageViewMode,
     pageContent.style.gridTemplateColumns = `repeat(${LB.galleryNumOfCols}, 1fr)`;
 
     const hasRecords = Array.isArray(gameRecords) && gameRecords.length > 0;
+    let appendedCount = 0;
 
     if (hasRecords) {
         for (const [i, gameRecord] of gameRecords.entries()) {
@@ -370,12 +371,15 @@ async function buildRecordGalleryPage({ loadingName, pagePlatform, pageViewMode,
 
                 if (gameContainer) {
                     pageContent.appendChild(gameContainer);
+                    appendedCount++;
                 }
             } catch (err) {
                 console.error('Failed to build record gallery item:', err);
             }
         }
-    } else {
+    }
+
+    if (!hasRecords || appendedCount === 0) {
         const emptyContainer = buildEmptyPageGameContainer({
             context: emptyContext,
         });

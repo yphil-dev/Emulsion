@@ -1,11 +1,15 @@
 import { fetchImages as steamgridFetch } from './backends/steamgrid.js';
 import { fetchImages as wikipediaFetch } from './backends/wikipedia.js';
 import { fetchImages as giantbombFetch } from './backends/giantbomb.js';
-import { fetchImages as opdbFetch } from './backends/opdb.js';
-import { fetchGameMetaData } from './backends/wikipedia-text.js';
+import { fetchImages as opdbFetch, fetchGameMetaData as opdbFetchGameMetaData } from './backends/opdb.js';
+import { fetchGameMetaData as wikipediaFetchGameMetaData } from './backends/wikipedia-text.js';
 
 export const getGameMetaData = async (params) => {
-    return await fetchGameMetaData(params.cleanName, params.platformName);
+    if (params.platformKey?.startsWith('vpx')) {
+        return await opdbFetchGameMetaData(params, params.opdbAPIKey);
+    }
+
+    return await wikipediaFetchGameMetaData(params.cleanName, params.platformDisplayName || params.platformName);
 };
 
 export const getAllCoverImageUrls = async (gameName, platform, platformName, options = {}) => {

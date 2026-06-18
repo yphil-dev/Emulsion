@@ -759,15 +759,20 @@ function saveMetaToFile(params, data) {
 
 ipcMain.on('fetch-meta', (event, params) => {
 
+    const preferences = loadPreferences();
     const searchParams = {
         cleanName: params.cleanName.replace(/\s*[\(\[].*?[\)\]]/g, ''),
-        platformName: params.platformDisplayName
+        gameFileName: params.gameFileName,
+        platformKey: params.platformName,
+        platformName: params.platformDisplayName,
+        platformDisplayName: params.platformDisplayName,
+        opdbAPIKey: preferences?.settings?.opdbAPIKey || ''
     };
 
     getGameMetaData(searchParams)
         .then((data) => {
             console.log("data: ", data);
-            const result = data ? saveMetaToFile(params, data) : null;
+            const result = (data && !data.error) ? saveMetaToFile(params, data) : null;
             event.reply('game-meta-data', data);
         })
         .catch((err) => {

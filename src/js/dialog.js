@@ -518,6 +518,15 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
             // Create tbody
             const tbody = document.createElement('tbody');
 
+            const isVpxPlatform = LB.currentPlatform?.startsWith('vpx');
+
+            function getSettingsFieldForSource(sourceName) {
+                if (sourceName === 'GiantBomb') return 'giantBombAPIKey';
+                if (sourceName === 'SteamGridDB') return 'steamGridAPIKey';
+                if (sourceName === 'OPDB') return 'opdbAPIKey';
+                return null;
+            }
+
             function createSourceRow(sourceName, isEnabled) {
                 const row = document.createElement('tr');
 
@@ -547,11 +556,13 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
                 setupButton.addEventListener('click', () => {
                     closeDialog();
                     resolve(null);
-                    const eltToFocus = sourceName === 'GiantBomb' ? 'giantBombAPIKey' : 'steamGridAPIKey';
-                    openPlatformMenu('settings', 'gallery', eltToFocus);
+                    const eltToFocus = getSettingsFieldForSource(sourceName);
+                    if (eltToFocus) {
+                        openPlatformMenu('settings', 'gallery', eltToFocus);
+                    }
                 });
 
-                if (!isEnabled) {
+                if (!isEnabled && getSettingsFieldForSource(sourceName)) {
                     buttonCell.appendChild(setupButton);
                 }
 
@@ -563,7 +574,8 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
             tbody.append(
                 createSourceRow('Wikipedia', true),
                 createSourceRow('SteamGridDB', LB.steamGridAPIKey),
-                createSourceRow('GiantBomb', LB.giantBombAPIKey)
+                createSourceRow('GiantBomb', LB.giantBombAPIKey),
+                createSourceRow('OPDB', LB.opdbAPIKey)
             );
 
             // Assemble table
@@ -583,7 +595,11 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
 
             // Create tbody for text sources
             const textTbody = document.createElement('tbody');
-            textTbody.appendChild(createSourceRow('Wikipedia', true));
+            if (isVpxPlatform) {
+                textTbody.appendChild(createSourceRow('OPDB', LB.opdbAPIKey));
+            } else {
+                textTbody.appendChild(createSourceRow('Wikipedia', true));
+            }
 
             // Assemble text sources table
             textSources.append(textThead, textTbody);

@@ -1,5 +1,31 @@
 import { getPlatformInfo } from './platforms.js';
 
+async function openSettingsOn(fieldId) {
+    const { openPlatformMenu } = await import('./menu.js');
+    openPlatformMenu('settings', 'gallery', fieldId);
+}
+
+function buildMetaErrorNode(params, gameMetaData) {
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('meta-not-found');
+
+    const message = document.createElement('p');
+    message.textContent = gameMetaData?.message || `No meta data found for ${params.cleanName}`;
+    wrapper.appendChild(message);
+
+    if (gameMetaData?.backend === 'OPDB' && (gameMetaData.error === 'MISSING_API_KEY' || gameMetaData.error === 'INVALID_API_KEY')) {
+        const setupButton = document.createElement('button');
+        setupButton.className = 'small button';
+        setupButton.textContent = 'Setup OPDB API Key';
+        setupButton.addEventListener('click', () => {
+            openSettingsOn('opdbAPIKey');
+        });
+        wrapper.appendChild(setupButton);
+    }
+
+    return wrapper;
+}
+
 export function getMeta(params) {
     return new Promise((resolve, reject) => {
         const gamesDir = LB.preferences[params.platformName].gamesDir;
@@ -38,11 +64,6 @@ export async function displayMetaData(params, gameMetaData) {
     const oldNotFound = metaContainer.querySelector('.meta-not-found');
     if (oldNotFound) oldNotFound.remove();
 
-    const metaNotFoundDiv = document.createElement('div');
-    metaNotFoundDiv.classList.add('meta-not-found');
-
-    metaNotFoundDiv.innerHTML = `<p>No meta data found for ${params.cleanName}</p>`;
-
     metaContainer.style.display = 'block';
 
     if (!params.error) {
@@ -51,7 +72,7 @@ export async function displayMetaData(params, gameMetaData) {
         metaContainer.style.display = 'block';
     } else {
         if (params.function === 'fetch-meta') {
-            metaContainer.appendChild(metaNotFoundDiv);
+            metaContainer.appendChild(buildMetaErrorNode(params, gameMetaData));
         } else {
             metaContainer.style.display = 'none';
         }

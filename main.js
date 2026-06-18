@@ -8,6 +8,7 @@ import { spawn, exec } from 'child_process';
 import { getAllCoverImageUrls, getGameMetaData } from './src/js/backends.js';
 
 import { PLATFORMS, getPlatformInfo } from './src/js/platforms.js';
+import { getFilenamePublisherYear, sortFavoriteRecords } from './src/js/shared/filename-metadata.js';
 
 import axios from 'axios';
 import os from 'os';
@@ -165,10 +166,15 @@ function normalizeFavoriteRecord(record) {
         return null;
     }
 
+    const fileName = record.gamePath ? path.basename(record.gamePath) : record.gameName;
+    const { Publisher, Year } = getFilenamePublisherYear(fileName);
+
     return {
         gameName: record.gameName,
         gamePath: record.gamePath,
-        platform: record.platform
+        platform: record.platform,
+        Publisher,
+        Year
     };
 }
 
@@ -274,8 +280,22 @@ function readNormalizedRecordFile(filePath, normalizeRecord, recordTypeLabel) {
     return Array.isArray(records) ? records : [];
 }
 
-function loadFavorites() {
-    return loadNormalizedRecordFile(favoritesFilePath, normalizeFavoriteRecord, 'favorites');
+function normalizeSortFavoritesBy(value) {
+    return ['publisher', 'date', 'name', 'none'].includes(value) ? value : 'none';
+}
+
+function loadFavorites(sortFavoritesBy = defaultPreferences.settings.sortFavoritesBy) {
+    const favorites = loadNormalizedRecordFile(favoritesFilePath, normalizeFavoriteRecord, 'favorites');
+    if (!Array.isArray(favorites)) {
+        return favorites;
+    }
+
+    const sortedFavorites = sortFavoriteRecords(favorites, normalizeSortFavoritesBy(sortFavoritesBy));
+    if (JSON.stringify(sortedFavorites) !== JSON.stringify(favorites)) {
+        writeRecordFile(favoritesFilePath, sortedFavorites);
+    }
+
+    return sortedFavorites;
 }
 
 function loadRecents() {
@@ -293,6 +313,7 @@ function loadPreferences() {
 
         const preferencesFileContent = fsSync.readFileSync(preferencesFilePath, 'utf8');
         const preferences = JSON.parse(preferencesFileContent);
+        let shouldSave = false;
 
         for (const [platform, platformPreferences] of Object.entries(preferences)) {
             if (platform === 'settings') {
@@ -323,6 +344,16 @@ function loadPreferences() {
                     return { error: 'INVALID_JSON', message: 'The preferences file contains invalid JSON. It will now be reset.' };
                 }
             }
+        }
+
+        const normalizedSortFavoritesBy = normalizeSortFavoritesBy(preferences.settings.sortFavoritesBy);
+        if (preferences.settings.sortFavoritesBy !== normalizedSortFavoritesBy) {
+            preferences.settings.sortFavoritesBy = normalizedSortFavoritesBy;
+            shouldSave = true;
+        }
+
+        if (shouldSave) {
+            savePreferences(preferences);
         }
 
         return preferences;
@@ -677,6 +708,12 @@ ipcMain.handle('add-favorite', async (event, favoriteRecord) => {
 
     favoriteRecords.push(normalizedFavoriteRecord);
 
+    const preferences = loadPreferences();
+    favoriteRecords = sortFavoriteRecords(
+        favoriteRecords,
+        normalizeSortFavoritesBy(preferences?.settings?.sortFavoritesBy)
+    );
+
     try {
         writeRecordFile(favoritesFilePath, favoriteRecords);
         console.log("Updated favorites.json with new/updated entry.");
@@ -848,6 +885,7 @@ const defaultPreferences = {
         recentlyPlayedViewMode: "grid",
         favoritesPolicy: "show",
         favoritesViewMode: "grid",
+        sortFavoritesBy: "none",
         startupDialogPolicy: "show",
         launchDialogPolicy: "show",
         optimize: "no",
@@ -872,7 +910,7 @@ PLATFORMS.forEach((platform, index) => {
 ipcMain.handle('load-preferences', async (event) => {
     const preferences = loadPreferences();
     const recents = loadRecents();
-    const favorites = loadFavorites();
+    const favorites = loadFavorites(preferences?.settings?.sortFavoritesBy);
 
     const userDataPath = app.getPath('userData');
     const appPath = app.getAppPath();

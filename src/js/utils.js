@@ -3,6 +3,9 @@ import { buildEmptyPageGameContainer } from './gallery.js';
 import { downloadMetaDialog } from './dialog.js';
 import { getMeta } from './metadata.js';
 import { updateGamePane } from './slideshow.js';
+import { extractVpxYear, extractVpxVendor, getFilenamePublisherYear, sortFavoriteRecords } from './shared/filename-metadata.js';
+
+export { extractVpxYear, extractVpxVendor, getFilenamePublisherYear };
 
 const fs = require('fs');
 const path = require('path');
@@ -382,26 +385,6 @@ function _titleCase(s) {
         .join(' ');
 }
 
-export function extractVpxYear(filename) {
-    // Look for 4-digit years (19xx or 20xx) inside parentheses
-    const match = filename.match(/\((?:[^)]*?\s)?(19|20)\d{2}[^)]*\)/);
-    if (match) {
-        const yearMatch = match[0].match(/(19|20)\d{2}/);
-        if (yearMatch) return parseInt(yearMatch[0]);
-    }
-    return 0; // Default for files without a year
-}
-
-export function extractVpxVendor(filename) {
-    // Look for vendor name inside parentheses, before the year
-    // Pattern: (Vendor Year) e.g., (Bally 1995), (Williams 1993)
-    const match = filename.match(/\(([^)]*?)\s+(?:19|20)\d{2}[^)]*\)/);
-    if (match && match[1]) {
-        return match[1].trim();
-    }
-    return ''; // Default for files without a vendor
-}
-
 export function setKeydown(newHandler) {
     // Initialize the storage if it doesn't exist
     if (!LB._keydownHistory) LB._keydownHistory = [];
@@ -742,10 +725,15 @@ function updateFavoriteBadgesByPath(gamePath, enabled) {
 }
 
 export function buildFavoriteRecord(gameContainer) {
+    const fileName = path.basename(gameContainer.dataset.gamePath || gameContainer.dataset.gameName || '');
+    const { Publisher, Year } = getFilenamePublisherYear(fileName);
+
     return {
         gameName: gameContainer.dataset.gameName,
         gamePath: gameContainer.dataset.gamePath,
-        platform: gameContainer.dataset.platform
+        platform: gameContainer.dataset.platform,
+        Publisher,
+        Year
     };
 }
 
@@ -759,6 +747,28 @@ export function isFavoriteGame(gameContainer) {
     return findFavoriteGameContainer(favoritesPage, favoriteRecord) !== null;
 }
 
+function getSortedFavoriteRecords(records) {
+    return sortFavoriteRecords(records, LB.sortFavoritesBy || 'none');
+}
+
+function reorderFavoritesPage(favoritesPage) {
+    if (!favoritesPage) {
+        return;
+    }
+
+    const sortedFavorites = getSortedFavoriteRecords(Array.isArray(LB.favorites) ? LB.favorites : []);
+    const fragment = document.createDocumentFragment();
+
+    sortedFavorites.forEach(favoriteRecord => {
+        const favoriteGameContainer = findFavoriteGameContainer(favoritesPage, favoriteRecord);
+        if (favoriteGameContainer) {
+            fragment.appendChild(favoriteGameContainer);
+        }
+    });
+
+    favoritesPage.appendChild(fragment);
+}
+
 export async function addFavorite(gameContainer) {
     const favoritesPage = getFavoritesPageContent();
 
@@ -766,24 +776,26 @@ export async function addFavorite(gameContainer) {
 
     const favoriteRecord = buildFavoriteRecord(gameContainer);
 
-    const emptyPageGameContainer = favoritesPage?.querySelector('.empty-platform-game-container');
-
-    updateFavoriteBadgesByPath(favoriteRecord.gamePath, true);
-
-    if (favoritesPage) {
-        if (emptyPageGameContainer) {
-            emptyPageGameContainer.remove();
-        }
-        const favoriteGameContainer = gameContainer.cloneNode(true);
-        favoriteGameContainer.classList.remove('selected');
-        setFavoriteBadge(favoriteGameContainer, true);
-        favoritesPage.appendChild(favoriteGameContainer);
-    }
-
     try {
         const result = await ipcRenderer.invoke('add-favorite', favoriteRecord);
         console.log("result:", result);
         if (result.success) {
+            LB.favorites = getSortedFavoriteRecords([...(Array.isArray(LB.favorites) ? LB.favorites : []), favoriteRecord]);
+            updateFavoriteBadgesByPath(favoriteRecord.gamePath, true);
+
+            if (favoritesPage) {
+                const emptyPageGameContainer = favoritesPage.querySelector('.empty-platform-game-container');
+                if (emptyPageGameContainer) {
+                    emptyPageGameContainer.remove();
+                }
+
+                const favoriteGameContainer = gameContainer.cloneNode(true);
+                favoriteGameContainer.classList.remove('selected');
+                setFavoriteBadge(favoriteGameContainer, true);
+                favoritesPage.appendChild(favoriteGameContainer);
+                reorderFavoritesPage(favoritesPage);
+            }
+
             console.info(`Yo, ${result.path}`);
             return result.path;
         } else {
@@ -808,11 +820,14 @@ export async function removeFavorite(gameContainer) {
         console.log("removeFavorite - result: ", result);
         if (result.success) {
 
+            LB.favorites = (Array.isArray(LB.favorites) ? LB.favorites : [])
+                .filter(record => record.gamePath !== favoriteRecord.gamePath);
             updateFavoriteBadgesByPath(favoriteRecord.gamePath, false);
 
             if (favoritesPage) {
                 const favoriteGameContainer = findFavoriteGameContainer(favoritesPage, favoriteRecord);
                 favoriteGameContainer?.remove();
+                reorderFavoritesPage(favoritesPage);
                 const remainingFavoritesCount = favoritesPage.querySelectorAll('.game-container').length;
                 if (remainingFavoritesCount === 0) {
 

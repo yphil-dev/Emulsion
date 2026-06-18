@@ -125,6 +125,7 @@ async function initializeApp() {
             disabledPlatformsPolicy: uiPreferences.settings.disabledPlatformsPolicy,
             recentlyPlayedPolicy: uiPreferences.settings.recentlyPlayedPolicy,
             favoritesPolicy: uiPreferences.settings.favoritesPolicy,
+            sortFavoritesBy: uiPreferences.settings.sortFavoritesBy || 'none',
             optimize: uiPreferences.settings.optimize || 'no',
             favoritePendingAction: null,
             startupDialogPolicy: uiPreferences.settings.startupDialogPolicy,

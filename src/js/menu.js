@@ -339,6 +339,10 @@ function buildSettingsMenu() {
     const favoritesPolicyGroup = favoritesPolicy.group;
     const favoritesPolicyRadios = favoritesPolicy.radios;
 
+    const sortFavoritesBy = buildPrefsFormItem('sortFavoritesBy', 'sort-order', ['publisher', 'date', 'name', 'none'], '', 'Sort favorites by', LB.sortFavoritesBy || 'none');
+    const sortFavoritesByGroup = sortFavoritesBy.group;
+    const sortFavoritesByRadios = sortFavoritesBy.radios;
+
     const optimize = LB.hasGameModeRun
         ? buildPrefsFormItem('optimize', 'bolt', ['yes', 'no'], '', 'Optimize (GameMode)', LB.optimize || 'no')
         : null;
@@ -364,6 +368,7 @@ function buildSettingsMenu() {
     formContainer.appendChild(disabledPlatformsPolicyGroup);
     formContainer.appendChild(recentlyPlayedPolicyGroup);
     formContainer.appendChild(favoritesPolicyGroup);
+    formContainer.appendChild(sortFavoritesByGroup);
     if (optimizeGroup) formContainer.appendChild(optimizeGroup);
     formContainer.appendChild(steamGridAPIKeyGroup);
     formContainer.appendChild(giantBombAPIKeyGroup);
@@ -430,6 +435,7 @@ function buildSettingsMenu() {
                 disabledPlatformsPolicy: disabledPlatformsPolicyRadios.find(radio => radio.checked)?.value,
                 recentlyPlayedPolicy: recentlyPlayedPolicyRadios.find(radio => radio.checked)?.value,
                 favoritesPolicy: favoritesPolicyRadios.find(radio => radio.checked)?.value,
+                sortFavoritesBy: sortFavoritesByRadios.find(radio => radio.checked)?.value || 'none',
                 optimize: optimizeRadios?.find(radio => radio.checked)?.value || 'no',
                 steamGridAPIKey: steamGridAPIKeyInput.value,
                 giantBombAPIKey: giantBombAPIKeyInput.value,
@@ -443,6 +449,7 @@ function buildSettingsMenu() {
             await updatePreference('settings', 'disabledPlatformsPolicy', newPrefs.disabledPlatformsPolicy);
             await updatePreference('settings', 'recentlyPlayedPolicy', newPrefs.recentlyPlayedPolicy);
             await updatePreference('settings', 'favoritesPolicy', newPrefs.favoritesPolicy);
+            await updatePreference('settings', 'sortFavoritesBy', newPrefs.sortFavoritesBy);
             if (LB.hasGameModeRun) {
                 await updatePreference('settings', 'optimize', newPrefs.optimize);
             }
@@ -456,6 +463,7 @@ function buildSettingsMenu() {
                   newPrefs.disabledPlatformsPolicy !== LB.disabledPlatformsPolicy ||
                   newPrefs.recentlyPlayedPolicy !== LB.recentlyPlayedPolicy ||
                   newPrefs.favoritesPolicy !== LB.favoritesPolicy ||
+                  newPrefs.sortFavoritesBy !== (LB.sortFavoritesBy || 'none') ||
                   newPrefs.steamGridAPIKey !== (LB.steamGridAPIKey || '') ||
                   newPrefs.giantBombAPIKey !== (LB.giantBombAPIKey || '') ||
                   newPrefs.opdbAPIKey !== (LB.opdbAPIKey || '');
@@ -468,6 +476,7 @@ function buildSettingsMenu() {
                 disabledPlatformsPolicy: newPrefs.disabledPlatformsPolicy,
                 recentlyPlayedPolicy: newPrefs.recentlyPlayedPolicy,
                 favoritesPolicy: newPrefs.favoritesPolicy,
+                sortFavoritesBy: newPrefs.sortFavoritesBy,
                 optimize: newPrefs.optimize,
                 steamGridAPIKey: newPrefs.steamGridAPIKey,
                 giantBombAPIKey: newPrefs.giantBombAPIKey,

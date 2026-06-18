@@ -412,7 +412,7 @@ export async function helpDialog(defaultTabId = null) {
     okButton.focus();
 }
 
-export async function downloadMetaDialog(imagesCount, metaCount) {
+export async function downloadMetaDialog(imagesCount, metaCount, totalGamesCount) {
     console.log("downloadMetaDialog: ");
     const overlay = document.getElementById('download-meta-overlay');
     const dialog = overlay.querySelector('.dialog');
@@ -498,7 +498,8 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
             };
 
             const hasImages = imagesCount > 0;
-            const hasMeta = metaCount > 0;
+            const hasMissingMeta = metaCount > 0;
+            const canDownloadMeta = totalGamesCount > 0;
 
             // const imgLabel = hasImages ? `Download missing images` : `No missing images`;
             // const metaLabel = hasMeta ? `Download missing metadata` : `No missing metadata`;
@@ -605,7 +606,9 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
             textSources.append(textThead, textTbody);
 
             const imgLabel = `Download <span class="accent">${imagesCount}</span> missing images`;
-            const metaLabel = `Download <span class="accent">${metaCount}</span> missing metadata`;
+            const metaLabel = hasMissingMeta
+                ? `Download <span class="accent">${metaCount}</span> missing metadata`
+                : `Re-download metadata for <span class="accent">${totalGamesCount}</span> games`;
 
             // --- append checkboxes and sources ---
             if (hasImages) optionsContainer.appendChild(imgSourcesTable);
@@ -613,15 +616,15 @@ export async function downloadMetaDialog(imagesCount, metaCount) {
                 makeCheckboxOption('batch-images', imgLabel, hasImages, !hasImages)
             );
 
-            if (hasMeta) optionsContainer.appendChild(textSources);
+            if (canDownloadMeta) optionsContainer.appendChild(textSources);
             optionsContainer.appendChild(
-                makeCheckboxOption('batch-metadata', metaLabel, hasMeta, !hasMeta)
+                makeCheckboxOption('batch-metadata', metaLabel, hasMissingMeta, !canDownloadMeta)
             );
 
             dialogBody.innerHTML = '';
             dialogBody.appendChild(optionsContainer);
 
-            const showOk = hasImages || hasMeta;
+            const showOk = hasImages || canDownloadMeta;
             okButton.style.display = showOk ? 'block' : 'none';
             cancelButton.textContent = showOk ? 'Cancel' : 'Close';
 

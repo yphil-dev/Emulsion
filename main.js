@@ -246,6 +246,10 @@ function sortFavoriteRecords(records, sortBy = 'none') {
     return [...records];
 }
 
+function normalizePlatformName(platformName) {
+    return ['vpx1', 'vpx2', 'vpx3'].includes(platformName) ? 'vpx' : platformName;
+}
+
 function normalizeFavoriteRecord(record) {
     if (!record || typeof record !== 'object') {
         return null;
@@ -265,7 +269,7 @@ function normalizeFavoriteRecord(record) {
     return {
         gameName: record.gameName,
         gamePath: record.gamePath,
-        platform: record.platform,
+        platform: normalizePlatformName(record.platform),
         Publisher,
         Year
     };
@@ -299,7 +303,7 @@ function normalizeRecentRecord(record) {
     return {
         gameName,
         gamePath,
-        platform: record.platform,
+        platform: normalizePlatformName(record.platform),
         date: record.date
     };
 }
@@ -407,6 +411,30 @@ function loadPreferences() {
         const preferencesFileContent = fsSync.readFileSync(preferencesFilePath, 'utf8');
         const preferences = JSON.parse(preferencesFileContent);
         let shouldSave = false;
+
+        const legacyVpxPlatforms = ['vpx1', 'vpx2', 'vpx3'];
+        const legacyVpxConfigs = legacyVpxPlatforms
+            .map(platformName => preferences[platformName])
+            .filter(Boolean);
+
+        if (legacyVpxConfigs.length) {
+            const sourceConfig = legacyVpxConfigs.find(config => config.gamesDir || config.isEnabled || config.emulator || config.emulatorArgs)
+                || legacyVpxConfigs[0];
+            preferences.vpx = {
+                ...defaultPreferences.vpx,
+                ...sourceConfig,
+                ...(preferences.vpx || {})
+            };
+            legacyVpxPlatforms.forEach(platformName => {
+                if (preferences[platformName]) {
+                    delete preferences[platformName];
+                }
+            });
+            shouldSave = true;
+        } else if (!preferences.vpx) {
+            preferences.vpx = { ...defaultPreferences.vpx };
+            shouldSave = true;
+        }
 
         for (const [platform, platformPreferences] of Object.entries(preferences)) {
             if (platform === 'settings') {

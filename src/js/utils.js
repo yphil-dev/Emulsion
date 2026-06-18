@@ -995,13 +995,14 @@ export async function batchDownload() {
     }
 
     // Identify missing items
+    const allGameContainers = currentPlatformPage.querySelectorAll('.game-container');
     const gamesMissingImage = currentPlatformPage.querySelectorAll(".game-container[data-missing-image]");
     const gamesMissingMeta = await getMissingMetaGames(currentPlatformPage);
 
     // Ask user for confirmation
     let confirmed;
     try {
-        confirmed = await downloadMetaDialog(gamesMissingImage.length, gamesMissingMeta.length);
+        confirmed = await downloadMetaDialog(gamesMissingImage.length, gamesMissingMeta.length, allGameContainers.length);
     } catch {
         // Dialog cancelled
         return;
@@ -1020,7 +1021,8 @@ export async function batchDownload() {
         tasks.push(executeBatchDownload(gamesMissingImage, 'image', LB.currentPlatform));
     }
     if (confirmed.metaBatch) {
-        tasks.push(executeBatchDownload(gamesMissingMeta, 'meta', LB.currentPlatform));
+        const metaBatchGames = gamesMissingMeta.length ? gamesMissingMeta : allGameContainers;
+        tasks.push(executeBatchDownload(metaBatchGames, 'meta', LB.currentPlatform));
     }
 
     LB.batchRunning = true;

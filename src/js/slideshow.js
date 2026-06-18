@@ -1256,7 +1256,8 @@ export async function updateGamePane(selectedContainer) {
         editCoverArtButton.title = `Edit coverArt data for "${selectedContainer.dataset.cleanName}"`;
 
         const fetchMetaButton = gamePane.querySelector('.fetch-meta-button');
-        fetchMetaButton.title = `Fetch meta data from WikiData for "${selectedContainer.dataset.cleanName}"`;
+        const metaSource = selectedContainer.dataset.platform?.startsWith('vpx') ? 'OPDB' : 'Wikipedia';
+        fetchMetaButton.title = `Fetch meta data from ${metaSource} for "${selectedContainer.dataset.cleanName}"`;
     }
 
     const imgSrc = selectedContainer.querySelector('img').src;

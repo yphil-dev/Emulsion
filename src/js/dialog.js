@@ -618,7 +618,7 @@ export async function downloadMetaDialog(imagesCount, metaCount, totalGamesCount
 
             if (canDownloadMeta) optionsContainer.appendChild(textSources);
             optionsContainer.appendChild(
-                makeCheckboxOption('batch-metadata', metaLabel, hasMissingMeta, !canDownloadMeta)
+                makeCheckboxOption('batch-metadata', metaLabel, canDownloadMeta, !canDownloadMeta)
             );
 
             dialogBody.innerHTML = '';

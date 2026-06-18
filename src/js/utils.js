@@ -995,7 +995,7 @@ export async function batchDownload() {
     }
 
     // Identify missing items
-    const allGameContainers = currentPlatformPage.querySelectorAll('.game-container');
+    const allGameContainers = currentPlatformPage.querySelectorAll('.game-container:not(.empty-platform-game-container)');
     const gamesMissingImage = currentPlatformPage.querySelectorAll(".game-container[data-missing-image]");
     const gamesMissingMeta = await getMissingMetaGames(currentPlatformPage);
 
@@ -1045,7 +1045,7 @@ export async function batchDownload() {
 }
 
 export async function getMissingMetaGames(currentPlatformPage) {
-    const gameContainers = currentPlatformPage.querySelectorAll(".game-container");
+    const gameContainers = currentPlatformPage.querySelectorAll('.game-container:not(.empty-platform-game-container)');
 
     const gamesMissingMeta = [];
 

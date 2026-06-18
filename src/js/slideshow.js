@@ -521,12 +521,11 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
 
         if (pageDataset.empty) {
             toggleViewModeButton.classList.add('disabled');
-            metaDataButton.classList.add('disabled');
         } else {
             toggleViewModeButton.classList.remove('disabled');
-            metaDataButton.classList.remove('disabled');
         }
 
+        metaDataButton.classList.remove('disabled');
         if (pageDataset.platform === 'recents' || pageDataset.platform === 'favorites') {
             metaDataButton.classList.add('disabled');
         }

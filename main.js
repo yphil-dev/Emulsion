@@ -8,7 +8,6 @@ import { spawn, exec } from 'child_process';
 import { getAllCoverImageUrls, getGameMetaData } from './src/js/backends.js';
 
 import { PLATFORMS, getPlatformInfo } from './src/js/platforms.js';
-import { getFilenamePublisherYear, sortFavoriteRecords } from './src/js/shared/filename-metadata.js';
 
 import axios from 'axios';
 import os from 'os';
@@ -151,6 +150,100 @@ Platform names: ${PLATFORMS.map(platform => platform.name).join(', ') + ", favor
 
 if (process.argv.includes('--help')) {
     showHelp();
+}
+
+function extractVpxYear(filename) {
+    const match = String(filename || '').match(/\((?:[^)]*?\s)?(19|20)\d{2}[^)]*\)/);
+    if (match) {
+        const yearMatch = match[0].match(/(19|20)\d{2}/);
+        if (yearMatch) {
+            return parseInt(yearMatch[0], 10);
+        }
+    }
+    return 0;
+}
+
+function extractVpxVendor(filename) {
+    const match = String(filename || '').match(/\(([^)]*?)\s+(?:19|20)\d{2}[^)]*\)/);
+    if (match && match[1]) {
+        return match[1].trim();
+    }
+    return '';
+}
+
+function getFilenamePublisherYear(filename) {
+    const publisher = extractVpxVendor(filename);
+    const year = extractVpxYear(filename);
+
+    return {
+        Publisher: publisher || '',
+        Year: year ? String(year) : ''
+    };
+}
+
+function compareText(a, b) {
+    return String(a || '').localeCompare(String(b || ''), undefined, {
+        numeric: true,
+        sensitivity: 'base'
+    });
+}
+
+function compareOptionalText(a, b) {
+    const left = String(a || '').trim();
+    const right = String(b || '').trim();
+
+    if (!left && right) return 1;
+    if (left && !right) return -1;
+    if (!left && !right) return 0;
+
+    return compareText(left, right);
+}
+
+function compareOptionalYear(a, b) {
+    const left = parseInt(a, 10) || 0;
+    const right = parseInt(b, 10) || 0;
+
+    if (!left && right) return 1;
+    if (left && !right) return -1;
+    if (!left && !right) return 0;
+
+    return left - right;
+}
+
+function sortFavoriteRecords(records, sortBy = 'none') {
+    if (!Array.isArray(records)) {
+        return [];
+    }
+
+    if (sortBy === 'publisher') {
+        return [...records].sort((recordA, recordB) => {
+            const publisherCompare = compareOptionalText(recordA?.Publisher, recordB?.Publisher);
+            if (publisherCompare !== 0) return publisherCompare;
+
+            const yearCompare = compareOptionalYear(recordA?.Year, recordB?.Year);
+            if (yearCompare !== 0) return yearCompare;
+
+            return compareText(recordA?.gameName, recordB?.gameName);
+        });
+    }
+
+    if (sortBy === 'date') {
+        return [...records].sort((recordA, recordB) => {
+            const yearCompare = compareOptionalYear(recordA?.Year, recordB?.Year);
+            if (yearCompare !== 0) return yearCompare;
+
+            const publisherCompare = compareOptionalText(recordA?.Publisher, recordB?.Publisher);
+            if (publisherCompare !== 0) return publisherCompare;
+
+            return compareText(recordA?.gameName, recordB?.gameName);
+        });
+    }
+
+    if (sortBy === 'name') {
+        return [...records].sort((recordA, recordB) => compareText(recordA?.gameName, recordB?.gameName));
+    }
+
+    return [...records];
 }
 
 function normalizeFavoriteRecord(record) {

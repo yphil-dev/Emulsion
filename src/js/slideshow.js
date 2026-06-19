@@ -281,6 +281,26 @@ function setGalleryFooterControls(pageDataset) {
     }
 }
 
+function syncGalleryHeaderControls(pageDataset) {
+    const headerControls = document.getElementById('header-controls');
+
+    if (LB.kioskMode) {
+        headerControls.style.display = 'none';
+        return;
+    }
+
+    const toggleViewModeButton = document.getElementById('view-mode-toggle-button');
+    const metaDataButton = document.getElementById('platform-covers-button');
+    const configPlatformButton = document.getElementById('config-platform-button');
+
+    metaDataButton.title = `Get meta data for ${pageDataset.platform} games`;
+    configPlatformButton.title = `Configure ${pageDataset.platform}`;
+
+    configPlatformButton.classList.remove('disabled');
+    toggleViewModeButton.classList.toggle('disabled', !!pageDataset.empty);
+    metaDataButton.classList.toggle('disabled', pageDataset.platform === 'recents' || pageDataset.platform === 'favorites');
+}
+
 // Gallery navigation - simplified, works directly with DOM
 let selectedIndex = 0;
 
@@ -360,6 +380,7 @@ function goToGalleryPage(direction = 1) {
             }
 
             updateHeader(page.dataset.platform);
+            syncGalleryHeaderControls(page.dataset);
             setGalleryFooterControls(page.dataset);
         } else if (index === (currentIndexNew - 1 + pages.length) % pages.length) {
             page.classList.add('prev');
@@ -503,32 +524,7 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
     }
 
     function updateHeaderControls(pageDataset) {
-        const headerControls = document.getElementById('header-controls');
-
-        if (LB.kioskMode) {
-            headerControls.style.display = 'none';
-            return;
-        }
-
-        const toggleViewModeButton = document.getElementById('view-mode-toggle-button');
-        const metaDataButton = document.getElementById('platform-covers-button');
-        const configPlatformButton = document.getElementById('config-platform-button');
-
-        metaDataButton.title = `Get meta data for ${pageDataset.platform} games`;
-        configPlatformButton.title = `Configure ${pageDataset.platform}`;
-
-        configPlatformButton.classList.remove('disabled');
-
-        if (pageDataset.empty) {
-            toggleViewModeButton.classList.add('disabled');
-        } else {
-            toggleViewModeButton.classList.remove('disabled');
-        }
-
-        metaDataButton.classList.remove('disabled');
-        if (pageDataset.platform === 'recents' || pageDataset.platform === 'favorites') {
-            metaDataButton.classList.add('disabled');
-        }
+        syncGalleryHeaderControls(pageDataset);
     }
 
     const goToNextPage = () => goToGalleryPage(1);

@@ -19,6 +19,7 @@ let menuState = {
     selectedIndex: 1,
 };
 
+
 // Only assign to window if it exists (renderer context)
 if (typeof window !== 'undefined') {
     window.onMenuKeyDown = function onMenuKeyDown(event) {
@@ -88,66 +89,107 @@ if (typeof window !== 'undefined') {
         const menu = document.getElementById('menu');
         const menuGameContainers = Array.from(menu.querySelectorAll('.menu-game-container'));
         const galleryNumOfCols = LB.galleryNumOfCols;
+        const active = document.activeElement;
+        const isTextInput = (el) =>
+            el && ((el.tagName === 'INPUT' && el.type === 'text') || el.tagName === 'TEXTAREA');
+        const isFocusableMenuControl = active && menu.contains(active) && active.matches('button, input, select, textarea, [tabindex]:not([tabindex="-1"])');
+
+        if (menu.dataset.nativeDialog === 'pick-image') {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+            }
+            return;
+        }
 
         switch (event.key) {
+        case 'Tab':
+            simulateTabNavigation(menu, event.shiftKey);
+            event.preventDefault();
+            return;
+
         case 'ArrowRight':
-            if (!event.shiftKey) {
+            if (!event.shiftKey && !isTextInput(active)) {
                 menuState.selectedIndex = (menuState.selectedIndex + 1) % menuGameContainers.length;
+                event.preventDefault();
             }
             break;
 
         case 'ArrowLeft':
-            if (!event.shiftKey && menuState.selectedIndex !== 1) {
+            if (!event.shiftKey && !isTextInput(active) && menuState.selectedIndex !== 1) {
                 menuState.selectedIndex = (menuState.selectedIndex - 1 + menuGameContainers.length) % menuGameContainers.length;
+                event.preventDefault();
             }
             break;
 
         case 'ArrowUp':
-            if (menuState.selectedIndex > galleryNumOfCols) {
+            if (!isTextInput(active) && menuState.selectedIndex > galleryNumOfCols) {
                 menuState.selectedIndex = Math.max(menuState.selectedIndex - galleryNumOfCols, 0);
+                event.preventDefault();
             }
             break;
 
         case 'ArrowDown':
-            menuState.selectedIndex = Math.min(menuState.selectedIndex + galleryNumOfCols, menuGameContainers.length - 1);
+            if (!isTextInput(active)) {
+                menuState.selectedIndex = Math.min(menuState.selectedIndex + galleryNumOfCols, menuGameContainers.length - 1);
+                event.preventDefault();
+            }
             break;
 
         case 'PageUp':
             menuState.selectedIndex = Math.max(menuState.selectedIndex - galleryNumOfCols * 10, 0);
+            event.preventDefault();
             break;
 
         case 'PageDown':
             menuState.selectedIndex = Math.min(menuState.selectedIndex + galleryNumOfCols * 10, menuGameContainers.length - 1);
+            event.preventDefault();
             break;
 
         case 'Home':
             menuState.selectedIndex = 0;
+            event.preventDefault();
             break;
 
         case 'End':
             menuState.selectedIndex = menuGameContainers.length - 1;
+            event.preventDefault();
             break;
 
         case 'Enter':
-            const selectedGameContainer = getSelectedGameContainer(menuGameContainers, menuState.selectedIndex);
-            const selectedImg = selectedGameContainer.querySelector('.game-image');
-            closeGameMenu(selectedImg.src);
-            initGallery(LB.currentPlatform);
-            break;
+            if (isFocusableMenuControl) {
+                return;
+            }
+            event.preventDefault();
+            {
+                const selectedGameContainer = getSelectedGameContainer(menuGameContainers, menuState.selectedIndex);
+                const selectedImg = selectedGameContainer?.querySelector('.game-image');
+                if (selectedImg) {
+                    closeGameMenu(selectedImg.src);
+                }
+            }
+            return;
+
         case 'Escape':
+            event.preventDefault();
             closeGameMenu();
-            initGallery(LB.currentPlatform);
-            break;
+            return;
+
+        case '/':
+            systemDialog('quit');
+            return;
+
+        case '?':
+            helpDialog('shortcuts');
+            return;
         }
 
         menuGameContainers.forEach((container, index) => {
             container.classList.toggle('selected', index === menuState.selectedIndex);
         });
 
-        if (event.key.startsWith('Arrow')) {
+        if (event.key.startsWith('Arrow') || event.key === 'PageUp' || event.key === 'PageDown' || event.key === 'Home' || event.key === 'End') {
             const selectedContainer = menuGameContainers.find((container, index) => index === menuState.selectedIndex);
 
-            // Manual scroll to replace scrollIntoView
             if (selectedContainer) {
                 const containerRect = menu.getBoundingClientRect();
                 const itemRect = selectedContainer.getBoundingClientRect();
@@ -1067,6 +1109,9 @@ export async function openGameMenu(container) {
     menuContainer.appendChild(currentGameImgContainer);
     await populateGameMenu(currentGameImgContainer, cleanName, platformName);
 
+    menu.tabIndex = -1;
+    menu.focus({ preventScroll: true });
+
     // menuContainer.addEventListener('wheel', onGameMenuWheel);
     // menuContainer.addEventListener('click', onGameMenuClick);
 
@@ -1169,9 +1214,25 @@ function buildManualSelectButton(gameName, platformName, imgElem) {
     button.addEventListener('click', async e => {
         e.stopPropagation();
 
+        const menu = document.getElementById('menu');
+        if (menu.dataset.nativeDialog === 'pick-image') {
+            return;
+        }
+
+        menu.dataset.nativeDialog = 'pick-image';
+        button.disabled = true;
+        button.blur();
+        menu.tabIndex = -1;
+        menu.focus({ preventScroll: true });
+
         // Ask the main process to show a file picker
         const srcPath = await ipcRenderer.invoke('pick-image');
-        if (!srcPath) return;  // user cancelled
+        if (!srcPath) {
+            delete menu.dataset.nativeDialog;
+            button.disabled = false;
+            menu.focus({ preventScroll: true });
+            return;
+        }
 
         const gamesDir = window.LB.preferences[platformName].gamesDir;
 
@@ -1194,6 +1255,9 @@ function buildManualSelectButton(gameName, platformName, imgElem) {
             };
 
         } else {
+            delete menu.dataset.nativeDialog;
+            button.disabled = false;
+            menu.focus({ preventScroll: true });
             console.log('Failed to save cover');
         }
 
@@ -1292,81 +1356,86 @@ async function closeSettingsMenu() {
 
 export async function closeGameMenu(imgSrc) {
 
-    const menu = document.getElementById('menu');
-    const menuContainer = document.getElementById('menu');
+    try {
+        const menu = document.getElementById('menu');
+        const menuContainer = document.getElementById('menu');
+        delete menu.dataset.nativeDialog;
+        // updateFooterControls('dpad', 'same', 'Browse', 'on');
+        toggleHeaderNavLinks('show');
 
-    // updateFooterControls('dpad', 'same', 'Browse', 'on');
-    toggleHeaderNavLinks('show');
+        menuContainer.innerHTML = '';
+        menu.style.height = '0';
 
-    menuContainer.innerHTML = '';
-    menu.style.height = '0';
+        const activePage = document.querySelector('.page.active');
+        const gameContainers = activePage ? Array.from(activePage.querySelectorAll('.game-container')) : [];
 
-    const activePage = document.querySelector('.page.active');
-    const gameContainers = Array.from(activePage.querySelectorAll('.game-container'));
+        let selectedGame = null;
+        let selectedIndex = -1;
 
-    let selectedGame = null;
-    let selectedIndex = -1;
-
-    for (let i = 0; i < gameContainers.length; i++) {
-        const c = gameContainers[i];
-        if (c.classList.contains('selected')) {
-            selectedGame = c;
-            selectedIndex = i;
-            break; // stop immediately — minimal overhead
-        }
-    }
-
-    if (imgSrc) {
-
-        if (selectedGame) {
-            const selectedGameImg = selectedGame.querySelector('.game-image');
-            if (selectedGameImg) {
-                selectedGameImg.classList.add('loading');
-
-                const gameName = selectedGame.dataset.gameName;
-
-                const isLocal = !imgSrc.startsWith('http');
-
-                let savedImagePath;
-
-                if (isLocal) {
-                    savedImagePath = imgSrc;
-                } else {
-                    savedImagePath = await downloadImage(
-                        imgSrc,
-                        selectedGame.dataset.platform,
-                        gameName
-                    );
-                }
-
-                if (savedImagePath) {
-                    selectedGameImg.src = savedImagePath + '?t=' + new Date().getTime();
-                    selectedGameImg.onload = () => {
-                        selectedGame.removeAttribute('data-missing-image');
-                        selectedGameImg.classList.remove('loading');
-                    };
-                }
-            }
-
-            // Manual scroll to replace scrollIntoView
-            const isListMode = activePage.querySelector('.page-content').classList.contains('list');
-            const scrollContainer = isListMode ? activePage.querySelector('.page-content') : activePage;
-            if (scrollContainer && selectedGame) {
-                const containerRect = scrollContainer.getBoundingClientRect();
-                const itemRect = selectedGame.getBoundingClientRect();
-                const scrollTop = scrollContainer.scrollTop;
-                const itemTop = itemRect.top - containerRect.top + scrollTop;
-                const itemHeight = itemRect.height;
-                const containerHeight = containerRect.height;
-                const newScrollTop = itemTop - (containerHeight / 2) + (itemHeight / 2);
-                scrollContainer.scrollTop = Math.max(0, newScrollTop);
+        for (let i = 0; i < gameContainers.length; i++) {
+            const c = gameContainers[i];
+            if (c.classList.contains('selected')) {
+                selectedGame = c;
+                selectedIndex = i;
+                break; // stop immediately — minimal overhead
             }
         }
+
+        if (imgSrc) {
+
+            if (selectedGame) {
+                const selectedGameImg = selectedGame.querySelector('.game-image');
+                if (selectedGameImg) {
+                    selectedGameImg.classList.add('loading');
+
+                    const gameName = selectedGame.dataset.gameName;
+
+                    const isLocal = !imgSrc.startsWith('http');
+
+                    let savedImagePath;
+
+                    if (isLocal) {
+                        savedImagePath = imgSrc;
+                    } else {
+                        savedImagePath = await downloadImage(
+                            imgSrc,
+                            selectedGame.dataset.platform,
+                            gameName
+                        );
+                    }
+
+                    if (savedImagePath) {
+                        selectedGameImg.src = savedImagePath + '?t=' + new Date().getTime();
+                        selectedGameImg.onload = () => {
+                            selectedGame.removeAttribute('data-missing-image');
+                            selectedGameImg.classList.remove('loading');
+                        };
+                    }
+                }
+
+                // Manual scroll to replace scrollIntoView
+                const isListMode = activePage?.querySelector('.page-content')?.classList.contains('list');
+                const scrollContainer = isListMode ? activePage?.querySelector('.page-content') : activePage;
+                if (scrollContainer && selectedGame) {
+                    const containerRect = scrollContainer.getBoundingClientRect();
+                    const itemRect = selectedGame.getBoundingClientRect();
+                    const scrollTop = scrollContainer.scrollTop;
+                    const itemTop = itemRect.top - containerRect.top + scrollTop;
+                    const itemHeight = itemRect.height;
+                    const containerHeight = containerRect.height;
+                    const newScrollTop = itemTop - (containerHeight / 2) + (itemHeight / 2);
+                    scrollContainer.scrollTop = Math.max(0, newScrollTop);
+                }
+            }
+        }
+
+        // menuContainer.removeEventListener('wheel', onGameMenuWheel);
+        // menuContainer.removeEventListener('click', onGameMenuClick);
+
+        initGallery(LB.currentPlatform, selectedIndex);
+    } catch (err) {
+        console.error('[gameMenu] close:error', err);
+        throw err;
     }
-
-    // menuContainer.removeEventListener('wheel', onGameMenuWheel);
-    // menuContainer.removeEventListener('click', onGameMenuClick);
-
-    initGallery(LB.currentPlatform, selectedIndex);
 
 }

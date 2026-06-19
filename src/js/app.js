@@ -177,8 +177,8 @@ async function initializeApp() {
                 window.onMenuKeyDown(event);
             } else if (LB.mode === 'metaEdit' && window.onMetaEditKeyDown) {
                 window.onMetaEditKeyDown(event);
-            } else if (LB.mode === 'gameMenu' && window.onGalleryKeyDown) {
-                window.onGalleryKeyDown(event);
+            } else if (LB.mode === 'gameMenu' && window.onGameMenuKeyDown) {
+                window.onGameMenuKeyDown(event);
             } else if (LB.mode === 'kbHelp' && window.onKBHelpKeyDown) {
                 window.onKBHelpKeyDown(event);
             } else if (LB.mode === 'systemDialog' && window.onSystemDialogKeyDown) {

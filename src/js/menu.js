@@ -1184,14 +1184,27 @@ function buildManualSelectButton(gameName, platformName, imgElem) {
         const success = await ipcRenderer.invoke('save-cover', srcPath, destPath);
 
         if (success) {
+            let closeQueued = false;
+            const queueClose = (delay = 1000) => {
+                if (closeQueued) return;
+                closeQueued = true;
+                setTimeout(() => closeGameMenu(destPath), delay);
+            };
+
+            imgElem.onload = () => queueClose(1000);
+            imgElem.onerror = () => {
+                console.warn('Failed to load selected image preview:', destPath);
+                queueClose(0);
+            };
+
             imgElem.src = `file://${destPath}?${Date.now()}`;
             console.log(`Cover saved to ${destPath}`);
 
-            imgElem.onload = () => {
-                setTimeout(() => {
-                    closeGameMenu(destPath);
-                }, 1000);
-            };
+            if (imgElem.complete && imgElem.naturalWidth > 0) {
+                queueClose(1000);
+            }
+
+            setTimeout(() => queueClose(0), 1500);
 
         } else {
             console.log('Failed to save cover');
@@ -1225,7 +1238,7 @@ function buildRemoveButton(img) {
         );
 
         if (success) {
-            img.src = path.join(LB.baseDir, 'img', 'missing.png');
+            closeGameMenu(path.join(LB.baseDir, 'img', 'missing.png'), { isMissingImage: true });
         } else {
             console.log('Failed to delete cover');
         }
@@ -1290,7 +1303,7 @@ async function closeSettingsMenu() {
 
 }
 
-export async function closeGameMenu(imgSrc) {
+export async function closeGameMenu(imgSrc, { isMissingImage = false } = {}) {
 
     const menu = document.getElementById('menu');
     const menuContainer = document.getElementById('menu');
@@ -1340,11 +1353,27 @@ export async function closeGameMenu(imgSrc) {
                 }
 
                 if (savedImagePath) {
-                    selectedGameImg.src = savedImagePath + '?t=' + new Date().getTime();
-                    selectedGameImg.onload = () => {
-                        selectedGame.removeAttribute('data-missing-image');
+                    const finishImageRefresh = () => {
+                        if (isMissingImage) {
+                            selectedGame.dataset.missingImage = true;
+                            selectedGameImg.classList.add('missing-image');
+                        } else {
+                            selectedGame.removeAttribute('data-missing-image');
+                            selectedGameImg.classList.remove('missing-image');
+                        }
                         selectedGameImg.classList.remove('loading');
                     };
+
+                    selectedGameImg.onload = finishImageRefresh;
+                    selectedGameImg.onerror = () => {
+                        console.warn('Failed to refresh saved image in gallery:', savedImagePath);
+                        finishImageRefresh();
+                    };
+                    selectedGameImg.src = savedImagePath + '?t=' + new Date().getTime();
+
+                    if (selectedGameImg.complete && selectedGameImg.naturalWidth > 0) {
+                        finishImageRefresh();
+                    }
                 }
             }
 

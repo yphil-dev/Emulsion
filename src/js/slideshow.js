@@ -595,6 +595,9 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
     const containers = isGallery
           ? Array.from(activePage.querySelectorAll('.game-container'))
           : Array.from(menu.querySelectorAll('.menu-game-container'));
+    const focusedGameMenuControl = isGameMenu
+          ? menu.querySelector('button:focus, input:focus, select:focus, textarea:focus, [tabindex]:focus')
+          : null;
 
     const isListMode = activePage && activePage.querySelector('.page-content') ? activePage.querySelector('.page-content').classList.contains('list') : false;
 
@@ -708,6 +711,11 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
         event.stopPropagation();
         event.stopImmediatePropagation();
         event.preventDefault();
+
+        if (isGameMenu && focusedGameMenuControl) {
+            focusedGameMenuControl.click();
+            return;
+        }
 
         const selectedContainer = containers[selectedIndex];
 

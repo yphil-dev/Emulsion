@@ -1225,20 +1225,7 @@ function buildRemoveButton(img) {
         );
 
         if (success) {
-            const activePage = document.querySelector('.page.active');
-            const gameContainers = activePage ? Array.from(activePage.querySelectorAll('.game-container')) : [];
-            const selectedGame = gameContainers.find(container => container.classList.contains('selected'));
-
-            if (selectedGame) {
-                const selectedGameImg = selectedGame.querySelector('.game-image');
-                if (selectedGameImg) {
-                    selectedGame.dataset.missingImage = true;
-                    selectedGameImg.classList.add('missing-image');
-                    selectedGameImg.src = path.join(LB.baseDir, 'img', 'missing.png') + '?t=' + Date.now();
-                }
-            }
-
-            closeGameMenu();
+            img.src = path.join(LB.baseDir, 'img', 'missing.png');
         } else {
             console.log('Failed to delete cover');
         }

@@ -1015,7 +1015,7 @@ const defaultPreferences = {
         sortFavoritesBy: "none",
         startupDialogPolicy: "show",
         launchDialogPolicy: "show",
-        optimize: "no",
+        optimize: "yes",
         theme: "default",
         steamGridAPIKey: "",
         giantBombAPIKey: "",

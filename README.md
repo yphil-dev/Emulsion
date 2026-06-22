@@ -37,8 +37,8 @@ It also works well for **arcade and pinball cabinets**, including **VPX** setups
 - **Per-platform emulator config** — executable, args, extensions, enable / disable
 - **Responsive layouts** — grid or list, configurable columns, fullscreen friendly
 - **Kiosk mode** — ideal for kids, cabinets, or public-facing setups
-- **GameModeRun support** on Linux — enabled by default when available, opt out if you want
-- **VPX / pinball ready** — dedicated VPX platform, OPDB integration, cabinet-friendly launching
+- **GameModeRun support** on Linux — enabled by default when available
+- **Pinball ready** — pinball control scheme, OPDB integration, cabinet-friendly launching
 
 ### Why it is practical
 

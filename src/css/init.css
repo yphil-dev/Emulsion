@@ -143,6 +143,10 @@ body {
   transition: background 0.8s ease;
 }
 
+body.busy,
+body.busy * {
+  cursor: wait !important;
+}
 
 h1, h2, h4 {
   color:var(--color-text-2);

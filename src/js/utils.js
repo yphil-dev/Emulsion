@@ -8,6 +8,9 @@ const fs = require('fs');
 const path = require('path');
 const fsp = fs.promises;
 
+const IMAGE_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg', '.webp']);
+const imageIndexCache = new Map();
+
 export function initFooterControls() {
     updateFooterControls('dpad', 'ew', 'Platforms', 'on');
     updateFooterControls('shoulders', 'same', 'same', 'off');
@@ -588,7 +591,7 @@ export function toggleFullScreen(elem = document.documentElement) {
     }
 }
 
-export async function scanDirectory(gamesDir, extensions, recursive = true, ignoredDirs = ['PS3_EXTRA', 'PKGDIR', 'freezer', 'tmp', 'WIP']) {
+export async function scanDirectory(gamesDir, extensions, recursive = true, ignoredDirs = ['PS3_EXTRA', 'PKGDIR', 'freezer', 'tmp', 'WIP', 'images', 'metadata']) {
 
     if (!gamesDir || typeof gamesDir !== 'string') {
         console.warn("scanDirectory: Invalid directory path provided:", gamesDir);
@@ -604,17 +607,59 @@ export async function scanDirectory(gamesDir, extensions, recursive = true, igno
     }
 }
 
-export async function findImageFile(basePath, fileNameWithoutExt) {
+async function buildImageIndex(basePath) {
+    const imageIndex = new Map();
+    const newestTimes = new Map();
+
     try {
-        // Use IPC to call the main process findImageFile handler
-        return await ipcRenderer.invoke('find-image-file', basePath, fileNameWithoutExt);
+        const items = await fsp.readdir(basePath, { withFileTypes: true });
+
+        for (const item of items) {
+            if (!item.isFile()) continue;
+
+            const extension = path.extname(item.name).toLowerCase();
+            if (!IMAGE_EXTENSIONS.has(extension)) continue;
+
+            const fullPath = path.join(basePath, item.name);
+            const fileName = path.basename(item.name, extension);
+
+            try {
+                const stats = await fsp.stat(fullPath);
+                const mtime = stats.mtimeMs || 0;
+
+                if (!newestTimes.has(fileName) || mtime >= newestTimes.get(fileName)) {
+                    newestTimes.set(fileName, mtime);
+                    imageIndex.set(fileName, fullPath);
+                }
+            } catch {
+                // Ignore unreadable image files
+            }
+        }
+    } catch {
+        // Missing images directory is fine
+    }
+
+    return imageIndex;
+}
+
+export async function findImageFile(basePath, fileNameWithoutExt) {
+    if (!basePath || !fileNameWithoutExt) {
+        return null;
+    }
+
+    try {
+        if (!imageIndexCache.has(basePath)) {
+            imageIndexCache.set(basePath, buildImageIndex(basePath));
+        }
+
+        const imageIndex = await imageIndexCache.get(basePath);
+        return imageIndex.get(fileNameWithoutExt) || null;
     } catch (err) {
+        imageIndexCache.delete(basePath);
         console.warn("Error finding image file:", err);
         return null;
     }
 }
-
-
 
 function setFooterProgress(barIndex, percent) {
     const bar = document.getElementById(`progress-bar-${barIndex}`);

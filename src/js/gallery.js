@@ -27,16 +27,12 @@ export async function buildGalleries (preferences, userDataPath) {
                     : []
             );
             let i = 0;
-            // Ensure consistent order: settings, platforms in PLATFORMS order, recents, favorites
             const platformNames = PLATFORMS.map(p => p.name).filter(name => preferences[name]);
             const platforms = ['settings', ...platformNames];
 
-            // Prepare all gallery building promises
-            const galleryPromises = [];
-            const platformParams = [];
-
             for (const platformName of platforms) {
-                let prefs = preferences[platformName];
+                const prefs = preferences[platformName];
+                let params;
 
                 if (prefs) {
                     let gamesDir, viewMode, emulator, emulatorArgs, extensions, isEnabled, index;
@@ -45,7 +41,7 @@ export async function buildGalleries (preferences, userDataPath) {
                         emulator = 'none';
                         emulatorArgs = 'none';
                         extensions = 'none';
-                        index = 0; // Settings is always index 0
+                        index = 0;
                     } else {
                         gamesDir = prefs.gamesDir;
                         viewMode = prefs.viewMode;
@@ -53,23 +49,21 @@ export async function buildGalleries (preferences, userDataPath) {
                         emulatorArgs = prefs.emulatorArgs;
                         extensions = prefs.extensions;
                         isEnabled = prefs.isEnabled;
-                        index = i + 1; // Platforms start from index 1
+                        index = i + 1;
                     }
-                    const params = {
+
+                    params = {
                         platform: platformName,
                         gamesDir,
                         viewMode,
                         emulator,
                         emulatorArgs,
                         userDataPath,
-                        index: index,
+                        index,
                         platforms,
                         extensions,
                         isEnabled
                     };
-
-                    galleryPromises.push(buildGallery(params));
-                    platformParams.push({ platformName, prefs, index: platformName === 'settings' ? 0 : i + 1 });
 
                     if (platformName !== 'settings') {
                         if (prefs.isEnabled) {
@@ -78,65 +72,42 @@ export async function buildGalleries (preferences, userDataPath) {
                         i++;
                     }
                 } else if (platformName === 'settings') {
-                    document.getElementById('loading-platform-name').textContent = 'settings';
-                    const params = {
+                    params = {
                         platform: platformName,
                         gamesDir: 'none',
                         emulator: 'none',
                         emulatorArgs: 'none',
                         userDataPath,
-                        index: 0, // Settings is always index 0
+                        index: 0,
                         platforms,
                         extensions: 'none'
                     };
-                    galleryPromises.push(buildGallery(params));
-                    platformParams.push({ platformName, prefs: null, index: 0 });
-                    // Don't increment i for settings
                 } else {
                     reject('No prefs for ' + platformName);
                     return;
                 }
-            }
 
-            // Build all galleries in parallel
-            const galleryContainers = await Promise.all(galleryPromises);
-
-            // Append all containers to DOM in order (maintaining visual consistency)
-            galleryContainers.forEach(container => {
+                const container = await buildGallery(params);
                 if (container) {
                     galleriesContainer.appendChild(container);
                 }
-            });
-
-            // Build additional galleries (recents and favorites) in parallel
-            const additionalPromises = [];
+            }
 
             if (LB.recentlyPlayedPolicy === 'show') {
-                additionalPromises.push(
-                    buildRecentGallery({ userDataPath, index: platforms.length })
-                        .then(recentGallery => {
-                            if (recentGallery) {
-                                galleriesContainer.appendChild(recentGallery);
-                                platforms.push("recents");
-                            }
-                        })
-                );
+                const recentGallery = await buildRecentGallery({ userDataPath, index: platforms.length });
+                if (recentGallery) {
+                    galleriesContainer.appendChild(recentGallery);
+                    platforms.push('recents');
+                }
             }
 
             if (LB.favoritesPolicy === 'show') {
-                additionalPromises.push(
-                    buildFavoritesGallery({ userDataPath, index: LB.recentlyPlayedPolicy === 'hide' ? platforms.length : platforms.length + 1 })
-                        .then(favGallery => {
-                            if (favGallery) {
-                                galleriesContainer.appendChild(favGallery);
-                                platforms.push("favorites");
-                            }
-                        })
-                );
+                const favGallery = await buildFavoritesGallery({ userDataPath, index: platforms.length + (LB.recentlyPlayedPolicy === 'show' ? 1 : 0) });
+                if (favGallery) {
+                    galleriesContainer.appendChild(favGallery);
+                    platforms.push('favorites');
+                }
             }
-
-            // Wait for additional galleries to complete
-            await Promise.all(additionalPromises);
 
             resolve(platforms);
         } catch (error) {
@@ -157,6 +128,8 @@ export async function buildGallery(params) {
         extensions,
         isEnabled
     } = params;
+
+    document.getElementById('loading-platform-name').textContent = getPlatformInfo(platform).name;
 
     const page = document.createElement('div');
     page.classList.add('page');
@@ -237,12 +210,12 @@ export async function buildGallery(params) {
         return page;
     }
 
-    // Process all games in parallel using Promise.all
-    const gameContainerPromises = gameFiles.map(async (gamePath, i) => {
+    const fragment = document.createDocumentFragment();
+
+    for (const [i, gamePath] of gameFiles.entries()) {
         const rawGameFileName = path.basename(gamePath);
         let gameName = stripExtensions(rawGameFileName, extensions);
 
-        // PS3 special handling - fetch PS3 titles in parallel (but limit concurrency to avoid overwhelming IPC)
         if (platform === 'ps3') {
             try {
                 const ps3Title = await getPs3GameName(gamePath);
@@ -251,11 +224,10 @@ export async function buildGallery(params) {
                 }
             } catch (err) {
                 console.warn(`Failed to parse PS3 title for ${gamePath}:`, err);
-                // Continue with original filename if parsing fails
             }
         }
 
-        const gameContainer = buildGameContainer({
+        const gameContainer = await buildGameContainer({
             platform,
             emulator,
             emulatorArgs,
@@ -264,25 +236,18 @@ export async function buildGallery(params) {
             index: i
         });
 
-        incrementNbGames(platform);
-        return gameContainer;
-    });
+        if (gameContainer) {
+            fragment.appendChild(gameContainer);
+            incrementNbGames(platform);
+        }
 
-    // Wait for all game containers to be created in parallel
-    const gameContainers = await Promise.all(gameContainerPromises);
+        if (i > 0 && i % 32 === 0) {
+            await new Promise(resolve => setTimeout(resolve, 0));
+        }
+    }
 
-    // Batch DOM operations - create a document fragment and append all at once
-    const fragment = document.createDocumentFragment();
-    gameContainers.forEach(container => {
-        fragment.appendChild(container);
-    });
-
-    // Single DOM operation to append all game containers
     pageContent.appendChild(fragment);
-
     page.appendChild(pageContent);
-
-    document.getElementById('loading-platform-name').textContent = getPlatformInfo(platform).name;
 
     return page;
 }
@@ -377,6 +342,8 @@ async function buildRecordGalleryPage({ loadingName, pagePlatform, pageViewMode,
     let appendedCount = 0;
 
     if (hasRecords) {
+        const fragment = document.createDocumentFragment();
+
         for (const [i, gameRecord] of gameRecords.entries()) {
             try {
                 const gameContainer = await buildGameContainer({
@@ -389,13 +356,19 @@ async function buildRecordGalleryPage({ loadingName, pagePlatform, pageViewMode,
                 });
 
                 if (gameContainer) {
-                    pageContent.appendChild(gameContainer);
+                    fragment.appendChild(gameContainer);
                     appendedCount++;
                 }
             } catch (err) {
                 console.error('Failed to build record gallery item:', err);
             }
+
+            if (i > 0 && i % 32 === 0) {
+                await new Promise(resolve => setTimeout(resolve, 0));
+            }
         }
+
+        pageContent.appendChild(fragment);
     }
 
     if (!hasRecords || appendedCount === 0) {

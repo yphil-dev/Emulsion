@@ -1290,7 +1290,7 @@ ipcMain.handle('is-flathub-configured', async () => {
   });
 });
 
-ipcMain.handle('scan-directory', async (event, gamesDir, extensions, recursive = true, ignoredDirs = ['PS3_EXTRA', 'PKGDIR', 'freezer', 'tmp']) => {
+ipcMain.handle('scan-directory', async (event, gamesDir, extensions, recursive = true, ignoredDirs = ['PS3_EXTRA', 'PKGDIR', 'freezer', 'tmp', 'WIP', 'images', 'metadata']) => {
     let files = [];
     const sortedExts = [...new Set(extensions)].sort((a, b) => b.length - a.length);
 

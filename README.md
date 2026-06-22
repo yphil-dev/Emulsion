@@ -69,6 +69,8 @@ Emulsion keeps your library structure simple:
 - images are stored in `images/` inside your games folder
 - metadata is stored in `metadata/` inside your games folder
 - recents and favorites are stored in your user config directory
+- favorites / recents enrich their records from `metadata/<gameName>.json` when available, using `publisher` and `releaseDate`
+- for VPX-style names like `Game Name (Publisher YYYY)`, the gallery badge prefers the filename values over metadata
 
 ![Theme screenshot](https://yphil.gitlab.io/images/emulsion-screenshot_02.png)
 

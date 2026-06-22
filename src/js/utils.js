@@ -404,14 +404,123 @@ export function extractVpxVendor(filename) {
     return '';
 }
 
-export function getFilenamePublisherYear(filename) {
+export function getFilenamePublisherReleaseDate(filename) {
     const publisher = extractVpxVendor(filename);
-    const year = extractVpxYear(filename);
+    const releaseDate = extractVpxYear(filename);
 
     return {
-        Publisher: publisher || '',
-        Year: year ? String(year) : ''
+        publisher: publisher || '',
+        releaseDate: releaseDate ? String(releaseDate) : ''
     };
+}
+
+function normalizeFavoriteRecordText(value) {
+    return typeof value === 'string' ? value.trim() : '';
+}
+
+function normalizeFavoriteRecordReleaseDate(value) {
+    const normalized = normalizeFavoriteRecordText(value);
+
+    if (
+        !normalized ||
+        normalized === 'N/A' ||
+        normalized === 'Unknown' ||
+        normalized === 'undefined' ||
+        normalized === 'null' ||
+        normalized === '0000-12-31T00:00:00Z' ||
+        /^--\d{2}-\d{2}$/.test(normalized)
+    ) {
+        return '';
+    }
+
+    return normalized;
+}
+
+function findMetadataFilePath(gamePath, gameName) {
+    if (
+        typeof gamePath !== 'string' ||
+        gamePath.trim() === '' ||
+        typeof gameName !== 'string' ||
+        gameName.trim() === ''
+    ) {
+        return null;
+    }
+
+    const metadataFileName = `${gameName}.json`;
+    let currentDir = path.dirname(gamePath);
+    let previousDir = null;
+
+    while (currentDir && currentDir !== previousDir) {
+        const candidatePath = path.join(currentDir, 'metadata', metadataFileName);
+
+        try {
+            if (fs.statSync(candidatePath).isFile()) {
+                return candidatePath;
+            }
+        } catch {
+            // Keep walking up until the filesystem root.
+        }
+
+        previousDir = currentDir;
+        currentDir = path.dirname(currentDir);
+    }
+
+    return null;
+}
+
+function getMetadataPublisherReleaseDate(gamePath, gameName) {
+    const metadataFilePath = findMetadataFilePath(gamePath, gameName);
+    if (!metadataFilePath) {
+        return {
+            publisher: '',
+            releaseDate: ''
+        };
+    }
+
+    try {
+        const parsedData = JSON.parse(fs.readFileSync(metadataFilePath, 'utf8'));
+        const gameMetaData = parsedData?.gameMetaData || {};
+
+        return {
+            publisher: normalizeFavoriteRecordText(gameMetaData.publisher),
+            releaseDate: normalizeFavoriteRecordReleaseDate(gameMetaData.releaseDate)
+        };
+    } catch (error) {
+        console.warn(`Failed to read metadata for ${gameName}:`, error);
+        return {
+            publisher: '',
+            releaseDate: ''
+        };
+    }
+}
+
+function getFavoriteRecordPublisherReleaseDate(record) {
+    const fileName = record?.gamePath ? path.basename(record.gamePath) : record?.gameName;
+    const fileNameData = getFilenamePublisherReleaseDate(fileName);
+    const metadataData = getMetadataPublisherReleaseDate(record?.gamePath, record?.gameName);
+
+    return {
+        publisher:
+            metadataData.publisher ||
+            normalizeFavoriteRecordText(record?.publisher) ||
+            normalizeFavoriteRecordText(record?.Publisher) ||
+            fileNameData.publisher ||
+            '',
+        releaseDate:
+            metadataData.releaseDate ||
+            normalizeFavoriteRecordReleaseDate(record?.releaseDate) ||
+            normalizeFavoriteRecordReleaseDate(record?.Year) ||
+            fileNameData.releaseDate ||
+            ''
+    };
+}
+
+function getFavoriteRecordPublisher(record) {
+    return normalizeFavoriteRecordText(record?.publisher) || normalizeFavoriteRecordText(record?.Publisher);
+}
+
+function getFavoriteRecordReleaseDate(record) {
+    return normalizeFavoriteRecordReleaseDate(record?.releaseDate) || normalizeFavoriteRecordReleaseDate(record?.Year);
 }
 
 function compareFavoriteText(a, b) {
@@ -432,9 +541,28 @@ function compareOptionalFavoriteText(a, b) {
     return compareFavoriteText(left, right);
 }
 
-function compareOptionalFavoriteYear(a, b) {
-    const left = parseInt(a, 10) || 0;
-    const right = parseInt(b, 10) || 0;
+function getFavoriteReleaseDateSortValue(value) {
+    const normalized = normalizeFavoriteRecordReleaseDate(value);
+    if (!normalized) {
+        return 0;
+    }
+
+    const parsedDate = Date.parse(normalized);
+    if (!isNaN(parsedDate)) {
+        return parsedDate;
+    }
+
+    const yearMatch = normalized.match(/(19|20)\d{2}/);
+    if (yearMatch) {
+        return parseInt(yearMatch[0], 10);
+    }
+
+    return 0;
+}
+
+function compareOptionalFavoriteReleaseDate(a, b) {
+    const left = getFavoriteReleaseDateSortValue(a);
+    const right = getFavoriteReleaseDateSortValue(b);
 
     if (!left && right) return 1;
     if (left && !right) return -1;
@@ -450,11 +578,11 @@ function sortFavoriteRecords(records, sortBy = 'none') {
 
     if (sortBy === 'publisher') {
         return [...records].sort((recordA, recordB) => {
-            const publisherCompare = compareOptionalFavoriteText(recordA?.Publisher, recordB?.Publisher);
+            const publisherCompare = compareOptionalFavoriteText(getFavoriteRecordPublisher(recordA), getFavoriteRecordPublisher(recordB));
             if (publisherCompare !== 0) return publisherCompare;
 
-            const yearCompare = compareOptionalFavoriteYear(recordA?.Year, recordB?.Year);
-            if (yearCompare !== 0) return yearCompare;
+            const releaseDateCompare = compareOptionalFavoriteReleaseDate(getFavoriteRecordReleaseDate(recordA), getFavoriteRecordReleaseDate(recordB));
+            if (releaseDateCompare !== 0) return releaseDateCompare;
 
             return compareFavoriteText(recordA?.gameName, recordB?.gameName);
         });
@@ -462,10 +590,10 @@ function sortFavoriteRecords(records, sortBy = 'none') {
 
     if (sortBy === 'date') {
         return [...records].sort((recordA, recordB) => {
-            const yearCompare = compareOptionalFavoriteYear(recordA?.Year, recordB?.Year);
-            if (yearCompare !== 0) return yearCompare;
+            const releaseDateCompare = compareOptionalFavoriteReleaseDate(getFavoriteRecordReleaseDate(recordA), getFavoriteRecordReleaseDate(recordB));
+            if (releaseDateCompare !== 0) return releaseDateCompare;
 
-            const publisherCompare = compareOptionalFavoriteText(recordA?.Publisher, recordB?.Publisher);
+            const publisherCompare = compareOptionalFavoriteText(getFavoriteRecordPublisher(recordA), getFavoriteRecordPublisher(recordB));
             if (publisherCompare !== 0) return publisherCompare;
 
             return compareFavoriteText(recordA?.gameName, recordB?.gameName);
@@ -861,15 +989,17 @@ function updateFavoriteBadgesByPath(gamePath, enabled) {
 }
 
 export function buildFavoriteRecord(gameContainer) {
-    const fileName = path.basename(gameContainer.dataset.gamePath || gameContainer.dataset.gameName || '');
-    const { Publisher, Year } = getFilenamePublisherYear(fileName);
-
-    return {
+    const record = {
         gameName: gameContainer.dataset.gameName,
         gamePath: gameContainer.dataset.gamePath,
-        platform: gameContainer.dataset.platform,
-        Publisher,
-        Year
+        platform: gameContainer.dataset.platform
+    };
+    const { publisher, releaseDate } = getFavoriteRecordPublisherReleaseDate(record);
+
+    return {
+        ...record,
+        publisher,
+        releaseDate
     };
 }
 

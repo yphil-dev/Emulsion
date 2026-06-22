@@ -172,14 +172,123 @@ function extractVpxVendor(filename) {
     return '';
 }
 
-function getFilenamePublisherYear(filename) {
+function getFilenamePublisherReleaseDate(filename) {
     const publisher = extractVpxVendor(filename);
-    const year = extractVpxYear(filename);
+    const releaseDate = extractVpxYear(filename);
 
     return {
-        Publisher: publisher || '',
-        Year: year ? String(year) : ''
+        publisher: publisher || '',
+        releaseDate: releaseDate ? String(releaseDate) : ''
     };
+}
+
+function normalizeRecordText(value) {
+    return typeof value === 'string' ? value.trim() : '';
+}
+
+function normalizeRecordReleaseDate(value) {
+    const normalized = normalizeRecordText(value);
+
+    if (
+        !normalized ||
+        normalized === 'N/A' ||
+        normalized === 'Unknown' ||
+        normalized === 'undefined' ||
+        normalized === 'null' ||
+        normalized === '0000-12-31T00:00:00Z' ||
+        /^--\d{2}-\d{2}$/.test(normalized)
+    ) {
+        return '';
+    }
+
+    return normalized;
+}
+
+function findMetadataFilePath(gamePath, gameName) {
+    if (
+        typeof gamePath !== 'string' ||
+        gamePath.trim() === '' ||
+        typeof gameName !== 'string' ||
+        gameName.trim() === ''
+    ) {
+        return null;
+    }
+
+    const metadataFileName = `${gameName}.json`;
+    let currentDir = path.dirname(gamePath);
+    let previousDir = null;
+
+    while (currentDir && currentDir !== previousDir) {
+        const candidatePath = path.join(currentDir, 'metadata', metadataFileName);
+
+        try {
+            if (fsSync.statSync(candidatePath).isFile()) {
+                return candidatePath;
+            }
+        } catch {
+            // Keep walking up the tree until we reach the filesystem root.
+        }
+
+        previousDir = currentDir;
+        currentDir = path.dirname(currentDir);
+    }
+
+    return null;
+}
+
+function getMetadataPublisherReleaseDate(gamePath, gameName) {
+    const metadataFilePath = findMetadataFilePath(gamePath, gameName);
+    if (!metadataFilePath) {
+        return {
+            publisher: '',
+            releaseDate: ''
+        };
+    }
+
+    try {
+        const parsedData = JSON.parse(fsSync.readFileSync(metadataFilePath, 'utf8'));
+        const gameMetaData = parsedData?.gameMetaData || {};
+
+        return {
+            publisher: normalizeRecordText(gameMetaData.publisher),
+            releaseDate: normalizeRecordReleaseDate(gameMetaData.releaseDate)
+        };
+    } catch (error) {
+        console.warn(`Failed to read metadata for ${gameName}: ${error.message}`);
+        return {
+            publisher: '',
+            releaseDate: ''
+        };
+    }
+}
+
+function getRecordPublisherReleaseDate(record) {
+    const fileName = record?.gamePath ? path.basename(record.gamePath) : record?.gameName;
+    const fileNameData = getFilenamePublisherReleaseDate(fileName);
+    const metadataData = getMetadataPublisherReleaseDate(record?.gamePath, record?.gameName);
+
+    return {
+        publisher:
+            metadataData.publisher ||
+            normalizeRecordText(record?.publisher) ||
+            normalizeRecordText(record?.Publisher) ||
+            fileNameData.publisher ||
+            '',
+        releaseDate:
+            metadataData.releaseDate ||
+            normalizeRecordReleaseDate(record?.releaseDate) ||
+            normalizeRecordReleaseDate(record?.Year) ||
+            fileNameData.releaseDate ||
+            ''
+    };
+}
+
+function getRecordPublisher(record) {
+    return normalizeRecordText(record?.publisher) || normalizeRecordText(record?.Publisher);
+}
+
+function getRecordReleaseDate(record) {
+    return normalizeRecordReleaseDate(record?.releaseDate) || normalizeRecordReleaseDate(record?.Year);
 }
 
 function compareText(a, b) {
@@ -200,9 +309,28 @@ function compareOptionalText(a, b) {
     return compareText(left, right);
 }
 
-function compareOptionalYear(a, b) {
-    const left = parseInt(a, 10) || 0;
-    const right = parseInt(b, 10) || 0;
+function getReleaseDateSortValue(value) {
+    const normalized = normalizeRecordReleaseDate(value);
+    if (!normalized) {
+        return 0;
+    }
+
+    const parsedDate = Date.parse(normalized);
+    if (!isNaN(parsedDate)) {
+        return parsedDate;
+    }
+
+    const yearMatch = normalized.match(/(19|20)\d{2}/);
+    if (yearMatch) {
+        return parseInt(yearMatch[0], 10);
+    }
+
+    return 0;
+}
+
+function compareOptionalReleaseDate(a, b) {
+    const left = getReleaseDateSortValue(a);
+    const right = getReleaseDateSortValue(b);
 
     if (!left && right) return 1;
     if (left && !right) return -1;
@@ -218,11 +346,11 @@ function sortFavoriteRecords(records, sortBy = 'none') {
 
     if (sortBy === 'publisher') {
         return [...records].sort((recordA, recordB) => {
-            const publisherCompare = compareOptionalText(recordA?.Publisher, recordB?.Publisher);
+            const publisherCompare = compareOptionalText(getRecordPublisher(recordA), getRecordPublisher(recordB));
             if (publisherCompare !== 0) return publisherCompare;
 
-            const yearCompare = compareOptionalYear(recordA?.Year, recordB?.Year);
-            if (yearCompare !== 0) return yearCompare;
+            const releaseDateCompare = compareOptionalReleaseDate(getRecordReleaseDate(recordA), getRecordReleaseDate(recordB));
+            if (releaseDateCompare !== 0) return releaseDateCompare;
 
             return compareText(recordA?.gameName, recordB?.gameName);
         });
@@ -230,10 +358,10 @@ function sortFavoriteRecords(records, sortBy = 'none') {
 
     if (sortBy === 'date') {
         return [...records].sort((recordA, recordB) => {
-            const yearCompare = compareOptionalYear(recordA?.Year, recordB?.Year);
-            if (yearCompare !== 0) return yearCompare;
+            const releaseDateCompare = compareOptionalReleaseDate(getRecordReleaseDate(recordA), getRecordReleaseDate(recordB));
+            if (releaseDateCompare !== 0) return releaseDateCompare;
 
-            const publisherCompare = compareOptionalText(recordA?.Publisher, recordB?.Publisher);
+            const publisherCompare = compareOptionalText(getRecordPublisher(recordA), getRecordPublisher(recordB));
             if (publisherCompare !== 0) return publisherCompare;
 
             return compareText(recordA?.gameName, recordB?.gameName);
@@ -264,15 +392,14 @@ function normalizeFavoriteRecord(record) {
         return null;
     }
 
-    const fileName = record.gamePath ? path.basename(record.gamePath) : record.gameName;
-    const { Publisher, Year } = getFilenamePublisherYear(fileName);
+    const { publisher, releaseDate } = getRecordPublisherReleaseDate(record);
 
     return {
         gameName: record.gameName,
         gamePath: record.gamePath,
         platform: normalizePlatformName(record.platform),
-        Publisher,
-        Year
+        publisher,
+        releaseDate
     };
 }
 
@@ -301,11 +428,19 @@ function normalizeRecentRecord(record) {
         return null;
     }
 
+    const { publisher, releaseDate } = getRecordPublisherReleaseDate({
+        ...record,
+        gameName,
+        gamePath
+    });
+
     return {
         gameName,
         gamePath,
         platform: normalizePlatformName(record.platform),
-        date: record.date
+        date: record.date,
+        publisher,
+        releaseDate
     };
 }
 

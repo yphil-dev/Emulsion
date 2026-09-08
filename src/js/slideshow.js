@@ -628,11 +628,18 @@ window.onGalleryKeyDown = async function onGalleryKeyDown(event) {
     const isGameMenu = LB.mode === 'gameMenu';
 
     const activePage = document.querySelector('.page.active');
-    const containers = isGallery
-          ? Array.from(activePage.querySelectorAll('.game-container'))
-          : Array.from(menu.querySelectorAll('.menu-game-container'));
+    const containerRoot = isGallery
+          ? activePage.querySelector('.page-content')
+          : menu.querySelector('.page-content');
+    const containers = isGallery && activePage.dataset.empty === 'true'
+          ? []
+          : containerRoot?.children || [];
+    const indexedSelectedContainer = containers[selectedIndex];
+    const previouslySelectedContainer = indexedSelectedContainer?.classList.contains('selected')
+          ? indexedSelectedContainer
+          : containerRoot?.querySelector('.selected');
 
-    const isListMode = activePage && activePage.querySelector('.page-content') ? activePage.querySelector('.page-content').classList.contains('list') : false;
+    const isListMode = containerRoot?.classList.contains('list') || false;
 
     const _moveRows = (idx, rows) => {
         const col = idx % LB.galleryNumOfCols;
@@ -847,9 +854,10 @@ window.onGalleryKeyDown = async function onGalleryKeyDown(event) {
     const selectedContainer = containers[selectedIndex];
     const isEmptyPage = activePage.dataset.empty === 'true';
 
-    containers.forEach((container, index) =>
-        container.classList.toggle('selected', index === selectedIndex)
-    );
+    if (previouslySelectedContainer !== selectedContainer) {
+        previouslySelectedContainer?.classList.remove('selected');
+        selectedContainer?.classList.add('selected');
+    }
 
     if (LB.mode === 'gameMenu') {
         selectedContainer.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });

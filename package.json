@@ -21,7 +21,7 @@
         "build": "electron-builder --config build/builder.yml --linux --publish=never"
     },
     "devDependencies": {
-        "electron": "43.4.0",
+        "electron": "44.1.1",
         "electron-builder": "26.15.3"
     },
     "dependencies": {

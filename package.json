@@ -1,8 +1,8 @@
 {
     "name": "emulsion",
-    "version": "0.21.4",
+    "version": "0.22.0",
     "summary": "Better gaming throught chemistry",
-    "description": "Display your games collection into responsive galleries, manage game metadata, cover art and emulator configuration. Launch your games in style.",
+    "description": "Display your games collection into responsive galleries, manage game metadata, OK, merge cover art and emulator configuration. Launch your games in style.",
     "homepage": "https://yphil.gitlab.io/emulsion",
     "license": "GPLv3",
     "author": {

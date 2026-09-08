@@ -13,6 +13,29 @@ import { incrementNbGames } from './preferences.js';
 import { openPlatformMenu } from './menu.js';
 
 let favoriteGamePaths = new Set();
+const galleryBuilders = new Map();
+const galleryBuildPromises = new Map();
+
+function setLoadingPlatformName(platformName) {
+    const loadingPlatformName = document.getElementById('loading-platform-name');
+    if (loadingPlatformName) {
+        loadingPlatformName.textContent = platformName;
+    }
+}
+
+function getGalleryPage(platformName) {
+    return Array.from(document.querySelectorAll('#galleries .page'))
+        .find(page => page.dataset.platform === platformName) || null;
+}
+
+function buildGalleryPlaceholder(platformName, viewMode) {
+    const page = document.createElement('div');
+    page.classList.add('page');
+    page.dataset.platform = platformName;
+    page.dataset.viewMode = viewMode;
+    page.dataset.galleryBuilt = 'false';
+    return page;
+}
 
 function isFavoriteGamePath(gamePath) {
     return favoriteGamePaths.has(gamePath);
@@ -34,102 +57,110 @@ function formatMameBadge(machine) {
 }
 
 export async function buildGalleries (preferences, userDataPath) {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const galleriesContainer = document.getElementById('galleries');
+    const galleriesContainer = document.getElementById('galleries');
+    const platformNames = PLATFORMS.map(p => p.name).filter(name => preferences[name]);
+    const platforms = ['settings', ...platformNames];
+
+    galleryBuilders.clear();
+    galleryBuildPromises.clear();
+    favoriteGamePaths = new Set(
+        Array.isArray(LB.favorites)
+            ? LB.favorites.map(record => record?.gamePath).filter(Boolean)
+            : []
+    );
+    LB.enabledPlatforms = [
+        'settings',
+        ...platformNames.filter(platformName => preferences[platformName]?.isEnabled)
+    ];
+
+    const settingsPage = await buildGallery({
+        platform: 'settings',
+        gamesDir: 'none',
+        emulator: 'none',
+        emulatorArgs: 'none',
+        userDataPath,
+        index: 0,
+        platforms,
+        extensions: 'none'
+    });
+    settingsPage.dataset.galleryBuilt = 'true';
+    galleriesContainer.appendChild(settingsPage);
+
+    platformNames.forEach((platformName, index) => {
+        const prefs = preferences[platformName];
+        const params = {
+            platform: platformName,
+            gamesDir: prefs.gamesDir,
+            viewMode: prefs.viewMode,
+            emulator: prefs.emulator,
+            emulatorArgs: prefs.emulatorArgs,
+            userDataPath,
+            index: index + 1,
+            platforms,
+            extensions: prefs.extensions,
+            isEnabled: prefs.isEnabled
+        };
+
+        galleryBuilders.set(platformName, () => buildGallery(params));
+        galleriesContainer.appendChild(buildGalleryPlaceholder(platformName, prefs.viewMode));
+    });
+
+    if (LB.recentlyPlayedPolicy === 'show') {
+        galleryBuilders.set('recents', () => buildRecentGallery({ userDataPath, index: platforms.length }));
+        galleriesContainer.appendChild(buildGalleryPlaceholder('recents', LB.recentlyPlayedViewMode));
+        platforms.push('recents');
+    }
+
+    if (LB.favoritesPolicy === 'show') {
+        galleryBuilders.set('favorites', () => buildFavoritesGallery({ userDataPath, index: platforms.length }));
+        galleriesContainer.appendChild(buildGalleryPlaceholder('favorites', LB.favoritesViewMode));
+        platforms.push('favorites');
+    }
+
+    return platforms;
+}
+
+export async function ensureGalleryBuilt(platformName) {
+    const existingPage = getGalleryPage(platformName);
+    if (existingPage?.dataset.galleryBuilt === 'true') {
+        return existingPage;
+    }
+
+    const builder = galleryBuilders.get(platformName);
+    if (!builder) {
+        return existingPage;
+    }
+
+    if (!galleryBuildPromises.has(platformName)) {
+        const buildPromise = (async () => {
             favoriteGamePaths = new Set(
                 Array.isArray(LB.favorites)
                     ? LB.favorites.map(record => record?.gamePath).filter(Boolean)
                     : []
             );
-            let i = 0;
-            const platformNames = PLATFORMS.map(p => p.name).filter(name => preferences[name]);
-            const platforms = ['settings', ...platformNames];
 
-            for (const platformName of platforms) {
-                const prefs = preferences[platformName];
-                let params;
+            const page = await builder();
+            if (!page) return null;
 
-                if (prefs) {
-                    let gamesDir, viewMode, emulator, emulatorArgs, extensions, isEnabled, index;
-                    if (platformName === 'settings') {
-                        gamesDir = 'none';
-                        emulator = 'none';
-                        emulatorArgs = 'none';
-                        extensions = 'none';
-                        index = 0;
-                    } else {
-                        gamesDir = prefs.gamesDir;
-                        viewMode = prefs.viewMode;
-                        emulator = prefs.emulator;
-                        emulatorArgs = prefs.emulatorArgs;
-                        extensions = prefs.extensions;
-                        isEnabled = prefs.isEnabled;
-                        index = i + 1;
+            page.dataset.galleryBuilt = 'true';
+            const placeholder = getGalleryPage(platformName);
+            if (placeholder) {
+                ['active', 'prev', 'next', 'adjacent'].forEach(className => {
+                    if (placeholder.classList.contains(className)) {
+                        page.classList.add(className);
                     }
-
-                    params = {
-                        platform: platformName,
-                        gamesDir,
-                        viewMode,
-                        emulator,
-                        emulatorArgs,
-                        userDataPath,
-                        index,
-                        platforms,
-                        extensions,
-                        isEnabled
-                    };
-
-                    if (platformName !== 'settings') {
-                        if (prefs.isEnabled) {
-                            LB.enabledPlatforms.push(platformName);
-                        }
-                        i++;
-                    }
-                } else if (platformName === 'settings') {
-                    params = {
-                        platform: platformName,
-                        gamesDir: 'none',
-                        emulator: 'none',
-                        emulatorArgs: 'none',
-                        userDataPath,
-                        index: 0,
-                        platforms,
-                        extensions: 'none'
-                    };
-                } else {
-                    reject('No prefs for ' + platformName);
-                    return;
-                }
-
-                const container = await buildGallery(params);
-                if (container) {
-                    galleriesContainer.appendChild(container);
-                }
+                });
+                placeholder.replaceWith(page);
             }
 
-            if (LB.recentlyPlayedPolicy === 'show') {
-                const recentGallery = await buildRecentGallery({ userDataPath, index: platforms.length });
-                if (recentGallery) {
-                    galleriesContainer.appendChild(recentGallery);
-                    platforms.push('recents');
-                }
-            }
+            return page;
+        })();
 
-            if (LB.favoritesPolicy === 'show') {
-                const favGallery = await buildFavoritesGallery({ userDataPath, index: platforms.length + (LB.recentlyPlayedPolicy === 'show' ? 1 : 0) });
-                if (favGallery) {
-                    galleriesContainer.appendChild(favGallery);
-                    platforms.push('favorites');
-                }
-            }
+        galleryBuildPromises.set(platformName, buildPromise);
+        buildPromise.catch(() => galleryBuildPromises.delete(platformName));
+    }
 
-            resolve(platforms);
-        } catch (error) {
-            reject(error);
-        }
-    });
+    return galleryBuildPromises.get(platformName);
 }
 
 export async function buildGallery(params) {
@@ -145,7 +176,7 @@ export async function buildGallery(params) {
         isEnabled
     } = params;
 
-    document.getElementById('loading-platform-name').textContent = getPlatformInfo(platform).name;
+    setLoadingPlatformName(getPlatformInfo(platform).name);
 
     const page = document.createElement('div');
     page.classList.add('page');
@@ -385,7 +416,7 @@ export async function buildGameContainer({
 }
 
 async function buildRecordGalleryPage({ loadingName, pagePlatform, pageViewMode, gameRecords, emptyContext }) {
-    document.getElementById('loading-platform-name').textContent = loadingName;
+    setLoadingPlatformName(loadingName);
 
     const page = document.createElement('div');
     page.classList.add('page');

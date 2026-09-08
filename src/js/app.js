@@ -9,7 +9,7 @@ import { systemDialog, helpDialog, launchErrorDialog } from './dialog.js';
 import { applyTheme, setFooterSize, initFooterControls, updateLabelFontSize } from './utils.js';
 import { buildHomeSlide, initSlideShow, initGallery, initGamepad } from './slideshow.js';
 import { loadPreferences } from './preferences.js';
-import { buildGalleries } from './gallery.js';
+import { buildGalleries, ensureGalleryBuilt } from './gallery.js';
 
 // Make Node.js modules globally available
 window.ipcRenderer = ipcRenderer;
@@ -250,15 +250,7 @@ async function initializeApp() {
                     });
                 });
 
-                return Promise.all(homeSlidePromises).then(() => {
-
-                    document.getElementById('galleries').style.display = 'none';
-                    document.getElementById("splash").remove();
-                    document.getElementById("main").style.display = 'flex';
-                    document.getElementById("footer").style.display = 'flex';
-
-                    setLoadingCursor(false);
-                    updateLabelFontSize(LB.galleryNumOfCols);
+                return Promise.all(homeSlidePromises).then(async () => {
 
                     const canAutoSelect =
                           LB.autoSelect &&
@@ -269,7 +261,19 @@ async function initializeApp() {
                           );
 
                     if (canAutoSelect) {
-                        initGallery(LB.autoSelect);
+                        await ensureGalleryBuilt(LB.autoSelect);
+                    }
+
+                    document.getElementById('galleries').style.display = 'none';
+                    document.getElementById("splash").remove();
+                    document.getElementById("main").style.display = 'flex';
+                    document.getElementById("footer").style.display = 'flex';
+
+                    setLoadingCursor(false);
+                    updateLabelFontSize(LB.galleryNumOfCols);
+
+                    if (canAutoSelect) {
+                        await initGallery(LB.autoSelect);
                     } else {
                         initSlideShow(0);
                     }

@@ -15,6 +15,7 @@ import { updateFooterControlsFor,
 import { updatePreference } from './preferences.js';
 import { getMeta, displayMetaData } from './metadata.js';
 import { editMetaDialog, toggleFavDialog, launchGameDialog, systemDialog, helpDialog } from './dialog.js';
+import { ensureGalleryBuilt } from './gallery.js';
 
 const main = document.querySelector('main');
 const slideshow = document.getElementById("slideshow");
@@ -134,7 +135,7 @@ export function initSlideShow(platformToDisplay) {
    //      });
    //  });
 
-    window.onSlideShowKeyDown = function(event) {
+    window.onSlideShowKeyDown = async function(event) {
         event.stopPropagation();
         event.stopImmediatePropagation();
 
@@ -156,9 +157,19 @@ export function initSlideShow(platformToDisplay) {
             if (platformName === 'settings' && LB.kioskMode) return;
 
             if (platformName === 'recents' || platformName === 'settings' || platformName === 'favorites') {
-                initGallery(platformName);
+                document.body.classList.add('busy');
+                try {
+                    await initGallery(platformName);
+                } finally {
+                    document.body.classList.remove('busy');
+                }
             } else if (LB.enabledPlatforms.includes(platformName)) {
-                initGallery(platformName);
+                document.body.classList.add('busy');
+                try {
+                    await initGallery(platformName);
+                } finally {
+                    document.body.classList.remove('busy');
+                }
             } else {
                 openPlatformMenu(platformName, 'slideshow');
             }
@@ -287,8 +298,8 @@ function setGalleryFooterControls(pageDataset) {
 let selectedIndex = 0;
 
 // Global function for gallery page navigation
-function goToGalleryPage(direction = 1) {
-    const pages = Array.from(document.querySelectorAll('#galleries .page'));
+async function goToGalleryPage(direction = 1) {
+    let pages = Array.from(document.querySelectorAll('#galleries .page'));
     const currentPage = pages.find(p => p.classList.contains('active'));
     let currentIndex = pages.indexOf(currentPage);
 
@@ -319,12 +330,23 @@ function goToGalleryPage(direction = 1) {
         }
     } while (nextIndex !== currentIndex); // Prevent infinite loop
 
-    // Update active page
+    const destinationPlatform = pages[nextIndex].dataset.platform;
+    document.body.classList.add('busy');
+    try {
+        await ensureGalleryBuilt(destinationPlatform);
+    } catch (error) {
+        console.error(`Failed to build gallery for ${destinationPlatform}:`, error);
+        return;
+    } finally {
+        document.body.classList.remove('busy');
+    }
+
+    pages = Array.from(document.querySelectorAll('#galleries .page'));
+    const currentPageNew = pages.find(page => page.dataset.platform === destinationPlatform);
     pages.forEach(p => p.classList.remove('active'));
-    pages[nextIndex].classList.add('active');
+    currentPageNew.classList.add('active');
 
     // Update gallery display
-    const currentPageNew = pages.find(p => p.classList.contains('active'));
     const currentIndexNew = pages.indexOf(currentPageNew);
 
     pages.forEach((page, index) => {
@@ -373,7 +395,16 @@ function goToGalleryPage(direction = 1) {
     });
 }
 
-export function initGallery(platformNameOrIndex, focusIndex = null) {
+export async function initGallery(platformNameOrIndex, focusIndex = null) {
+
+    const initialPages = Array.from(galleries.querySelectorAll('.page'));
+    const requestedPlatform = typeof platformNameOrIndex === 'string'
+        ? platformNameOrIndex
+        : initialPages[platformNameOrIndex]?.dataset.platform;
+
+    if (requestedPlatform) {
+        await ensureGalleryBuilt(requestedPlatform);
+    }
 
     document.getElementById('menu').style.display = 'none';
 
@@ -387,7 +418,6 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
     LB.mode = 'gallery';
 
 
-    const galleries = document.getElementById('galleries');
     const header = document.getElementById('header');
 
     document.getElementById('slideshow').style.display = 'none';
@@ -586,7 +616,7 @@ export function initGallery(platformNameOrIndex, focusIndex = null) {
     updateGallery();
 }
 
-window.onGalleryKeyDown = function onGalleryKeyDown(event) {
+window.onGalleryKeyDown = async function onGalleryKeyDown(event) {
 
     if (shouldDismissFavoriteConfirmation(event)) {
         return;
@@ -614,8 +644,8 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
     switch (event.key) {
     case 'ArrowLeft':
         if (event.shiftKey) {
-            goToGalleryPage(-1);
-            selectedIndex = 1;
+            await goToGalleryPage(-1);
+            return;
         } else {
             if (isListMode && LB.mode === 'gallery') {
                 selectedIndex =
@@ -632,8 +662,8 @@ window.onGalleryKeyDown = function onGalleryKeyDown(event) {
 
     case 'ArrowRight':
         if (event.shiftKey) {
-            goToGalleryPage(1);
-            selectedIndex = 0;
+            await goToGalleryPage(1);
+            return;
         } else {
             if (isListMode && LB.mode === 'gallery') {
                 selectedIndex =

@@ -22,6 +22,20 @@ const slideshow = document.getElementById("slideshow");
 const galleries = document.getElementById("galleries");
 
 let confirmationTimeout = null;
+const SLIDE_CONFIRMATION_DURATION_MS = 420;
+
+function playSlideConfirmation(slide) {
+    slide.classList.remove('confirming');
+    void slide.offsetWidth;
+    slide.classList.add('confirming');
+
+    return new Promise(resolve => {
+        setTimeout(() => {
+            slide.classList.remove('confirming');
+            resolve();
+        }, SLIDE_CONFIRMATION_DURATION_MS);
+    });
+}
 
 function dismissFavoriteConfirmation() {
     const existingDialog = document.getElementById('favorite-confirmation');
@@ -52,6 +66,7 @@ export function initSlideShow(platformToDisplay) {
 
     const slides = Array.from(slideshow.querySelectorAll('.slide'));
     let currentIndex = 0;
+    let slideConfirmationPending = false;
 
     if (platformToDisplay) {
         const foundIndex = slides.findIndex(
@@ -151,31 +166,46 @@ export function initSlideShow(platformToDisplay) {
             prevSlide();
             break;
         case 'Enter': {
+            if (slideConfirmationPending) return;
+
             const activeSlide = slides[currentIndex];
             const platformName = activeSlide.dataset.platform;
+            const confirmation = playSlideConfirmation(activeSlide);
+            slideConfirmationPending = true;
 
-            if (platformName === 'settings' && LB.kioskMode) return;
+            try {
+                if (platformName === 'settings' && LB.kioskMode) {
+                    await confirmation;
+                    return;
+                }
 
-            if (platformName === 'recents' || platformName === 'settings' || platformName === 'favorites') {
-                document.body.classList.add('busy');
-                try {
-                    await initGallery(platformName);
-                } finally {
-                    document.body.classList.remove('busy');
+                const opensGallery =
+                    platformName === 'recents' ||
+                    platformName === 'settings' ||
+                    platformName === 'favorites' ||
+                    LB.enabledPlatforms.includes(platformName);
+
+                if (opensGallery) {
+                    document.body.classList.add('busy');
+                    try {
+                        await Promise.all([
+                            confirmation,
+                            ensureGalleryBuilt(platformName)
+                        ]);
+                        await initGallery(platformName);
+                    } finally {
+                        document.body.classList.remove('busy');
+                    }
+                } else {
+                    await confirmation;
+                    openPlatformMenu(platformName, 'slideshow');
                 }
-            } else if (LB.enabledPlatforms.includes(platformName)) {
-                document.body.classList.add('busy');
-                try {
-                    await initGallery(platformName);
-                } finally {
-                    document.body.classList.remove('busy');
-                }
-            } else {
-                openPlatformMenu(platformName, 'slideshow');
+
+                galleries.style.display = 'flex';
+                slideshow.style.display = 'none';
+            } finally {
+                slideConfirmationPending = false;
             }
-
-            galleries.style.display = 'flex';
-            slideshow.style.display = 'none';
             break;
         }
 
@@ -926,21 +956,30 @@ export function initGamepad() {
 
     let animationFrameId = null;
 
-    const shoulderRepeater = createProgressiveRepeater(
-        (buttonIndex, eventOptions = {}) => handleGameControllerButtonPress(buttonIndex, eventOptions),
-        {
-            initialDelay: 250,
-            steps: [
-                { afterMs: 0, interval: 110 },
-                { afterMs: 700, interval: 75 },
-                { afterMs: 1200, interval: 50 },
-                { afterMs: 1800, interval: 35 },
-            ]
-        }
-    );
+    const repeatOptions = {
+        initialDelay: 250,
+        steps: [
+            { afterMs: 0, interval: 110 },
+            { afterMs: 700, interval: 75 },
+            { afterMs: 1200, interval: 50 },
+            { afterMs: 1800, interval: 35 },
+        ]
+    };
+    const triggerRepeatedButton =
+        (buttonIndex, eventOptions = {}) => handleGameControllerButtonPress(buttonIndex, eventOptions);
+    const shoulderRepeater = createProgressiveRepeater(triggerRepeatedButton, repeatOptions);
+    const dpadRepeater = createProgressiveRepeater(triggerRepeatedButton, repeatOptions);
 
     function isRepeatableButton(buttonIndex) {
         return LB.controlScheme === 'pinball' && (buttonIndex === 4 || buttonIndex === 5);
+    }
+
+    function isDpadButton(buttonIndex) {
+        return buttonIndex >= 12 && buttonIndex <= 15;
+    }
+
+    function isRepeatableDpadButton(buttonIndex) {
+        return LB.mode === 'gallery' && isDpadButton(buttonIndex);
     }
 
     // Listen for gamepad connection events
@@ -957,12 +996,14 @@ export function initGamepad() {
             animationFrameId = null;
         }
         shoulderRepeater.reset();
+        dpadRepeater.reset();
     });
 
     function pollGamepad() {
         // If the document doesn't have focus, simply skip processing
         if (!document.hasFocus()) {
             shoulderRepeater.reset();
+            dpadRepeater.reset();
             animationFrameId = requestAnimationFrame(pollGamepad);
             return;
         }
@@ -1018,11 +1059,30 @@ export function initGamepad() {
                 const button = gamepad.buttons[buttonIndex];
                 const wasPressed = buttonStates[buttonIndex];
 
+                if (isDpadButton(buttonIndex) && !isRepeatableDpadButton(buttonIndex)) {
+                    dpadRepeater.update(buttonIndex, false, buttonIndex);
+                }
+
                 if (buttonIndex === 8 && LB.controlScheme === "pinball") {
                     if (button.pressed && !wasPressed) {
                         buttonStates[buttonIndex] = true;
                     } else if (!button.pressed && wasPressed) {
                         buttonStates[buttonIndex] = false;
+                    }
+                } else if (isRepeatableDpadButton(buttonIndex)) {
+                    if (button.pressed) {
+                        buttonStates[buttonIndex] = true;
+                        dpadRepeater.update(buttonIndex, true, buttonIndex);
+                    } else {
+                        dpadRepeater.update(buttonIndex, false, buttonIndex);
+                        if (wasPressed) {
+                            buttonStates[buttonIndex] = false;
+                            if (buttonIndex === 12 && buttonStates[8]) {
+                                console.log('Share + Up combo!');
+                                ipcRenderer.invoke('restart');
+                                return;
+                            }
+                        }
                     }
                 } else if (isRepeatableButton(buttonIndex)) {
                     if (button.pressed) {
@@ -1055,6 +1115,7 @@ export function initGamepad() {
             });
         } else {
             shoulderRepeater.reset();
+            dpadRepeater.reset();
         }
 
         // Continue polling

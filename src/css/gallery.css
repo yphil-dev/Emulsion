@@ -85,6 +85,11 @@
   border-bottom: 1px solid var(--color-hr);
 }
 
+.page-content:not(.list) > .game-container {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 35vh;
+}
+
 .page-content.list .game-container.selected {
   color: var(--color-selected);
   background-color: var(--color-bg-selected);

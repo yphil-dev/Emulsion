@@ -15,6 +15,8 @@ import { openPlatformMenu } from './menu.js';
 let favoriteGamePaths = new Set();
 const galleryBuilders = new Map();
 const galleryBuildPromises = new Map();
+const VIRTUAL_GALLERY_THRESHOLD = 800;
+const VIRTUAL_GALLERY_ROWS = 12;
 
 function setLoadingPlatformName(platformName) {
     const loadingPlatformName = document.getElementById('loading-platform-name');
@@ -54,6 +56,178 @@ function getMameMachineData(mameNameMap, gameName) {
 
 function formatMameBadge(machine) {
     return [machine?.manufacturer, machine?.year].filter(Boolean).join(' ');
+}
+
+function createVirtualSpacer() {
+    const spacer = document.createElement('div');
+    spacer.className = 'virtual-gallery-spacer';
+    spacer.style.gridColumn = '1 / -1';
+    return spacer;
+}
+
+function getVirtualGalleryRowHeight(page) {
+    const state = page?._galleryState;
+    const firstContainer = state?.pageContent?.querySelector('.game-container');
+    const rowGap = parseFloat(getComputedStyle(state.pageContent).rowGap) || 10;
+    const measuredHeight = firstContainer?.getBoundingClientRect().height || 0;
+
+    return measuredHeight > 0
+        ? measuredHeight + rowGap
+        : Math.max(1, Math.round(window.innerHeight * 0.35));
+}
+
+function updateVirtualGallerySpacers(page) {
+    const state = page?._galleryState;
+    if (!state) return;
+
+    const columns = Math.max(1, Number(LB.galleryNumOfCols) || 1);
+    state.rowHeight = getVirtualGalleryRowHeight(page);
+    const topRows = Math.floor(state.start / columns);
+    const bottomRows = Math.ceil((state.records.length - state.end) / columns);
+
+    state.topSpacer.style.height = `${topRows * state.rowHeight}px`;
+    state.bottomSpacer.style.height = `${bottomRows * state.rowHeight}px`;
+}
+
+async function renderVirtualGalleryWindow(page, targetIndex = 0, renderAll = false) {
+    const state = page?._galleryState;
+    if (!state) return;
+
+    const columns = Math.max(1, Number(LB.galleryNumOfCols) || 1);
+    const rowCount = renderAll
+        ? Math.ceil(state.records.length / columns)
+        : VIRTUAL_GALLERY_ROWS;
+    const boundedTargetIndex = Math.min(
+        Math.max(0, targetIndex),
+        Math.max(0, state.records.length - 1)
+    );
+    const targetRow = Math.floor(boundedTargetIndex / columns);
+    const startRow = renderAll
+        ? 0
+        : Math.max(0, targetRow - Math.floor(rowCount / 2));
+    const start = startRow * columns;
+    const end = renderAll
+        ? state.records.length
+        : Math.min(state.records.length, (startRow + rowCount) * columns);
+    const renderToken = ++state.renderToken;
+    const rendered = new Map();
+    const scrollTop = page.scrollTop;
+
+    for (let index = start; index < end; index++) {
+        const record = state.records[index];
+        const gameContainer = await buildGameContainer({ ...record, index });
+        if (renderToken !== state.renderToken) return;
+        if (gameContainer) rendered.set(index, gameContainer);
+    }
+
+    if (renderToken !== state.renderToken) return;
+
+    state.start = start;
+    state.end = end;
+    state.rendered = rendered;
+    state.pageContent.replaceChildren(state.topSpacer, ...rendered.values(), state.bottomSpacer);
+    updateVirtualGallerySpacers(page);
+    if (page.isConnected) page.scrollTop = scrollTop;
+
+    const selectedContainer = rendered.get(state.selectedIndex);
+    selectedContainer?.classList.add('selected');
+}
+
+async function buildVirtualGalleryPage(page, pageContent, records) {
+    page.dataset.virtualized = 'true';
+    pageContent.classList.add(page.dataset.viewMode === 'list' ? 'list' : 'grid');
+    page.dataset.gameCount = records.length;
+    page._galleryState = {
+        records,
+        pageContent,
+        rendered: new Map(),
+        start: 0,
+        end: 0,
+        selectedIndex: 0,
+        renderToken: 0,
+        rowHeight: 0,
+        renderPromise: null,
+        pendingIndex: null,
+        topSpacer: createVirtualSpacer(),
+        bottomSpacer: createVirtualSpacer()
+    };
+    page.appendChild(pageContent);
+    await renderVirtualGalleryWindow(page);
+    return page;
+}
+
+export function getGalleryState(page) {
+    return page?._galleryState || null;
+}
+
+export function getGalleryItemCount(page) {
+    return page?._galleryState?.records.length
+        ?? page?.querySelectorAll('.game-container:not(.empty-platform-game-container)').length
+        ?? 0;
+}
+
+export function getGalleryContainer(page, index) {
+    const state = page?._galleryState;
+    return state ? state.rendered.get(index) || null : page?.querySelectorAll('.game-container')[index] || null;
+}
+
+export function getGalleryContainers(page) {
+    const state = page?._galleryState;
+    return state ? Array.from(state.rendered.values()) : Array.from(page?.querySelectorAll('.game-container') || []);
+}
+
+export async function ensureGalleryIndexRendered(page, index) {
+    const state = page?._galleryState;
+    if (!state) return getGalleryContainer(page, index);
+
+    const boundedIndex = Math.min(
+        Math.max(0, index),
+        Math.max(0, state.records.length - 1)
+    );
+
+    if (state.renderPromise) {
+        state.pendingIndex = boundedIndex;
+        await state.renderPromise;
+    } else if (boundedIndex < state.start || boundedIndex >= state.end) {
+        state.pendingIndex = boundedIndex;
+        state.renderPromise = (async () => {
+            while (state.pendingIndex !== null) {
+                const targetIndex = state.pendingIndex;
+                state.pendingIndex = null;
+                if (targetIndex < state.start || targetIndex >= state.end) {
+                    await renderVirtualGalleryWindow(page, targetIndex);
+                }
+            }
+        })().finally(() => {
+            state.renderPromise = null;
+        });
+        await state.renderPromise;
+    }
+
+    const container = state.rendered.get(boundedIndex);
+    if (container) {
+        state.selectedIndex = boundedIndex;
+        container.classList.add('selected');
+        return container;
+    }
+
+    return getGalleryContainer(page, state.selectedIndex);
+}
+
+export function refreshVirtualGalleryLayout(page) {
+    if (page?._galleryState) updateVirtualGallerySpacers(page);
+}
+
+export async function materializeGallery(page) {
+    const state = page?._galleryState;
+    if (!state) return;
+
+    await renderVirtualGalleryWindow(page, 0, true);
+    page._galleryState.pageContent.replaceChildren(
+        ...page._galleryState.rendered.values()
+    );
+    page.dataset.virtualized = 'false';
+    page._galleryState = null;
 }
 
 export async function buildGalleries (preferences, userDataPath) {
@@ -285,7 +459,7 @@ export async function buildGallery(params) {
         return page;
     }
 
-    const fragment = document.createDocumentFragment();
+    const records = [];
 
     for (const [i, gamePath] of gameFiles.entries()) {
         const rawGameFileName = path.basename(gamePath);
@@ -308,25 +482,30 @@ export async function buildGallery(params) {
             badgeText = formatMameBadge(mameMachine);
         }
 
-        const gameContainer = await buildGameContainer({
+        records.push({
             platform,
             emulator,
             emulatorArgs,
             gamePath,
             gameName,
             displayName,
-            badgeText,
-            index: i
+            badgeText
         });
-
-        if (gameContainer) {
-            fragment.appendChild(gameContainer);
-            incrementNbGames(platform);
-        }
+        incrementNbGames(platform);
 
         if (i > 0 && i % 32 === 0) {
             await new Promise(resolve => setTimeout(resolve, 0));
         }
+    }
+
+    if (records.length > VIRTUAL_GALLERY_THRESHOLD) {
+        return buildVirtualGalleryPage(page, pageContent, records);
+    }
+
+    const fragment = document.createDocumentFragment();
+    for (const [i, record] of records.entries()) {
+        const gameContainer = await buildGameContainer({ ...record, index: i });
+        if (gameContainer) fragment.appendChild(gameContainer);
     }
 
     pageContent.appendChild(fragment);
@@ -431,7 +610,7 @@ async function buildRecordGalleryPage({ loadingName, pagePlatform, pageViewMode,
     let appendedCount = 0;
 
     if (hasRecords) {
-        const fragment = document.createDocumentFragment();
+        const records = [];
         const mameNameMaps = new Map();
 
         for (const [i, gameRecord] of gameRecords.entries()) {
@@ -452,21 +631,15 @@ async function buildRecordGalleryPage({ loadingName, pagePlatform, pageViewMode,
                     badgeText = formatMameBadge(mameMachine);
                 }
 
-                const gameContainer = await buildGameContainer({
+                records.push({
                     platform: gameRecord.platform,
                     emulator: '',
                     emulatorArgs: '',
                     gamePath: gameRecord.gamePath,
                     gameName: gameRecord.gameName,
                     displayName,
-                    badgeText,
-                    index: i
+                    badgeText
                 });
-
-                if (gameContainer) {
-                    fragment.appendChild(gameContainer);
-                    appendedCount++;
-                }
             } catch (err) {
                 console.error('Failed to build record gallery item:', err);
             }
@@ -476,6 +649,18 @@ async function buildRecordGalleryPage({ loadingName, pagePlatform, pageViewMode,
             }
         }
 
+        if (records.length > VIRTUAL_GALLERY_THRESHOLD) {
+            return buildVirtualGalleryPage(page, pageContent, records);
+        }
+
+        const fragment = document.createDocumentFragment();
+        for (const [i, record] of records.entries()) {
+            const gameContainer = await buildGameContainer({ ...record, index: i });
+            if (gameContainer) {
+                fragment.appendChild(gameContainer);
+                appendedCount++;
+            }
+        }
         pageContent.appendChild(fragment);
     }
 

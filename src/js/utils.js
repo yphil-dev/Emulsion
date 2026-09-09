@@ -1,5 +1,8 @@
 import { PLATFORMS } from './platforms.js';
-import { buildEmptyPageGameContainer } from './gallery.js';
+import {
+    buildEmptyPageGameContainer,
+    materializeGallery
+} from './gallery.js';
 import { downloadMetaDialog } from './dialog.js';
 import { getMeta } from './metadata.js';
 import { updateGamePane } from './slideshow.js';
@@ -1220,6 +1223,10 @@ export async function batchDownload() {
         console.warn("No page found for current platform:", currentPlatform);
         return;
     }
+
+    // Batch operations retain the existing DOM-based implementation.
+    // Materialize only when the user explicitly starts a batch operation.
+    await materializeGallery(currentPlatformPage);
 
     // Identify missing items
     const allGameContainers = currentPlatformPage.querySelectorAll('.game-container:not(.empty-platform-game-container)');

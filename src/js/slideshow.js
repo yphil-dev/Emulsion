@@ -15,7 +15,15 @@ import { updateFooterControlsFor,
 import { updatePreference } from './preferences.js';
 import { getMeta, displayMetaData } from './metadata.js';
 import { editMetaDialog, toggleFavDialog, launchGameDialog, systemDialog, helpDialog } from './dialog.js';
-import { ensureGalleryBuilt } from './gallery.js';
+import {
+    ensureGalleryBuilt,
+    getGalleryState,
+    getGalleryItemCount,
+    getGalleryContainer,
+    getGalleryContainers,
+    ensureGalleryIndexRendered,
+    refreshVirtualGalleryLayout
+} from './gallery.js';
 
 const main = document.querySelector('main');
 const slideshow = document.getElementById("slideshow");
@@ -384,7 +392,7 @@ async function goToGalleryPage(direction = 1) {
 
         if (page === currentPageNew) {
             // Re-init the current gallery
-            const gameContainers = Array.from(page.querySelectorAll('.game-container'));
+            const gameContainers = getGalleryContainers(page);
             const selected = page.querySelector('.game-container.selected');
 
             if (!selected && !page.dataset.empty) {
@@ -473,11 +481,14 @@ export async function initGallery(platformNameOrIndex, focusIndex = null) {
     }
 
     function initCurrentGallery(page) {
-        const gameContainers = Array.from(page.querySelectorAll('.game-container'));
-
+        const gameContainers = getGalleryContainers(page);
+        const virtualState = getGalleryState(page);
         const selected = page.querySelector('.game-container.selected');
 
-        if (!selected && !page.dataset.empty) {
+        if (virtualState) {
+            selectedIndex = virtualState.selectedIndex;
+            getGalleryContainer(page, selectedIndex)?.classList.add('selected');
+        } else if (!selected && !page.dataset.empty) {
             gameContainers[0].classList.add('selected');
             selectedIndex = 0;
         } else {
@@ -485,8 +496,11 @@ export async function initGallery(platformNameOrIndex, focusIndex = null) {
         }
 
         if (!page.dataset.listenersAttached) {
-            gameContainers.forEach(container => {
-                container.addEventListener('click', (event) => {
+            if (getGalleryState(page)) {
+                page.addEventListener('click', (event) => {
+                    const container = event.target.closest('.game-container');
+                    if (!container || !page.contains(container)) return;
+
                     event.stopPropagation();
                     event.stopImmediatePropagation();
 
@@ -496,21 +510,54 @@ export async function initGallery(platformNameOrIndex, focusIndex = null) {
                         launchGameDialog(container);
                     }
 
-                    gameContainers.forEach(c => c.classList.remove('selected'));
+                    page.querySelectorAll('.game-container.selected').forEach(c => c.classList.remove('selected'));
                 });
 
-                container.addEventListener('contextmenu', (event) => {
+                page.addEventListener('contextmenu', (event) => {
+                    const container = event.target.closest('.game-container');
+                    if (!container || !page.contains(container)) return;
+
                     event.preventDefault();
                     event.stopPropagation();
                     event.stopImmediatePropagation();
 
-                    gameContainers.forEach(c => c.classList.remove('selected'));
+                    page.querySelectorAll('.game-container.selected').forEach(c => c.classList.remove('selected'));
                     container.classList.add('selected');
+                    selectedIndex = Number(container.dataset.index) || 0;
+                    const state = getGalleryState(page);
+                    if (state) state.selectedIndex = selectedIndex;
                     openGameMenu(container);
                 });
-            });
+            } else {
+                gameContainers.forEach(container => {
+                    container.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        event.stopImmediatePropagation();
+
+                        if (container.classList.contains('settings')) {
+                            openPlatformMenu(container.dataset.platform, 'settings');
+                        } else if (!container.classList.contains('empty-platform-game-container')) {
+                            launchGameDialog(container);
+                        }
+
+                        gameContainers.forEach(c => c.classList.remove('selected'));
+                    });
+
+                    container.addEventListener('contextmenu', (event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        event.stopImmediatePropagation();
+
+                        gameContainers.forEach(c => c.classList.remove('selected'));
+                        container.classList.add('selected');
+                        openGameMenu(container);
+                    });
+                });
+            }
             page.dataset.listenersAttached = true;
         }
+
+        refreshVirtualGalleryLayout(page);
 
         if (!LB.noUI) {
             toggleHeaderNavLinks('show');
@@ -661,10 +708,17 @@ window.onGalleryKeyDown = async function onGalleryKeyDown(event) {
     const containerRoot = isGallery
           ? activePage.querySelector('.page-content')
           : menu.querySelector('.page-content');
+    const virtualState = isGallery ? getGalleryState(activePage) : null;
     const containers = isGallery && activePage.dataset.empty === 'true'
           ? []
-          : containerRoot?.children || [];
-    const indexedSelectedContainer = containers[selectedIndex];
+          : virtualState ? null : containerRoot?.children || [];
+    const containerCount = isGallery
+        ? getGalleryItemCount(activePage)
+        : containers.length;
+    const getContainer = index => virtualState
+        ? getGalleryContainer(activePage, index)
+        : containers[index];
+    const indexedSelectedContainer = getContainer(selectedIndex);
     const previouslySelectedContainer = indexedSelectedContainer?.classList.contains('selected')
           ? indexedSelectedContainer
           : containerRoot?.querySelector('.selected');
@@ -674,9 +728,17 @@ window.onGalleryKeyDown = async function onGalleryKeyDown(event) {
     const _moveRows = (idx, rows) => {
         const col = idx % LB.galleryNumOfCols;
         const row = Math.floor(idx / LB.galleryNumOfCols);
-        return Math.min(Math.max((row + rows) * LB.galleryNumOfCols + col, 0), containers.length - 1);
+        return Math.min(Math.max((row + rows) * LB.galleryNumOfCols + col, 0), containerCount - 1);
     };
-
+    const getContainerName = index => {
+        const container = getContainer(index);
+        const record = virtualState?.records[index];
+        return (container?.dataset.cleanName
+            || container?.dataset.gameName
+            || record?.displayName
+            || record?.gameName
+            || '').toLowerCase();
+    };
 
     switch (event.key) {
     case 'ArrowLeft':
@@ -686,13 +748,13 @@ window.onGalleryKeyDown = async function onGalleryKeyDown(event) {
         } else {
             if (isListMode && LB.mode === 'gallery') {
                 selectedIndex =
-                    (selectedIndex - 1 + containers.length) % containers.length;
+                    (selectedIndex - 1 + containerCount) % containerCount;
             } else {
                 if (LB.mode === 'gameMenu' && selectedIndex === 1) {
                     return;
                 }
                 selectedIndex =
-                    (selectedIndex - 1 + containers.length) % containers.length;
+                    (selectedIndex - 1 + containerCount) % containerCount;
             }
         }
         break;
@@ -704,10 +766,10 @@ window.onGalleryKeyDown = async function onGalleryKeyDown(event) {
         } else {
             if (isListMode && LB.mode === 'gallery') {
                 selectedIndex =
-                    (selectedIndex + 1) % containers.length;
+                    (selectedIndex + 1) % containerCount;
             } else {
                 selectedIndex =
-                    (selectedIndex + 1) % containers.length;
+                    (selectedIndex + 1) % containerCount;
             }
         }
         break;
@@ -715,7 +777,7 @@ window.onGalleryKeyDown = async function onGalleryKeyDown(event) {
     case 'ArrowUp':
         if (isListMode && LB.mode === 'gallery') {
             selectedIndex =
-                (selectedIndex - 1 + containers.length) % containers.length;
+                (selectedIndex - 1 + containerCount) % containerCount;
         } else {
             if (LB.mode === 'gameMenu' && selectedIndex === LB.galleryNumOfCols) {
                 return;
@@ -727,7 +789,7 @@ window.onGalleryKeyDown = async function onGalleryKeyDown(event) {
     case 'ArrowDown':
         if (isListMode && LB.mode === 'gallery') {
             selectedIndex =
-                (selectedIndex + 1) % containers.length;
+                (selectedIndex + 1) % containerCount;
         } else {
             selectedIndex = _moveRows(selectedIndex, 1);
         }
@@ -736,7 +798,7 @@ window.onGalleryKeyDown = async function onGalleryKeyDown(event) {
     case 'PageUp':
         if (isListMode && LB.mode === 'gallery') {
             selectedIndex =
-                (selectedIndex - 10 + containers.length) % containers.length;
+                (selectedIndex - 10 + containerCount) % containerCount;
         } else {
             selectedIndex =
                 _moveRows(selectedIndex, -Math.ceil(10 / LB.galleryNumOfCols));
@@ -746,7 +808,7 @@ window.onGalleryKeyDown = async function onGalleryKeyDown(event) {
     case 'PageDown':
         if (isListMode && LB.mode === 'gallery') {
             selectedIndex =
-                (selectedIndex + 10) % containers.length;
+                (selectedIndex + 10) % containerCount;
         } else {
             selectedIndex =
                 _moveRows(selectedIndex, Math.ceil(10 / LB.galleryNumOfCols));
@@ -758,7 +820,7 @@ window.onGalleryKeyDown = async function onGalleryKeyDown(event) {
         break;
 
     case 'End':
-        selectedIndex = containers.length - 1;
+        selectedIndex = containerCount - 1;
         break;
 
     case 'Escape':
@@ -782,7 +844,10 @@ window.onGalleryKeyDown = async function onGalleryKeyDown(event) {
         event.stopImmediatePropagation();
         event.preventDefault();
 
-        const selectedContainer = containers[selectedIndex];
+        if (virtualState) {
+            await ensureGalleryIndexRendered(activePage, selectedIndex);
+        }
+        const selectedContainer = getContainer(selectedIndex);
 
         if (!selectedContainer) {
             openPlatformMenu(activePage.dataset.platform, 'gallery');
@@ -805,7 +870,10 @@ window.onGalleryKeyDown = async function onGalleryKeyDown(event) {
 
     case '+':
         if (!LB.kioskMode) {
-            handleFavoriteToggle(containers[selectedIndex]);
+            if (virtualState) {
+                await ensureGalleryIndexRendered(activePage, selectedIndex);
+            }
+            handleFavoriteToggle(getContainer(selectedIndex));
         }
 
         break;
@@ -831,7 +899,10 @@ window.onGalleryKeyDown = async function onGalleryKeyDown(event) {
     case 'i':
         if (!LB.kioskMode) {
             if (event.ctrlKey) {
-                const selectedContainer = containers[selectedIndex];
+                if (virtualState) {
+                    await ensureGalleryIndexRendered(activePage, selectedIndex);
+                }
+                const selectedContainer = getContainer(selectedIndex);
                 openGameMenu(selectedContainer);
             }
         }
@@ -854,8 +925,8 @@ window.onGalleryKeyDown = async function onGalleryKeyDown(event) {
             const startIndex = selectedIndex + 1;
             let matchIndex = -1;
 
-            for (let i = startIndex; i < containers.length; i++) {
-                const name = (containers[i].dataset.cleanName || containers[i].dataset.gameName || '').toLowerCase();
+            for (let i = startIndex; i < containerCount; i++) {
+                const name = getContainerName(i);
                 if (name.startsWith(key)) {
                     matchIndex = i;
                     break;
@@ -865,7 +936,7 @@ window.onGalleryKeyDown = async function onGalleryKeyDown(event) {
             // Wrap-around
             if (matchIndex === -1) {
                 for (let i = 0; i < startIndex; i++) {
-                    const name = (containers[i].dataset.cleanName || containers[i].dataset.gameName || '').toLowerCase();
+                    const name = getContainerName(i);
                     if (name.startsWith(key)) {
                         matchIndex = i;
                         break;
@@ -881,7 +952,11 @@ window.onGalleryKeyDown = async function onGalleryKeyDown(event) {
 
     }
 
-    const selectedContainer = containers[selectedIndex];
+    if (virtualState) {
+        await ensureGalleryIndexRendered(activePage, selectedIndex);
+        virtualState.selectedIndex = selectedIndex;
+    }
+    const selectedContainer = getContainer(selectedIndex);
     const isEmptyPage = activePage.dataset.empty === 'true';
 
     if (previouslySelectedContainer !== selectedContainer) {
@@ -1228,6 +1303,8 @@ async function setGalleryViewMode(viewMode, save) {
             gamePane.style.display = 'none';
         }
     }
+
+    refreshVirtualGalleryLayout(page);
 }
 
 function ensureGamePane(params) {

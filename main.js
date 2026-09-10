@@ -621,9 +621,24 @@ function loadPreferences() {
             shouldSave = true;
         }
 
-        const normalizedLaunchAnimation = normalizeLaunchAnimation(preferences.settings.launchAnimation);
-        if (preferences.settings.launchAnimation !== normalizedLaunchAnimation) {
-            preferences.settings.launchAnimation = normalizedLaunchAnimation;
+        const legacyLaunchAnimation = normalizeLaunchAnimation(preferences.settings.launchAnimation);
+        const normalizedPlatformLaunchAnimation = normalizeLaunchAnimation(
+            preferences.settings.platformLaunchAnimation ?? legacyLaunchAnimation
+        );
+        const normalizedGameLaunchAnimation = normalizeLaunchAnimation(
+            preferences.settings.gameLaunchAnimation ?? legacyLaunchAnimation
+        );
+
+        if (preferences.settings.platformLaunchAnimation !== normalizedPlatformLaunchAnimation) {
+            preferences.settings.platformLaunchAnimation = normalizedPlatformLaunchAnimation;
+            shouldSave = true;
+        }
+        if (preferences.settings.gameLaunchAnimation !== normalizedGameLaunchAnimation) {
+            preferences.settings.gameLaunchAnimation = normalizedGameLaunchAnimation;
+            shouldSave = true;
+        }
+        if (Object.hasOwn(preferences.settings, 'launchAnimation')) {
+            delete preferences.settings.launchAnimation;
             shouldSave = true;
         }
 
@@ -1260,7 +1275,8 @@ const defaultPreferences = {
         sortFavoritesBy: "none",
         startupDialogPolicy: "show",
         launchDialogPolicy: "show",
-        launchAnimation: "bubble",
+        platformLaunchAnimation: "bubble",
+        gameLaunchAnimation: "bubble",
         optimize: "yes",
         theme: "default",
         steamGridAPIKey: "",

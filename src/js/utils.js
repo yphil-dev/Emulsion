@@ -49,6 +49,7 @@ export function updateFooterControlsFor(context) {
         updateFooterControls('shoulders', 'same', 'Platforms', 'on');
         updateFooterControls('west', 'same', 'Cover', 'off');
         updateFooterControls('north', 'same', 'same', 'off');
+        updateFooterControls('east', 'same', 'Back', 'on');
         break;
 
     case 'game-menu':
@@ -1329,7 +1330,7 @@ export function launchGame(gameContainer) {
     // Force reflow to restart the selected animation
     void gameContainer.offsetWidth;
 
-    const launchAnimation = LB.launchAnimation || 'bubble';
+    const launchAnimation = LB.gameLaunchAnimation || 'bubble';
     if (launchAnimation === 'sweep') {
         gameContainer.classList.add('launching');
     } else if (launchAnimation === 'bubble') {

@@ -162,7 +162,8 @@ async function initializeApp() {
             favoritePendingAction: null,
             startupDialogPolicy: uiPreferences.settings.startupDialogPolicy,
             launchDialogPolicy: uiPreferences.settings.launchDialogPolicy,
-            launchAnimation: uiPreferences.settings.launchAnimation || 'bubble'
+            platformLaunchAnimation: uiPreferences.settings.platformLaunchAnimation || 'bubble',
+            gameLaunchAnimation: uiPreferences.settings.gameLaunchAnimation || 'bubble'
         });
 
         LB.batchRunning = false;

@@ -36,7 +36,7 @@ function playSlideConfirmation(slide) {
     slide.classList.remove('launching', 'confirming');
     void slide.offsetWidth;
 
-    const launchAnimation = LB.launchAnimation || 'bubble';
+    const launchAnimation = LB.platformLaunchAnimation || 'bubble';
     if (launchAnimation === 'sweep') {
         slide.classList.add('launching');
     } else if (launchAnimation === 'bubble') {

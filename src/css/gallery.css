@@ -482,20 +482,3 @@ div.menu-current-image-container {
   font-weight: bold;
 }
 
-.launching::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(120deg,
-        transparent 0%,
-        var(--color-selected) 50%,
-        transparent 100%
-    );
-    animation: sweep 350ms ease forwards;
-    pointer-events: none;
-}
-
-@keyframes sweep {
-    0%   { transform: translateX(-120%); opacity: 0.7; }
-    100% { transform: translateX(120%);  opacity: 0;   }
-}

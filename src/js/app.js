@@ -161,7 +161,8 @@ async function initializeApp() {
             optimize: uiPreferences.settings.optimize || 'no',
             favoritePendingAction: null,
             startupDialogPolicy: uiPreferences.settings.startupDialogPolicy,
-            launchDialogPolicy: uiPreferences.settings.launchDialogPolicy
+            launchDialogPolicy: uiPreferences.settings.launchDialogPolicy,
+            launchAnimation: uiPreferences.settings.launchAnimation || 'bubble'
         });
 
         LB.batchRunning = false;

@@ -385,6 +385,10 @@ function buildSettingsMenu() {
     const sortFavoritesByGroup = sortFavoritesBy.group;
     const sortFavoritesByRadios = sortFavoritesBy.radios;
 
+    const launchAnimation = buildPrefsFormItem('launchAnimation', 'bolt', ['sweep', 'bubble', 'none'], '', 'Launch animation', LB.launchAnimation || 'bubble');
+    const launchAnimationGroup = launchAnimation.group;
+    const launchAnimationRadios = launchAnimation.radios;
+
     const optimize = LB.hasGameModeRun
         ? buildPrefsFormItem('optimize', 'bolt', ['yes', 'no'], '', 'Optimize (GameModeRun)', LB.optimize || 'no')
         : null;
@@ -411,6 +415,7 @@ function buildSettingsMenu() {
     formContainer.appendChild(recentlyPlayedPolicyGroup);
     formContainer.appendChild(favoritesPolicyGroup);
     formContainer.appendChild(sortFavoritesByGroup);
+    formContainer.appendChild(launchAnimationGroup);
     if (optimizeGroup) formContainer.appendChild(optimizeGroup);
     formContainer.appendChild(steamGridAPIKeyGroup);
     formContainer.appendChild(giantBombAPIKeyGroup);
@@ -478,6 +483,7 @@ function buildSettingsMenu() {
                 recentlyPlayedPolicy: recentlyPlayedPolicyRadios.find(radio => radio.checked)?.value,
                 favoritesPolicy: favoritesPolicyRadios.find(radio => radio.checked)?.value,
                 sortFavoritesBy: sortFavoritesByRadios.find(radio => radio.checked)?.value || 'none',
+                launchAnimation: launchAnimationRadios.find(radio => radio.checked)?.value || 'bubble',
                 optimize: optimizeRadios?.find(radio => radio.checked)?.value || 'no',
                 steamGridAPIKey: steamGridAPIKeyInput.value,
                 giantBombAPIKey: giantBombAPIKeyInput.value,
@@ -492,6 +498,7 @@ function buildSettingsMenu() {
             await updatePreference('settings', 'recentlyPlayedPolicy', newPrefs.recentlyPlayedPolicy);
             await updatePreference('settings', 'favoritesPolicy', newPrefs.favoritesPolicy);
             await updatePreference('settings', 'sortFavoritesBy', newPrefs.sortFavoritesBy);
+            await updatePreference('settings', 'launchAnimation', newPrefs.launchAnimation);
             if (LB.hasGameModeRun) {
                 await updatePreference('settings', 'optimize', newPrefs.optimize);
             }
@@ -519,6 +526,7 @@ function buildSettingsMenu() {
                 recentlyPlayedPolicy: newPrefs.recentlyPlayedPolicy,
                 favoritesPolicy: newPrefs.favoritesPolicy,
                 sortFavoritesBy: newPrefs.sortFavoritesBy,
+                launchAnimation: newPrefs.launchAnimation,
                 optimize: newPrefs.optimize,
                 steamGridAPIKey: newPrefs.steamGridAPIKey,
                 giantBombAPIKey: newPrefs.giantBombAPIKey,

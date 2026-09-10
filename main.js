@@ -518,6 +518,10 @@ function normalizeSortFavoritesBy(value) {
     return ['publisher', 'date', 'name', 'none'].includes(value) ? value : 'none';
 }
 
+function normalizeLaunchAnimation(value) {
+    return ['sweep', 'bubble', 'none'].includes(value) ? value : 'bubble';
+}
+
 function loadFavorites(sortFavoritesBy = defaultPreferences.settings.sortFavoritesBy) {
     const favorites = loadNormalizedRecordFile(favoritesFilePath, normalizeFavoriteRecord, 'favorites');
     if (!Array.isArray(favorites)) {
@@ -614,6 +618,12 @@ function loadPreferences() {
         const normalizedSortFavoritesBy = normalizeSortFavoritesBy(preferences.settings.sortFavoritesBy);
         if (preferences.settings.sortFavoritesBy !== normalizedSortFavoritesBy) {
             preferences.settings.sortFavoritesBy = normalizedSortFavoritesBy;
+            shouldSave = true;
+        }
+
+        const normalizedLaunchAnimation = normalizeLaunchAnimation(preferences.settings.launchAnimation);
+        if (preferences.settings.launchAnimation !== normalizedLaunchAnimation) {
+            preferences.settings.launchAnimation = normalizedLaunchAnimation;
             shouldSave = true;
         }
 
@@ -1250,6 +1260,7 @@ const defaultPreferences = {
         sortFavoritesBy: "none",
         startupDialogPolicy: "show",
         launchDialogPolicy: "show",
+        launchAnimation: "bubble",
         optimize: "yes",
         theme: "default",
         steamGridAPIKey: "",

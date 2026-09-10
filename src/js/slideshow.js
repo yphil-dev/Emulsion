@@ -33,13 +33,19 @@ let confirmationTimeout = null;
 const SLIDE_CONFIRMATION_DURATION_MS = 420;
 
 function playSlideConfirmation(slide) {
-    slide.classList.remove('confirming');
+    slide.classList.remove('launching', 'confirming');
     void slide.offsetWidth;
-    slide.classList.add('confirming');
+
+    const launchAnimation = LB.launchAnimation || 'bubble';
+    if (launchAnimation === 'sweep') {
+        slide.classList.add('launching');
+    } else if (launchAnimation === 'bubble') {
+        slide.classList.add('confirming');
+    }
 
     return new Promise(resolve => {
         setTimeout(() => {
-            slide.classList.remove('confirming');
+            slide.classList.remove('launching', 'confirming');
             resolve();
         }, SLIDE_CONFIRMATION_DURATION_MS);
     });

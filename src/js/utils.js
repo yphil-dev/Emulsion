@@ -1321,16 +1321,20 @@ export async function getMameNameMap(emulatorCommand) {
 
 export function launchGame(gameContainer) {
 
-    // Remove launching class from ALL game containers
-    document.querySelectorAll('.game-container.launching').forEach(container => {
-        container.classList.remove('launching');
+    // Remove activation animation classes from ALL game containers
+    document.querySelectorAll('.game-container.launching, .game-container.confirming').forEach(container => {
+        container.classList.remove('launching', 'confirming');
     });
 
-    // Force reflow to restart the animation
+    // Force reflow to restart the selected animation
     void gameContainer.offsetWidth;
 
-    // Add launching class only to the launched game
-    gameContainer.classList.add('launching');
+    const launchAnimation = LB.launchAnimation || 'bubble';
+    if (launchAnimation === 'sweep') {
+        gameContainer.classList.add('launching');
+    } else if (launchAnimation === 'bubble') {
+        gameContainer.classList.add('confirming');
+    }
 
     const launchConfig = syncGameContainerLaunchConfig(gameContainer);
 

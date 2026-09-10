@@ -19,7 +19,7 @@ export function initFooterControls() {
     updateFooterControls('shoulders', 'same', 'same', 'off');
     updateFooterControls('west', 'same', 'same', 'off');
     updateFooterControls('north', 'same', 'same', 'off');
-    updateFooterControls('east', 'same', 'Exit', 'on');
+    updateFooterControls('east', 'same', 'Menu', 'on');
     updateFooterControls('south', 'same', 'same', 'on');
 }
 
@@ -32,7 +32,7 @@ export function updateFooterControlsFor(context) {
         updateFooterControls('north', 'same', 'Favorite', 'on');
         updateFooterControls('shoulders', 'same', 'Platforms', 'on');
         updateFooterControls('south', 'same', 'Launch', 'on');
-        updateFooterControls('east', 'same', 'Exit', 'on');
+        updateFooterControls('east', 'same', 'Back', 'on');
         break;
 
     case 'gallery-list':
@@ -41,7 +41,7 @@ export function updateFooterControlsFor(context) {
         updateFooterControls('north', 'same', 'Favorite', 'on');
         updateFooterControls('shoulders', 'same', 'Platforms', 'on');
         updateFooterControls('south', 'same', 'Launch', 'on');
-        updateFooterControls('east', 'same', 'Exit', 'on');
+        updateFooterControls('east', 'same', 'Back', 'on');
         break;
 
     case 'settings':

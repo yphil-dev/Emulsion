@@ -34,6 +34,7 @@ export function updateFooterControlsFor(context) {
         updateFooterControls('shoulders', 'same', 'Platforms', 'on');
         updateFooterControls('south', 'same', 'Launch', 'on');
         updateFooterControls('east', 'same', 'Back', 'on');
+        updateFooterControls('select', 'same', 'Menu', 'on');
         break;
 
     case 'gallery-list':
@@ -43,6 +44,7 @@ export function updateFooterControlsFor(context) {
         updateFooterControls('shoulders', 'same', 'Platforms', 'on');
         updateFooterControls('south', 'same', 'Launch', 'on');
         updateFooterControls('east', 'same', 'Back', 'on');
+        updateFooterControls('select', 'same', 'Menu', 'on');
         break;
 
     case 'settings':
@@ -51,6 +53,7 @@ export function updateFooterControlsFor(context) {
         updateFooterControls('west', 'same', 'Cover', 'off');
         updateFooterControls('north', 'same', 'same', 'off');
         updateFooterControls('east', 'same', 'Back', 'on');
+        updateFooterControls('select', 'same', 'Menu', 'on');
         break;
 
     case 'game-menu':
@@ -58,6 +61,7 @@ export function updateFooterControlsFor(context) {
         updateFooterControls('shoulders', 'same', 'Platforms', 'on');
         updateFooterControls('west', 'same', 'Cover', 'off');
         updateFooterControls('north', 'same', 'same', 'off');
+        updateFooterControls('select', 'same', 'Menu', 'on');
         break;
 
     case 'platform-menu':
@@ -65,6 +69,7 @@ export function updateFooterControlsFor(context) {
         updateFooterControls('west', 'same', '', 'off');
         updateFooterControls('shoulders', 'same', '', 'off');
         updateFooterControls('north', 'same', 'same', 'off');
+        updateFooterControls('select', 'same', 'same', 'off');
         break;
 
     case 'empty-page':
@@ -73,10 +78,12 @@ export function updateFooterControlsFor(context) {
         updateFooterControls('west', 'same', 'Cover', 'off');
         updateFooterControls('south', 'same', 'Select', 'on');
         updateFooterControls('north', 'same', 'same', 'off');
+        updateFooterControls('select', 'same', 'Menu', 'on');
         break;
 
     case 'slide-show':
         initFooterControls();
+        updateFooterControls('select', 'same', 'same', 'off');
         break;
     }
 }

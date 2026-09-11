@@ -1,7 +1,7 @@
 import { initSlideShow, initGallery } from './slideshow.js';
 import { displayMetaData } from './metadata.js';
 import { PLATFORMS, getPlatformInfo } from './platforms.js';
-import { simulateTabNavigation, launchGame, buildIcon, switchIcon, syncGameContainerLaunchConfig } from './utils.js';
+import { simulateTabNavigation, launchGame, buildIcon, switchIcon, syncGameContainerLaunchConfig } from './util.js';
 import { updatePreference } from './preferences.js';
 import { openPlatformMenu } from './menu.js';
 

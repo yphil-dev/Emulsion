@@ -6,7 +6,7 @@ const axios = require('axios');
 
 import * as preferences from './preferences.js';
 import { systemDialog, helpDialog, launchErrorDialog } from './dialog.js';
-import { applyTheme, setFooterSize, initFooterControls, updateLabelFontSize } from './utils.js';
+import { applyTheme, setFooterSize, initFooterControls, updateLabelFontSize } from './util.js';
 import { buildHomeSlide, initSlideShow, initGallery, initGamepad } from './slideshow.js';
 import { loadPreferences } from './preferences.js';
 import { buildGalleries, ensureGalleryBuilt } from './gallery.js';

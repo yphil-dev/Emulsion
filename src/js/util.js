@@ -4,6 +4,7 @@ import {
     materializeGallery
 } from './gallery.js';
 import { downloadMetaDialog } from './dialog.js';
+import { playActivationZoom } from './animation.js';
 import { getMeta } from './metadata.js';
 import { updateGamePane } from './slideshow.js';
 
@@ -1322,15 +1323,19 @@ export async function getMameNameMap(emulatorCommand) {
 
 export function launchGame(gameContainer) {
 
+    const launchAnimation = LB.gameLaunchAnimation || 'bubble';
+    if (launchAnimation === 'zoom') {
+        playActivationZoom(gameContainer);
+    }
+
     // Remove activation animation classes from ALL game containers
-    document.querySelectorAll('.game-container.launching, .game-container.confirming').forEach(container => {
-        container.classList.remove('launching', 'confirming');
+    document.querySelectorAll('.game-container.launching, .game-container.confirming, .game-container.zooming').forEach(container => {
+        container.classList.remove('launching', 'confirming', 'zooming');
     });
 
     // Force reflow to restart the selected animation
     void gameContainer.offsetWidth;
 
-    const launchAnimation = LB.gameLaunchAnimation || 'bubble';
     if (launchAnimation === 'sweep') {
         gameContainer.classList.add('launching');
     } else if (launchAnimation === 'bubble') {

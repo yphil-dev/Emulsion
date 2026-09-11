@@ -36,6 +36,27 @@
   animation-delay: 60ms;
 }
 
+.activation-zoom-clone {
+  position: fixed !important;
+  margin: 0 !important;
+  transform-origin: center center;
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 9999;
+  animation: activation-zoom-clone 220ms ease-out forwards !important;
+}
+
+@keyframes activation-zoom-clone {
+  from {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  to {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
 @keyframes slide-confirmation-burst {
   0% {
     transform: translate(-50%, -50%) scale(0.25);

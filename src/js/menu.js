@@ -12,7 +12,7 @@ import { getSelectedGameContainer,
          simulateTabNavigation,
          setFooterSize,
          toggleHeaderNavLinks,
-         fadeOut } from './utils.js';
+         fadeOut } from './util.js';
 import { helpDialog, installEmulatorsDialog, systemDialog } from './dialog.js';
 
 let menuState = {
@@ -385,11 +385,11 @@ function buildSettingsMenu() {
     const sortFavoritesByGroup = sortFavoritesBy.group;
     const sortFavoritesByRadios = sortFavoritesBy.radios;
 
-    const platformLaunchAnimation = buildPrefsFormItem('platformLaunchAnimation', 'anim', ['sweep', 'bubble', 'none'], '', 'Platform launch animation', LB.platformLaunchAnimation || 'bubble');
+    const platformLaunchAnimation = buildPrefsFormItem('platformLaunchAnimation', 'anim', ['sweep', 'bubble', 'zoom', 'none'], '', 'Platform launch animation', LB.platformLaunchAnimation || 'bubble');
     const platformLaunchAnimationGroup = platformLaunchAnimation.group;
     const platformLaunchAnimationRadios = platformLaunchAnimation.radios;
 
-    const gameLaunchAnimation = buildPrefsFormItem('gameLaunchAnimation', 'anim', ['sweep', 'bubble', 'none'], '', 'Launch game animation', LB.gameLaunchAnimation || 'bubble');
+    const gameLaunchAnimation = buildPrefsFormItem('gameLaunchAnimation', 'anim', ['sweep', 'bubble', 'zoom', 'none'], '', 'Launch game animation', LB.gameLaunchAnimation || 'bubble');
     const gameLaunchAnimationGroup = gameLaunchAnimation.group;
     const gameLaunchAnimationRadios = gameLaunchAnimation.radios;
 

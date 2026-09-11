@@ -519,7 +519,7 @@ function normalizeSortFavoritesBy(value) {
 }
 
 function normalizeLaunchAnimation(value) {
-    return ['sweep', 'bubble', 'none'].includes(value) ? value : 'bubble';
+    return ['sweep', 'bubble', 'zoom', 'none'].includes(value) ? value : 'bubble';
 }
 
 function loadFavorites(sortFavoritesBy = defaultPreferences.settings.sortFavoritesBy) {

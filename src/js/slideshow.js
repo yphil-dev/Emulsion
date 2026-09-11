@@ -11,8 +11,9 @@ import { updateFooterControlsFor,
          createProgressiveRepeater,
          toggleHeaderNavLinks,
          buildIcon,
-         switchIcon } from './utils.js';
+         switchIcon } from './util.js';
 import { updatePreference } from './preferences.js';
+import { playActivationZoom } from './animation.js';
 import { getMeta, displayMetaData } from './metadata.js';
 import { editMetaDialog, toggleFavDialog, launchGameDialog, systemDialog, helpDialog } from './dialog.js';
 import {
@@ -33,10 +34,14 @@ let confirmationTimeout = null;
 const SLIDE_CONFIRMATION_DURATION_MS = 420;
 
 function playSlideConfirmation(slide) {
-    slide.classList.remove('launching', 'confirming');
+    const launchAnimation = LB.platformLaunchAnimation || 'bubble';
+    if (launchAnimation === 'zoom') {
+        return playActivationZoom(slide);
+    }
+
+    slide.classList.remove('launching', 'confirming', 'zooming');
     void slide.offsetWidth;
 
-    const launchAnimation = LB.platformLaunchAnimation || 'bubble';
     if (launchAnimation === 'sweep') {
         slide.classList.add('launching');
     } else if (launchAnimation === 'bubble') {
@@ -45,7 +50,7 @@ function playSlideConfirmation(slide) {
 
     return new Promise(resolve => {
         setTimeout(() => {
-            slide.classList.remove('launching', 'confirming');
+            slide.classList.remove('launching', 'confirming', 'zooming');
             resolve();
         }, SLIDE_CONFIRMATION_DURATION_MS);
     });

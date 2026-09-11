@@ -8,7 +8,7 @@ import { cleanFileName,
          buildIcon,
          extractVpxYear,
          extractVpxVendor,
-         syncGameContainerLaunchConfig } from './utils.js';
+         syncGameContainerLaunchConfig } from './util.js';
 import { incrementNbGames } from './preferences.js';
 import { openPlatformMenu } from './menu.js';
 

@@ -301,6 +301,18 @@ export const PLATFORMS = [
     {
         nbGames: 0,
         display: "grid",
+        displayName: "Wii",
+        vendor: "Nintendo",
+        name: "wii",
+        extensions: [".wbfs"],
+        sortGamesBy: "name",
+        emulators: [
+            { name: "RPCS3", flatpak: "net.rpcs3.RPCS3", scoop: "games/rpcs3", url:"https://rpcs3.net/", args: "--no-gui" }
+        ]
+    },
+    {
+        nbGames: 0,
+        display: "grid",
         displayName: "3DS",
         vendor: "Nintendo",
         name: "3ds",

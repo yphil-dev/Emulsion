@@ -307,7 +307,7 @@ export const PLATFORMS = [
         extensions: [".wbfs"],
         sortGamesBy: "name",
         emulators: [
-            { name: "RPCS3", flatpak: "net.rpcs3.RPCS3", scoop: "games/rpcs3", url:"https://rpcs3.net/", args: "--no-gui" }
+            { name: "dolphin", flatpak: "org.DolphinEmu.dolphin-emu", scoop: "games/dolphin", url:"https://dolphin-emu.org/", args: "-b -e" }
         ]
     },
     {

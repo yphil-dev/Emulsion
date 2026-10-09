@@ -1010,10 +1010,48 @@ export function syncGameContainerLaunchConfig(gameContainer) {
     gameContainer.dataset.command = [emulator, emulatorArgs, gameContainer.dataset.gamePath].filter(Boolean).join(' ');
 
     if (gameContainer.dataset.cleanName && gameContainer.dataset.gamePath) {
-        gameContainer.title = `${gameContainer.dataset.cleanName}\n\n- File: ${gameContainer.dataset.gamePath}\n- Click to launch with ${emulator || 'the configured emulator'}\n- Right-click to fetch cover art image`;
+        if (gameContainer.dataset.availabilityTracked === 'true' && gameContainer.dataset.available === 'false') {
+            gameContainer.title = `${gameContainer.dataset.cleanName}\n\nUnavailable now\n- File: ${gameContainer.dataset.gamePath}\n- Reconnect or mount the drive, then restart Emulsion`;
+        } else {
+            gameContainer.title = `${gameContainer.dataset.cleanName}\n\n- File: ${gameContainer.dataset.gamePath}\n- Click to launch with ${emulator || 'the configured emulator'}\n- Right-click to fetch cover art image`;
+        }
     }
 
     return { emulator, emulatorArgs };
+}
+
+export function refreshGameAvailability(gameContainer) {
+    if (!gameContainer || gameContainer.dataset.availabilityTracked !== 'true') {
+        return true;
+    }
+
+    const available = Boolean(gameContainer.dataset.gamePath) && fs.existsSync(gameContainer.dataset.gamePath);
+    gameContainer.dataset.available = String(available);
+    gameContainer.classList.toggle('unavailable', !available);
+
+    let availabilityBadge = gameContainer.querySelector('.availability-badge');
+    if (!available && !availabilityBadge) {
+        availabilityBadge = document.createElement('span');
+        availabilityBadge.className = 'availability-badge';
+        availabilityBadge.textContent = 'Offline';
+        gameContainer.appendChild(availabilityBadge);
+    } else if (available) {
+        availabilityBadge?.remove();
+    }
+
+    syncGameContainerLaunchConfig(gameContainer);
+    return available;
+}
+
+export function updateGameAvailabilityControls(gameContainer) {
+    const available = gameContainer?.dataset.availabilityTracked !== 'true' || gameContainer.dataset.available !== 'false';
+    const launchControl = document.getElementById('south');
+    if (!launchControl) return available;
+
+    launchControl.classList.toggle('disabled', !available);
+    launchControl.setAttribute('aria-disabled', String(!available));
+    updateFooterControls('south', 'same', available ? 'Launch' : 'Reconnect drive', 'on');
+    return available;
 }
 
 function getFavoritesPageContent() {
@@ -1121,7 +1159,9 @@ export async function addFavorite(gameContainer) {
 
                 const favoriteGameContainer = gameContainer.cloneNode(true);
                 favoriteGameContainer.classList.remove('selected');
+                favoriteGameContainer.dataset.availabilityTracked = 'true';
                 setFavoriteBadge(favoriteGameContainer, true);
+                refreshGameAvailability(favoriteGameContainer);
                 favoritesPage.appendChild(favoriteGameContainer);
                 reorderFavoritesPage(favoritesPage);
             }
@@ -1330,6 +1370,10 @@ export async function getMameNameMap(emulatorCommand) {
 
 export function launchGame(gameContainer) {
 
+    if (!updateGameAvailabilityControls(gameContainer)) {
+        return false;
+    }
+
     const launchAnimation = LB.gameLaunchAnimation || 'bubble';
     if (launchAnimation === 'zoom') {
         playActivationZoom(gameContainer);
@@ -1360,6 +1404,7 @@ export function launchGame(gameContainer) {
     };
 
     ipcRenderer.send('run-command', launchRequest);
+    return true;
 }
 
 export function switchIcon (svgElement, newId) {

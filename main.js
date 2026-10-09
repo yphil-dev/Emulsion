@@ -453,18 +453,6 @@ function normalizeRecordArray(records, normalizeRecord) {
     return records.map(normalizeRecord).filter(Boolean);
 }
 
-function recordGamePathExists(record) {
-    if (!record || typeof record.gamePath !== 'string' || record.gamePath.trim() === '') {
-        return false;
-    }
-
-    try {
-        return fsSync.statSync(record.gamePath).isFile();
-    } catch {
-        return false;
-    }
-}
-
 function writeRecordFile(filePath, records) {
     fsSync.writeFileSync(filePath, JSON.stringify(records, null, 2), 'utf8');
 }
@@ -480,24 +468,17 @@ function loadNormalizedRecordFile(filePath, normalizeRecord, recordTypeLabel) {
         try {
             const records = JSON.parse(fileContent);
             const normalizedRecords = normalizeRecordArray(records, normalizeRecord);
-            const existingRecords = normalizedRecords.filter(recordGamePathExists);
 
-            if (JSON.stringify(existingRecords) !== JSON.stringify(records)) {
-                writeRecordFile(filePath, existingRecords);
+            if (JSON.stringify(normalizedRecords) !== JSON.stringify(records)) {
+                writeRecordFile(filePath, normalizedRecords);
 
                 const removedInvalidCount = records.length - normalizedRecords.length;
-                const removedMissingCount = normalizedRecords.length - existingRecords.length;
-
                 if (removedInvalidCount > 0) {
                     console.warn(`Removed ${removedInvalidCount} invalid entries from ${recordTypeLabel} file.`);
                 }
-
-                if (removedMissingCount > 0) {
-                    console.warn(`Removed ${removedMissingCount} missing-game entries from ${recordTypeLabel} file.`);
-                }
             }
 
-            return existingRecords;
+            return normalizedRecords;
 
         } catch (parseError) {
             console.error(`Invalid JSON in ${recordTypeLabel} file:`, parseError);

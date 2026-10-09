@@ -1,7 +1,7 @@
 import { initSlideShow, initGallery } from './slideshow.js';
 import { displayMetaData } from './metadata.js';
 import { PLATFORMS, getPlatformInfo } from './platforms.js';
-import { simulateTabNavigation, launchGame, buildIcon, switchIcon, syncGameContainerLaunchConfig } from './util.js';
+import { simulateTabNavigation, launchGame, buildIcon, switchIcon, syncGameContainerLaunchConfig, updateGameAvailabilityControls } from './util.js';
 import { updatePreference } from './preferences.js';
 import { openPlatformMenu } from './menu.js';
 
@@ -761,6 +761,7 @@ export function launchGameDialog(gameContainer) {
     const okButton = dialog.querySelector('.ok');
     const cancelButton = dialog.querySelector('.cancel');
     const checkbox = document.getElementById('open-dialog-at-launch');
+    const available = updateGameAvailabilityControls(gameContainer);
 
     // Set dialog content
     const { emulator } = syncGameContainerLaunchConfig(gameContainer);
@@ -768,6 +769,17 @@ export function launchGameDialog(gameContainer) {
     dialog.querySelector('img').src = gameContainer.querySelector('img').src;
     dialog.querySelector('.dialog-title').textContent = gameContainer.dataset.cleanName || gameContainer.dataset.gameName;
     dialog.querySelector('.emulator-name').textContent = emulator;
+
+    let availabilityMessage = dialog.querySelector('.availability-message');
+    if (!availabilityMessage) {
+        availabilityMessage = document.createElement('p');
+        availabilityMessage.className = 'availability-message text';
+        dialog.querySelector('.launch-game-dialog-body').before(availabilityMessage);
+    }
+    availabilityMessage.textContent = 'File unavailable. Reconnect or mount the drive, then restart Emulsion.';
+    availabilityMessage.hidden = available;
+    okButton.disabled = !available;
+    okButton.title = available ? 'Launch game' : availabilityMessage.textContent;
 
     function closeDialog() {
         DialogManager.closeCurrent();
@@ -823,7 +835,7 @@ export function launchGameDialog(gameContainer) {
 
     // Open the dialog using DialogManager
     DialogManager.open(overlay, 'launchGame');
-    okButton.focus();
+    (available ? okButton : cancelButton).focus();
 }
 
 export function preferencesErrorDialog(errorMessage) {

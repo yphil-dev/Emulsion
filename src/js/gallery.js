@@ -8,7 +8,8 @@ import { cleanFileName,
          buildIcon,
          extractVpxYear,
          extractVpxVendor,
-         syncGameContainerLaunchConfig } from './util.js';
+         syncGameContainerLaunchConfig,
+         refreshGameAvailability } from './util.js';
 import { incrementNbGames } from './preferences.js';
 import { openPlatformMenu } from './menu.js';
 
@@ -522,7 +523,8 @@ export async function buildGameContainer({
     gameName,
     displayName,
     badgeText,
-    index
+    index,
+    availabilityTracked = false
 }) {
     const container = document.createElement('div');
     const gamesDir = LB.preferences[platform]?.gamesDir;
@@ -558,6 +560,7 @@ export async function buildGameContainer({
     container.dataset.emulatorArgs = emulatorArgs;
     container.dataset.gamePath = gamePath;
     container.dataset.index = index;
+    container.dataset.availabilityTracked = String(availabilityTracked);
 
     syncGameContainerLaunchConfig(container);
 
@@ -590,6 +593,10 @@ export async function buildGameContainer({
     container.appendChild(imageContainer);
     container.appendChild(platformBadge);
     container.appendChild(label);
+
+    if (availabilityTracked) {
+        refreshGameAvailability(container);
+    }
 
     return container;
 }
@@ -638,7 +645,8 @@ async function buildRecordGalleryPage({ loadingName, pagePlatform, pageViewMode,
                     gamePath: gameRecord.gamePath,
                     gameName: gameRecord.gameName,
                     displayName,
-                    badgeText
+                    badgeText,
+                    availabilityTracked: true
                 });
             } catch (err) {
                 console.error('Failed to build record gallery item:', err);

@@ -53,6 +53,11 @@ footer {
   transition: all 0.4s ease;
 }
 
+#south.disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
 .pie-progress {
   --progress: 0;        /* progress: 0–100 */
   --spinner-ring-color: #00ffae;    /* ring color */

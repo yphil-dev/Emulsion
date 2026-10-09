@@ -11,7 +11,8 @@ import { updateFooterControlsFor,
          createProgressiveRepeater,
          toggleHeaderNavLinks,
          buildIcon,
-         switchIcon } from './util.js';
+         switchIcon,
+         updateGameAvailabilityControls } from './util.js';
 import { updatePreference } from './preferences.js';
 import { playActivationZoom } from './animation.js';
 import { getMeta, displayMetaData } from './metadata.js';
@@ -434,6 +435,9 @@ async function goToGalleryPage(direction = 1) {
 
             updateHeader(page.dataset.platform);
             setGalleryFooterControls(page.dataset);
+            if (!page.dataset.empty && page.dataset.platform !== 'settings') {
+                updateGameAvailabilityControls(getGalleryContainer(page, selectedIndex));
+            }
         } else if (index === (currentIndexNew - 1 + pages.length) % pages.length) {
             page.classList.add('prev');
         } else if (index === (currentIndexNew + 1) % pages.length) {
@@ -574,6 +578,9 @@ export async function initGallery(platformNameOrIndex, focusIndex = null) {
             toggleHeaderNavLinks('show');
             updateHeader(page.dataset.platform);
             setGalleryFooterControls(page.dataset);
+            if (!page.dataset.empty && page.dataset.platform !== 'settings') {
+                updateGameAvailabilityControls(getGalleryContainer(page, selectedIndex));
+            }
         }
 
         if (LB.noUI) {
@@ -973,6 +980,10 @@ window.onGalleryKeyDown = async function onGalleryKeyDown(event) {
     if (previouslySelectedContainer !== selectedContainer) {
         previouslySelectedContainer?.classList.remove('selected');
         selectedContainer?.classList.add('selected');
+    }
+
+    if (isGallery && !isEmptyPage && selectedContainer) {
+        updateGameAvailabilityControls(selectedContainer);
     }
 
     if (LB.mode === 'gameMenu') {

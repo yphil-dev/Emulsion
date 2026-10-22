@@ -768,7 +768,7 @@ export function launchGameDialog(gameContainer) {
 
     dialog.querySelector('img').src = gameContainer.querySelector('img').src;
     dialog.querySelector('.dialog-title').textContent = gameContainer.dataset.cleanName || gameContainer.dataset.gameName;
-    dialog.querySelector('.emulator-name').textContent = emulator;
+    dialog.querySelector('.emulator-name').textContent = gameContainer.dataset.platform === 'sys' ? 'System' : emulator;
 
     let availabilityMessage = dialog.querySelector('.availability-message');
     if (!availabilityMessage) {

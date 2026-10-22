@@ -369,6 +369,16 @@ export const PLATFORMS = [
         emulators: [
             { name: "MAME", flatpak: "org.mamedev.MAME", scoop: null, url:"https://www.mamedev.org/", args: "" }
         ]
+    },
+    {
+        nbGames: 0,
+        display: "grid",
+        displayName: "Sys",
+        vendor: "Operating System",
+        name: "sys",
+        extensions: [""],
+        sortGamesBy: "name",
+        emulators: []
     }
 ];
 

@@ -1108,45 +1108,49 @@ ipcMain.on('run-command', async (event, launchRequest) => {
     let cmd;
     let args = [];
 
-    const emulatorParts = emulator.split(/\s+/).filter(Boolean);
-
-    if (emulatorParts[0] === "flatpak" && emulatorParts[1] === "run") {
-        cmd = "flatpak";
-
-        args = [
-            "run",
-            `--filesystem=${romDir}:ro`,
-            ...emulatorParts.slice(2)
-        ];
+    if (platform === 'sys') {
+        cmd = gamePath;
     } else {
-        cmd = emulatorParts[0];
-        args = emulatorParts.slice(1);
-    }
+        const emulatorParts = emulator.split(/\s+/).filter(Boolean);
 
-    const parsedEmulatorArgs = emulatorArgs
-        ? emulatorArgs.split(/\s+/).filter(Boolean)
-        : [];
+        if (emulatorParts[0] === "flatpak" && emulatorParts[1] === "run") {
+            cmd = "flatpak";
 
-    if (platform === 'mame') {
-        const sanitizedEmulatorArgs = [];
-
-        for (let i = 0; i < parsedEmulatorArgs.length; i++) {
-            const currentArg = parsedEmulatorArgs[i];
-
-            if (currentArg === '-rompath') {
-                const nextArg = parsedEmulatorArgs[i + 1];
-                if (nextArg && !nextArg.startsWith('-')) {
-                    i++;
-                }
-                continue;
-            }
-
-            sanitizedEmulatorArgs.push(currentArg);
+            args = [
+                "run",
+                `--filesystem=${romDir}:ro`,
+                ...emulatorParts.slice(2)
+            ];
+        } else {
+            cmd = emulatorParts[0];
+            args = emulatorParts.slice(1);
         }
 
-        args.push(...sanitizedEmulatorArgs, '-rompath', romDir, romShortName);
-    } else {
-        args.push(...parsedEmulatorArgs, gamePath);
+        const parsedEmulatorArgs = emulatorArgs
+            ? emulatorArgs.split(/\s+/).filter(Boolean)
+            : [];
+
+        if (platform === 'mame') {
+            const sanitizedEmulatorArgs = [];
+
+            for (let i = 0; i < parsedEmulatorArgs.length; i++) {
+                const currentArg = parsedEmulatorArgs[i];
+
+                if (currentArg === '-rompath') {
+                    const nextArg = parsedEmulatorArgs[i + 1];
+                    if (nextArg && !nextArg.startsWith('-')) {
+                        i++;
+                    }
+                    continue;
+                }
+
+                sanitizedEmulatorArgs.push(currentArg);
+            }
+
+            args.push(...sanitizedEmulatorArgs, '-rompath', romDir, romShortName);
+        } else {
+            args.push(...parsedEmulatorArgs, gamePath);
+        }
     }
 
     if (shouldUseGameMode && cmd !== 'gamemoderun') {
@@ -1637,7 +1641,7 @@ ipcMain.handle('scan-directory', async (event, gamesDir, extensions, recursive =
             } else {
                 const lowerName = item.name.toLowerCase();
                 const match = sortedExts.find(ext => lowerName.endsWith(ext.toLowerCase()));
-                if (match) files.push(fullPath);
+                if (match !== undefined) files.push(fullPath);
             }
         }
     } catch (err) {
@@ -1665,7 +1669,7 @@ async function scanDirectoryRecursive(gamesDir, extensions, recursive, ignoredDi
             } else {
                 const lowerName = item.name.toLowerCase();
                 const match = sortedExts.find(ext => lowerName.endsWith(ext.toLowerCase()));
-                if (match) files.push(fullPath);
+                if (match !== undefined) files.push(fullPath);
             }
         }
     } catch (err) {

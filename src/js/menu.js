@@ -583,6 +583,7 @@ function buildPlatformMenuForm(platformName) {
     statusLabelPlatormName.id = 'form-status-label-platform-name';
 
     const platformInfo = getPlatformInfo(platformName);
+    const usesEmulator = platformName !== 'sys';
 
     statusLabelPlatormName.innerHTML = `${platformInfo.name} is&nbsp;`;
 
@@ -806,8 +807,10 @@ function buildPlatformMenuForm(platformName) {
     formContainer.appendChild(platformMenuImageCtn);
     formContainer.appendChild(statusLabel);
     formContainer.appendChild(gamesDirGroup);
-    formContainer.appendChild(emulatorGroup);
-    formContainer.appendChild(emulatorArgsGroup);
+    if (usesEmulator) {
+        formContainer.appendChild(emulatorGroup);
+        formContainer.appendChild(emulatorArgsGroup);
+    }
     formContainer.appendChild(sortGamesByGroup);
     formContainer.appendChild(extensionsGroup);
 
@@ -817,7 +820,7 @@ function buildPlatformMenuForm(platformName) {
     formContainerButtons.appendChild(saveButton);
 
     statusCheckBox.addEventListener('change', (event) => {
-        const isNotEnablable = !gamesDirInput.value || !emulatorInput.value;
+        const isNotEnablable = !gamesDirInput.value || (usesEmulator && !emulatorInput.value);
         const isEnabling = statusCheckBox.checked;
 
         gamesDirSubLabel.textContent = '';
@@ -828,7 +831,7 @@ function buildPlatformMenuForm(platformName) {
                 gamesDirSubLabel.innerHTML = `Select where your <span class="accent">${LB.currentPlatform}</span> games live`;
                 fadeOut(gamesDirSubLabel);
             }
-            if (!emulatorInput.value) {
+            if (usesEmulator && !emulatorInput.value) {
                 emulatorSubLabel.innerHTML = `Select a <span class="accent">${LB.currentPlatform}</span> emulator, or enter a name/path`;
                 fadeOut(emulatorSubLabel);
             }
@@ -869,7 +872,7 @@ function buildPlatformMenuForm(platformName) {
                 gamesDirSubLabel.textContent = '';
             }
 
-            if (!emulatorInput.value.trim()) {
+            if (usesEmulator && !emulatorInput.value.trim()) {
                 emulatorSubLabel.textContent = 'This field cannot be empty';
                 valid = false;
             } else {
@@ -887,10 +890,11 @@ function buildPlatformMenuForm(platformName) {
         )
               .map(input => {
                   let val = input.value.trim().toLowerCase();
+                  if (!val && platformName === 'sys') return '';
                   if (!val.startsWith('.')) val = '.' + val;
                   return val.replace(/[^a-z0-9.]/gi, '');
               })
-              .filter(ext => ext.length > 1);
+              .filter(ext => ext === '' ? platformName === 'sys' : ext.length > 1);
 
         try {
             // Get current preferences for comparison

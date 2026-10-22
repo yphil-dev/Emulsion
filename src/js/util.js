@@ -329,6 +329,8 @@ const PREDEFINED_TITLES = {
     WIPEOUTFUSION:  'WipEout Fusion',
     PROJECTXSE:     'ProjectX SE',
     DUCKTALES:      'DuckTales',
+    MEGABATAR:      'MegaBatar',
+    ZEEWOLF:        'ZeeWolf',
     SONIC3COMPLETE: 'Sonic 3 Complete',
     NHL94:          'NHL 94',
 };
